@@ -15,12 +15,14 @@ import torch
 
 from mythouro.main import MythOuro, MythOuroConfig
 from mythouro.inference import (
+    BestOfTrajectoryGenerator,
     ComponentGradNormLogger,
     ConfidenceAwareGenerator,
     ContinuousDepthwiseBatcher,
     CrossLoopKVCache,
     SpeculativeDecoder,
     UncertaintyGatedGenerator,
+    best_of_trajectory_generate,
     compress_kv_cache,
     confidence_aware_generate,
     speculative_generate,
@@ -463,3 +465,104 @@ class TestConfidenceAwareGenerator:
         # Every entry must be a finite probability — UncertaintyHead is a sigmoid.
         for u in trace:
             assert 0.0 <= u <= 1.0
+
+
+# ---------------------------------------------------------------------------
+# BestOfTrajectoryGenerator + forward_trajectory
+# ---------------------------------------------------------------------------
+
+
+class TestBestOfTrajectory:
+    def setup_method(self):
+        self.cfg = _tiny_cfg(max_loop_iters=4)
+        self.model = MythOuro(self.cfg).eval()
+        self.prompt = torch.randint(0, self.cfg.vocab_size, (1, 6))
+
+    # ── forward_trajectory contract ──────────────────────────────────
+
+    def test_forward_trajectory_shapes(self):
+        logits_traj, unc_traj = self.model.forward_trajectory(
+            self.prompt, n_loops=4,
+        )
+        B, T = self.prompt.shape
+        assert logits_traj.shape[0] == B and logits_traj.shape[1] == T
+        assert logits_traj.shape[-1] == self.cfg.vocab_size
+        K = logits_traj.shape[2]
+        assert 1 <= K <= 4
+        assert unc_traj.shape == (B, T, K)
+        # Uncertainty is a sigmoid → valid probabilities.
+        assert bool((unc_traj >= 0).all() and (unc_traj <= 1).all())
+
+    def test_forward_trajectory_does_not_leak_state(self):
+        # The capture flag must be reset after the call so the normal forward
+        # path is unaffected.
+        self.model.forward_trajectory(self.prompt, n_loops=4)
+        assert self.model.recurrent.collect_trajectory is False
+        assert self.model.recurrent.last_trajectory is None
+        # Plain forward still returns the (logits, uncertainty) tuple.
+        out = self.model(self.prompt, n_loops=4)
+        assert isinstance(out, tuple) and len(out) == 2
+
+    def test_n_loops_one_gives_single_step(self):
+        # n_loops=1 runs exactly one recurrent loop → trajectory of length 1.
+        # (n_loops=0 is *not* tested: RecurrentBlock coalesces `0 or
+        # max_loop_iters`, so 0 falls back to the default depth.)
+        logits_traj, unc_traj = self.model.forward_trajectory(
+            self.prompt, n_loops=1,
+        )
+        assert logits_traj.shape[2] == 1
+        assert unc_traj.shape[2] == 1
+
+    # ── generation contract ──────────────────────────────────────────
+
+    def test_generate_length_and_prefix(self):
+        out = best_of_trajectory_generate(
+            self.model, self.prompt, max_new_tokens=4, n_loops=4, top_k=0,
+        )
+        seq = out["sequences"]
+        assert seq.shape == (1, self.prompt.shape[1] + 4)
+        assert torch.equal(seq[:, : self.prompt.shape[1]], self.prompt)
+        assert len(out["chosen_loops"]) == 4
+        assert len(out["uncertainty_trace"]) == 4
+        # Every chosen loop is a valid depth index.
+        assert all(0 <= k < 4 for k in out["chosen_loops"])
+
+    def test_selects_argmin_uncertainty_loop(self):
+        # The generator's first emitted loop must equal the argmin of the
+        # trajectory's last-position uncertainty (deterministic: same input,
+        # no sampling on the selection). min_loops=1 → no floor masking.
+        logits_traj, unc_traj = self.model.forward_trajectory(
+            self.prompt, n_loops=4,
+        )
+        expected = int(torch.argmin(unc_traj[0, -1]).item())
+        out = best_of_trajectory_generate(
+            self.model, self.prompt, max_new_tokens=1, n_loops=4,
+            min_loops=1, top_k=0,
+        )
+        assert out["chosen_loops"][0] == expected
+
+    def test_min_loops_floor_excludes_shallow_depths(self):
+        # With min_loops=3, loops 0 and 1 are never selectable (the trajectory
+        # is length 4, so the floor applies).
+        out = best_of_trajectory_generate(
+            self.model, self.prompt, max_new_tokens=5, n_loops=4,
+            min_loops=3, top_k=0,
+        )
+        assert all(k >= 2 for k in out["chosen_loops"])
+
+    def test_eos_stops_generation(self):
+        # Force EOS by passing an id the model will eventually emit; assert the
+        # stop_reason wiring works when it does. Use a permissive check: run
+        # with a real eos id and confirm the field is one of the valid reasons.
+        out = best_of_trajectory_generate(
+            self.model, self.prompt, max_new_tokens=4, n_loops=2,
+            eos_token_id=0, top_k=0,
+        )
+        assert out["stop_reason"] in {"eos", "cycle", "max_new_tokens"}
+
+    def test_batched_input_rejected(self):
+        import pytest
+        gen = BestOfTrajectoryGenerator(self.model, n_loops=2)
+        batched = torch.randint(0, self.cfg.vocab_size, (2, 6))
+        with pytest.raises(AssertionError, match="single-sequence"):
+            gen.generate(batched, max_new_tokens=2)

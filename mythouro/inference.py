@@ -1296,3 +1296,164 @@ def confidence_aware_generate(
         temperature=temperature,
         top_k=top_k,
     )
+
+
+# ---------------------------------------------------------------------------
+# BestOfTrajectoryGenerator
+# ---------------------------------------------------------------------------
+
+
+class BestOfTrajectoryGenerator:
+    """
+    Emit the lowest-uncertainty depth across the recurrent trajectory.
+
+    Standard decoding uses the recurrent block's ACT-weighted blend over loops.
+    This generator instead asks the UncertaintyHead to score *every* loop depth
+    (via ``MythOuro.forward_trajectory``) and, for each next-token position,
+    emits the logits from whichever loop the head is most confident about —
+    keeping the best step it saw rather than running extra loops and trying to
+    undo a bad one.
+
+    Rationale: more loops can legitimately *raise* entropy on genuinely hard
+    tokens before they resolve, so "loop more while uncertain" can overshoot.
+    Selecting the best-by-uncertainty step sidesteps that without needing a
+    ground-truth revert signal at inference. This is the inference-side
+    counterpart to the depth-extrapolation machinery already in the recurrent
+    block (loop-index embedding, convergence early-exit, per-loop LoRA).
+
+    Single-sequence only (B=1): the per-token argmin-over-loops selection is
+    position-specific and doesn't generalise to batched rows that pick different
+    depths. Full recompute per token (no KV cache) because each step re-scores
+    the whole trajectory — an experiment / inspector path, not fast decode.
+
+    The returned dict adds a ``chosen_loops`` trace (the loop index emitted for
+    each generated token) so you can see whether best-of-trajectory actually
+    diverges from always taking the deepest loop.
+    """
+
+    def __init__(
+        self,
+        model: nn.Module,
+        *,
+        n_loops: int = 8,
+        eos_token_id: "int | None" = None,
+        min_loops: int = 1,
+        cycle_window: int = 32,
+        cycle_min_len: int = 4,
+    ):
+        """
+        Args:
+            n_loops      -- recurrent depth scored per step (may exceed the
+                            trained value for depth extrapolation).
+            eos_token_id -- stop when this id is emitted (None disables, same
+                            fail-closed convention as ConfidenceAwareGenerator).
+            min_loops    -- floor on the selectable depth: loops shallower than
+                            this are excluded from the argmin unless the
+                            trajectory is shorter (early convergence). Prevents
+                            collapsing onto loop 0 when the head is miscalibrated
+                            early.
+        """
+        self.model = model
+        self.n_loops = n_loops
+        self.eos_token_id = eos_token_id
+        self.min_loops = max(min_loops, 1)
+        self.cycle_window = cycle_window
+        self.cycle_min_len = cycle_min_len
+
+    @torch.no_grad()
+    def generate(
+        self,
+        input_ids: torch.Tensor,
+        max_new_tokens: int = 64,
+        temperature: float = 1.0,
+        top_k: int = 50,
+    ) -> "dict[str, object]":
+        """
+        Returns a dict:
+
+            {
+                "sequences":         Tensor (1, T_prompt + N),
+                "stop_reason":       "eos" / "cycle" / "max_new_tokens",
+                "uncertainty_trace": list[float] — uncertainty of the *emitted*
+                                     loop for each generated token,
+                "chosen_loops":     list[int] — which loop index was emitted.
+            }
+        """
+        assert input_ids.shape[0] == 1, (
+            "BestOfTrajectoryGenerator requires a single-sequence input "
+            f"(got batch size {input_ids.shape[0]})."
+        )
+
+        generated_ids: list[int] = []
+        unc_history: list[float] = []
+        chosen_loops: list[int] = []
+        stop_reason = "max_new_tokens"
+
+        for _ in range(max_new_tokens):
+            logits_traj, unc_traj = self.model.forward_trajectory(
+                input_ids, n_loops=self.n_loops,
+            )
+            # Last position only (B=1): (K, V) logits, (K,) uncertainty.
+            last_logits = logits_traj[0, -1]
+            last_unc = unc_traj[0, -1]
+            K = int(last_unc.shape[0])
+
+            # Exclude depths below the min_loops floor from selection, unless
+            # the trajectory is shorter than the floor (convergence cut it).
+            floor = min(self.min_loops - 1, K - 1)
+            cand_unc = last_unc.clone()
+            if floor > 0:
+                cand_unc[:floor] = float("inf")
+            best_k = int(torch.argmin(cand_unc).item())
+
+            chosen_loops.append(best_k)
+            unc_history.append(float(last_unc[best_k].item()))
+
+            next_tok = _sample(last_logits[best_k : best_k + 1], temperature, top_k)
+            tok_id = int(next_tok[0, 0].item())
+            input_ids = torch.cat([input_ids, next_tok], dim=1)
+            generated_ids.append(tok_id)
+
+            if self.eos_token_id is not None and tok_id == self.eos_token_id:
+                stop_reason = "eos"
+                break
+
+            if len(generated_ids) >= self.cycle_window and (
+                ConfidenceAwareGenerator._has_cycle(
+                    generated_ids, self.cycle_window, self.cycle_min_len,
+                )
+            ):
+                stop_reason = "cycle"
+                break
+
+        return {
+            "sequences": input_ids,
+            "stop_reason": stop_reason,
+            "uncertainty_trace": unc_history,
+            "chosen_loops": chosen_loops,
+        }
+
+
+def best_of_trajectory_generate(
+    model: nn.Module,
+    input_ids: torch.Tensor,
+    max_new_tokens: int = 64,
+    *,
+    n_loops: int = 8,
+    eos_token_id: "int | None" = None,
+    min_loops: int = 1,
+    temperature: float = 1.0,
+    top_k: int = 50,
+) -> "dict[str, object]":
+    """One-shot helper that constructs BestOfTrajectoryGenerator and calls generate."""
+    return BestOfTrajectoryGenerator(
+        model,
+        n_loops=n_loops,
+        eos_token_id=eos_token_id,
+        min_loops=min_loops,
+    ).generate(
+        input_ids,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        top_k=top_k,
+    )

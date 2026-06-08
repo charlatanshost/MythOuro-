@@ -1332,6 +1332,16 @@ class RecurrentBlock(nn.Module):
         self.use_ckpt = getattr(cfg, "gradient_checkpointing", False)
         self.conv_eps = getattr(cfg, "convergence_eps", 1e-4)
 
+        # Best-of-trajectory support (inference experiment, off by default).
+        # When a generator sets `collect_trajectory`, each loop's committed
+        # hidden state is stashed in `last_trajectory` so the caller can score
+        # every depth with the uncertainty head and emit the most-confident one
+        # — see MythOuro.forward_trajectory and
+        # inference.BestOfTrajectoryGenerator. When False the normal path is
+        # byte-for-byte unchanged and pays nothing.
+        self.collect_trajectory = False
+        self.last_trajectory: Optional[torch.Tensor] = None
+
         # Part 2: multi-scale injection (hierarchical fine/coarse/global e)
         self.use_ms = getattr(cfg, "use_multiscale_injection", False)
         if self.use_ms:
@@ -1442,6 +1452,14 @@ class RecurrentBlock(nn.Module):
         # flow gradient back into ACTHalting → LoRA → recurrent block.
         loop_halt_probs: list[torch.Tensor] = []
 
+        # Best-of-trajectory capture: committed per-loop hidden states, used by
+        # MythOuro.forward_trajectory. Only active when a generator opted in via
+        # `collect_trajectory`, and never during training (the training return
+        # is h_K and must stay on its own gradient path — see the comment at the
+        # end of this method).
+        collect = self.collect_trajectory and kv_cache is None and not self.training
+        traj_states: list[torch.Tensor] = []
+
         use_ckpt = self.use_ckpt and self.training and kv_cache is None
 
         for t in range(n_loops):
@@ -1487,10 +1505,14 @@ class RecurrentBlock(nn.Module):
                         torch.tensor(t, device=h.device, dtype=halt_step.dtype),
                         halt_step,
                     )
+                    if collect:
+                        traj_states.append(h_new)
                     break
 
             h_prev = h_new.detach()
             h = h_new
+            if collect:
+                traj_states.append(h)
 
             p = self.act(h)  # (B, T) — per-step halt prob (PonderNet's λ_t)
             # Track the lambda for the depth regulariser. We keep gradient
@@ -1570,6 +1592,14 @@ class RecurrentBlock(nn.Module):
             self.last_halt_distribution = halt_dist
         else:
             self.last_halt_distribution = None
+
+        # Stash the per-loop trajectory for best-of-trajectory emission.
+        # (B, T, K, D) where K is the number of loops actually run; None when
+        # capture wasn't requested.
+        if collect:
+            self.last_trajectory = (
+                torch.stack(traj_states, dim=2).detach() if traj_states else None
+            )
 
         # During training, return the FINAL loop's hidden state directly.
         # The ACT-weighted sum `h_out = Σ_t w_t · h_t` gives the optimizer a
@@ -1858,6 +1888,81 @@ class MythOuro(nn.Module):
         logits = self.head(normed)
         unc = self.uncertainty(normed)
         return logits, unc
+
+    @torch.no_grad()
+    def forward_trajectory(
+        self,
+        input_ids: torch.Tensor,
+        n_loops: Optional[int] = None,
+    ) -> "tuple[torch.Tensor, torch.Tensor]":
+        """
+        Inference-only forward returning a per-recurrent-loop output trajectory.
+
+        For each loop the recurrent block runs, this pushes that loop's hidden
+        state through the Coda + LM head + UncertaintyHead, so every depth is
+        scored as a *full model output* (not a raw recurrent state). Used by
+        `inference.BestOfTrajectoryGenerator` to emit the lowest-uncertainty
+        depth across the trajectory rather than the ACT-weighted blend.
+
+        Runs without a KV cache (full recompute); the Coda is re-run once per
+        captured loop, so cost is O(K) Codas. Fine at inspector / experiment
+        scale — not a fast-decode path. The normal `forward` is untouched.
+
+        Args:
+            input_ids -- token indices of shape (B, T)
+            n_loops   -- recurrent depth; defaults to cfg.max_loop_iters. May be
+                         raised above the trained value (depth extrapolation).
+
+        Returns:
+            (logits_traj, unc_traj):
+              logits_traj -- (B, T, K, vocab_size)
+              unc_traj    -- (B, T, K) per-loop confidence-of-error in (0, 1)
+            where K is the number of loops actually run (≤ n_loops; fewer if
+            convergence early-exit fires).
+        """
+        device = input_ids.device
+        x = self.embed(input_ids)
+        x, sink_len = self.sink.prepend(x)
+
+        T_ext = x.shape[1]
+        freqs_cis = (
+            self.freqs_cis_mla if self.cfg.attn_type == "mla" else self.freqs_cis
+        )[:T_ext]
+        mask = self._causal_mask(T_ext, device, x.dtype) if T_ext > 1 else None
+
+        for i, layer in enumerate(self.prelude):
+            x = layer(x, freqs_cis, mask, None, cache_key=f"prelude_{i}")
+
+        e = x  # injected each loop
+        self.recurrent.collect_trajectory = True
+        try:
+            self.recurrent(x, e, freqs_cis, mask, n_loops, None)
+            traj = self.recurrent.last_trajectory  # (B, T_ext, K, D) or None
+        finally:
+            self.recurrent.collect_trajectory = False
+            self.recurrent.last_trajectory = None
+
+        # No loop ran (n_loops == 0): fall back to a single Coda pass on the
+        # Prelude output so the trajectory still has exactly one entry.
+        if traj is None:
+            traj = e.unsqueeze(2)
+
+        K = traj.shape[2]
+        logits_steps: list[torch.Tensor] = []
+        unc_steps: list[torch.Tensor] = []
+        for k in range(K):
+            h = traj[..., k, :]
+            for i, layer in enumerate(self.coda):
+                h = layer(h, freqs_cis, mask, None, cache_key=f"coda_{i}")
+            if sink_len:
+                h = self.sink.strip(h)
+            normed = self.norm(h)
+            logits_steps.append(self.head(normed))
+            unc_steps.append(self.uncertainty(normed))
+
+        logits_traj = torch.stack(logits_steps, dim=2)  # (B, T, K, V)
+        unc_traj = torch.stack(unc_steps, dim=2)          # (B, T, K)
+        return logits_traj, unc_traj
 
     @torch.no_grad()
     def generate(

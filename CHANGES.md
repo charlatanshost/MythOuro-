@@ -723,3 +723,48 @@ If full PonderNet semantics are wanted later (criterion AND
 regularisation), the swap is a separate ~80-line change in `RecurrentBlock`
 that keeps `last_halt_distribution` intact and just changes how `h_out`
 is computed (weighted sum by P(halt) instead of cumulative-threshold).
+
+---
+
+# 2026-06-08 update — best-of-trajectory emission
+
+Inference-side experiment to extract more from the existing depth machinery
+without retraining. Default-off; the normal `forward`/`generate` path is
+byte-for-byte unchanged.
+
+**Motivation.** Standard decoding emits the recurrent block's ACT-weighted blend
+over loops, and the existing `UncertaintyGatedGenerator` only ever loops *more*
+when uncertain. Neither can emit an *earlier* loop's prediction when that loop
+was the most confident — yet extra loops can legitimately raise entropy on hard
+tokens before resolving them. Best-of-trajectory keeps the lowest-uncertainty
+step instead of running extra loops and trying to undo a bad one.
+
+**[`mythouro/main.py`](mythouro/main.py)**:
+- `RecurrentBlock` — opt-in `collect_trajectory` flag stashes the per-loop
+  committed hidden states into `last_trajectory` (B, T, K, D). Active only at
+  inference (no kv_cache, not training); zero cost otherwise.
+- `MythOuro.forward_trajectory(input_ids, n_loops)` — runs each captured loop
+  state through Coda + LM head + UncertaintyHead and returns
+  `(logits_traj (B,T,K,V), unc_traj (B,T,K))`, where K is the number of loops
+  actually run (≤ n_loops; fewer if convergence early-exit fires). Full
+  recompute, no KV cache — O(K) Codas, an inspector/experiment path.
+
+**[`mythouro/inference.py`](mythouro/inference.py)**:
+- `BestOfTrajectoryGenerator` + `best_of_trajectory_generate` — B=1 decode that
+  selects the argmin-uncertainty depth per token. Has a `min_loops` floor
+  (excludes shallow depths from selection when the head is miscalibrated early)
+  and returns a `chosen_loops` telemetry trace so you can see whether selection
+  diverges from "always deepest".
+
+**[`tests/test_inference.py`](tests/test_inference.py)** — +8 tests
+(`TestBestOfTrajectory`): forward_trajectory shapes + valid probabilities, no
+state leakage after the call, single-step at `n_loops=1`, generation
+length/prefix, argmin-selection contract (deterministic match against
+`forward_trajectory`), `min_loops` floor, EOS wiring, B=1 assertion. Full
+inference suite 31 → 39 tests, all passing.
+
+**Status.** Validation-ready against v4/v5. It's a *measurement* tool first —
+the param-count gibberish ceiling may mask the effect until the model is larger.
+The learned generalisation of this (a trained depth policy unified with expert
+routing) is tracked as **MoDr** in [`docs/roadmap.md`](docs/roadmap.md), gated
+behind the MoE-vs-dense ablation.

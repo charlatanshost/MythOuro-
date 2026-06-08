@@ -981,6 +981,7 @@ These are MythOuro-specific questions where existing literature doesn't fully an
 4. **Can we promote AND maintain a custom teacher in distillation?** I.e., distill the promoted v3 from Ouro-2.6B again, or do the new experts disrupt logit-matching?
 5. **How does loop count interact with MoE specialization?** Different loops might want different expert mixes; we've never measured this.
 6. **Would Ouro's per-step weighted loss beat our final-loop loss?** See the experiment below — Ouro trains the exit gates *via the task loss* (per-step LM loss weighted by exit probability); we use final-loop (`h_K`) loss + a decoupled depth regulariser. Ours works but theirs is arguably more principled.
+7. **Should expert routing and recurrence-depth routing be one learned head (MoDr)?** Currently `MoEFFN.router` (which experts) and `ACTHalting` (how deep) are separate. Unifying them into one router that emits expert-choice + per-token depth could let depth and expert specialisation co-adapt — but it couples two collapse-prone parts. Gated behind the MoE-vs-dense ablation. See [MoDr — Mixture-of-Depth routing](#candidate-direction-modr--mixture-of-depth-routing-learned).
 
 These are research-paper-sized questions individually; flagged here so we don't lose them.
 
@@ -1039,3 +1040,90 @@ finding is documented.
 **Risk.** Low — it's flag-gated, default-off, falls back to current behaviour,
 and the `K=1` equivalence test guards correctness. Worst case it doesn't help
 and we keep `final`.
+
+---
+
+## Shipped: best-of-trajectory emission (inference)
+
+An inference-side experiment for getting more out of the existing depth
+machinery *without retraining* — runnable today against v4/v5.
+
+**What it is.** Standard decoding emits the recurrent block's ACT-weighted blend
+over loops. Best-of-trajectory instead scores *every* loop depth with the
+UncertaintyHead and emits the logits from whichever loop the head is most
+confident about — "keep the best step you saw" rather than "loop more, then undo
+a bad one." It avoids the trap where extra loops legitimately *raise* entropy on
+genuinely hard tokens before they resolve.
+
+**Implementation** (all default-off, normal path byte-for-byte unchanged):
+- `RecurrentBlock` gains an opt-in `collect_trajectory` flag that stashes the
+  per-loop hidden states in `last_trajectory`.
+- `MythOuro.forward_trajectory(input_ids, n_loops)` runs each captured loop
+  state through Coda + LM head + UncertaintyHead and returns
+  `(logits_traj (B,T,K,V), unc_traj (B,T,K))`.
+- `inference.BestOfTrajectoryGenerator` / `best_of_trajectory_generate` — B=1
+  greedy/sampled decode that selects the argmin-uncertainty depth per token,
+  with a `min_loops` floor and a `chosen_loops` telemetry trace.
+- 8 tests in `tests/test_inference.py::TestBestOfTrajectory`.
+
+**How to validate.** Run it against v4/v5 in the inspector and compare to the
+default generator: does `chosen_loops` actually diverge from "always deepest"?
+Does inspector behaviour (halt reasons, register) improve? It's a measurement
+tool — keep it if the trace shows the head is discriminating usefully across
+depths; the gibberish ceiling at this scale may mask the effect until the model
+is larger.
+
+**Caveat (the code-level subtlety).** Training returns `h_K`, not the weighted
+sum, to defuse ACT λ-collapse; inference uses the blend. Best-of-trajectory adds
+a *third* emission rule that reads per-loop states — so it's an inference-only
+overlay, deliberately not wired into training.
+
+---
+
+## Candidate direction: MoDr — Mixture-of-Depth routing (learned)
+
+The learned generalisation of everything above. Best-of-trajectory selects depth
+*post-hoc* with a threshold/argmin on the uncertainty head; MoDr makes the depth
+decision a **learned policy**, and unifies it with expert routing.
+
+**The idea.** MythOuro already has two routing-shaped heads that are trained and
+used separately:
+- `MoEFFN.router` — picks which experts fire per token (DeepSeek-V3
+  aux-loss-free bias balancing).
+- `ACTHalting` — emits a per-position halt/continue probability per loop.
+
+MoDr collapses these into **one router head that emits both** *expert choice*
+**and** *per-token recurrence depth* (halt/continue logit per position per
+iteration), supervised against the converged-state target rather than gated by a
+fixed `act_threshold`. "Extend by 2 or 4 loops" stops being an inference
+heuristic and becomes a trained policy — the model learns how deep each token
+needs to go, jointly with which experts handle it.
+
+**Why it's attractive.** The MoE router and the ACT halt head already share the
+same routing primitive (a linear projection of the hidden state to a routing
+logit). Unifying them is conceptually clean and could let depth and expert
+specialisation co-adapt (e.g. some experts for shallow pattern-matching, others
+for deep refinement — currently they can't coordinate).
+
+**Why it's gated (honest caveat).** This is a *coupling* change to two of the
+most stability-sensitive parts of the model (expert routing + ACT halting, both
+of which have already caused collapse failures — see Failure modes). Adding that
+coupling **before** the open **MoE-vs-dense ablation** ([Open research
+questions](#open-research-questions-specific-to-mythouro), Q on whether MoE earns
+its complexity) risks entrenching machinery that the ablation might say to
+remove. **Sequencing rule: run the dense-vs-MoE ablation first.** If MoE stays,
+MoDr is the natural next architecture step; if MoE goes, MoDr is moot.
+
+**Rough build sketch** (when unblocked, flag-gated, default-off):
+1. A `DepthRouter` head emitting `(expert_logits, halt_logit)` from the shared
+   hidden state; `ACTHalting` becomes the `halt_logit` branch.
+2. Supervise the halt branch against the converged depth (the loop where
+   `‖h_{t+1}−h_t‖` first drops below `convergence_eps`) instead of the Graves
+   cumulative-threshold criterion.
+3. Keep the depth regulariser (KL-to-uniform) as the anti-collapse guard.
+4. Tests: router emits both heads; `K=1` reduces to current behaviour; halt
+   supervision target matches the convergence detector; no-NaN train step.
+
+**Relation to prior art.** This is the project's own framing of Mixture-of-Depths
+(Raposo et al.) adapted to a *recurrent* (weight-shared, looped) block rather
+than a stack of distinct layers — depth here means loop count, not layer index.
