@@ -524,11 +524,21 @@ largely in the memory-bound regime.
   ~3× the bandwidth of a maxed DDR5 rig, no DIMM tax — aimed exactly at the
   16→4 TFLOPS collapse measured above. So in *this* RAM market, building around
   an HBM Max is both faster and cheaper than feeding the 8480 with RDIMMs.
-- **Verify before buying a Max:** the 9480 Max is a Xeon *Scalable* part
-  (normally C741 server boards); the on-hand 8480 *Scalable ES* runs in an ASUS
-  *W790 workstation* board, which is encouraging but not a guarantee a Max POSTs
-  there. Confirm board/BIOS support for the 94xx Max line first — if it needs a
-  C741 board too, that changes the budget.
+- **Decision (2026-06-08): dedicated 1S C741 Xeon Max rig.** Build a *separate*
+  box — Gigabyte **MS33-CE0** (single-socket LGA4677 / C741, 8-channel) or
+  similar MS33/MS03 — around a **Xeon Max 9480**, run **HBM-only mode** (64 GB,
+  no DIMMs → dodges the RDIMM shortage entirely; fits a 3B + teacher with
+  *streamed* data). This resolves the earlier platform-compat worry (proper
+  server board, not the W790 workstation board the 8480 ES currently sits in) and
+  frees the work rig. **1S (MS33), not 2S (MS73):** for a single training job one
+  socket avoids the cross-socket NUMA penalty (2S = two 64 GB HBM pools over UPI,
+  *not* a unified 1.6 TB/s); reserve 2S for parallel jobs or a 128 GB need.
+- **Build gotchas:** 9480 is 350 W and needs a narrow-ILM LGA4677 server cooler
+  + real airflow; a Max *ES* carries the same clock/stability caveats as the
+  8480 ES. Expectation: raw bf16 GEMM ~3–5× the starved 8480, but end-to-end
+  MythOuro tok/s gains *less* (small matmuls + recurrent-loop tax persist) — the
+  honest target is "finally trains a 3B at usable speed," not "95 TFLOPS of model
+  throughput." Run `tools/bench_step.py` on it day one for the real number.
 - Still **additive compute + 3B-capacity, not a GPU replacement**: even HBM-fed,
   the Max's AMX (~95–175 TFLOPS 1S–2S) is below a modern GPU's tensor throughput,
   and MythOuro's small matmuls + recurrent loop won't saturate it — but it *fits*
