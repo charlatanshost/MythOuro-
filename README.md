@@ -7,18 +7,6 @@
       <img alt="Version" src="https://img.shields.io/pypi/v/mythouro?style=for-the-badge&color=3670A0">
     </picture>
   </a>
-  <a href="https://twitter.com/kyegomezb/">
-    <picture>
-      <source srcset="https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" media="(prefers-color-scheme: dark)">
-      <img src="https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter">
-    </picture>
-  </a>
-  <a href="https://discord.gg/3keGBK9Pvr" target="_blank">
-    <picture>
-      <source srcset="https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white" media="(prefers-color-scheme: dark)">
-      <img alt="Discord" src="https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white">
-    </picture>
-  </a>
   <a href="https://pytorch.org" target="_blank">
     <picture>
       <source srcset="https://img.shields.io/badge/PyTorch-Implemented-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" media="(prefers-color-scheme: dark)">
