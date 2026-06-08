@@ -442,6 +442,7 @@ from-scratch. Compared honestly:
 | **RTX 5090 32 GB** | ~$2k | 32 GB | ✅ | Yes (tight) | Single card, native bf16, newest compute |
 | **Used RTX A6000 48 GB** | ~$3–4k | 48 GB | ✅ | Yes, comfortable | Single card, ECC, native bf16, NVLink-bridge — the "do it properly" pick |
 | **Used A100 40 GB** | ~$3k | 40 GB | ✅ | Yes, comfortable | Datacenter HBM2, native bf16, NVLink-capable |
+| **Intel Xeon Max 9480** (1S, 64 GB HBM2e) | ~$3k/chip (used) + SPR board | 64 GB HBM | ✅ (AMX) | Yes, comfortable | **CPU with AMX matrix units + on-package HBM.** ~95 effective dense-BF16 TFLOPS single-socket (~3× a lone 5070's ~34), passes the native-bf16 gate. Capacity play: 64 GB fits 3B + teacher with no FSDP. See assessment below. |
 
 Because MythOuro is compute-bound, a **single fast native-bf16 card beats a
 fast interconnect between slow cards**: even 2× V100 NVLink in software-bf16 is
@@ -449,6 +450,43 @@ slower per step than the current 5070+5060 over PCIe (the V100's emulated bf16
 runs at ~fp32 speed, and the recurrent loops make compute, not comms, the
 bottleneck). The V100 path only wins on *price* and on *fitting* models that
 don't fit otherwise — not on speed.
+
+##### Intel Xeon Max 9480 (AMX + HBM) — assessed 2026-06-08
+
+Considered as an upgrade from the current consumer rig (a lone 5070 sustains
+~34 dense-BF16 TFLOPS; 5070+5060 pooled ~55). Verdict: **a legitimate
+single-socket upgrade — but verify the real number before buying.**
+
+- **For — vs. the *actual* current baseline** (not vs. an H100): single-socket
+  9480 is ~95 effective dense-BF16 TFLOPS (≈3× the 5070) **and** a 64 GB HBM
+  pool that finally fits a 3B + teacher with no mixed-card FSDP. AMX has native
+  BF16, so it dodges the V100 fp16-revalidation trap. On every axis that matters
+  vs. today's hardware, it's up.
+- **Against — the caveats that shrink the win:**
+  - **The recurrent-loop tax.** Headline tok/s estimates assume a dense
+    single-pass model; MythOuro runs the recurrent block `n_loops`× per token
+    (×4 train), so real sequence throughput is ~/4 of the dense-model figure.
+    A "~46k tok/s on a 650M dense model" estimate is closer to **~11–13k tok/s**
+    for an equivalent MythOuro.
+  - **Small-matmul derating.** ~95 TFLOPS is big-square-GEMM peak; MythOuro's
+    small matmuls (MoE experts, MLA, per-loop LoRA) sustain a fraction of it on
+    *any* engine. Whether AMX holds a higher fraction than a GPU here is an
+    empirical question — could break either way.
+  - **Dual-socket ≠ one big accelerator.** 2S is *two* 64 GB HBM pools over UPI
+    (~hundreds of GB/s cross-socket, not a unified 3 TB/s); NUMA reintroduces
+    sharding penalties — partly the thing you're trying to escape. The clean
+    story is **single-socket**.
+  - **CPU/AMX software maturity.** The pipeline is CUDA-validated; moving to CPU
+    BF16 (oneDNN/IPEX) needs re-validation, and custom ops (recurrent loop, MoE
+    `index_add_` dispatch) may not hit optimal AMX kernels without tuning.
+- **Decision rule: measure, don't extrapolate.** Peak TFLOPS is a spec sheet;
+  the buy hinges on *achieved* tok/s on MythOuro. Rent an AMX instance (Intel
+  Tiber Developer Cloud — already listed below for the B70 port test) for an
+  hour and run [`tools/bench_step.py`](../tools/bench_step.py) on it and on the
+  5070 for a true apples-to-apples (`python -m tools.bench_step --variant
+  mythouro_distill_tiny --device {cpu|cuda:0}`). If single-socket lands ≥2×
+  real-world *and* fitting 3B locally is worth ~$3k+platform to you, it's a
+  defensible buy. If it lands ~1–1.5×, rent GPU hours instead.
 
 #### Other accelerants
 
