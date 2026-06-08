@@ -245,21 +245,65 @@ def _inspect_prompt(
         print(f"best-of-trajectory generation  (stop={bot['stop_reason']!r}, "
               f"{len(bot_new)} tokens emitted):")
         print(f"  {tokenizer.decode(bot_new)!r}")
+        plu = bot.get("per_loop_uncertainty") or []
         if chosen:
-            deepest = n_loops - 1
-            shallower = sum(1 for k in chosen if k < deepest)
+            # ACT can halt every position before n_loops, so the trajectory is
+            # often shorter than n_loops. "Deepest" must mean the deepest loop
+            # that ACTUALLY RAN for each token (len(vec)-1), not n_loops-1 — a
+            # loop that never executed. Using n_loops-1 here falsely reports
+            # "100% diverged" when the model is in fact picking the deepest
+            # available loop.
+            depths = [len(v) for v in plu] if plu else [n_loops] * len(chosen)
+            mean_k = sum(depths) / len(depths)
+            diverged = sum(1 for k, d in zip(chosen, depths) if k < d - 1)
             dist = dict(sorted(Counter(chosen).items()))
-            print(f"  chosen-loop depth: mean={sum(chosen)/len(chosen):.2f}  "
-                  f"(deepest scored = {deepest})")
+            print(f"  loops actually run: mean={mean_k:.1f}  "
+                  f"(n_loops={n_loops}; ACT halts all positions early)")
+            print(f"  chosen-loop depth: mean={sum(chosen)/len(chosen):.2f}")
             print(f"  chosen-loop histogram (loop -> count): {dist}")
-            # The A/B headline: how often did it NOT just take the deepest loop?
-            print(f"  diverged from deepest: {shallower}/{len(chosen)} tokens "
-                  f"({100*shallower/len(chosen):.0f}%)")
+            # The A/B headline: how often did it pick a loop *shallower* than the
+            # deepest one that ran (i.e. best-of-trajectory genuinely diverging
+            # from "just take the last loop")?
+            print(f"  picked below deepest-run loop: {diverged}/{len(chosen)} "
+                  f"tokens ({100*diverged/len(chosen):.0f}%)")
             bt = bot["uncertainty_trace"]
             if bt:
                 print(f"  emitted-loop uncertainty: "
                       f"mean={sum(bt)/len(bt):.3f}  "
                       f"min={min(bt):.3f}  max={max(bt):.3f}")
+
+            # ── Monotonic-vs-discriminating test ───────────────────────────
+            # Average the per-loop uncertainty over every generated token to
+            # get a single uncertainty-by-depth curve. If its minimum is an
+            # *interior* loop, the head genuinely distinguishes depths (the
+            # best-of-trajectory result is real). If the minimum sits at loop 0
+            # (or the curve rises monotonically with depth), the head may just
+            # be penalising deeper loops — a head bias, not depth selection.
+            if plu:
+                maxk = max(len(v) for v in plu)
+                sums = [0.0] * maxk
+                cnts = [0] * maxk
+                for vec in plu:
+                    for i, u in enumerate(vec):
+                        sums[i] += u
+                        cnts[i] += 1
+                means = [
+                    (sums[i] / cnts[i]) if cnts[i] else float("inf")
+                    for i in range(maxk)
+                ]
+                argmin_i = min(range(maxk), key=lambda i: means[i])
+                pretty = [round(m, 3) if m != float("inf") else None for m in means]
+                print(f"  mean uncertainty by loop depth: {pretty}")
+                if 0 < argmin_i < maxk - 1:
+                    verdict = "interior dip -> genuine depth discrimination"
+                elif argmin_i == 0:
+                    verdict = "min at shallowest -> head prefers fewer loops (monotonic-up)"
+                else:
+                    verdict = "min at deepest-run loop -> more loops cut uncertainty (monotonic-down)"
+                print(f"  -> uncertainty min at loop {argmin_i}  ({verdict})")
+                for j, vec in enumerate(plu[:3]):
+                    print(f"  token[{j}] per-loop uncertainty: "
+                          f"{[round(u, 3) for u in vec]}")
 
 
 def _break_token_candidates(tokenizer: MythOuroTokenizer) -> "list[int] | None":

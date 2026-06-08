@@ -1387,6 +1387,7 @@ class BestOfTrajectoryGenerator:
         generated_ids: list[int] = []
         unc_history: list[float] = []
         chosen_loops: list[int] = []
+        per_loop_unc: list[list[float]] = []
         stop_reason = "max_new_tokens"
 
         for _ in range(max_new_tokens):
@@ -1397,6 +1398,10 @@ class BestOfTrajectoryGenerator:
             last_logits = logits_traj[0, -1]
             last_unc = unc_traj[0, -1]
             K = int(last_unc.shape[0])
+            # Full per-loop uncertainty vector for this token — lets the caller
+            # distinguish "head genuinely discriminates depth" (an interior
+            # minimum) from "head just penalises the last loop" (monotonic).
+            per_loop_unc.append([float(u) for u in last_unc.tolist()])
 
             # Exclude depths below the min_loops floor from selection, unless
             # the trajectory is shorter than the floor (convergence cut it).
@@ -1431,6 +1436,7 @@ class BestOfTrajectoryGenerator:
             "stop_reason": stop_reason,
             "uncertainty_trace": unc_history,
             "chosen_loops": chosen_loops,
+            "per_loop_uncertainty": per_loop_unc,
         }
 
 

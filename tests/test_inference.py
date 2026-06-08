@@ -526,6 +526,14 @@ class TestBestOfTrajectory:
         assert len(out["uncertainty_trace"]) == 4
         # Every chosen loop is a valid depth index.
         assert all(0 <= k < 4 for k in out["chosen_loops"])
+        # Per-loop uncertainty vectors: one per generated token, each a list of
+        # K probabilities in [0, 1], and the emitted-loop uncertainty must equal
+        # the chosen loop's entry in its vector.
+        plu = out["per_loop_uncertainty"]
+        assert len(plu) == 4
+        for vec, k, emitted in zip(plu, out["chosen_loops"], out["uncertainty_trace"]):
+            assert all(0.0 <= u <= 1.0 for u in vec)
+            assert abs(vec[k] - emitted) < 1e-6
 
     def test_selects_argmin_uncertainty_loop(self):
         # The generator's first emitted loop must equal the argmin of the

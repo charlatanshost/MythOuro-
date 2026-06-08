@@ -1078,6 +1078,24 @@ sum, to defuse ACT λ-collapse; inference uses the blend. Best-of-trajectory add
 a *third* emission rule that reads per-loop states — so it's an inference-only
 overlay, deliberately not wired into training.
 
+**First results (2026-06-08, v4 + v5, `reports/inspect_v{4,5}.txt`).**
+- **ACT caps usable depth at ~3, not the configured 4.** At `n_loops=4`, ACT
+  halts *all* positions by loop ~2, so only **3 loops actually run** and loop 3
+  never executes — on every prompt, both checkpoints. (An early "100% diverged
+  from the deepest loop" reading was an artifact of comparing against loop 3,
+  which never runs; the per-loop dump caught it. Real divergence is **35–90%**.)
+- **The uncertainty-by-depth curve is mostly monotonic, with genuine interior
+  dips on some prompts.** v5 trends *deeper = more confident* (min at the
+  deepest-run loop); v4 has prompts where *shallower = more confident* (min at
+  loop 0) — the two checkpoints have differently-shaped depth/confidence
+  profiles. A couple of prompts (v5 fib + Roman-Empire) show a real interior
+  dip at loop 1, where best-of-trajectory does non-trivial selection.
+- **Takeaway:** best-of-trajectory is *not* a no-op, but it's also not a big win
+  at this scale — it's partly "take the most-confident endpoint." The louder
+  signal is the **ACT depth-collapse to ~3**: the deepest configured loop is
+  dead weight. That's a concrete data point for the MoDr / depth-policy work
+  (the depth decision wants tuning) and for revisiting the ACT halt threshold.
+
 ---
 
 ## Candidate direction: MoDr — Mixture-of-Depth routing (learned)
