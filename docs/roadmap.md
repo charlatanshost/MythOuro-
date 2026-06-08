@@ -74,6 +74,7 @@ authoritative documents and where to find what:
 | [docs/mythouro.md](mythouro.md) | Architecture overview — what's in `MythOuro` and why each piece exists. |
 | [docs/datasets.md](datasets.md) | Dataset reference — what corpora we use and how. |
 | [docs/growth_design.md](growth_design.md) | MoE expansion / model growth design notes. Read before promoting a checkpoint. |
+| [docs/fork_vs_openmythos.md](fork_vs_openmythos.md) | Verified code-level diff of this fork against upstream `kyegomez/OpenMythos`. |
 | `archived_models/<name>/MODEL_CARD.md` | Per-checkpoint provenance: training config, eval results, behavioural validation, limitations. One per shipped reference checkpoint. |
 | `CHANGES.md` | Changelog at the codebase root — features added per session. |
 

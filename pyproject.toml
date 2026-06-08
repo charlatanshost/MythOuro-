@@ -8,11 +8,14 @@ name = "mythouro"
 version = "0.5.0"
 description = "MythOuro — open-source theoretical reconstruction of the Claude Mythos Recurrent-Depth Transformer architecture"
 license = "MIT"
-authors = ["Kye Gomez <kye@swarms.world>"]
-homepage = "https://github.com/The-Swarm-Corporation/MythOuro"
-documentation = "https://github.com/The-Swarm-Corporation/MythOuro/blob/main/docs/mythouro.md"
+authors = [
+    "charlatanshost <charlatanshost@gmail.com>",
+    "Kye Gomez <kye@swarms.world> (upstream OpenMythos author)",
+]
+homepage = "https://github.com/charlatanshost/MythOuro-"
+documentation = "https://github.com/charlatanshost/MythOuro-/blob/main/docs/mythouro.md"
 readme = "README.md"
-repository = "https://github.com/The-Swarm-Corporation/MythOuro"
+repository = "https://github.com/charlatanshost/MythOuro-"
 keywords = [
     "artificial intelligence",
     "deep learning",
