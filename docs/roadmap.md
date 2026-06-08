@@ -488,6 +488,28 @@ single-socket upgrade — but verify the real number before buying.**
   real-world *and* fitting 3B locally is worth ~$3k+platform to you, it's a
   defensible buy. If it lands ~1–1.5×, rent GPU hours instead.
 
+**Measured on the on-hand ES 8480 (2026-06-08) — AMX is NOT free.** Benchmarked
+on a Sapphire Rapids **8480 engineering sample** (56C @ ~1.9 GHz, 2-of-8 DDR5
+channels populated, Windows, stock `torch==2.12.0+cpu`):
+- bf16 4096³ GEMM sustained only **~3 TFLOPS** — that's AVX-512-BF16 class
+  (4× the 0.8 TFLOPS fp32), **not AMX** (which would be ~10–30× higher). AMX
+  tiles sat idle.
+- `tools.bench_step` `distill_tiny`, bf16 autocast, b1×s256: **85 tok/s, 3.0
+  s/step** — far slower than the 5070 would be. Unusable for training as-is.
+- Root cause: stock Windows `torch+cpu` doesn't dispatch AMX. Realising AMX
+  needs **Intel Extension for PyTorch (IPEX)**, almost certainly **Linux** (AMX
+  tile-state enablement is reliable there), retail clocks (the ES caps ~1.9 GHz
+  vs a retail 8480's ~3.8 GHz boost), and **all 8 memory channels** populated.
+- **Takeaway:** the ~95-TFLOPS AMX figure is *latent in the silicon but gated
+  behind a real software/config project* — it is not plug-and-play, especially
+  on Windows. Validate AMX is actually engaged (a bf16 GEMM should hit tens of
+  TFLOPS, not 3) *before* assuming the speedup. Until then a CUDA GPU wins
+  outright on this workload.
+
+*(Side effect of this benchmark: it surfaced and fixed a latent autocast bug —
+`MoEFFN.index_add_` dispatch wasn't dtype-consistent under mixed precision. The
+CUDA training path dodged it by dtype coincidence; now fixed for all paths.)*
+
 #### Other accelerants
 
 | If you get… | Then unlock |

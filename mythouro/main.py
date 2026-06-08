@@ -755,11 +755,15 @@ class MoEFFN(nn.Module):
             tok = token_index[sel]                                # (M,)
             gate = flat_gate[sel]                                 # (M, 1)
             expert_out = self.routed_experts[eid](flat[tok]) * gate
-            out.index_add_(0, tok, expert_out)
+            # `.to(out.dtype)` keeps the scatter dtype-consistent under
+            # autocast (where the expert Linear emits bf16 but `out` may be the
+            # fp32 input activation). No-op when dtypes already match — i.e. on
+            # the native-bf16 / fp32 paths.
+            out.index_add_(0, tok, expert_out.to(out.dtype))
 
         # shared experts always fire for every token
         for shared in self.shared_experts:
-            out = out + shared(flat)
+            out = out + shared(flat).to(out.dtype)
 
         return out.view(B, T, D)
 

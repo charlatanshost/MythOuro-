@@ -136,6 +136,26 @@ def test_moe_aux_helpers_noop_on_dense():
 # ---------------------------------------------------------------------------
 
 
+def test_moe_forward_under_cpu_bf16_autocast():
+    # Regression: MoEFFN.index_add_ dispatch must be dtype-consistent under
+    # autocast (the expert Linear emits bf16 while the accumulator may be the
+    # fp32 input activation). Previously crashed with a scalar-type mismatch.
+    model = MythOuro(_cfg(recurrent_dense=False)).train()
+    x = torch.randint(0, 128, (2, 8))
+    with torch.autocast(device_type="cpu", dtype=torch.bfloat16):
+        logits, unc = model(x)
+    assert logits.shape == (2, 8, 128)
+    assert torch.isfinite(logits.float()).all()
+
+
+def test_dense_forward_under_cpu_bf16_autocast():
+    model = MythOuro(_cfg(recurrent_dense=True)).train()
+    x = torch.randint(0, 128, (2, 8))
+    with torch.autocast(device_type="cpu", dtype=torch.bfloat16):
+        logits, _ = model(x)
+    assert torch.isfinite(logits.float()).all()
+
+
 def test_distill_tiny_dense_differs_only_in_ffn_fields():
     tiny = asdict(mythouro_distill_tiny())
     dense = asdict(mythouro_distill_tiny_dense())
