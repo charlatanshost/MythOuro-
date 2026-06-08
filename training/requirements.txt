@@ -1,0 +1,6 @@
+torch>=2.11.0
+datasets>=3.6.0
+loguru>=0.7.3
+transformers>=4.45.0
+# mythouro is this repo — imported as a local package, not pip-installed.
+# Run scripts from the project root so `mythouro/` is on sys.path.

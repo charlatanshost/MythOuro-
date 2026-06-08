@@ -1,0 +1,1040 @@
+# MythOuro Roadmap
+
+Living document tracking what's been built, what's queued, and what's
+deliberately out of scope. Updated as we make decisions.
+
+**What this project is:** a custom recurrent-depth MoE language model — a hybrid
+that takes its architecture from the OpenMythos (`kyegomez/OpenMythos`) RDT
+reconstruction, distills from ByteDance Ouro-2.6B-Thinking as a teacher, and is
+independently scaled via a function-preserving model-growth pipeline. It is
+*not* OpenMythos (we extended it into a trained pipeline), *not* Ouro (that's the
+teacher), and *not* Claude Mythos (speculative inspiration only). Trained
+checkpoints are 278M–420M proof-of-concept models — they validate the
+architecture and recipe, not deployable quality. Full lineage writeup is in the
+README's "Project identity & lineage" section.
+
+**Attribution:** the upstream architecture is Kye Gomez's work
+(`kyegomez/OpenMythos`, MIT) and is credited with thanks. He has no involvement
+in this fork beyond that foundation, and no responsibility for its direction or
+current state. The teacher (`ByteDance/Ouro-2.6B-Thinking`) is Apache 2.0. See
+the README "Acknowledgements" and "Licensing & data provenance" sections.
+
+Compute constraint baseline: **single workstation — RTX 5070 (12 GB) + RTX 5060
+(8 GB) + RTX 4060 (8 GB), all native bf16, overnight-only training windows.**
+Anything multi-week of continuous compute belongs to the "needs cloud or
+hardware upgrade" tier.
+
+---
+
+## ⚡ Resume quickstart (read this first if returning after a gap)
+
+**State in one sentence:** the distill → SFT → MoE-growth pipeline is built and
+validated through v5; the latest checkpoint is `mythouro_distill_xl_grown_v5`
+(632M, 96 experts) — but the **2nd MoE expansion (48 → 96) hit the expert-count
+ceiling** (net-comparable to the 420M v4, `cv` wouldn't tighten below ~0.5), so
+**MoE growth is now considered tapped out** and output is still gibberish at this
+scale (parameter-count ceiling, not a bug).
+
+**The next axis is width/scale, not more experts.** Two real options:
+
+- **Near-term, single-card (Path A):** build **Net2Wider** width growth
+  (`grow_width.py`, ~2 sessions — does not exist yet) to push `dim` up toward
+  ~1B on the 5070. Function-preserving with SiLU (only Net2Deeper is blocked by
+  SiLU non-idempotence — see [`growth_design.md`](growth_design.md)). This is the
+  remaining unproven growth axis.
+- **The actual destination (rented compute):** **from-scratch *distilled* 3B**
+  from a stronger teacher (Llama 3.3 70B / Qwen 2.5 72B), then quantize to INT4
+  to fit a 24 GB card. Growth can't deliver the gibberish→coherent jump; scale +
+  real data can. See [Scale-up execution plan](#scale-up-execution-plan-the-destination).
+
+> **Do NOT re-run the 48 → 96 MoE expansion** — that was v5 (2026-06-06) and it
+> hit the ceiling. The previous version of this block told you to run it; that
+> advice is obsolete.
+
+**Where to look:** checkpoint lineage + criteria → [Capability success criteria](#capability-success-criteria-per-milestone);
+something broke → [Failure modes](#failure-modes-encountered--recovery-patterns);
+which memory/growth technique → [Decision rules](#decision-rules);
+hardware questions → [Hardware-scaling analysis](#hardware-scaling-analysis).
+
+**Hard limits to remember:** current rig caps at ~1B single-card (~1.5B via FSDP,
+PCIe-penalised); 3B needs an Ampere+ card with ≥24 GB; coherent text needs scale
+the workstation can't reach — this is a *recipe-validation* project, not a
+deployable-model project.
+
+---
+
+## Documentation index
+
+If you're returning to this project after a break, these are the
+authoritative documents and where to find what:
+
+| File | What's in it |
+|------|--------------|
+| [docs/roadmap.md](roadmap.md) | This file. Forward plan, milestones, decision rules, failure-mode memory. **Start here when resuming.** |
+| [docs/mythouro.md](mythouro.md) | Architecture overview — what's in `MythOuro` and why each piece exists. |
+| [docs/datasets.md](datasets.md) | Dataset reference — what corpora we use and how. |
+| [docs/growth_design.md](growth_design.md) | MoE expansion / model growth design notes. Read before promoting a checkpoint. |
+| `archived_models/<name>/MODEL_CARD.md` | Per-checkpoint provenance: training config, eval results, behavioural validation, limitations. One per shipped reference checkpoint. |
+| `CHANGES.md` | Changelog at the codebase root — features added per session. |
+
+Where to find code that implements specific concepts:
+
+| Concept | File / function |
+|---------|-----------------|
+| Core model | [mythouro/main.py](../mythouro/main.py) (`MythOuro`, `RecurrentBlock`, `MoEFFN`, `ACTHalting`) |
+| Architectural variants | [mythouro/variants.py](../mythouro/variants.py) |
+| Tokenizer wrapper | [mythouro/tokenizer.py](../mythouro/tokenizer.py) |
+| Training utilities (losses, MoE bias updater, FSDP wrap) | [mythouro/training_utils.py](../mythouro/training_utils.py) |
+| Checkpointing + shutdown handler | [mythouro/checkpointing.py](../mythouro/checkpointing.py) |
+| SFT dataset + masked-loss contract | [mythouro/sft_data.py](../mythouro/sft_data.py) |
+| MoE expansion algorithm | [mythouro/grow.py](../mythouro/grow.py) |
+| Confidence-aware generation | [mythouro/inference.py](../mythouro/inference.py) |
+| Distillation training loop | [training/distill.py](../training/distill.py) |
+| SFT training loop | [training/sft.py](../training/sft.py) |
+| Pretraining loop (kept for reference) | [training/3b_fine_web_edu.py](../training/3b_fine_web_edu.py) |
+| Eval harness | [eval/harness.py](../eval/harness.py) |
+| Inspector | [inspect_checkpoint.py](../inspect_checkpoint.py) |
+| Checkpoint promotion CLI | [tools/grow_checkpoint.py](../tools/grow_checkpoint.py) |
+
+---
+
+## Where we are (as of 2026-06-05)
+
+### Shipped reference checkpoints
+
+| Checkpoint | Variant | Params | Method | Status |
+|------------|---------|-------:|--------|--------|
+| `mythouro_distill_tiny_v1` | distill_tiny | 278M | Logit distillation from Ouro-2.6B-Thinking (5K steps) | ✓ Archived |
+| `mythouro_distill_tiny_sft_v2` | distill_tiny | 278M | SFT on Magicoder + MetaMath (3K steps) | ✓ Archived |
+| `mythouro_distill_small_grown_v3` | distill_small | 420M | MoE expansion (24→48 experts) + 3K SFT steps | ✓ Archived |
+| `mythouro_distill_small_v4` | distill_small | 420M | OpenHermes-augmented SFT @ seq_len=768 (fp32 AdamW; bnb unavailable on CUDA 13.2) | ✓ Archived |
+| `mythouro_distill_xl_grown_v5` | distill_xl | 632M | MoE expansion 48→96 + ~2.4K SFT steps @ 8-bit AdamW | ✓ Archived (step 2887) — **expert-count ceiling** data point: net-comparable to v4, 2nd expansion did not compound |
+
+### Pipeline infrastructure built and tested
+
+- **Distillation training** ([training/distill.py](OpenMythos-main/training/distill.py)) — Hinton-style logit distillation with auxiliary heads
+- **SFT training** ([training/sft.py](OpenMythos-main/training/sft.py)) — masked-CE on response tokens only, growth-checkpoint-aware
+- **MoE expansion** ([mythouro/grow.py](OpenMythos-main/mythouro/grow.py)) — function-preserving promotion with sentinel-bias decay
+- **Eval harness** ([eval/harness.py](OpenMythos-main/eval/harness.py)) — perplexity, ECE, loop_efficiency, ARC, GSM8K
+- **Checkpoint inspector** ([inspect_checkpoint.py](OpenMythos-main/inspect_checkpoint.py)) — qualitative diagnostics per prompt
+- **Tests**: 303/303 passing across the codebase
+
+---
+
+## Near-term: next 1–3 overnights
+
+### Immediate (v4 + v5 both done — MoE growth tapped out)
+
+v4 validated (all 3 halt mechanisms fire, 4/4 prompts halt cleanly) and v5 (2nd
+MoE expansion) hit the expert-count ceiling on 2026-06-06. The decision is made:
+**stop expanding experts.** The two live next axes are:
+
+1. **Net2Wider width growth** (`grow_width.py`, ~2 sessions — does not exist yet)
+   to push `dim` toward ~1B single-card. Function-preserving with SiLU; the
+   remaining unproven growth axis.
+2. **From-scratch distilled 3B on rented compute** — the actual destination for
+   coherent output (see [Scale-up execution plan](#scale-up-execution-plan-the-destination)).
+   Growth can't deliver the gibberish→coherent jump.
+
+### Memory-reduction stack (apply as needed)
+
+Ranked by leverage for the current single-card budget:
+
+| Technique | Status | Savings | Effort | Unlocks |
+|-----------|--------|--------:|--------|---------|
+| **8-bit AdamW** (bitsandbytes) | ✓ Working — `--use-8bit-adam`, auto-detects cuda130 binary on CUDA 13.2 | ~2.5 GB | done | 420M comfortable, ~700M tight |
+| **GaLore** (gradient low-rank projection) | 📋 Queued | ~4–6 GB | 4–6h | ~1B on 5070 alone, full-param training |
+| **Paged AdamW** (bnb 8-bit + CPU offload) | 📋 Queued | spike resilience | 1h | survives transient memory spikes |
+| **Activation checkpointing on more layers** | 📋 Queued (partial coverage today) | ~0.5 GB | 1h | minor headroom |
+| **4-bit optimizers** (thu-ml/low-bit-optimizers) | 📋 Optional | ~3.5 GB total | 2h | further squeeze if 8-bit isn't enough |
+| **Q-GaLore** (GaLore + 4-bit projection) | 📋 Optional, newer | ~6–8 GB | 6–8h | ~1.5B+ on 5070 alone, less battle-tested |
+
+**Deliberately NOT applicable** (revisit if requirements change):
+
+| Technique | Why excluded |
+|-----------|--------------|
+| QLoRA | Freezes base model → blocks full-param training + growth |
+| GPTQ / AWQ / HQQ / AQLM | Inference-only quantization |
+| Zeroth-order optimization | ~100× slower convergence |
+| TorchAO | Less mature than bnb/GaLore for our training case |
+
+### Growth axes (next promotion candidates)
+
+Proven: **MoE expansion** round 1 (24 → 48 experts, v3) via [mythouro/grow.py](OpenMythos-main/mythouro/grow.py).
+**Tapped out:** MoE expansion round 2 (48 → 96, v5) hit the expert-count ceiling
+(2026-06-06) — do not repeat.
+
+Remaining growth axes:
+
+| Axis | Approach | Effort | Notes |
+|------|----------|--------|-------|
+| ~~**MoE expansion round 2** (48 → 96 experts)~~ | ~~Same `grow_moe_checkpoint`~~ | done (v5) | **Ceiling hit — net-comparable to v4. Do not repeat.** |
+| **Net2Wider** (hidden dim growth) | Custom `grow_width.py` module | 2 sessions | **Next single-card lever.** SiLU non-idempotency means ~0.3 nat loss spike, recoverable |
+| **Net2Deeper** (layer count) | Custom `grow_depth.py` module | 2 sessions | Same SiLU caveat, identity-init layers |
+| **Loop expansion** | Bump `max_loop_iters` | Trivial | Already free at inference, training would need depth-reg retune |
+
+---
+
+## Mid-term: next month, given overnight-only compute
+
+### Path A — Stay single-card, push to ~1B
+
+```
+v4 (420M) → 8-bit Adam validated
+        ↓
+    [done] MoE expansion round 2 → v5 (632M, 96 experts) — CEILING HIT, no compound gain
+        ↓
+    GaLore wrapper (4–6h work, one session)            ← resume here
+        ↓
+    Net2Wider promotion to dim=1536 or 1792 (~1B)      ← the real next lever
+        ↓
+    20K SFT steps overnight chunks (~2 weeks calendar)
+```
+
+Endpoint: a ~1B MythOuro that comfortably fits on the 5070 alone, with all the architectural multipliers stacked. Calendar cost: ~3 weeks of overnights.
+
+### Path B — Add FSDP, push to ~1.5B
+
+```
+v4 validated
+        ↓
+    FSDP wiring (3–4h work, one session)
+        ↓
+    Direct 1B distillation from a stronger teacher
+    (Llama 3.3 70B local quantized OR DeepSeek V3 API)
+        ↓
+    20K-step distillation overnight chunks
+        ↓
+    SFT phase with full data mix
+```
+
+Endpoint: a ~1B model distilled from a stronger teacher (breaks the Ouro-2.6B quality ceiling). Calendar cost: ~3–4 weeks of overnights.
+
+### My recommendation
+
+**Path A** for the next month — leverages the growth infrastructure already built and stays inside the single-card comfort zone. FSDP wiring is the right Path B work but it's the kind of debugging that's painful in overnight chunks (you discover the sync bug at 7 AM with no time to fix before workday). Path A wins from a "how do I make progress while sleeping" angle.
+
+---
+
+## Scale-up execution plan (the destination)
+
+The biggest roadmap gap, now filled: *what to actually run when compute arrives.*
+Decided 2026-06-06 after the v5 expert-ceiling finding.
+
+### Grow vs. from-scratch — decision: **growth is tapped out; destination is from-scratch (distilled)**
+
+Growth (MoE expansion / Net2Wider) was the **proof-of-concept + compute-thrift** tool and it did its job — validated the recipe and *mapped the ceilings*. But the evidence says it's near its useful end for this base:
+- **2nd MoE expansion (v5) hit a ceiling** — measured, not theoretical
+- The model is **data-starved** (~20–40M tokens) — growth adds capacity a starved model can't fill
+- **Warm-start benefit erodes** as growth ops stack (Net2Net literature)
+
+So the gibberish→coherent jump needs **from-scratch at scale with real data**, which growth can't deliver.
+
+**Key nuance — from-scratch ≠ pure pretraining.** For hardware-constrained reality, **from-scratch *distilled* from a strong teacher** (Llama 3.3 70B / DeepSeek V3) is far more sample-efficient than raw CE pretraining — reaches coherence on *much* less data. That's the actual destination.
+
+### The "train big, then quantize to fit" strategy
+
+Confirmed intent (2026-06-06): on rented compute, **train a model bigger than 1B (e.g., 3B), then quantize it to fit a small card for local deployment** — *quantize, not distill-down*. The distinction matters:
+- **Quantize** (INT4): a 3B model → still 3B params, ~¼ the memory. **3B-INT4 ≈ fits a 24GB consumer card.** Same model, small footprint. ← **this is the plan**
+- (Distillation to a genuinely smaller param count remains an *option*, but the chosen path is quantize-to-fit — keep the 3B capability, shrink the footprint.)
+
+This also **validates the quantization roadmap**: quant was modest at 632M, but **at 3B it pays off** — exactly where INT4 footprint savings let a big model run on consumer hardware. Train big → quantize → run the *full-capability* model locally.
+
+### Execution sequence (rented-compute phase)
+
+```
+1. Rent NVIDIA (A100-class) → from-scratch BIG MythOuro (3B+), distilled from a strong teacher
+2. Quantize the 3B → 3B-INT4 (torchao) so it fits a 24GB consumer card at full capability
+3. Rust + candle runtime for the frozen, quantized model   (deployment phase)
+   — separately & cheaply: rent an Intel instance to test whether the B70 ports
+     (CUDA→XPU) and its achieved tok/s, before any $800–1000 B70 purchase
+```
+
+### Sequencing rule: Rust comes AFTER training, never before
+Rust is a deployment optimization for a *frozen, coherent* model; from-scratch produces that model, and the architecture may change during it — building Rust first means rebuilding it. Order: **train → freeze → quantize → Rust.**
+
+> **The one exception (note it):** if you do **reasoning RL (GRPO)** later, that
+> needs *many inference rollouts during training*, so fast inference would speed
+> the RL loop — but even then you'd want the architecture **frozen first**. So
+> Rust still lands after the base model exists, never before.
+
+### Objective: distillation vs. training from just datasets (pure pretraining)
+
+Two ways to train the big model. The recipe already blends them via
+`α·soft(teacher) + (1−α)·hard(CE on data)` — so "just datasets" = α=0.
+
+> **What the pipeline actually does today (phase pattern, verified):**
+> - **Distillation phase** (`training/distill.py`, made **v1**): **hybrid**,
+>   `α=0.5` (default, not overridden) — 50% soft teacher logits (Ouro-2.6B) +
+>   50% hard CE on data tokens.
+> - **SFT phase** (`training/sft.py`, made **v2–v5**): **datasets-only** —
+>   `masked_ce_loss` on response tokens, **no teacher**.
+>
+> So the project already uses *both* modes, in different stages. The **scale-up
+> repeats this two-phase shape at larger scale**: hybrid distillation (big run,
+> α-blend) → datasets-only SFT on top. The α knob tunes the teacher-vs-data
+> balance, or goes α=0 for pure datasets if the teacher is ever dropped.
+
+| | Distillation (teacher) | Pure pretraining (datasets only, α=0) |
+|---|---|---|
+| Capability ceiling | capped at teacher | **none** — can exceed any model |
+| Sample efficiency | **high** (soft targets) | lower (hard CE) |
+| Data needed | billions of tokens | **way more** (~10–60B for 3B, Chinchilla ~20 tok/param) |
+| Compute | less | more |
+| Teacher constraints | hosting + tokenizer + licensing | none (free vocab, clean provenance) |
+| Per-step cost | teacher forward each step | cheaper/step |
+
+**Decision: distillation is the pragmatic primary** for a budget-constrained
+run. Pure pretraining at 3B (~250–3000× the ~20–40M tokens used so far) is
+likely beyond even the rented-compute budget — distillation's sample-efficiency
+is what makes coherence reachable affordably. Pure-datasets (α=0) is the
+**fallback** if the teacher situation breaks (no hostable teacher, tokenizer/
+licensing problems) or if abundant data+compute ever materialise. Note: both
+paths still need a large data jump — the data-acquisition problem bites either
+way, just bigger for pretraining.
+
+### Teacher choice — decision framework (resolve at run time)
+
+The gating factor is **not "which model is smartest" — it's "which can you run
+locally to read its logits."** Logit distillation needs the teacher's full
+per-token distribution, which means self-hosting open weights with an
+adoptable tokenizer.
+
+| Teacher | Self-host for logits? | Vocab | Verdict |
+|---------|----------------------|-------|---------|
+| Llama 3.3 70B | ✅ (quantized ~40GB, A100 80GB) | ~128k | **Safe default** |
+| Qwen 2.5 72B | ✅ (quantized) | ~150k | Strong code/reasoning alt |
+| Gemma (latest, ~27B) | ✅ (fits easily) | **~256k → big student embedding** | OK if you accept the vocab cost. (Gemma 4 specifics unverified.) |
+| DeepSeek V3 | ❌ for logits (671B; API gives no full logits) | — | Out for *logit* distill; viable for *synthetic-data* SFT |
+
+Two coupled facts:
+- **Teacher = student vocab.** Logit distillation forces a shared tokenizer, so
+  picking the teacher silently sets the student's embedding/LM-head size (Gemma's
+  256k vocab = a much bigger embedding at 3B).
+- **Ouro is out for scale-up** — it's 2.6B, too small to teach a *bigger* student
+  to exceed 2.6B. Scaling up *requires* a bigger teacher.
+
+**Split-teacher strategy** (best of both): logit-distill from a self-hostable
+teacher (Llama/Qwen/Gemma) for the backbone, **and** generate synthetic
+reasoning/code data from a stronger model you can't self-host (DeepSeek V3 API)
+for capability injection. (Synthetic API data carries the OpenAI-style ToS
+provenance flag — fine for research, a constraint if distributing.)
+
+Resolve the exact teacher **closer to the run** — the open-model landscape moves
+fast; there may be a clearly-best option by the time you rent compute.
+
+### Hardware is the upstream gate — and it keeps *both* objectives open
+
+Both distillation and pure-datasets need better/rented compute, so the hardware
+investment is required either way — and **it doesn't force the objective choice;
+it enables both.** With multiple high-quality cards or a rented node you can fit
+*either* a decent teacher (Llama 70B quantized ~40GB) for distillation *or* large
+streamed datasets for pretraining. Two consequences:
+
+- **Good hardware makes distillation *easier*, not just possible** — on a
+  multi-A100 / multi-card node you host a big teacher *and* the student
+  comfortably, with room for bigger batches. The cramped teacher-hosting that
+  forced the v1 teacher onto the 5060 disappears.
+- **The objective can be deferred to run-time** — rent the node, see what fits
+  and what the budget allows, then choose. Default lean stays **distillation**
+  (sample-efficient → *fewer rented hours → cheaper total run*, even with the
+  teacher's per-step overhead); go pure-datasets only to exceed the teacher and
+  if you can afford the extra hours.
+
+### Cloud rental — providers to evaluate (research in progress)
+
+Renting is the realistic unstick path. Providers to compare (verify current
+pricing — it moves):
+
+| Provider | Note |
+|----------|------|
+| **RunPod** | Popular, cheap, per-hour A100/H100, community + secure tiers — common budget pick |
+| **Vast.ai** | Marketplace, often cheapest (community hosts), variable reliability |
+| **Lambda Labs** | ML-focused, A100/H100, solid middle ground |
+| **Paperspace / DigitalOcean** | Managed, easy onboarding |
+| **CoreWeave, Hyperbolic, TensorDock** | Newer / larger-scale options worth checking |
+| **AWS / GCP / Azure** | Most reliable, most expensive; spot instances cheaper |
+| **Intel Tiber Developer Cloud** | For the **B70/Intel port test** specifically (Arc/Max GPUs) |
+
+Two separate rentals, different purposes (don't conflate):
+- **NVIDIA (A100-class)** → the actual from-scratch-distilled training run
+- **Intel (Arc/B70-class)** → the cheap port-feasibility + tok/s test before any B70 purchase
+
+### Still to decide (remaining open sub-questions)
+- **Target size** (3B confirmed as "train big"; could go larger if compute allows)
+- **Data volume/mix** for the run — the data-scale plan (billions of tokens) is its own undertaking
+- **Cloud cost budget** (provider rate × A100-hours for the chosen step count) — pick provider first, then the math
+- **Cloud provider** — evaluate the table above against current pricing
+
+---
+
+## Long-term: requires hardware upgrade or cloud compute
+
+### Out of scope on current hardware
+
+| Direction | Why parked |
+|-----------|-----------|
+| 3B+ training from scratch | 50+ days continuous compute |
+| Real foundation pretraining (100B+ tokens) | Even at 1B, multiple months on this hardware |
+| Frontier model competition | Different problem class, ~$M of compute |
+
+### Hardware-scaling analysis
+
+#### Current rig — three GPUs, use them by *role*, not FSDP
+
+The workstation has three cards, all **native bf16** (no fp16 conversion needed).
+
+> **Status: PROPOSED role-separation — not yet exercised.** The 3-card setup has
+> only been *discussed*, never run. Actual history: **v1 distillation used 2
+> cards** (5070 student + 5060 teacher); **v2–v5 (SFT + growth) used 1 card**
+> (5070 only). The **4060 has never been used in a training session.** The table
+> below is the *suggested* allocation if/when you run a multi-card workflow, not
+> a description of what's been done.
+
+| Card | VRAM | Gen | Proposed role (not yet used as a trio) |
+|------|------|-----|-----------|
+| RTX 5070 | 12 GB | Blackwell (fastest) | **Primary training** — single-card, native bf16, no sync overhead (this *is* what v2–v5 used) |
+| RTX 5060 | 8 GB | Blackwell | **Teacher host** during distillation — where the v1 teacher ran (Ouro-2.6B ~5.2 GB bf16) |
+| RTX 4060 | 8 GB | Ada | **Parallel eval** (proposed) — run the harness on saved checkpoints while the 5070 trains. *Never used yet.* |
+
+**Do NOT FSDP these three together for training.** MythOuro is *compute-bound*
+(the recurrent loops multiply compute per step without multiplying
+communication), so the PCIe-sync penalty (no NVLink) hurts, and the
+heterogeneous cards mean the slowest gates every step. Role-separation
+(teacher on 4060, eval on 5060, train on 5070) sidesteps the sync cost
+entirely — the teacher forward is one transfer/step, not gradient all-reduce.
+
+Ceiling with this rig: **~1B single-card** (8-bit Adam + growth), stretchable to
+**~1.3–1.5B** via FSDP student on 5070+5060 with the teacher on the 4060, if you
+accept the PCIe penalty.
+
+#### The bf16-generation rule for any GPU purchase
+
+The single most important hardware caveat, learned the hard way: **buy Ampere
+generation or newer.** bf16 was introduced with Ampere (A100). Older datacenter
+/ workstation cards lack hardware bf16:
+
+| Card | Gen | Native bf16? | Verdict for this project |
+|------|-----|--------------|--------------------------|
+| V100 (any) | Volta | ❌ | bf16 runs at fp32 speed (no tensor cores); fp16 needs revalidation |
+| Quadro RTX 8000 / 6000 | Turing | ❌ | Same trap — 48 GB is tempting but no bf16 |
+| A100 40/80 GB | Ampere | ✅ | Ideal — native bf16 + tf32, datacenter-grade |
+| RTX A6000 48 GB | Ampere | ✅ | Excellent — most VRAM, ECC, workstation |
+| RTX 6000 Ada 48 GB | Ada | ✅ | Newer, faster, pricier |
+| RTX 5090 32 GB | Blackwell | ✅ | Consumer, fast, fits 3B (tight) |
+
+Running the whole validated pipeline on a non-bf16 card means converting to
+fp16 and re-validating every stability property (ACT collapse, MoE balance,
+LTI spectral radius, depth regulariser). MythOuro's *bounded-activation* design
+(ρ(A) < 1, normalized routing, sigmoid halting) makes fp16 tractable, but it's
+work you avoid entirely by staying on Ampere+.
+
+#### Purchase options for the 3B goal
+
+3B needs **~24 GB minimum, ~28–32 GB comfortable** (8-bit Adam). The current
+20 GB pooled can't fit it — 3B requires new hardware regardless of growth-vs-
+from-scratch. Compared honestly:
+
+| Option | $ | VRAM | bf16 | Reaches 3B? | Caveats |
+|--------|---|------|------|-------------|---------|
+| **2× V100 16 GB SXM2 + baseboard** | ~$500 | 32 GB (NVLink) | ❌ fp16 | Yes (FSDP) | SXM2 = build project (cooling/power); fp16 revalidation; old, slow compute. Viable for a maker with shop skills (AIO + milled bracket); the cheap $/GB path. |
+| **RTX 5090 32 GB** | ~$2k | 32 GB | ✅ | Yes (tight) | Single card, native bf16, newest compute |
+| **Used RTX A6000 48 GB** | ~$3–4k | 48 GB | ✅ | Yes, comfortable | Single card, ECC, native bf16, NVLink-bridge — the "do it properly" pick |
+| **Used A100 40 GB** | ~$3k | 40 GB | ✅ | Yes, comfortable | Datacenter HBM2, native bf16, NVLink-capable |
+
+Because MythOuro is compute-bound, a **single fast native-bf16 card beats a
+fast interconnect between slow cards**: even 2× V100 NVLink in software-bf16 is
+slower per step than the current 5070+5060 over PCIe (the V100's emulated bf16
+runs at ~fp32 speed, and the recurrent loops make compute, not comms, the
+bottleneck). The V100 path only wins on *price* and on *fitting* models that
+don't fit otherwise — not on speed.
+
+#### Other accelerants
+
+| If you get… | Then unlock |
+|-------------|-------------|
+| **Cloud A100/H100 hour budget** | 5–10× faster training; 20K-step runs become single overnights |
+| **DeepSeek V3 / Llama 3.3 70B API access** | Stronger teacher → break past the Ouro-2.6B quality ceiling regardless of student size |
+
+### Post-training pipeline stages (mostly hardware-independent)
+
+Beyond pretraining + SFT, the full pipeline has more stages we haven't touched:
+
+| Stage | Cost | What it unlocks |
+|-------|------|-----------------|
+| **Preference tuning** (DPO / ORPO / KTO) | ~1–2 nights at 1B scale | Smooth, helpful style; reduces refusals/over-refusals |
+| **Reasoning RL** (GRPO-style with verifier rewards) | ~3–5 nights | Math/code/logic improvements; this is where Ouro-Thinking gets its edge |
+| **Tool use / function calling** | ~1 night SFT | Capability expansion (API calling, code execution) |
+| **Self-improvement loop** | open-ended | Diminishing returns, but a real research direction |
+
+Each is realistic on the current hardware once we have a stable 1B base.
+
+---
+
+## Inference efficiency (deployment phase)
+
+How to make a *trained, frozen* MythOuro run faster/cheaper. Planning captured
+now; **not a near-term action** (see scale caveat).
+
+### ⚠️ Scale caveat — read first
+Quantization's payoff is **scale-dependent**, and it's **modest at 632M**:
+- A 632M model is ~1.3 GB in bf16 — it **already fits trivially**, so the 2–4×
+  *memory* win is moot at this size.
+- Quant *speedup* comes mostly from reduced memory **bandwidth**, which dominates
+  for **large, bandwidth-bound** models (7B+). A small model that's
+  **compute-bound on the recurrent loops** sees little gain from weight quant.
+
+So inference-efficiency work is a **large-model, deployment-phase** lever. Don't
+burn a session quantizing the current model expecting big wins — the payoff
+arrives at 7B+ scale and/or real serving load.
+
+### The three approaches (for when it's worth doing)
+
+| # | Approach | When | Notes |
+|---|----------|------|-------|
+| **A** | **torchao quantization in PyTorch** | first / always | No ONNX export — handles the dynamic ACT loop, MLA, MoE natively. Biggest lever, least friction. |
+| **B** | Fixed-loop static export → ONNX Runtime / TensorRT | if more speed needed, model frozen | Must unroll ACT to a fixed K (lose adaptive depth); MLA/MoE need plugins or decomposition. ONNX RT over TensorRT initially (more op-tolerant). |
+| **C** | Hybrid: static parts to a runtime, ACT/routing in PyTorch | best-of-both, more eng | Quantized matmuls + flexible dynamic control. |
+
+### MythOuro export obstacles (why it's not "export and go")
+- **ACT dynamic loop** — data-dependent termination doesn't export to a static
+  ONNX graph cleanly. The biggest blocker for B/C. (Same problem the Rust
+  ACT-compaction work solves — see below.)
+- **MLA** — no fused TensorRT/ONNX kernel; decomposes (slow) or needs a plugin.
+- **MoE dispatch** — exports inefficiently; may need a plugin.
+
+### Component-aware quantization map (torchao, Approach A)
+Mixed precision: quantize compute-heavy matmuls, **protect** stability-critical
+parts. Use the *real* module names below (from `model.named_modules()`), not
+guessed regexes.
+
+| Component (real FQN) | Quantization | Why |
+|----------------------|--------------|-----|
+| `recurrent...routed_experts.{i}.{gate,up,down}` | INT4 weight-only (group 64) | Heavy, compute-dense, tolerant if calibrated |
+| `...shared_experts.{i}.{gate,up,down}` | INT4 weight-only | Same |
+| GQAttention/MLAttention projections (q/k/v/o, MLA latents) | INT4/INT8 weight-only | Matmul-heavy; watch outliers |
+| prelude/coda block FFNs (`Expert`) | INT4/INT8 weight-only | Standard heavy matmuls, safe |
+| `...router` (Linear) + `router_bias` | **keep BF16/INT8** | Low-bit destabilises expert selection |
+| `LTIInjection` A/B | **keep BF16** | Quant can push ρ(A) ≥ 1 → divergence |
+| `ACTHalting` head, `UncertaintyHead` | **keep BF16** | Halt/confidence fragile; errors compound across loops |
+| KV cache (if long-context) | INT8/FP8 dynamic | Big win at long context |
+
+Progression: INT8 baseline → measure (PPL, routing entropy, avg ACT depth,
+ρ(A), expert utilisation, output KL) → push experts/attention to INT4 → if
+quality dips, per-component sensitivity ablation or light QAT on the sensitive
+heads. **torchao API + FQN patterns must be verified against the installed
+version** (the API evolves; don't trust copy-pasted config dicts).
+
+### Convergence with the Rust path
+The ACT dynamic-loop obstacle for TensorRT is *the same* problem the Rust+candle
+runtime solves via active-set compaction. So the **Rust deployment runtime
+subsumes the TensorRT path** for this architecture — it handles ACT natively
+where TensorRT struggles. If you build the Rust runtime, you likely skip
+TensorRT. Quantization (torchao) is orthogonal and applies in either world.
+
+---
+
+## Deployment & language strategy
+
+A settled decision, recorded so it isn't re-litigated. (Explored in depth
+2026-06-06: Rust vs C++ vs Zig vs Jule for a faster MythOuro.)
+
+### The core finding: host language is NOT the efficiency lever
+
+Model **capability** lives in the weights (training-determined) and is
+**language-independent** — a Rust/C++/Python MythOuro with the same weights
+produces identical outputs. Model **execution efficiency** is what a language
+choice can affect, but even there the host language is the *smallest* lever,
+because all of them call the same GPU kernels (cuBLAS/cuDNN) and hit the same
+ceiling. The real efficiency levers, in order:
+
+1. **Quantization** (INT8/INT4) — 2–4×, the biggest, language-agnostic
+2. **Inference compiler/runtime** (TensorRT / ONNX Runtime / TVM) — kernel fusion
+3. **Custom kernels** (Triton/CUDA) for the architecture-specific hot paths
+4. **Host language** (Rust/C++/Zig/Jule) — marginal (overhead only)
+
+So: don't language-hunt for efficiency. For inference efficiency → quantize +
+compiler. For the *training* bottleneck → rented GPU / faster card (a language
+can't add TFLOPs).
+
+### The plan (phased)
+
+| Phase | Language | Rationale |
+|-------|----------|-----------|
+| **Research / now** | **Python + PyTorch** | Max iteration speed, mature ecosystem, HF teacher + datasets live here. Correct for the exploration phase — proven by the findings this project produced. |
+| **Scale-up** | Python + PyTorch | Same stack, bigger model, rented/upgraded compute. No language change. |
+| **Deployment (post-coherence)** | **Rust + candle, C++ FFI for custom kernels** | Once there's a coherent model worth serving *and* a serving need. |
+
+### Deployment-phase specifics (when reached)
+
+- **Rust + [candle](https://github.com/huggingface/candle)** — inference-shaped,
+  direct tensor/memory control, flash-attn binding. Preferred over `burn`
+  (don't need autodiff/training abstraction for inference).
+- **C++ FFI only for the gaps** — candle covers standard ops (matmul, softmax,
+  RoPE, RMSNorm, attention). Bridge to hand-written **CUDA C++ kernels** only
+  for the architecture-specific hot paths: **ACT active-set compaction**
+  (gather still-looping tokens, compact compute but not the KV cache) and
+  **MoE sorted-dispatch**. Same FFI pattern the maintainer already proved on a
+  prior slicer project. `cudarc` is an option to call kernels from Rust without
+  a C++ layer.
+- **The architecture-specific upside**: ACT variable-compute is a first-class
+  citizen in Rust (compaction) rather than a masked-overcompute afterthought as
+  in PyTorch — a genuine ~1.5–2× inference win on the recurrent block, *specific
+  to this architecture*, not generic "Rust is fast."
+- **Not C++/Zig/Jule**: same efficiency ceiling as Rust (kernels dominate);
+  Rust gives memory safety + the candle ecosystem. Jule is pre-stable (v0.2.2,
+  2026) with no ML/GPU ecosystem — interesting language, wrong tool here.
+
+**Trigger to start this phase**: a coherent, deploy-worthy model (post scale-up)
++ an actual serving/latency/edge requirement. Not before — it optimizes
+inference (not the current bottleneck) of a model that isn't coherent yet.
+
+---
+
+## Application layer (far horizon) — RAG / retrieval
+
+The furthest-downstream thread: features built *around* a coherent MythOuro,
+not improvements *to* the model. Captured so the three "later" threads stay
+cleanly separated (they're easy to conflate).
+
+### The three downstream threads, disambiguated
+
+| Thread | Layer | What it touches | Phase |
+|--------|-------|-----------------|-------|
+| Inference efficiency (torchao / ONNX / TensorRT) | the model | makes the *model* run faster | deployment |
+| Rust + candle runtime | the model | efficient *model* execution (ACT compaction) | deployment |
+| **RAG / retrieval (this section)** | **around the model** | an *application feature*, retrieval over a corpus | **application — furthest out** |
+
+### RAG and where turbovec fits
+
+**RAG (Retrieval-Augmented Generation)** = MythOuro *generates*, a vector store
+*retrieves* relevant documents to inject into the prompt. It makes a *coherent*
+model more **factual/grounded**; it **cannot** make a scale-limited model
+coherent. So it sits in the "deliberately NOT yet" bucket until there's a model
+good enough to *use* retrieved context — bolting RAG onto a 632M gibberish model
+does nothing.
+
+**turbovec** ([RyanCodrai/turbovec](https://github.com/RyanCodrai/turbovec)) —
+a candidate retrieval backend for that eventual RAG layer:
+- **What it is**: vector search / approximate-nearest-neighbor (ANN) tool.
+  Compresses embedding vectors and does fast similarity search. Rust + Python
+  bindings, MIT, production-ready (~7k stars). Uses Google Research's
+  *TurboQuant* (data-oblivious quantizer, no codebook training).
+- **Claims**: ~16× compression on 1536-dim vectors; beats FAISS IndexPQFastScan
+  12–20% on ARM, matches/exceeds on x86; filtered search with no recall penalty.
+- **Fits the project ethos**: local-first, private, no managed service / no data
+  leaving the machine — aligns with the "best *local* LLM" goal.
+
+### ⚠️ Naming trap: turbovec quant ≠ model quant
+turbovec's "quantization" compresses **embedding vectors** (for search). The
+torchao/TensorRT quantization in the Inference-efficiency section compresses
+**model weights** (for faster LLM inference). **Same word, unrelated jobs,
+different layers of the stack.** Do not conflate them — turbovec is *not* on the
+inference-efficiency path; it's retrieval infrastructure for a RAG application.
+
+### Trigger
+A **coherent** MythOuro (post scale-up) **and** a use case where it answers from
+a document corpus. Furthest-downstream item on the roadmap — past scale-up, past
+basic deployment. Alternatives at that point: FAISS, or other ANN libraries;
+turbovec is bookmarked as the local-first, high-compression option.
+
+---
+
+## Data roadmap
+
+What data feeds which stage. The SFT stage is built; the rest are planned and
+listed here so the data decision is made before the engineering, not during.
+
+| Stage | Status | Datasets | Format / notes |
+|-------|--------|----------|----------------|
+| **Distillation** | ✓ done | FineWeb-Edu (40%) · open-web-math (40%) · codeparrot-clean (20%) | Raw text + teacher logits. Math-heavy to transfer Ouro-Thinking's reasoning. |
+| **SFT** | ✓ done (v2–v4) | OpenHermes-2.5 (30%) · MetaMathQA (40%) · Magicoder-Evol-Instruct (30%) | ChatML, loss masked to response tokens. Use `seq_len≥1024` for OpenHermes (multi-turn) — at 512 it's ~95% rejected. |
+| **Preference tuning (DPO/ORPO)** | 📋 planned | `HuggingFaceH4/ultrafeedback_binarized`, `Anthropic/hh-rlhf` | Needs `(prompt, chosen, rejected)` triples. ORPO folds it into one stage (no separate reward model) — simplest for a solo overnight setup. Start small (~10k pairs at this scale). |
+| **Reasoning RL (GRPO)** | 📋 planned | GSM8K + MATH (train splits) with a **programmatic verifier** as the reward | The reward is a correctness checker (parse final answer, compare), not a learned reward model. This is where the recurrent-depth architecture should shine — more loops on harder problems. Memory-heavy (multiple rollouts/step); needs the 8-bit-Adam + small-batch budget. |
+| **Tool use / function calling** | 📋 later | `glaiveai/glaive-function-calling-v2`, ToolBench subsets | SFT-style, but responses contain structured tool-call tokens. Define the call schema first. |
+| **Long-context** | 📋 later | Curated long documents (books, repos) | Only meaningful once a model is coherent; the Ouro tokenizer supports 131k but nothing's been trained past 1k. |
+
+**General principle observed so far:** at this scale, *data variety* moved
+behaviour more than *data volume* or *parameter count*. Adding OpenHermes (v4)
+unlocked the social-prompt register and recovered the confidence-halt that MoE
+growth had blurred — a data change, not a scale change. Prefer adding a new
+*kind* of data over more of the same.
+
+---
+
+## External eval baselines (context for the numbers)
+
+Our metrics in isolation don't say whether they're good. Rough anchors for
+small models at comparable scale (held-out web-text perplexity; exact numbers
+vary by tokenizer/corpus, so treat as order-of-magnitude):
+
+| Model | Params | Train tokens | Ballpark PPL | Note |
+|-------|-------:|-------------:|-------------:|------|
+| **MythOuro v1 (distill)** | 278M | ~20M | **37** | Ours — but distilled, so PPL is teacher-shaped, not from-scratch |
+| GPT-2 small | 124M | ~40B | ~30–35 | ~2000× more tokens than ours |
+| Pythia-410M | 410M | ~300B | ~12–15 | ~15000× more tokens |
+| GPT-2 medium | 355M | ~40B | ~22–26 | — |
+
+**The honest takeaway:** our PPL ~37 is *reasonable for the token budget* (we
+trained on ~20M tokens vs. tens of billions for the others — distillation is why
+it's even comparable). But coherent generation empirically needs both more
+params (~1B+) and more tokens (~10B+) than the workstation can reach. The gap to
+"usable" is **scale**, and these baselines quantify roughly how far: ~3× the
+params and ~500× the tokens to reach Pythia-410M territory.
+
+---
+
+## Glossary
+
+Project-specific terms used throughout the code and docs:
+
+| Term | Meaning |
+|------|---------|
+| **RDT** | Recurrent-Depth Transformer — the core architecture (Prelude → looped Recurrent block → Coda) |
+| **ACT** | Adaptive Computation Time — per-token learned halting; decides how many loops each token needs |
+| **halt distribution** | Per-loop probability mass of where tokens stop looping; should be *spread*, not pinned to loop 1 (pinned = collapse) |
+| **loop_efficiency** | avg_halt_depth / max_loops — how much of the available depth the model actually uses (~0.5 = genuinely adaptive) |
+| **LTI / ρ(A)** | Linear Time-Invariant injection; ρ(A) is its spectral radius. Must stay < 1 or the recurrence diverges. |
+| **MoE** | Mixture of Experts — routed + shared FFN experts; only top-k routed experts fire per token |
+| **cv / max% / min%** | MoE utilisation stats: coefficient of variation across experts, and the most/least-used expert's share. Low cv = balanced. |
+| **router_bias** | DeepSeek-V3 aux-loss-free load-balancing bias on router logits; nudged outside the optimizer toward uniform expert use |
+| **sentinel-bias** | Large negative router_bias on newly-grown experts at promotion, decayed over N steps — keeps MoE expansion function-preserving |
+| **depth-reg** | PonderNet × Ouro KL-to-uniform regulariser on the halt distribution; prevents ACT loop-collapse |
+| **resp_frac** | Fraction of tokens in an SFT batch that contribute to the loss (response tokens, not prompt/padding) |
+| **soft / hard loss** | Distillation: `soft` = distance to teacher logits, `hard` = CE against gold tokens |
+| **ECE** | Expected Calibration Error — how well predicted confidence matches actual correctness (lower = better calibrated) |
+| **UncertaintyHead** | Per-token uncertainty predictor; the `ConfidenceAwareGenerator` uses it to halt/refuse low-confidence generation |
+
+---
+
+## Decision rules
+
+When to apply which technique:
+
+| Symptom | Treatment |
+|---------|-----------|
+| VRAM at ceiling, want bigger model | `--use-8bit-adam` (working, ~2.5 GB, best MoE fit — quantization is architecture-agnostic) |
+| 8-bit Adam not enough, single-card | GaLore/LoRA-Pre (pure PyTorch, installs clean) — but note: low-rank methods are *dense-optimized*; on MoE's many small expert matrices the benefit shrinks and per-matrix SVD overhead grows. Validate on a small model first. |
+| Want >1B and 8-bit Adam maxed | FSDP across the rig (accept PCIe penalty) — or buy an Ampere+ card with more VRAM |
+| Capacity unused, output still gibberish | Add data variety, not more params (the 278M/420M ceiling is param-count, not architecture) |
+| Calibration drifts after promotion (e.g. confidence-halt lost) | More SFT with varied prompt types re-tightens it (v4 recovered all 3 halt mechanisms by adding OpenHermes) |
+| Halt discipline gets fuzzier post-promotion | Threshold-retune the ConfidenceAwareGenerator OR more SFT steps |
+| New experts stay idle after sentinel decay | Extend training, the bias updater needs time (v3 hit min% 1.1 by step ~2500) |
+| bnb "cuda132 binary not found" | `_configure_bnb_cuda_version()` already auto-handles it (picks cuda130 for CUDA 13.2) — see failure modes |
+
+---
+
+## What's deliberately NOT on the roadmap (and why)
+
+| Idea | Why parked |
+|------|-----------|
+| Rewriting in JAX/Triton | Massive engineering cost, marginal benefit for tonight-scale training |
+| Building a custom CUDA kernel for MoE dispatch | We're using torch SDPA fallback anyway; FlashAttention2 unavailable on cuda_cc=(12,0) per our logs |
+| Adding RAG | Sidesteps the model-quality problem rather than fixing it. Useful as a layer over the eventual best model, not a substitute |
+| Constitutional AI / safety alignment | Premature at proof-of-concept scale; revisit when output is coherent |
+| Multimodal extension (vision, audio) | Single problem at a time; pure-LM has to work first |
+| Custom MoE routing (beyond DeepSeek-V3) | Current routing is working — `cv 0.19` is exceptional. Don't fix what isn't broken |
+| Changing the activation (SwiGLU → ReGLU/GeGLU/etc.) | **SwiGLU/SiLU is the SOTA standard** (LLaMA/PaLM/Mistral) and isn't a bottleneck. The only architectural reason to switch would be an *idempotent* activation (ReGLU) to make Net2Deeper depth-growth function-preserving — but that trades away SwiGLU quality to unlock an axis we don't need (MoE expansion + Net2Wider already cover growth). Also can't be retrofit onto trained weights (would require from-scratch retraining). Considered, rejected. |
+
+> **Note on activations & growth** (corrects an earlier doc error): MythOuro
+> uses **SiLU inside SwiGLU** (`down(SiLU(gate(x)) · up(x))`). SiLU's
+> non-idempotence only blocks **Net2Deeper (depth growth)**, not **Net2Wider
+> (width growth)** — Net2Wider is function-preserving with any element-wise
+> activation. So width growth toward ~1B *is* available without changing the
+> activation. See [`docs/growth_design.md`](growth_design.md) for the corrected
+> analysis.
+
+---
+
+## Licensing & data provenance (gate before distributing weights)
+
+Full writeup in the README's "Licensing & data provenance" section. Short version:
+
+- **Code**: MIT. **Teacher** (`ByteDance/Ouro-2.6B-Thinking`): **Apache 2.0** — clean for distillation/redistribution with attribution.
+- **The gating issue**: the SFT datasets (OpenHermes 2.5, MetaMathQA, Magicoder-Evol-Instruct) all contain **OpenAI-generated data**, whose terms restrict training competing models. Fine for private research; a real constraint if distributing/commercialising the SFT'd checkpoints.
+- **To get a cleanly-distributable checkpoint**: retrain SFT on non-OpenAI-provenance data (Dolly-15k, documented Tulu-3 subsets, or self-generated from an Apache/MIT model). Distillation data (FineWeb-Edu, OpenWebMath, CodeParrot) is open-provenance and fine.
+
+---
+
+## Active checkpoints (working set, not archived)
+
+- `checkpoints_grown\step_0003500.pt` — same as v3 archive (kept for live use)
+- `checkpoints_grown_v4\step_*.pt` — v4 SFT run (420M, 48 experts)
+- `checkpoints_grown_v5\step_*.pt` — v5 2nd-expansion run (632M, 96 experts);
+  last step 2887. Archived as `mythouro_distill_xl_grown_v5`; **expert-count
+  ceiling** data point, not an improvement over v4.
+
+## Sessions log
+
+| Date | Session focus | Outcome |
+|------|---------------|---------|
+| Pre-2026-05-31 | Architecture build, debugging ACT collapse, distillation recipe | Pipeline working end-to-end |
+| 2026-05-31 to 2026-06-01 | Full distillation 5K steps | v1 archived (PPL 37.4) |
+| 2026-06-03 to 2026-06-04 | SFT pipeline build + 3K-step v2 SFT | v2 archived |
+| 2026-06-04 | MoE expansion design + implementation + v3 grown run | v3 archived (cv 0.19, exceptional routing) |
+| 2026-06-05 | OpenHermes re-add + 8-bit Adam wiring; v4 run at seq_len=768 (bnb blocked by CUDA 13.2) | v4 archived — all 3 halt mechanisms firing, 4/4 prompts halt cleanly |
+| 2026-06-06 | bnb fixed (cuda130 auto-detect); 2nd MoE expansion 48→96 (`distill_xl`, 632M); v5 run to step 2887; full docs/attribution/licensing pass; hardware analysis (A10 identified as best-fit upgrade) | v5 archived — **expert-count ceiling hit**: 2nd expansion net-comparable to v4 (7-prompt inspector), cv wouldn't tighten below ~0.5. Q#1 answered. Next lever: width/scale, not more experts. |
+
+---
+
+## Capability success criteria per milestone
+
+What "succeeded" looks like at each checkpoint. Use these as the
+yardstick when deciding whether to ship a reference checkpoint vs
+keep iterating.
+
+### v1 (distill_tiny — distillation only) — ACHIEVED ✓
+
+- Held-out perplexity < 50 (achieved: **37.4**)
+- ECE < 0.05 (achieved: **0.041**)
+- Loop efficiency in 0.30–0.70 band (achieved: **0.50**)
+- MoE cv < 0.8 (achieved: **0.34**)
+- No ACT loop collapse during training
+
+### v2 (distill_tiny — SFT'd) — ACHIEVED ✓
+
+- All v1 criteria preserved (no degradation from SFT)
+- Inspector test: at least 1 of 4 prompts produces `stop='eos'` (achieved: **1/4**, fibonacci)
+- Inspector test: at least 1 of 4 prompts produces `stop='confidence'` (achieved: **1/4**, trivia)
+- Different prompt types produce different response *registers* (achieved)
+- `resp_frac` stays in 0.4–0.6 band during training (achieved)
+
+### v3 (distill_small — MoE grown) — ACHIEVED ✓
+
+- Function preservation at promotion: identical logits to v2 within fp tolerance (validated by tests)
+- Loss does NOT spike at promotion or during sentinel decay (achieved: ce stayed ~1.4)
+- All 48 experts get nonzero traffic by step 3000 (achieved: **min% 1.1, max% 3.0**)
+- MoE cv after stabilization < 0.5 (achieved: **0.19** — better than v2)
+- LTI ρ(A) stays < 1.0 (achieved: 0.34–0.39)
+- Inspector test: math prompt produces `stop='eos'` (achieved)
+- Inspector test: at least 1 prompt shows visibly more domain-relevant content than v2 (achieved on math + code)
+
+### v4 (distill_small — OpenHermes-augmented SFT at seq_len=768) — ACHIEVED ✓
+
+Ran at seq_len=768 (not the planned 1024) because bitsandbytes 8-bit Adam
+couldn't load on this machine's CUDA 13.2 (no matching prebuilt binary).
+Dropped the `--use-8bit-adam` flag and reduced seq_len to fit fp32 AdamW
+in 12 GB. VRAM ran at ~10.7 GB the whole run — tight but stable.
+
+Results vs the criteria set before the run:
+
+- **OpenHermes acceptance ≥ 40%**: achieved (resp_frac 0.25–0.40 confirms general data flowing)
+- **"Say hello" produces attempted social response**: achieved — v4 opens **"Sure,"** and halts on `confidence` (v3 ran 50 tokens of code-register gibberish)
+- **Trivia re-triggers a non-`max_new_tokens` halt**: achieved — fires `stop='cycle'` (repetition detector), v3 ran out the clock
+- **All v3 criteria preserved**: achieved — MoE cv 0.20, min% 1.4 (better than v3's 1.1), no loop collapse, ρ(A) 0.34–0.39
+
+**Headline milestone — all three halt mechanisms now fire:**
+
+| Prompt | v3 stop | v4 stop | Mechanism |
+|--------|---------|---------|-----------|
+| Math (2+2) | `eos` | `eos` | end-of-turn recognition |
+| Code (fib) | `max_new_tokens` | `confidence` | UncertaintyHead guard |
+| Trivia (France) | `max_new_tokens` | `cycle` | repetition detector |
+| Hello | `max_new_tokens` | `confidence` | UncertaintyHead guard |
+
+v4 halts cleanly on **4/4** prompts (v3: 1/4, v2: 2/4) and exercises all
+three distinct halt mechanisms. The OpenHermes data variety re-tightened
+the calibration that had drifted between v2 and v3, and generalized the
+confidence-halt behaviour across every prompt type.
+
+Unchanged ceiling: content is still gibberish at 420M params. Every
+behavioural mechanism in the architecture is now demonstrably working;
+the only barrier to usable output is parameter count (a compute problem,
+not a design problem).
+
+Archived as `archived_models/mythouro_distill_small_v4/`.
+
+### v5 (distill_xl — 2nd MoE expansion, 48 → 96 experts) — DONE, ceiling hit ⚠️
+
+Took **Path A** (stay single-card; promote v4's 48 experts to 96, ~632M params,
+8-bit Adam). Ran to step 2887. Function preservation and post-promotion MoE
+balance worked as designed — but the capacity **did not translate to inspector
+improvement**:
+
+- `cv` wouldn't tighten below ~0.5 (v3/v4 reached 0.19–0.20); min% stayed ~0.1–0.4
+- 7-prompt inspector read came out **net-comparable to v4** (2 better, 2 worse on
+  the standard 4) — correct register + clean halting, but scale-bound gibberish
+- Conclusion: at 632M / ~20–40M tokens the model can't find distinct work for 96
+  experts. **MoE expansion is tapped out** (Open research Q#1, answered 2026-06-06)
+
+Archived as `archived_models/mythouro_distill_xl_grown_v5/`. **Do not do a third
+expansion.** Next lever is width (Net2Wider) or scale, not more experts.
+
+**Path B (NOT taken — recorded for reference): FSDP across both cards, direct 1B
+distill from a stronger teacher**
+- FSDP gradient sync overhead per step measurable but tolerable (~20–25 s/step at 1B)
+- Teacher logits accessible (Llama 3.3 70B local quantized OR DeepSeek V3 API)
+- Promoted student still benefits from MoE growth machinery (test: promote 1B → 1.5B)
+- Calendar: 20K steps × 25s = 140 hours = ~17 overnights
+- This is the "break past Ouro-2.6B quality ceiling" path. Now folded into the
+  larger [Scale-up execution plan](#scale-up-execution-plan-the-destination)
+  (from-scratch distilled 3B on rented compute), which supersedes it.
+
+### Eventual full-pipeline target (~1B post-RL)
+
+Far-horizon — only after a stable 1B base is shipped:
+
+- DPO converges (KL-divergence to base bounded, reward score positive)
+- Reasoning RL on GSM8K with verifier improves accuracy by >5 percentage points
+- Multi-turn behaviour stable (no degenerative repetition over 5+ turns)
+- ECE stays < 0.10 through post-training stages
+- Safety + refusal calibration acceptable on red-team prompts (TBD on rubric)
+
+---
+
+## Failure modes encountered + recovery patterns
+
+Institutional memory. If any of these come back in a future session,
+the fix is already known — saves hours of re-debugging.
+
+### Training / architecture
+
+**ACT loop collapse — depth distribution pins to one bucket**
+- *Symptom*: `depth` log metric drops to 0.000 sustained; inspector shows halt distribution `[1.0, 0, 0, 0]`. Loops are not used despite being configured.
+- *Root cause*: ACT halt probabilities trained against the main task gradient. The optimizer learns to pin λ₀≈1.0 because the weighted-sum output `Σ w_t · h_t` lets it shortcut through one loop's output.
+- *Fix*: **Return `h_K` (last loop's hidden state) during training instead of the ACT-weighted sum.** Inference still uses the weighted sum. See `RecurrentBlock.forward` in [mythouro/main.py](../mythouro/main.py); the `if self.training and kv_cache is None:` branch at the end.
+- *Additional guard*: depth-reg coefficient on the PonderNet × Ouro KL-to-uniform regulariser. We use 0.1 as default in v3 onward.
+
+**MoE expansion: new experts stay idle after sentinel decay**
+- *Symptom*: post-promotion training shows `min% = 0.0` indefinitely; new experts never enter top-k.
+- *Root cause*: sentinel decay completed but bias updater hasn't had time to nudge underused experts up.
+- *Fix*: keep training. By step 2000+ post-promotion the DeepSeek-V3 updater pushes underused experts into the top-k pool. Verified in v3 training run.
+
+**Loss spike at MoE promotion**
+- *Symptom*: CE jumps by >0.5 immediately after grown checkpoint is loaded.
+- *Root cause*: new experts' `down.weight` not zeroed, or sentinel bias not high enough to exclude from top-k.
+- *Fix*: `_promote_state_dict` in [mythouro/grow.py](../mythouro/grow.py) zeroes the down projection AND sets `router_bias[new] = -100.0`. Tests assert this in `tests/test_grow.py`.
+
+### Data pipeline
+
+**HF streaming hangs silently for hours**
+- *Symptom*: `load_dataset(..., streaming=True)` succeeds; first `next(iter(ds))` call hangs without timing out. No errors, no progress.
+- *Root cause*: HF datasets' range-request iterator doesn't time out on stalled TCP connections. Happens on flaky / firewall-restricted home internet.
+- *Fix*: use `streaming=False` (pre-download). Implemented in [mythouro/sft_data.py](../mythouro/sft_data.py) `_open_source`. Pre-download datasets once via `load_dataset(repo, split='train')` in a separate command.
+
+**`apply_chat_template(..., tokenize=True)` returns `BatchEncoding`, not `list[int]`**
+- *Symptom*: 100% of SFT samples rejected with `empty_or_shorter_response` reason. `len()` of returned object is 2 (number of BatchEncoding fields) rather than token count.
+- *Root cause*: Ouro tokenizer returns a `BatchEncoding` wrapper; calling `len()` gives field count, not token count.
+- *Fix*: render with `tokenize=False` to get text, then call `tokenizer.encode(text, add_special_tokens=False)`. See `_build_sft_example` in [mythouro/sft_data.py](../mythouro/sft_data.py).
+
+**OpenHermes ~95% rejection rate at seq_len=512**
+- *Symptom*: SFT diagnostic shows `general: 0/N (0.0% accept) [prompt_too_long=N]`. Training stalls waiting for valid samples.
+- *Root cause*: OpenHermes-2.5 is mostly multi-turn — system + user + previous-assistant turns already exceed 512 tokens before the final assistant response can land in the loss-bearing region.
+- *Fix*: either drop OpenHermes (v2 approach) OR bump to `seq_len=1024` (v4 approach). At 1024 acceptance jumps to ~60–70%.
+
+**HF dataset `.shard(num_shards=N, index=i)` raises "list index out of range"**
+- *Symptom*: streaming source crashes immediately on iterator open when `num_workers > num_shards`.
+- *Root cause*: many instruction datasets ship as a single parquet file (`num_shards=1`); `.shard(num_shards=2, ...)` on those crashes inside the streaming library.
+- *Fix*: only call `.shard()` when `total_shards > 1`. Use `num_workers=0` in DataLoader for single-process runs. See `MixedSFTDataset._open_source` in [mythouro/sft_data.py](../mythouro/sft_data.py).
+
+### Checkpoint / resume
+
+**Grown checkpoint refuses to load — `KeyError: 'param_groups'`**
+- *Symptom*: `load_checkpoint` crashes when resuming from a `tools/grow_checkpoint.py`-produced file.
+- *Root cause*: grown checkpoints contain an empty `optimizer` dict (the source optimizer's tensor shapes don't match the promoted model). `optimizer.load_state_dict({})` blows up because `param_groups` is missing.
+- *Fix*: `load_checkpoint` detects empty optimizer state and skips the load — caller's fresh optimizer is kept. See [mythouro/checkpointing.py](../mythouro/checkpointing.py).
+
+**Tools script can't find `mythouro` module**
+- *Symptom*: `python tools/grow_checkpoint.py ...` fails with `ModuleNotFoundError: No module named 'mythouro'`.
+- *Root cause*: Python adds the script's directory to sys.path, not the cwd. From `tools/`, the project root isn't on the path.
+- *Fix*: `sys.path.insert(0, project_root)` at top of `tools/grow_checkpoint.py`. Already implemented.
+
+### Environment
+
+**Pytest collection segfaults on Python 3.14 + Windows + pandas**
+- *Symptom*: `python -m pytest tests/` segfaults during collection, before any test runs.
+- *Root cause*: importing pandas (transitively pulled in by `datasets`) at top-level in a heavy training module triggers a crash on Py3.14+Windows.
+- *Fix*: split checkpointing helpers into their own lightweight module so tests don't transitively import the training script's heavy deps. See [mythouro/checkpointing.py](../mythouro/checkpointing.py) module docstring.
+
+**bitsandbytes "Configured CUDA binary not found at libbitsandbytes_cuda132.dll"**
+- *Symptom*: `--use-8bit-adam` crashes at import — bnb looks for a `cuda132` binary that doesn't exist, even on the latest bnb (0.49.2).
+- *Root cause*: torch is built for CUDA 13.2 (`cu132`), but bnb's prebuilt wheels only bundle binaries up to `cuda130`. There's no exact 13.2 binary in any release.
+- *Fix*: **RESOLVED.** CUDA binaries are forward-compatible within a major version, so the `cuda130` binary runs fine against the 13.2 runtime. `training/sft.py` now calls `_configure_bnb_cuda_version()` before importing bnb — it scans the bundled `libbitsandbytes_cudaXXX` binaries, picks the highest ≤ the torch CUDA version, and sets `BNB_CUDA_VERSION` automatically. Verified: `AdamW8bit` constructs and runs on CUDA. No source build, no manual env var needed.
+- *Manual override*: set `BNB_CUDA_VERSION` yourself before launching to force a specific binary; the helper respects an existing value.
+
+**bitsandbytes not installed at all**
+- *Symptom*: ImportError when `--use-8bit-adam` is passed and bnb isn't installed.
+- *Fix*: import inside the `if args.use_8bit_adam:` branch with a clear `pip install bitsandbytes` error message. See [training/sft.py](../training/sft.py).
+
+### Numerics / autocast
+
+**`F.binary_cross_entropy` raises in bf16 autocast**
+- *Symptom*: `RuntimeError: torch.nn.functional.binary_cross_entropy and torch.nn.BCELoss are unsafe to autocast` during distillation.
+- *Root cause*: BCE is on PyTorch's autocast-banned list because of fp16/bf16 stability issues.
+- *Fix*: compute BCE manually as `-(target * log(p) + (1 - target) * log(1 - p))` and cast inputs to fp32. See `uncertainty_calibration_loss` in [mythouro/training_utils.py](../mythouro/training_utils.py).
+
+**Cross-device tensor error during distillation**
+- *Symptom*: `RuntimeError: Expected all tensors to be on the same device` when teacher is on cuda:0 and student is on cuda:2.
+- *Root cause*: `teacher_logits()` was being passed input_ids on the student's device.
+- *Fix*: `teacher_logits` internally moves input_ids to the teacher's device, and returns logits that the caller `.to(student_device)`. See [mythouro/training_utils.py](../mythouro/training_utils.py).
+
+---
+
+## Open research questions specific to MythOuro
+
+These are MythOuro-specific questions where existing literature doesn't fully answer. Worth tracking as we learn more.
+
+1. **Does MoE expansion compound across rounds?** **ANSWERED (2026-06-06): No — it stops compounding by the second round at this scale.** First round (24→48, v3) clearly compounded: recovered all 3 halt mechanisms, tightened cv to 0.19. Second round (48→96, v5) hit the **expert-count ceiling** — cv wouldn't tighten below ~0.5, min% stayed ~0.1–0.4, and a 7-prompt inspector read came out **net-comparable to v4** (2 better, 2 worse on the standard 4; in-domain prompts confirmed correct register + clean halting but scale-bound gibberish content). Conclusion: at 632M / ~20–40M tokens, 96 experts is more than the model can find distinct work for. **Don't do a third expansion; the next lever is width (Net2Wider) or scale (more params + data + compute), not more experts or more SFT.**
+2. **What's the right depth-reg coefficient post-promotion?** Currently kept at 0.1 across all runs. Empirically the halt distribution stays uniform; is there a coefficient that allows *more* adaptive depth at inference without re-triggering loop collapse?
+3. **Does the ConfidenceAwareGenerator stop-threshold need per-checkpoint retuning?** v2 hit `stop='confidence'` on trivia; v3 didn't. Suggests the calibration shifted with the larger pool.
+4. **Can we promote AND maintain a custom teacher in distillation?** I.e., distill the promoted v3 from Ouro-2.6B again, or do the new experts disrupt logit-matching?
+5. **How does loop count interact with MoE specialization?** Different loops might want different expert mixes; we've never measured this.
+6. **Would Ouro's per-step weighted loss beat our final-loop loss?** See the experiment below — Ouro trains the exit gates *via the task loss* (per-step LM loss weighted by exit probability); we use final-loop (`h_K`) loss + a decoupled depth regulariser. Ours works but theirs is arguably more principled.
+
+These are research-paper-sized questions individually; flagged here so we don't lose them.
+
+---
+
+## Candidate experiment: Ouro-style per-step weighted loop loss
+
+A ready-to-run experiment, documented so it can be picked up in a future
+overnight. Context and the full Ouro-vs-MythOuro comparison are in
+[`docs/growth_design.md`](growth_design.md) ("Related design decision:
+loop-loss supervision").
+
+**Hypothesis.** Replacing the current *final-loop CE* with Ouro's *expected task
+loss across loops* — `L = Σ_t pφ(t|x)·CE^(t)` (per-loop CE weighted by exit
+probability) plus the existing entropy/depth regulariser — trains the ACT exit
+gates directly and may improve loop_efficiency (currently ~0.5) and calibration
+without re-triggering the loop collapse we fixed earlier.
+
+**Why it might work where our first attempt failed.** Our original collapse came
+from an ACT-*weighted-sum hidden state* `Σ wₜhₜ` fed to a single CE — the
+optimiser collapsed `λ₀→1` to shortcut. Ouro keeps the losses *per step* (each
+loop gets its own CE against the gold tokens) and only the *weighting* is the
+exit probability, with entropy reg holding the distribution open. That's a
+different gradient path: every loop is independently supervised to predict the
+target, so no single loop can "absorb" the others.
+
+**Implementation sketch** (~1 session, isolated behind a flag):
+
+1. **Forward** — `RecurrentBlock.forward` already runs all loops during training
+   (the `h_K` fix forces `K = n_loops`). Expose the *per-loop* hidden states
+   `[h_1 … h_K]` (stash a list, like `last_halt_distribution` is stashed), not
+   just `h_K`.
+2. **Per-loop logits** — run the shared LM head on each `h_t` → `logits_t`.
+   (Memory: K× the logit tensor; with `K≤4`, vocab 49152, seq 768, mb 1 — a few
+   GB. May need `micro_batch=1` + 8-bit Adam, which we have.)
+3. **Per-loop CE** — `CE^(t) = cross_entropy(logits_t, targets)` (SFT: masked to
+   response tokens, reusing `masked_ce_loss`).
+4. **Exit probabilities** — `pφ(t|x)` from the ACT halt head's per-loop λ values
+   (already computed; currently only used by the depth-reg). Normalise to a
+   proper distribution over `t ∈ [1..K]`.
+5. **Expected loss** — `L_task = Σ_t pφ(t)·CE^(t)`. Keep the existing depth /
+   entropy regulariser term as-is (Ouro uses both).
+6. **Flag it** — `--loop-loss {final,per_step_weighted}` (default `final` to
+   preserve current behaviour). New path only activates with the flag.
+7. **Tests** — (a) per-loop logits shape; (b) `pφ` sums to 1 over loops;
+   (c) with `K=1` the per-step loss reduces exactly to the final-loop loss;
+   (d) a train-step smoke doesn't NaN.
+
+**Validation plan.** Run a short SFT (~1500 steps) on the v4 checkpoint with
+`--loop-loss per_step_weighted`, compare against the `final` baseline on:
+loop_efficiency, ECE, halt-distribution spread, and inspector behaviour
+(do more prompts hit `stop='eos'`/`stop='confidence'`?). Keep it if it improves
+adaptivity/calibration without collapse; otherwise the flag stays off and the
+finding is documented.
+
+**Risk.** Low — it's flag-gated, default-off, falls back to current behaviour,
+and the `K=1` equivalence test guards correctness. Worst case it doesn't help
+and we keep `final`.

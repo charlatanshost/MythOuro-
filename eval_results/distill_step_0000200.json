@@ -1,0 +1,127 @@
+{
+  "perplexity": {
+    "name": "perplexity",
+    "samples": 20,
+    "tokens": 10240,
+    "mean_nll": 7.013249611854553,
+    "ppl": 1111.2598068539025,
+    "elapsed_s": 9.237411500012968
+  },
+  "loop_efficiency": {
+    "name": "loop_efficiency",
+    "samples": 20,
+    "positions": 5120,
+    "avg_halt_depth": 0.1298828125,
+    "max_depth": 4,
+    "efficiency": 0.032470703125,
+    "halt_distribution": [
+      4478,
+      619,
+      23,
+      0,
+      0
+    ],
+    "elapsed_s": 8.050370999990264
+  },
+  "ece": {
+    "name": "expected_calibration_error",
+    "samples": 20,
+    "positions": 5120,
+    "ece": 0.03889101597014814,
+    "bins": [
+      {
+        "lo": 0.0,
+        "hi": 0.10000000149011612,
+        "count": 0,
+        "mean_pred": null,
+        "mean_error": null
+      },
+      {
+        "lo": 0.10000000149011612,
+        "hi": 0.20000000298023224,
+        "count": 0,
+        "mean_pred": null,
+        "mean_error": null
+      },
+      {
+        "lo": 0.20000000298023224,
+        "hi": 0.30000001192092896,
+        "count": 0,
+        "mean_pred": null,
+        "mean_error": null
+      },
+      {
+        "lo": 0.30000001192092896,
+        "hi": 0.4000000059604645,
+        "count": 5,
+        "mean_pred": 0.3659055829048157,
+        "mean_error": 1.0
+      },
+      {
+        "lo": 0.4000000059604645,
+        "hi": 0.5,
+        "count": 9,
+        "mean_pred": 0.43292832374572754,
+        "mean_error": 0.8888888955116272
+      },
+      {
+        "lo": 0.5,
+        "hi": 0.6000000238418579,
+        "count": 2,
+        "mean_pred": 0.5161775350570679,
+        "mean_error": 1.0
+      },
+      {
+        "lo": 0.6000000238418579,
+        "hi": 0.699999988079071,
+        "count": 2,
+        "mean_pred": 0.698564350605011,
+        "mean_error": 1.0
+      },
+      {
+        "lo": 0.699999988079071,
+        "hi": 0.800000011920929,
+        "count": 696,
+        "mean_pred": 0.7615330815315247,
+        "mean_error": 0.7801724076271057
+      },
+      {
+        "lo": 0.800000011920929,
+        "hi": 0.8999999761581421,
+        "count": 2822,
+        "mean_pred": 0.8618532419204712,
+        "mean_error": 0.9075124263763428
+      },
+      {
+        "lo": 0.8999999761581421,
+        "hi": 1.0,
+        "count": 1584,
+        "mean_pred": 0.9410011768341064,
+        "mean_error": 0.9715909361839294
+      }
+    ],
+    "elapsed_s": 7.543758099986007
+  },
+  "arc_challenge": {
+    "name": "arc_challenge",
+    "samples": 20,
+    "accuracy": 0.1,
+    "n_correct": 2,
+    "random_baseline": 0.25,
+    "elapsed_s": 5.869691400002921
+  },
+  "gsm8k": {
+    "name": "gsm8k",
+    "samples": 20,
+    "accuracy": 0.0,
+    "n_correct": 0,
+    "elapsed_s": 287.335946999985
+  },
+  "_meta": {
+    "elapsed_s": 318.04499629998463,
+    "n_benchmarks": 5,
+    "max_samples": 20,
+    "n_loops": 4,
+    "device": "cuda:0"
+  }
+}

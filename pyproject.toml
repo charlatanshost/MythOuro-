@@ -1,0 +1,127 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "mythouro"
+version = "0.5.0"
+description = "MythOuro — open-source theoretical reconstruction of the Claude Mythos Recurrent-Depth Transformer architecture"
+license = "MIT"
+authors = ["Kye Gomez <kye@swarms.world>"]
+homepage = "https://github.com/The-Swarm-Corporation/MythOuro"
+documentation = "https://github.com/The-Swarm-Corporation/MythOuro/blob/main/docs/mythouro.md"
+readme = "README.md"
+repository = "https://github.com/The-Swarm-Corporation/MythOuro"
+keywords = [
+    "artificial intelligence",
+    "deep learning",
+    "transformers",
+    "recurrent transformers",
+    "looped transformers",
+    "mixture of experts",
+    "multi-latent attention",
+    "grouped query attention",
+    "adaptive computation time",
+    "recurrent depth transformer",
+    "LTI stability",
+    "inference-time scaling",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+]
+
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+torch = "2.11.0"
+transformers = ">=4.40.0"
+datasets = ">=2.18.0"
+# `loguru` is imported by training_utils, inference, checkpointing,
+# eval/*, and data/*. Treating it as a core dep rather than an extra
+# avoids surprise NoModuleFoundErrors at import time.
+loguru = ">=0.7,<1.0"
+
+# Optional flash-attn — only useful on CC ≥ 8.0 (Ampere+). The
+# architecture cascade (mythouro.main.CAPABILITIES) gracefully
+# falls back to torch SDPA when it's missing or unusable.
+[tool.poetry.dependencies.flash-attn]
+version = ">=2.8.3"
+optional = true
+
+# Optional MinHash backend for `data/dedup.py`. Without it,
+# MinHashDeduplicator raises ImportError on construction with a clear
+# install hint, but every other import path stays clean.
+[tool.poetry.dependencies.datasketch]
+version = ">=1.6,<2.0"
+optional = true
+
+# Optional experiment tracker. The training script doesn't import
+# wandb directly today, but the `train` extra reserves the slot so
+# users adding logging hooks don't need to also edit pyproject.toml.
+[tool.poetry.dependencies.wandb]
+version = ">=0.16,<1.0"
+optional = true
+
+[tool.poetry.extras]
+# Each extra brings in exactly the optional deps for one workflow.
+# Multi-format quantization (gptq/awq/gguf) and multi-backend serving
+# (vllm/llama-cpp) extras are deliberately omitted because there is
+# no integration code for those formats yet — shipping empty extras
+# would mislead users into thinking the features exist.
+flash = ["flash-attn"]
+data  = ["datasketch"]
+train = ["wandb"]
+all   = ["flash-attn", "datasketch", "wandb"]
+
+
+# Console-script entry points. Filenames in `training/` start with a
+# digit so they can't be imported as Python modules; `training.cli`
+# wraps them with `runpy` so these entry points work after a pip install.
+[tool.poetry.scripts]
+mythouro-train      = "training.cli:fineweb_3b_main"
+mythouro-train-1b   = "training.cli:fineweb_1b_main"
+mythouro-train-tiny = "training.cli:tiny_main"
+mythouro-distill    = "training.cli:distill_main"
+mythouro-eval       = "eval.harness:main"
+mythouro-data       = "data.__main__:main"
+
+
+[tool.poetry.group.lint.dependencies]
+black = ">=23.1,<27.0"
+ruff = ">=0.5.1,<0.15.9"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = ">=8.1.1,<10.0.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+ruff = "*"
+pytest = "*"
+
+[tool.ruff]
+line-length = 88
+
+[tool.black]
+target-version = ["py310"]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | docs
+)/
+'''
