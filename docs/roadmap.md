@@ -1164,14 +1164,28 @@ Matched-active dense width: `d_ff = expert_dim · top_k · (1 + n_shared)
 Both arms do the **same FLOPs/token**; the MoE arm just carries ~98 M extra
 *total* (sparsely-used) capacity. Whole-model totals: MoE ≈ 278 M, dense ≈ 180 M.
 
-**Prerequisite code change (~15 lines, does not exist yet).** Add
-`recurrent_dense: bool = False` + `recurrent_dense_ffn_dim: int` to
-`MythOuroConfig`; in `RecurrentBlock.__init__`, when set, swap the recurrent
-block's `ffn` for `Expert(dim, recurrent_dense_ffn_dim)` instead of `MoEFFN`.
-Add a `mythouro_distill_tiny_dense()` variant mirroring `distill_tiny` with
-`recurrent_dense=True, recurrent_dense_ffn_dim=15360`. (Note: flipping the
-existing `use_moe=False` is *not* enough — that builds the prelude/coda width
-`Expert(dim, dim*4//3)`, not the matched 15360.)
+**Prerequisite code change — DONE (2026-06-08).** `MythOuroConfig` has
+`recurrent_dense` + `recurrent_dense_ffn_dim`; `RecurrentBlock` builds a dense
+`Expert(dim, d_ff)` recurrent FFN when set (auto width
+`expert_dim·top_k·(1+n_shared)`); `mythouro_distill_tiny_dense()` is registered
+in both training CLIs. Verified: MoE arm 278.9 M total / dense arm 180.5 M (98 M
+idle capacity removed), dense recurrent FFN width 15360, and a test pins
+`dense_FFN_params == MoE_active_FFN_params` exactly
+(`tests/test_dense_ablation.py`). The MoE-only aux losses already no-op on a
+dense model (they short-circuit to 0 when there are no MoE layers), so the dense
+arm runs through the existing `distill.py` / `sft.py` unchanged.
+
+**Run it (both arms, matched everything but the FFN):**
+```powershell
+# MoE arm (= the existing distill_tiny recipe)
+python -m training.distill --trust-remote-code --student-variant mythouro_distill_tiny `
+    --total-steps 4000 --seed 0 --eval --eval-every 1000 --ckpt-dir checkpoints_ablation_moe
+# Dense arm (same flags, dense variant; MoE aux terms vanish to 0 automatically)
+python -m training.distill --trust-remote-code --student-variant mythouro_distill_tiny_dense `
+    --total-steps 4000 --seed 0 --eval --eval-every 1000 --ckpt-dir checkpoints_ablation_dense
+```
+Repeat each with `--seed 1` for the ≥2-seed requirement, then compare with the
+eval harness / inspector.
 
 ### Protocol
 

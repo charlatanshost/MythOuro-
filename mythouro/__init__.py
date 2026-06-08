@@ -18,6 +18,7 @@ from mythouro.main import (
 from mythouro.tokenizer import MythOuroTokenizer
 from mythouro.variants import (
     mythouro_distill_tiny,
+    mythouro_distill_tiny_dense,
     mythouro_distill_small,
     mythouro_distill_xl,
     mythouro_1b,
@@ -46,6 +47,7 @@ __all__ = [
     "apply_rope",
     "loop_index_embedding",
     "mythouro_distill_tiny",
+    "mythouro_distill_tiny_dense",
     "mythouro_distill_small",
     "mythouro_distill_xl",
     "mythouro_1b",

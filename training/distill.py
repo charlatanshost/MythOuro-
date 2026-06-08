@@ -87,6 +87,7 @@ from mythouro.training_utils import (
 )
 from mythouro.variants import (
     mythouro_distill_tiny,
+    mythouro_distill_tiny_dense,
     mythouro_distill_small,
     mythouro_distill_xl,
     mythouro_1b, mythouro_3b, mythouro_10b, mythouro_50b, mythouro_100b,
@@ -98,6 +99,9 @@ _VARIANT_FUNCS = {
     # 240M student aligned to Ouro vocab; designed to cohabit with the
     # bf16 teacher on a single 12 GB GPU. Default choice for distillation.
     "mythouro_distill_tiny":  mythouro_distill_tiny,
+    # Dense twin of distill_tiny (recurrent MoE -> matched-active dense FFN).
+    # The dense arm of the MoE-vs-dense ablation (docs/roadmap.md).
+    "mythouro_distill_tiny_dense": mythouro_distill_tiny_dense,
     # Post-MoE-expansion targets (48 / 96 routed experts). Used when resuming
     # a grown checkpoint via `tools/grow_checkpoint.py`.
     "mythouro_distill_small": mythouro_distill_small,

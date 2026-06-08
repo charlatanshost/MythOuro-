@@ -792,3 +792,31 @@ uncertainty (ACT too early), on others they don't (ACT justified); and on v5 at
 the trained depth), partial evidence for depth-extrapolation. Full analysis +
 the "single global halt threshold is structurally wrong -> motivates MoDr"
 takeaway are in [`docs/roadmap.md`](docs/roadmap.md).
+
+### MoE-vs-dense ablation: `recurrent_dense` flag + variant
+
+Wires up the gating experiment that decides whether the recurrent MoE earns its
+complexity (and gates MoDr). See the full spec / protocol / decision rule in
+[`docs/roadmap.md`](docs/roadmap.md).
+
+- **[`mythouro/main.py`](mythouro/main.py)** — `MythOuroConfig` gains
+  `recurrent_dense` + `recurrent_dense_ffn_dim`. When `recurrent_dense=True`,
+  `RecurrentBlock` builds a dense `Expert(dim, d_ff)` recurrent FFN instead of
+  `MoEFFN`, with auto width `expert_dim · n_experts_per_tok · (1 + n_shared)` —
+  sized so the dense FFN's params/FLOPs per token equal the MoE arm's *activated*
+  FFN per token (matched compute). `TransformerBlock` gained a `dense_ffn_dim`
+  override to support this.
+- **[`mythouro/variants.py`](mythouro/variants.py)** — `mythouro_distill_tiny_dense()`,
+  a `dataclasses.replace` of `distill_tiny` differing *only* in the two dense
+  fields (provably identical otherwise). Registered in `mythouro/__init__.py`
+  and both training CLIs (`training/sft.py`, `training/distill.py`).
+- **[`tests/test_dense_ablation.py`](tests/test_dense_ablation.py)** — 8 tests:
+  flag swaps MoEFFN→Expert, explicit/auto width, the matched-active invariant
+  (`dense_FFN_params == MoE_active_FFN_params`, exact), dense forward+backward,
+  the MoE-aux helpers no-op on a dense model, and the variant differs from
+  `distill_tiny` only in the FFN fields.
+
+Verified on the real variant: MoE arm **278.9 M** total / dense arm **180.5 M**
+(98 M idle routed-expert capacity removed), dense recurrent FFN width **15360**.
+The MoE-only aux losses already short-circuit to 0 on a model with no MoE layers,
+so the dense arm runs through the existing training scripts unchanged.

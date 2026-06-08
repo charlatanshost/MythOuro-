@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 from mythouro.main import MythOuroConfig
 
 # Parameter budget breakdown per variant:
@@ -66,6 +68,30 @@ def mythouro_distill_tiny() -> MythOuroConfig:
         act_threshold=0.99,
         rope_theta=500000.0,
         lora_rank=8,
+    )
+
+
+def mythouro_distill_tiny_dense() -> MythOuroConfig:
+    """
+    Dense twin of `mythouro_distill_tiny` for the MoE-vs-dense ablation.
+
+    Identical in every respect except the recurrent block's FFN: the MoE
+    (24 routed + 2 shared experts, top-4) is replaced by a single dense SwiGLU
+    FFN of width `expert_dim * n_experts_per_tok * (1 + n_shared_experts)`
+    = 1280 * 4 * 3 = 15360. That width makes the dense FFN's parameters /
+    FLOPs per token equal to the MoE arm's *activated* FFN per token — the
+    matched-compute comparison. Same compute, ~98M fewer total params (the
+    idle routed experts), and none of the routing machinery.
+
+    Use as the dense arm of the ablation in docs/roadmap.md ("Gating
+    experiment: MoE-vs-dense ablation"). The training run must drop the
+    MoE-only aux losses (load-balance / sparse-activation / router-bias) for
+    this variant — there are no MoE layers for them to read.
+    """
+    return replace(
+        mythouro_distill_tiny(),
+        recurrent_dense=True,
+        recurrent_dense_ffn_dim=15360,
     )
 
 

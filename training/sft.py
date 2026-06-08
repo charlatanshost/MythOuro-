@@ -73,6 +73,7 @@ from mythouro.training_utils import (
 )
 from mythouro.variants import (
     mythouro_distill_tiny,
+    mythouro_distill_tiny_dense,
     mythouro_distill_small,
     mythouro_distill_xl,
     mythouro_1b, mythouro_3b, mythouro_10b, mythouro_50b, mythouro_100b,
@@ -83,6 +84,7 @@ from mythouro.grow import apply_sentinel_to_router_biases
 
 _VARIANT_FUNCS = {
     "mythouro_distill_tiny":  mythouro_distill_tiny,
+    "mythouro_distill_tiny_dense": mythouro_distill_tiny_dense,
     "mythouro_distill_small": mythouro_distill_small,
     "mythouro_distill_xl":    mythouro_distill_xl,
     "mythouro_1b":   mythouro_1b,

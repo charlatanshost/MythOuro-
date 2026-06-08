@@ -204,6 +204,17 @@ class MythOuroConfig:
     # when enabling: 1e-3 to 1e-2.
     depth_reg_coeff: float = 0.0
 
+    # Ablation: replace the recurrent block's MoE FFN with a single dense
+    # SwiGLU FFN, to test whether sparsity earns its keep at matched compute.
+    # When True, the recurrent FFN is `Expert(dim, recurrent_dense_ffn_dim)`
+    # instead of `MoEFFN`. Default width (when recurrent_dense_ffn_dim == 0) is
+    # `expert_dim * n_experts_per_tok * (1 + n_shared_experts)`, which makes the
+    # dense FFN's parameters/FLOPs per token equal to the MoE arm's *activated*
+    # FFN per token — the matched-compute comparison spec'd in
+    # docs/roadmap.md ("Gating experiment: MoE-vs-dense ablation").
+    recurrent_dense: bool = False
+    recurrent_dense_ffn_dim: int = 0
+
 
 # ---------------------------------------------------------------------------
 # RMSNorm
@@ -874,17 +885,29 @@ class TransformerBlock(nn.Module):
         False → Expert  (dense SwiGLU FFN; used in Prelude and Coda)
     """
 
-    def __init__(self, cfg: MythOuroConfig, use_moe: bool = False):
+    def __init__(
+        self,
+        cfg: MythOuroConfig,
+        use_moe: bool = False,
+        dense_ffn_dim: Optional[int] = None,
+    ):
         """
         Args:
-            cfg     -- MythOuroConfig; attn_type selects the attention class
-            use_moe -- if True, use MoEFFN; otherwise use a dense Expert FFN
+            cfg           -- MythOuroConfig; attn_type selects the attention class
+            use_moe       -- if True, use MoEFFN; otherwise use a dense Expert FFN
+            dense_ffn_dim -- inner width of the dense Expert FFN when use_moe is
+                             False. Defaults to the prelude/coda width
+                             `dim * 4 // 3`; the recurrent dense ablation passes
+                             the matched-active width explicitly.
         """
         super().__init__()
         self.attn_norm = RMSNorm(cfg.dim)
         self.ffn_norm = RMSNorm(cfg.dim)
         self.attn = MLAttention(cfg) if cfg.attn_type == "mla" else GQAttention(cfg)
-        self.ffn = MoEFFN(cfg) if use_moe else Expert(cfg.dim, cfg.dim * 4 // 3)
+        if use_moe:
+            self.ffn = MoEFFN(cfg)
+        else:
+            self.ffn = Expert(cfg.dim, dense_ffn_dim or (cfg.dim * 4 // 3))
         self.resid_drop = nn.Dropout(cfg.dropout)
 
     def forward(
@@ -1317,7 +1340,16 @@ class RecurrentBlock(nn.Module):
         """
         super().__init__()
         self.cfg = cfg
-        self.block = TransformerBlock(cfg, use_moe=True)
+        if getattr(cfg, "recurrent_dense", False):
+            # Ablation arm: dense SwiGLU FFN at the matched-active width so the
+            # recurrent block does the same FLOPs/token as the MoE arm. See
+            # docs/roadmap.md "Gating experiment: MoE-vs-dense ablation".
+            d_ff = cfg.recurrent_dense_ffn_dim or (
+                cfg.expert_dim * cfg.n_experts_per_tok * (1 + cfg.n_shared_experts)
+            )
+            self.block = TransformerBlock(cfg, use_moe=False, dense_ffn_dim=d_ff)
+        else:
+            self.block = TransformerBlock(cfg, use_moe=True)
         self.injection = LTIInjection(
             cfg.dim,
             max_loops=cfg.max_loop_iters,
