@@ -503,6 +503,37 @@ class TestBestOfTrajectory:
         out = self.model(self.prompt, n_loops=4)
         assert isinstance(out, tuple) and len(out) == 2
 
+    def test_force_full_depth_runs_all_loops(self):
+        # ACT may halt early, giving K < n_loops by default. With
+        # force_full_depth, every loop up to n_loops must run, so K == n_loops
+        # on every step.
+        n = 4
+        default = self.model.forward_trajectory(self.prompt, n_loops=n)[1]
+        forced = self.model.forward_trajectory(
+            self.prompt, n_loops=n, force_full_depth=True,
+        )[1]
+        assert forced.shape[2] == n          # forced K == n_loops
+        assert default.shape[2] <= n         # default may be shorter
+        # The flag must be reset afterwards (no leak into the normal path).
+        assert self.model.recurrent.force_full_depth is False
+
+    def test_force_full_depth_extrapolates_past_trained_depth(self):
+        # n_loops can exceed the trained max_loop_iters=4; forced depth must
+        # still produce exactly that many loop scores.
+        forced = self.model.forward_trajectory(
+            self.prompt, n_loops=6, force_full_depth=True,
+        )[1]
+        assert forced.shape[2] == 6
+
+    def test_generator_force_full_depth_chosen_within_range(self):
+        out = best_of_trajectory_generate(
+            self.model, self.prompt, max_new_tokens=3, n_loops=4,
+            force_full_depth=True, top_k=0,
+        )
+        # Every per-loop vector has the full depth now.
+        assert all(len(v) == 4 for v in out["per_loop_uncertainty"])
+        assert all(0 <= k < 4 for k in out["chosen_loops"])
+
     def test_n_loops_one_gives_single_step(self):
         # n_loops=1 runs exactly one recurrent loop → trajectory of length 1.
         # (n_loops=0 is *not* tested: RecurrentBlock coalesces `0 or

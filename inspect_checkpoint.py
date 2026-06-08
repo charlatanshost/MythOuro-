@@ -162,6 +162,7 @@ def _inspect_prompt(
     n_loops: int,
     best_of_traj: bool = True,
     bot_min_loops: int = 1,
+    force_full_depth: bool = False,
 ) -> None:
     print()
     print("=" * 80)
@@ -237,12 +238,14 @@ def _inspect_prompt(
         bot = best_of_trajectory_generate(
             model, ids, max_new_tokens=max_new_tokens,
             n_loops=n_loops, min_loops=bot_min_loops,
+            force_full_depth=force_full_depth,
             temperature=0.7, top_k=40,
         )
         bot_new = bot["sequences"][0, ids.shape[1] :].tolist()
         chosen = bot["chosen_loops"]
+        mode = "FORCED full depth" if force_full_depth else "ACT-respecting"
         print()
-        print(f"best-of-trajectory generation  (stop={bot['stop_reason']!r}, "
+        print(f"best-of-trajectory generation [{mode}]  (stop={bot['stop_reason']!r}, "
               f"{len(bot_new)} tokens emitted):")
         print(f"  {tokenizer.decode(bot_new)!r}")
         plu = bot.get("per_loop_uncertainty") or []
@@ -301,6 +304,24 @@ def _inspect_prompt(
                 else:
                     verdict = "min at deepest-run loop -> more loops cut uncertainty (monotonic-down)"
                 print(f"  -> uncertainty min at loop {argmin_i}  ({verdict})")
+
+                # ── A-vs-B verdict (only meaningful with forced full depth) ──
+                # Contrast ACT's *learned* stopping point (halt_step_mean) with
+                # where uncertainty actually bottoms out when ALL loops are
+                # forced to run. If the min sits deeper than ACT's cutoff, the
+                # loops ACT skipped would have lowered uncertainty -> ACT halts
+                # too early (Hypothesis B). If they coincide, ACT learned right
+                # (Hypothesis A).
+                if force_full_depth and "halt_step_mean" in diag:
+                    act_depth = diag["halt_step_mean"]
+                    if argmin_i > act_depth + 0.5:
+                        print(f"  [A/B] uncertainty bottoms at loop {argmin_i}, "
+                              f"PAST ACT's learned ~{act_depth:.1f} cutoff "
+                              f"-> ACT halts too early (usable depth left on table)")
+                    else:
+                        print(f"  [A/B] uncertainty min (loop {argmin_i}) is at/"
+                              f"before ACT's ~{act_depth:.1f} cutoff "
+                              f"-> ACT's stopping point is justified")
                 for j, vec in enumerate(plu[:3]):
                     print(f"  token[{j}] per-loop uncertainty: "
                           f"{[round(u, 3) for u in vec]}")
@@ -374,11 +395,28 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
         help="Floor on the selectable depth for best-of-trajectory (loops "
              "shallower than this are excluded from the per-token argmin).",
     )
+    p.add_argument(
+        "--force-full-depth", action="store_true",
+        help="Suppress ACT's early-exit during best-of-trajectory so every "
+             "loop up to --n-loops runs. Reveals the counterfactual loops ACT "
+             "would skip — does deeper computation lower uncertainty, or not? "
+             "Adds an [A/B] verdict comparing ACT's halt depth to the forced "
+             "uncertainty minimum. Pure measurement; weights untouched.",
+    )
     return p.parse_args(argv)
 
 
 def main():
     args = _parse_args()
+
+    # The model's (often gibberish) output can contain characters outside the
+    # Windows console's default cp1252 codepage; force UTF-8 so redirecting
+    # output to a file doesn't crash on an exotic token. No-op where stdout
+    # doesn't support reconfigure.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
 
     # ── Locate the checkpoint ────────────────────────────────────────
     if args.checkpoint:
@@ -433,6 +471,7 @@ def main():
                 max_new_tokens=args.max_new_tokens, n_loops=n_loops,
                 best_of_traj=args.best_of_trajectory,
                 bot_min_loops=args.bot_min_loops,
+                force_full_depth=args.force_full_depth,
             )
     else:
         prompts = [args.prompt] if args.prompt else _DEFAULT_PROMPTS
@@ -442,6 +481,7 @@ def main():
                 max_new_tokens=args.max_new_tokens, n_loops=n_loops,
                 best_of_traj=args.best_of_trajectory,
                 bot_min_loops=args.bot_min_loops,
+                force_full_depth=args.force_full_depth,
             )
 
 

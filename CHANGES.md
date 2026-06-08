@@ -768,3 +768,27 @@ the param-count gibberish ceiling may mask the effect until the model is larger.
 The learned generalisation of this (a trained depth policy unified with expert
 routing) is tracked as **MoDr** in [`docs/roadmap.md`](docs/roadmap.md), gated
 behind the MoE-vs-dense ablation.
+
+### Forced-depth probe (`--force-full-depth`)
+
+`forward_trajectory(..., force_full_depth=True)` suppresses ACT's
+convergence + halt-all early-exit during trajectory capture (via a
+`RecurrentBlock.force_full_depth` measurement flag) so the loop runs the full
+`n_loops` instead of stopping where ACT chose. This exposes the counterfactual
+loops ACT skips — letting us tell "deeper loops genuinely hurt" from "deeper
+loops never ran". Threaded through `BestOfTrajectoryGenerator(force_full_depth=)`
+and an `inspect_checkpoint.py --force-full-depth` switch that prints an `[A/B]`
+verdict comparing ACT's learned halt depth to the forced-depth uncertainty
+minimum. Pure measurement — no weight change, normal forward/generate untouched.
++3 tests (forced K == n_loops, extrapolation past trained depth, generator
+contract). Also fixed: `inspect_checkpoint.py` now forces UTF-8 stdout so
+redirecting output doesn't crash on exotic tokens in the model's (gibberish)
+generations on a cp1252 Windows console.
+
+**Result (v4/v5, `reports/inspect_v{4,5}_forced*.txt`).** Whether ACT halts too
+early is **prompt-dependent** — on some prompts the skipped loops *do* lower
+uncertainty (ACT too early), on others they don't (ACT justified); and on v5 at
+`n_loops=8` one prompt reaches its global uncertainty minimum at **loop 7** (2×
+the trained depth), partial evidence for depth-extrapolation. Full analysis +
+the "single global halt threshold is structurally wrong -> motivates MoDr"
+takeaway are in [`docs/roadmap.md`](docs/roadmap.md).

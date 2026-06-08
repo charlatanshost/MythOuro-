@@ -1096,6 +1096,38 @@ overlay, deliberately not wired into training.
   dead weight. That's a concrete data point for the MoDr / depth-policy work
   (the depth decision wants tuning) and for revisiting the ACT halt threshold.
 
+**Forced-depth probe (`--force-full-depth`, `reports/inspect_v{4,5}_forced*.txt`).**
+The ACT-respecting run above can only observe loops ACT chose to run, so it
+couldn't tell "loop 3 genuinely hurts" (Hyp. A) from "loop 3 never ran"
+(Hyp. B). The `--force-full-depth` knob suppresses ACT's convergence + halt-all
+early-exit during trajectory capture (pure measurement — no weight change, normal
+path untouched) so the loop runs the full `n_loops` and we can score the skipped
+loops. An `[A/B]` line then compares ACT's learned halt depth (`halt_step_mean`)
+to where uncertainty actually bottoms out. Findings:
+
+- **The answer is prompt-dependent — both hypotheses are true, per input.** On a
+  *subset* of prompts the skipped loops *do* lower uncertainty below ACT's
+  stopping point (Hyp. B — ACT halts too early): v5 "recurrent-depth…" and "2+2"
+  both bottom at **loop 3** (past ACT's ~2.0 cutoff); v4 "fibonacci" likewise. On
+  others uncertainty rises past loop ~2 (Hyp. A — ACT justified). So a *single*
+  global ACT threshold is structurally wrong: the right depth varies by token.
+- **Depth-extrapolation partially works (v5, `n_loops=8`, 2× trained depth).**
+  Curves are non-monotonic ("wavy"), but on "recurrent-depth transformer is"
+  uncertainty reaches its **global minimum at loop 7** (0.50), well past the
+  trained depth of 4 — concrete evidence the model *can* use more depth than it
+  was trained on for some inputs. Other prompts degrade past loop 4 (off-
+  distribution: loop-index embeddings + per-loop LoRA were only trained for
+  loops 0–3). So extrapolation is real but input-specific, not free.
+- **Caveat — sampling noise.** Curves are averaged over the generated tokens, and
+  generation uses `temperature=0.7`, so exact values shift run-to-run (the same
+  prompt's loop-0 value differed between the `n=4` and `n=8` runs). The
+  *qualitative shape* (where the min sits, monotonic vs. interior vs. wavy) is the
+  signal, not the third decimal. For tighter curves: greedy decode or more tokens.
+- **Direct implication for MoDr.** "Right depth is prompt-dependent, sometimes
+  shallow, sometimes 3, occasionally 7" is precisely the case a single learned
+  halt threshold can't serve and a **per-token learned depth router can** — this
+  probe is the empirical motivation for the MoDr direction below.
+
 ---
 
 ## Candidate direction: MoDr — Mixture-of-Depth routing (learned)

@@ -1342,6 +1342,16 @@ class RecurrentBlock(nn.Module):
         self.collect_trajectory = False
         self.last_trajectory: Optional[torch.Tensor] = None
 
+        # Measurement override (off by default). When set alongside
+        # `collect_trajectory`, the two inference early-exit breaks (convergence
+        # and ACT halt-all) are suppressed so the loop runs the full n_loops.
+        # This is what lets `forward_trajectory` observe the *counterfactual*
+        # loops ACT would otherwise skip — answering "would deeper loops have
+        # lowered uncertainty?" rather than just "where did ACT choose to stop?"
+        # Pure measurement: changes no weights and never affects the normal
+        # forward/generate path (which leaves this False).
+        self.force_full_depth = False
+
         # Part 2: multi-scale injection (hierarchical fine/coarse/global e)
         self.use_ms = getattr(cfg, "use_multiscale_injection", False)
         if self.use_ms:
@@ -1489,6 +1499,7 @@ class RecurrentBlock(nn.Module):
                 h_prev is not None
                 and not self.training
                 and kv_cache is None
+                and not self.force_full_depth
             ):
                 delta = (h_new - h_prev).norm(dim=-1)              # (B, T)
                 if (delta < self.conv_eps).all():
@@ -1554,8 +1565,14 @@ class RecurrentBlock(nn.Module):
             #      the failure mode we observed empirically;
             #   2. gradients flow through every λ_t, not just the ones that
             #      survived to the break point.
-            # Inference still short-circuits for latency.
-            if halted.all() and kv_cache is None and not self.training:
+            # Inference still short-circuits for latency — unless force_full_depth
+            # is set for a counterfactual depth measurement.
+            if (
+                halted.all()
+                and kv_cache is None
+                and not self.training
+                and not self.force_full_depth
+            ):
                 break
 
         # Detach so downstream diagnostics never accidentally extend the
@@ -1894,6 +1911,7 @@ class MythOuro(nn.Module):
         self,
         input_ids: torch.Tensor,
         n_loops: Optional[int] = None,
+        force_full_depth: bool = False,
     ) -> "tuple[torch.Tensor, torch.Tensor]":
         """
         Inference-only forward returning a per-recurrent-loop output trajectory.
@@ -1909,16 +1927,24 @@ class MythOuro(nn.Module):
         scale — not a fast-decode path. The normal `forward` is untouched.
 
         Args:
-            input_ids -- token indices of shape (B, T)
-            n_loops   -- recurrent depth; defaults to cfg.max_loop_iters. May be
-                         raised above the trained value (depth extrapolation).
+            input_ids        -- token indices of shape (B, T)
+            n_loops          -- recurrent depth; defaults to cfg.max_loop_iters.
+                                May be raised above the trained value
+                                (depth extrapolation).
+            force_full_depth -- when True, suppress ACT's convergence/halt-all
+                                early-exit so the loop runs the *full* n_loops.
+                                Lets the trajectory observe the loops ACT would
+                                otherwise skip — the counterfactual needed to
+                                tell "loop k genuinely hurts" from "loop k never
+                                ran". Pure measurement; weights untouched.
 
         Returns:
             (logits_traj, unc_traj):
               logits_traj -- (B, T, K, vocab_size)
               unc_traj    -- (B, T, K) per-loop confidence-of-error in (0, 1)
-            where K is the number of loops actually run (≤ n_loops; fewer if
-            convergence early-exit fires).
+            where K is the number of loops actually run. With
+            force_full_depth=True, K == n_loops; otherwise K ≤ n_loops (fewer
+            when ACT halts all positions or the state converges early).
         """
         device = input_ids.device
         x = self.embed(input_ids)
@@ -1935,11 +1961,13 @@ class MythOuro(nn.Module):
 
         e = x  # injected each loop
         self.recurrent.collect_trajectory = True
+        self.recurrent.force_full_depth = force_full_depth
         try:
             self.recurrent(x, e, freqs_cis, mask, n_loops, None)
             traj = self.recurrent.last_trajectory  # (B, T_ext, K, D) or None
         finally:
             self.recurrent.collect_trajectory = False
+            self.recurrent.force_full_depth = False
             self.recurrent.last_trajectory = None
 
         # No loop ran (n_loops == 0): fall back to a single Coda pass on the

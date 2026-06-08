@@ -1338,25 +1338,30 @@ class BestOfTrajectoryGenerator:
         n_loops: int = 8,
         eos_token_id: "int | None" = None,
         min_loops: int = 1,
+        force_full_depth: bool = False,
         cycle_window: int = 32,
         cycle_min_len: int = 4,
     ):
         """
         Args:
-            n_loops      -- recurrent depth scored per step (may exceed the
-                            trained value for depth extrapolation).
-            eos_token_id -- stop when this id is emitted (None disables, same
-                            fail-closed convention as ConfidenceAwareGenerator).
-            min_loops    -- floor on the selectable depth: loops shallower than
-                            this are excluded from the argmin unless the
-                            trajectory is shorter (early convergence). Prevents
-                            collapsing onto loop 0 when the head is miscalibrated
-                            early.
+            n_loops          -- recurrent depth scored per step (may exceed the
+                                trained value for depth extrapolation).
+            eos_token_id     -- stop when this id is emitted (None disables, same
+                                fail-closed convention as ConfidenceAwareGenerator).
+            min_loops        -- floor on the selectable depth: loops shallower
+                                than this are excluded from the argmin unless the
+                                trajectory is shorter (early convergence).
+                                Prevents collapsing onto loop 0 when the head is
+                                miscalibrated early.
+            force_full_depth -- suppress ACT's early-exit so every step scores
+                                the full n_loops (counterfactual measurement —
+                                see MythOuro.forward_trajectory).
         """
         self.model = model
         self.n_loops = n_loops
         self.eos_token_id = eos_token_id
         self.min_loops = max(min_loops, 1)
+        self.force_full_depth = force_full_depth
         self.cycle_window = cycle_window
         self.cycle_min_len = cycle_min_len
 
@@ -1393,6 +1398,7 @@ class BestOfTrajectoryGenerator:
         for _ in range(max_new_tokens):
             logits_traj, unc_traj = self.model.forward_trajectory(
                 input_ids, n_loops=self.n_loops,
+                force_full_depth=self.force_full_depth,
             )
             # Last position only (B=1): (K, V) logits, (K,) uncertainty.
             last_logits = logits_traj[0, -1]
@@ -1448,6 +1454,7 @@ def best_of_trajectory_generate(
     n_loops: int = 8,
     eos_token_id: "int | None" = None,
     min_loops: int = 1,
+    force_full_depth: bool = False,
     temperature: float = 1.0,
     top_k: int = 50,
 ) -> "dict[str, object]":
@@ -1457,6 +1464,7 @@ def best_of_trajectory_generate(
         n_loops=n_loops,
         eos_token_id=eos_token_id,
         min_loops=min_loops,
+        force_full_depth=force_full_depth,
     ).generate(
         input_ids,
         max_new_tokens=max_new_tokens,
