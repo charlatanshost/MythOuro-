@@ -163,6 +163,8 @@ def _inspect_prompt(
     best_of_traj: bool = True,
     bot_min_loops: int = 1,
     force_full_depth: bool = False,
+    temperature: float = 0.7,
+    top_k: int = 40,
 ) -> None:
     print()
     print("=" * 80)
@@ -191,7 +193,7 @@ def _inspect_prompt(
     # ── Greedy generation via model.generate (the simplest path) ──────
     out = model.generate(
         ids, max_new_tokens=max_new_tokens,
-        n_loops=n_loops, temperature=0.7, top_k=40,
+        n_loops=n_loops, temperature=temperature, top_k=top_k,
     )
     new_tokens = out[0, ids.shape[1] :].tolist()
     decoded = tokenizer.decode(new_tokens)
@@ -214,7 +216,7 @@ def _inspect_prompt(
         cycle_window=12,
     )
     result = cag.generate(
-        ids, max_new_tokens=max_new_tokens, temperature=0.7, top_k=40,
+        ids, max_new_tokens=max_new_tokens, temperature=temperature, top_k=top_k,
     )
     cag_new = result["sequences"][0, ids.shape[1] :].tolist()
     print()
@@ -239,7 +241,7 @@ def _inspect_prompt(
             model, ids, max_new_tokens=max_new_tokens,
             n_loops=n_loops, min_loops=bot_min_loops,
             force_full_depth=force_full_depth,
-            temperature=0.7, top_k=40,
+            temperature=temperature, top_k=top_k,
         )
         bot_new = bot["sequences"][0, ids.shape[1] :].tolist()
         chosen = bot["chosen_loops"]
@@ -373,6 +375,16 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     )
     p.add_argument("--max-new-tokens", type=int, default=50)
     p.add_argument(
+        "--temperature", type=float, default=0.7,
+        help="Sampling temperature for all generators.",
+    )
+    p.add_argument(
+        "--top-k", type=int, default=40,
+        help="Top-k sampling for all generators. Set --top-k 1 for deterministic "
+             "greedy decoding (kills run-to-run sampling noise in the per-loop "
+             "uncertainty curves).",
+    )
+    p.add_argument(
         "--n-loops", type=int, default=None,
         help="Recurrent loop depth at inference. Default: cfg.max_loop_iters.",
     )
@@ -472,6 +484,7 @@ def main():
                 best_of_traj=args.best_of_trajectory,
                 bot_min_loops=args.bot_min_loops,
                 force_full_depth=args.force_full_depth,
+                temperature=args.temperature, top_k=args.top_k,
             )
     else:
         prompts = [args.prompt] if args.prompt else _DEFAULT_PROMPTS
@@ -482,6 +495,7 @@ def main():
                 best_of_traj=args.best_of_trajectory,
                 bot_min_loops=args.bot_min_loops,
                 force_full_depth=args.force_full_depth,
+                temperature=args.temperature, top_k=args.top_k,
             )
 
 

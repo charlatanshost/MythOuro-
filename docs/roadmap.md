@@ -1118,11 +1118,18 @@ to where uncertainty actually bottoms out. Findings:
   was trained on for some inputs. Other prompts degrade past loop 4 (off-
   distribution: loop-index embeddings + per-loop LoRA were only trained for
   loops 0–3). So extrapolation is real but input-specific, not free.
-- **Caveat — sampling noise.** Curves are averaged over the generated tokens, and
-  generation uses `temperature=0.7`, so exact values shift run-to-run (the same
-  prompt's loop-0 value differed between the `n=4` and `n=8` runs). The
-  *qualitative shape* (where the min sits, monotonic vs. interior vs. wavy) is the
-  signal, not the third decimal. For tighter curves: greedy decode or more tokens.
+- **Confirmed noise-free (greedy, `--top-k 1`, 40 tokens,
+  `reports/inspect_v{4,5}_forced_n*_greedy.txt`).** The temperature-0.7 curves
+  carried run-to-run noise, so we reran deterministically. The headline result is
+  *stronger* under greedy, not weaker: for "recurrent depth transformer is" (v5,
+  `n=8`) uncertainty decreases **strictly monotonically** loop 0→7
+  `[0.76, 0.64, 0.60, 0.54, 0.48, 0.41, 0.39, 0.39]` (every step negative,
+  flattening to ≈0 by loop 7 — i.e. converging, not bottoming early). 3 of 4 v5
+  prompts hit their minimum at loop 7. So depth-extrapolation to **2× the trained
+  depth genuinely lowers uncertainty** for continuation-style prompts; it's a real
+  effect, not a sampling artifact. (Short-answer / factual prompts still prefer
+  shallow — the prompt-dependence also survives greedy.) The
+  `--temperature` / `--top-k` inspector knobs were added for exactly this.
 - **Direct implication for MoDr.** "Right depth is prompt-dependent, sometimes
   shallow, sometimes 3, occasionally 7" is precisely the case a single learned
   halt threshold can't serve and a **per-token learned depth router can** — this

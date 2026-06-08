@@ -1,0 +1,128 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[32m2026-06-08 09:15:48.491[0m | [33m[1mWARNING [0m | [36mmythouro.main[0m:[36mwarn_once[0m:[36m77[0m - [33m[1mGQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=None).[0m
+loading: checkpoints_grown_v5/step_0002887.pt
+device:  cpu
+step:    2887
+params:  632,857,971
+vocab:   49152  max_loops=4
+
+================================================================================
+prompt: 'The recurrent depth transformer is'
+--------------------------------------------------------------------------------
+prompt tokens : 5
+diagnostic    : uncertainty mean=0.830 max=1.000
+                halt distribution per loop = [0.395, 0.306, 0.298]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=2.688  (min=0.0%  max=13.9%)
+
+greedy generation (T=0.7 top_k=40):
+  ' 9.1%.\n\nExpplifying the percentage: L++re.price\n{90}$ lugging, a project[]\n{90}$ lugging, a project'
+
+confidence-aware generation  (stop='max_new_tokens', 40 tokens emitted):
+  ' 9.1%.\n\nExpplifying the percentage: L++re.price\n{90}$ lugging, a project[]\n{90}$ lugging, a project'
+  uncertainty trace: mean=0.568  min=0.004  max=0.988
+
+best-of-trajectory generation [FORCED full depth]  (stop='max_new_tokens', 40 tokens emitted):
+  ' 9.\n\nThe total distance of the sky, which is the total height. Thecam has the total distance. The circumference has 90 miles.\nThe circumference has a total distance'
+  loops actually run: mean=4.0  (n_loops=4; ACT halts all positions early)
+  chosen-loop depth: mean=2.10
+  chosen-loop histogram (loop -> count): {0: 1, 1: 11, 2: 11, 3: 17}
+  picked below deepest-run loop: 23/40 tokens (58%)
+  emitted-loop uncertainty: mean=0.389  min=0.008  max=0.772
+  mean uncertainty by loop depth: [0.784, 0.507, 0.481, 0.465]
+  -> uncertainty min at loop 3  (min at deepest-run loop -> more loops cut uncertainty (monotonic-down))
+  [A/B] uncertainty bottoms at loop 3, PAST ACT's learned ~2.0 cutoff -> ACT halts too early (usable depth left on table)
+  token[0] per-loop uncertainty: [0.912, 0.67, 0.558, 0.613]
+  token[1] per-loop uncertainty: [0.779, 0.36, 0.262, 0.338]
+  token[2] per-loop uncertainty: [0.878, 0.473, 0.195, 0.346]
+
+================================================================================
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+--------------------------------------------------------------------------------
+prompt tokens : 16
+diagnostic    : uncertainty mean=0.660 max=1.000
+                halt distribution per loop = [0.368, 0.284, 0.348]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.583  (min=0.0%  max=7.5%)
+
+greedy generation (T=0.7 top_k=40):
+  'There are 4 + 1 2. Use \\binlying($75{.python \\binlying($75{.python \\binlying($75{.'
+
+confidence-aware generation  (stop='confidence', 30 tokens emitted):
+  'There are 4 + 1 2. Use \\binlying($75{.python \\binlying($75{.'
+  uncertainty trace: mean=0.545  min=0.008  max=0.962
+
+best-of-trajectory generation [FORCED full depth]  (stop='max_new_tokens', 40 tokens emitted):
+  'Let be the right side.\n1. We know that the speed is.\n1. We know that the speed is the right.\n1. We know that the speed is'
+  loops actually run: mean=4.0  (n_loops=4; ACT halts all positions early)
+  chosen-loop depth: mean=1.62
+  chosen-loop histogram (loop -> count): {0: 3, 1: 18, 2: 10, 3: 9}
+  picked below deepest-run loop: 31/40 tokens (78%)
+  emitted-loop uncertainty: mean=0.436  min=0.003  max=0.928
+  mean uncertainty by loop depth: [0.793, 0.507, 0.513, 0.535]
+  -> uncertainty min at loop 1  (interior dip -> genuine depth discrimination)
+  [A/B] uncertainty min (loop 1) is at/before ACT's ~2.0 cutoff -> ACT's stopping point is justified
+  token[0] per-loop uncertainty: [0.91, 0.775, 0.779, 0.783]
+  token[1] per-loop uncertainty: [0.713, 0.675, 0.814, 0.846]
+  token[2] per-loop uncertainty: [0.584, 0.112, 0.17, 0.38]
+
+================================================================================
+prompt: 'def fibonacci(n):'
+--------------------------------------------------------------------------------
+prompt tokens : 6
+diagnostic    : uncertainty mean=0.762 max=0.996
+                halt distribution per loop = [0.396, 0.309, 0.295]
+                halt step mean = 1.90  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=3.029  (min=0.0%  max=20.0%)
+
+greedy generation (T=0.7 top_k=40):
+  '.input_json, "http:// price2`,\n\n```bgging the dataset2`, or "http://localhost: top(n) Total_json version 0'
+
+confidence-aware generation  (stop='max_new_tokens', 40 tokens emitted):
+  '.input_json, "http:// price2`,\n\n```bgging the dataset2`, or "http://localhost: top(n) Total_json version 0'
+  uncertainty trace: mean=0.598  min=0.059  max=0.992
+
+best-of-trajectory generation [FORCED full depth]  (stop='max_new_tokens', 40 tokens emitted):
+  '. 4 objects\ncam_y subtracting the Distance.\ns_x = 12'
+  loops actually run: mean=4.0  (n_loops=4; ACT halts all positions early)
+  chosen-loop depth: mean=1.55
+  chosen-loop histogram (loop -> count): {0: 13, 1: 7, 2: 5, 3: 15}
+  picked below deepest-run loop: 25/40 tokens (62%)
+  emitted-loop uncertainty: mean=0.516  min=0.059  max=0.973
+  mean uncertainty by loop depth: [0.658, 0.669, 0.689, 0.621]
+  -> uncertainty min at loop 3  (min at deepest-run loop -> more loops cut uncertainty (monotonic-down))
+  [A/B] uncertainty bottoms at loop 3, PAST ACT's learned ~1.9 cutoff -> ACT halts too early (usable depth left on table)
+  token[0] per-loop uncertainty: [0.818, 0.743, 0.703, 0.799]
+  token[1] per-loop uncertainty: [0.988, 0.994, 0.987, 0.973]
+  token[2] per-loop uncertainty: [0.829, 0.954, 0.928, 0.498]
+
+================================================================================
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+--------------------------------------------------------------------------------
+prompt tokens : 15
+diagnostic    : uncertainty mean=0.811 max=0.999
+                halt distribution per loop = [0.372, 0.293, 0.336]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.939  (min=0.0%  max=9.2%)
+
+greedy generation (T=0.7 top_k=40):
+  " double list was the moon States.\n- strending the moon5.\n- strending the Nobel5. Python is {len(to_numbers, 'consoleending_evidence5}."
+
+confidence-aware generation  (stop='eos', 16 tokens emitted):
+  ' double list was the moon States.\n- strending the moon5.'
+  uncertainty trace: mean=0.561  min=0.015  max=0.948
+
+best-of-trajectory generation [FORCED full depth]  (stop='max_new_tokens', 40 tokens emitted):
+  ' end ofMetaInfoClassates vowel SysCall firstsum firstsumRecipeSteps timesMetaInfoClass SysCall SysCall firstsum questionnaes\r\r\n        \r\r\n            firstsum firstsum firstsuma time-in-\n  \tdataCostonacci SysCall SysCallRecipeSteps'
+  loops actually run: mean=4.0  (n_loops=4; ACT halts all positions early)
+  chosen-loop depth: mean=0.55
+  chosen-loop histogram (loop -> count): {0: 29, 1: 4, 2: 3, 3: 4}
+  picked below deepest-run loop: 36/40 tokens (90%)
+  emitted-loop uncertainty: mean=0.242  min=0.000  max=0.908
+  mean uncertainty by loop depth: [0.296, 0.587, 0.619, 0.668]
+  -> uncertainty min at loop 0  (min at shallowest -> head prefers fewer loops (monotonic-up))
+  [A/B] uncertainty min (loop 0) is at/before ACT's ~2.0 cutoff -> ACT's stopping point is justified
+  token[0] per-loop uncertainty: [0.859, 0.609, 0.51, 0.437]
+  token[1] per-loop uncertainty: [0.551, 0.899, 0.848, 0.643]
+  token[2] per-loop uncertainty: [0.736, 0.768, 0.881, 0.542]

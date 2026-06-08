@@ -1,0 +1,128 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[32m2026-06-08 09:17:02.480[0m | [33m[1mWARNING [0m | [36mmythouro.main[0m:[36mwarn_once[0m:[36m77[0m - [33m[1mGQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=None).[0m
+loading: checkpoints_grown_v4/step_0003000.pt
+device:  cpu
+step:    3000
+params:  396,866,931
+vocab:   49152  max_loops=4
+
+================================================================================
+prompt: 'The recurrent depth transformer is'
+--------------------------------------------------------------------------------
+prompt tokens : 5
+diagnostic    : uncertainty mean=0.793 max=1.000
+                halt distribution per loop = [0.402, 0.312, 0.287]
+                halt step mean = 1.89  (0 = halted immediately, 8 = ran full depth)
+                MoE router CV=1.896  (min=0.0%  max=16.7%)
+
+greedy generation (T=0.7 top_k=40):
+  " 1.8%.join(n) for the monthly cream\n```sql-by=1).findA WHERE ticket: 'my'; url = 1.8%.join(n)"
+
+confidence-aware generation  (stop='confidence', 34 tokens emitted):
+  " 1.8%.join(n) for the monthly cream\n```sql-by=1).findA WHERE ticket: 'my'; url = 1."
+  uncertainty trace: mean=0.495  min=0.069  max=0.984
+
+best-of-trajectory generation [FORCED full depth]  (stop='cycle', 33 tokens emitted):
+  '\n): 1. The first\nThe'
+  loops actually run: mean=8.0  (n_loops=8; ACT halts all positions early)
+  chosen-loop depth: mean=4.42
+  chosen-loop histogram (loop -> count): {0: 6, 3: 4, 4: 4, 5: 6, 6: 3, 7: 10}
+  picked below deepest-run loop: 23/33 tokens (70%)
+  emitted-loop uncertainty: mean=0.213  min=0.007  max=0.585
+  mean uncertainty by loop depth: [0.655, 0.759, 0.71, 0.528, 0.367, 0.336, 0.331, 0.333]
+  -> uncertainty min at loop 6  (interior dip -> genuine depth discrimination)
+  [A/B] uncertainty bottoms at loop 6, PAST ACT's learned ~1.9 cutoff -> ACT halts too early (usable depth left on table)
+  token[0] per-loop uncertainty: [0.815, 0.534, 0.428, 0.477, 0.61, 0.251, 0.04, 0.215]
+  token[1] per-loop uncertainty: [0.725, 0.406, 0.339, 0.459, 0.704, 0.491, 0.274, 0.234]
+  token[2] per-loop uncertainty: [0.696, 0.707, 0.606, 0.798, 0.894, 0.768, 0.451, 0.382]
+
+================================================================================
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+--------------------------------------------------------------------------------
+prompt tokens : 16
+diagnostic    : uncertainty mean=0.633 max=0.999
+                halt distribution per loop = [0.372, 0.283, 0.345]
+                halt step mean = 2.00  (0 = halted immediately, 8 = ran full depth)
+                MoE router CV=1.202  (min=0.0%  max=10.0%)
+
+greedy generation (T=0.7 top_k=40):
+  'Let\'s break the height in the original-9000? **Area. "Area. "Area as add the original-900" % self. **Area. "Area in'
+
+confidence-aware generation  (stop='cycle', 21 tokens emitted):
+  'Let\'s break the height in the original-9000? **Area. "Area. "'
+  uncertainty trace: mean=0.506  min=0.143  max=0.944
+
+best-of-trajectory generation [FORCED full depth]  (stop='max_new_tokens', 40 tokens emitted):
+  'The length of the day\nSELECT get_i)\n# 2+4\n\n# 2+4\n\n\n# Print the length of\n\n\n# 2'
+  loops actually run: mean=8.0  (n_loops=8; ACT halts all positions early)
+  chosen-loop depth: mean=3.35
+  chosen-loop histogram (loop -> count): {0: 5, 1: 9, 2: 9, 3: 1, 4: 1, 5: 2, 6: 1, 7: 12}
+  picked below deepest-run loop: 28/40 tokens (70%)
+  emitted-loop uncertainty: mean=0.380  min=0.014  max=0.831
+  mean uncertainty by loop depth: [0.721, 0.511, 0.558, 0.622, 0.662, 0.645, 0.624, 0.587]
+  -> uncertainty min at loop 1  (interior dip -> genuine depth discrimination)
+  [A/B] uncertainty min (loop 1) is at/before ACT's ~2.0 cutoff -> ACT's stopping point is justified
+  token[0] per-loop uncertainty: [0.829, 0.849, 0.759, 0.737, 0.88, 0.884, 0.842, 0.828]
+  token[1] per-loop uncertainty: [0.884, 0.303, 0.486, 0.847, 0.927, 0.93, 0.904, 0.855]
+  token[2] per-loop uncertainty: [0.596, 0.028, 0.035, 0.088, 0.221, 0.442, 0.674, 0.847]
+
+================================================================================
+prompt: 'def fibonacci(n):'
+--------------------------------------------------------------------------------
+prompt tokens : 6
+diagnostic    : uncertainty mean=0.731 max=0.999
+                halt distribution per loop = [0.394, 0.312, 0.294]
+                halt step mean = 2.00  (0 = halted immediately, 8 = ran full depth)
+                MoE router CV=2.149  (min=0.0%  max=20.0%)
+
+greedy generation (T=0.7 top_k=40):
+  '\n    \'example_date.department\'; = new Array-example_result.department\'; = new Array-example_result\nFROM respectively.toArray(),\n                    "example_date.department";'
+
+confidence-aware generation  (stop='max_new_tokens', 40 tokens emitted):
+  '\n    \'example_date.department\'; = new Array-example_result.department\'; = new Array-example_result\nFROM respectively.toArray(),\n                    "example_date.department";'
+  uncertainty trace: mean=0.521  min=0.006  max=0.972
+
+best-of-trajectory generation [FORCED full depth]  (stop='max_new_tokens', 40 tokens emitted):
+  "cam firstsum|'('|'='swigfaissa firstsumcam firstsum|'='|'=' firstsum firstsum firstsum firstsum firstsum firstsum 1cam firstsum|'='|'='|'=' firstsum firstsum firstsum firstsum firstsum firstsum 4"
+  loops actually run: mean=8.0  (n_loops=8; ACT halts all positions early)
+  chosen-loop depth: mean=1.02
+  chosen-loop histogram (loop -> count): {0: 32, 1: 1, 2: 1, 5: 1, 6: 2, 7: 3}
+  picked below deepest-run loop: 37/40 tokens (92%)
+  emitted-loop uncertainty: mean=0.157  min=0.000  max=0.659
+  mean uncertainty by loop depth: [0.208, 0.693, 0.676, 0.706, 0.672, 0.623, 0.576, 0.549]
+  -> uncertainty min at loop 0  (min at shallowest -> head prefers fewer loops (monotonic-up))
+  [A/B] uncertainty min (loop 0) is at/before ACT's ~2.0 cutoff -> ACT's stopping point is justified
+  token[0] per-loop uncertainty: [0.769, 0.642, 0.657, 0.72, 0.789, 0.678, 0.568, 0.564]
+  token[1] per-loop uncertainty: [0.783, 0.972, 0.965, 0.905, 0.7, 0.378, 0.104, 0.253]
+  token[2] per-loop uncertainty: [0.002, 0.551, 0.67, 0.731, 0.427, 0.065, 0.302, 0.315]
+
+================================================================================
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+--------------------------------------------------------------------------------
+prompt tokens : 15
+diagnostic    : uncertainty mean=0.822 max=0.997
+                halt distribution per loop = [0.378, 0.295, 0.327]
+                halt step mean = 2.00  (0 = halted immediately, 8 = ran full depth)
+                MoE router CV=1.378  (min=0.0%  max=13.2%)
+
+greedy generation (T=0.7 top_k=40):
+  ' end of vowels. The official COUP result, "EnterList COUP result, \'EnterList CO(1). Then of vowels.nextToCost_KEY_```\nSo, \'Invalid'
+
+confidence-aware generation  (stop='max_new_tokens', 40 tokens emitted):
+  ' end of vowels. The official COUP result, "EnterList COUP result, \'EnterList CO(1). Then of vowels.nextToCost_KEY_```\nSo, \'Invalid'
+  uncertainty trace: mean=0.590  min=0.049  max=0.960
+
+best-of-trajectory generation [FORCED full depth]  (stop='max_new_tokens', 40 tokens emitted):
+  'cam end traveled\n\t# The height of the left the first.\nTo find the height of the left side, we know that the height of the left side, we the midpoint'
+  loops actually run: mean=8.0  (n_loops=8; ACT halts all positions early)
+  chosen-loop depth: mean=3.15
+  chosen-loop histogram (loop -> count): {0: 3, 1: 5, 2: 13, 3: 3, 4: 7, 5: 2, 6: 1, 7: 6}
+  picked below deepest-run loop: 34/40 tokens (85%)
+  emitted-loop uncertainty: mean=0.394  min=0.031  max=0.899
+  mean uncertainty by loop depth: [0.787, 0.548, 0.513, 0.535, 0.555, 0.58, 0.586, 0.58]
+  -> uncertainty min at loop 2  (interior dip -> genuine depth discrimination)
+  [A/B] uncertainty min (loop 2) is at/before ACT's ~2.0 cutoff -> ACT's stopping point is justified
+  token[0] per-loop uncertainty: [0.822, 0.69, 0.599, 0.676, 0.22, 0.331, 0.309, 0.327]
+  token[1] per-loop uncertainty: [0.841, 0.634, 0.46, 0.525, 0.501, 0.385, 0.488, 0.611]
+  token[2] per-loop uncertainty: [0.544, 0.423, 0.234, 0.146, 0.031, 0.051, 0.157, 0.424]
