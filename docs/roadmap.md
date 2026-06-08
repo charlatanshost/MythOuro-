@@ -1151,10 +1151,42 @@ used separately:
 
 MoDr collapses these into **one router head that emits both** *expert choice*
 **and** *per-token recurrence depth* (halt/continue logit per position per
-iteration), supervised against the converged-state target rather than gated by a
-fixed `act_threshold`. "Extend by 2 or 4 loops" stops being an inference
-heuristic and becomes a trained policy — the model learns how deep each token
-needs to go, jointly with which experts handle it.
+iteration), supervised against a best-exit target rather than gated by a fixed
+`act_threshold`. "Extend by 2 or 4 loops" stops being an inference heuristic and
+becomes a trained policy — the model learns how deep each token needs to go,
+jointly with which experts handle it.
+
+**Why the depth probe motivates this (2026-06-08 findings).** The
+`--force-full-depth` experiment established the two premises MoDr needs, both
+under deterministic greedy decode (noise-free):
+- *The right depth is per-token, not global.* Some prompts bottom out at loop 7
+  (2× the trained depth), others at loop 0. A single `act_threshold` cannot serve
+  both; a per-token policy can.
+- *The useful depth exists, but ACT misses it.* ACT collapses to ~2–3 loops, yet
+  uncertainty keeps dropping monotonically to loop 7 on continuation prompts — so
+  the current halting policy leaves real signal on the table. That's a *policy*
+  bug to fix, not a capacity limit.
+
+**Teacher / student — the crucial design point (don't skip this).** "Run full
+depth, then pick the best exit" — what best-of-trajectory does — is the right move
+at *training* time and the **wrong** move at *inference* time. Running every loop
+on every token and choosing afterwards destroys the entire purpose of adaptive
+depth: you've already paid for the deepest loop before deciding you could have
+stopped at loop 2. You can't pick an exit you haven't already run past — picking
+is free, *reaching* the loop is the cost. So the pipeline splits:
+- **Teacher (train time, can afford full depth):** run all `n_loops`, find each
+  token's best exit — the loop minimising uncertainty (today's proxy) or, once the
+  model is coherent, per-loop CE loss. This is exactly the `--force-full-depth`
+  trajectory we already compute in `forward_trajectory`.
+- **Student (inference, must be cheap):** the `DepthRouter` learns to *predict*
+  that best exit per token from the current hidden state and halt there directly —
+  loop 2 for an easy token, loop 7 for a hard one — without running the rest.
+  Best-of-trajectory is the *supervision signal*, never the decode path.
+
+So the one-line design rule: **let it run full depth at *training* time to
+discover the best exit, and train a cheap per-token policy to hit that exit
+directly at inference.** The forced-depth probe is the teacher; MoDr's
+`DepthRouter` is the student.
 
 **Why it's attractive.** The MoE router and the ACT halt head already share the
 same routing primitive (a linear projection of the hidden state to a routing
@@ -1174,12 +1206,27 @@ MoDr is the natural next architecture step; if MoE goes, MoDr is moot.
 **Rough build sketch** (when unblocked, flag-gated, default-off):
 1. A `DepthRouter` head emitting `(expert_logits, halt_logit)` from the shared
    hidden state; `ACTHalting` becomes the `halt_logit` branch.
-2. Supervise the halt branch against the converged depth (the loop where
-   `‖h_{t+1}−h_t‖` first drops below `convergence_eps`) instead of the Graves
-   cumulative-threshold criterion.
-3. Keep the depth regulariser (KL-to-uniform) as the anti-collapse guard.
-4. Tests: router emits both heads; `K=1` reduces to current behaviour; halt
-   supervision target matches the convergence detector; no-NaN train step.
+2. **Supervise the halt branch against the best-exit target from the forced-depth
+   teacher** — per token, the loop that minimises uncertainty (proxy now) or
+   per-loop CE (once coherent), computed via `forward_trajectory(force_full_depth
+   =True)`. This is strictly better than supervising against the *convergence*
+   depth (`‖h_{t+1}−h_t‖ < convergence_eps`): our probe shows convergence often
+   lands *later* than the uncertainty-minimising exit, so convergence over-spends.
+3. Keep the depth regulariser (KL-to-uniform) as the anti-collapse guard, and the
+   `min_loops` floor so the student can't collapse onto loop 0.
+4. Train the teacher target offline first (cache best-exit labels with
+   `--force-full-depth`) so the student trains against fixed labels — cheaper and
+   more stable than computing full-depth trajectories every step.
+5. Tests: router emits both heads; `K=1` reduces to current behaviour; best-exit
+   target matches `forward_trajectory` argmin; depth regulariser still fires;
+   no-NaN train step.
+
+**Open question for the build:** the best-exit target is only as good as the
+uncertainty head's calibration (today it's a *proxy* for correctness, validated
+at ECE ~0.04 on v1 but unverified at the gibberish ceiling). Before MoDr ships,
+confirm on a coherent checkpoint that "lowest-uncertainty loop" actually
+correlates with "lowest-CE loop" — otherwise the teacher is teaching the wrong
+exit. Until then, the per-loop-CE target is the safer supervision signal.
 
 **Relation to prior art.** This is the project's own framing of Mixture-of-Depths
 (Raposo et al.) adapted to a *recurrent* (weight-shared, looped) block rather
