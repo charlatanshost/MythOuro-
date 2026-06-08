@@ -515,16 +515,29 @@ an 8480 on DDR5 underperforms a Xeon Max on HBM: identical AMX compute, but HBM
 **85 tok/s** here — the small per-op matmuls + MoE scatter + recurrent loop sit
 largely in the memory-bound regime.
 
-- **Highest-ROI lever (cheap): populate all 8 DDR5 channels.** 2→8 ≈ **4×
-  bandwidth**, directly attacking the starvation that caps real throughput — six
-  more DIMMs (~a few hundred $) before considering a Xeon Max. Won't reach HBM,
-  but should multiply the 85 tok/s materially. **Re-benchmark after.**
-- Retail clocks (ES caps short of a retail 8480's ~3.8 GHz boost) and IPEX
-  tuning are secondary; the memory channels are the dominant fix.
+- **The bandwidth lever — and why the RAM market tilts it toward HBM.** Filling
+  2→8 DDR5 channels is ~4× bandwidth and would lift the memory-bound throughput.
+  *But* at current ECC DDR5 RDIMM shortage pricing (32 GB ~$600–800 ea, 16 GB
+  ~$300–500), six more DIMMs is **~$3.6–4.8k**, not "a few hundred" — and even
+  full 8-channel DDR5-4800 (~300 GB/s) still partially starves AMX on large
+  problems. A used **Xeon Max 9480 (~$3k)** bundles **64 GB HBM2e (>1 TB/s)** —
+  ~3× the bandwidth of a maxed DDR5 rig, no DIMM tax — aimed exactly at the
+  16→4 TFLOPS collapse measured above. So in *this* RAM market, building around
+  an HBM Max is both faster and cheaper than feeding the 8480 with RDIMMs.
+- **Verify before buying a Max:** the 9480 Max is a Xeon *Scalable* part
+  (normally C741 server boards); the on-hand 8480 *Scalable ES* runs in an ASUS
+  *W790 workstation* board, which is encouraging but not a guarantee a Max POSTs
+  there. Confirm board/BIOS support for the 94xx Max line first — if it needs a
+  C741 board too, that changes the budget.
+- Still **additive compute + 3B-capacity, not a GPU replacement**: even HBM-fed,
+  the Max's AMX (~95–175 TFLOPS 1S–2S) is below a modern GPU's tensor throughput,
+  and MythOuro's small matmuls + recurrent loop won't saturate it — but it *fits*
+  a 3B the 12 GB card can't, with HBM removing the starvation.
 - **Revised takeaway:** AMX is real and working on this box — it's
-  *bandwidth-limited, not software-limited*. Fix memory channels first, re-measure
-  vs the 5070, then decide on a Xeon Max (whose HBM is the thing that makes AMX
-  fly). My earlier "AMX not engaged / needs IPEX+Linux" framing was wrong.
+  *bandwidth-limited, not software-limited*. My earlier "AMX not engaged / needs
+  IPEX+Linux" and "just cheaply fill 8 channels" framings were both wrong. Given
+  RAM pricing, an HBM Xeon Max is the rational build target for an AMX path;
+  validate platform compat, and remember it complements (not replaces) the GPU.
 
 *(Side effect of this exercise: it surfaced and fixed a latent autocast bug —
 `MoEFFN.index_add_` dispatch wasn't dtype-consistent under mixed precision. The
