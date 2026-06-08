@@ -10,6 +10,11 @@ What you get per prompt:
     3. Per-generated-token uncertainty trace                 — UncertaintyHead readout
     4. Mean halt depth across the generated tokens           — does ACT spread or collapse?
     5. MoE routing utilization snapshot (CV / min / max)     — is the router healthy?
+    6. Best-of-trajectory A/B (vs default emission)          — does picking the
+                                                              lowest-uncertainty loop
+                                                              diverge from "always
+                                                              deepest"? (--no-best-of-
+                                                              trajectory to skip)
 
 Usage:
     # Inspect the most recent checkpoint in checkpoints_distill/
@@ -43,9 +48,11 @@ from typing import Optional
 
 import torch
 
+from collections import Counter
+
 from mythouro.main import MythOuro, MythOuroConfig
 from mythouro.tokenizer import MythOuroTokenizer
-from mythouro.inference import ConfidenceAwareGenerator
+from mythouro.inference import ConfidenceAwareGenerator, best_of_trajectory_generate
 
 
 # Default prompt set — short, diverse, designed to exercise different
@@ -153,6 +160,8 @@ def _inspect_prompt(
     *,
     max_new_tokens: int,
     n_loops: int,
+    best_of_traj: bool = True,
+    bot_min_loops: int = 1,
 ) -> None:
     print()
     print("=" * 80)
@@ -217,6 +226,41 @@ def _inspect_prompt(
               f"mean={sum(trace)/len(trace):.3f}  "
               f"min={min(trace):.3f}  max={max(trace):.3f}")
 
+    # ── Best-of-trajectory A/B — emit the lowest-uncertainty loop per token ──
+    # The greedy + confidence-aware paths above both decode at the ACT-blended
+    # output of `n_loops`. This path instead scores every loop depth with the
+    # UncertaintyHead and emits the most-confident one per token. The payoff is
+    # the `chosen_loops` distribution: if it always picks the deepest loop, the
+    # head isn't discriminating across depths at this scale; if it varies,
+    # best-of-trajectory is doing real work.
+    if best_of_traj:
+        bot = best_of_trajectory_generate(
+            model, ids, max_new_tokens=max_new_tokens,
+            n_loops=n_loops, min_loops=bot_min_loops,
+            temperature=0.7, top_k=40,
+        )
+        bot_new = bot["sequences"][0, ids.shape[1] :].tolist()
+        chosen = bot["chosen_loops"]
+        print()
+        print(f"best-of-trajectory generation  (stop={bot['stop_reason']!r}, "
+              f"{len(bot_new)} tokens emitted):")
+        print(f"  {tokenizer.decode(bot_new)!r}")
+        if chosen:
+            deepest = n_loops - 1
+            shallower = sum(1 for k in chosen if k < deepest)
+            dist = dict(sorted(Counter(chosen).items()))
+            print(f"  chosen-loop depth: mean={sum(chosen)/len(chosen):.2f}  "
+                  f"(deepest scored = {deepest})")
+            print(f"  chosen-loop histogram (loop -> count): {dist}")
+            # The A/B headline: how often did it NOT just take the deepest loop?
+            print(f"  diverged from deepest: {shallower}/{len(chosen)} tokens "
+                  f"({100*shallower/len(chosen):.0f}%)")
+            bt = bot["uncertainty_trace"]
+            if bt:
+                print(f"  emitted-loop uncertainty: "
+                      f"mean={sum(bt)/len(bt):.3f}  "
+                      f"min={min(bt):.3f}  max={max(bt):.3f}")
+
 
 def _break_token_candidates(tokenizer: MythOuroTokenizer) -> "list[int] | None":
     """
@@ -275,6 +319,17 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
         "--interactive", "-i", action="store_true",
         help="Read prompts from stdin until EOF or 'exit'.",
     )
+    p.add_argument(
+        "--best-of-trajectory", action=argparse.BooleanOptionalAction, default=True,
+        help="A/B the best-of-trajectory generator (emit the lowest-uncertainty "
+             "loop per token) against the default emission. On by default; pass "
+             "--no-best-of-trajectory to skip it.",
+    )
+    p.add_argument(
+        "--bot-min-loops", type=int, default=1,
+        help="Floor on the selectable depth for best-of-trajectory (loops "
+             "shallower than this are excluded from the per-token argmin).",
+    )
     return p.parse_args(argv)
 
 
@@ -332,6 +387,8 @@ def main():
             _inspect_prompt(
                 model, tokenizer, prompt, device,
                 max_new_tokens=args.max_new_tokens, n_loops=n_loops,
+                best_of_traj=args.best_of_trajectory,
+                bot_min_loops=args.bot_min_loops,
             )
     else:
         prompts = [args.prompt] if args.prompt else _DEFAULT_PROMPTS
@@ -339,6 +396,8 @@ def main():
             _inspect_prompt(
                 model, tokenizer, prompt, device,
                 max_new_tokens=args.max_new_tokens, n_loops=n_loops,
+                best_of_traj=args.best_of_trajectory,
+                bot_min_loops=args.bot_min_loops,
             )
 
 
