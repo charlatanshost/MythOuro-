@@ -488,25 +488,45 @@ single-socket upgrade — but verify the real number before buying.**
   real-world *and* fitting 3B locally is worth ~$3k+platform to you, it's a
   defensible buy. If it lands ~1–1.5×, rent GPU hours instead.
 
-**Measured on the on-hand ES 8480 (2026-06-08) — AMX is NOT free.** Benchmarked
-on a Sapphire Rapids **8480 engineering sample** (56C @ ~1.9 GHz, 2-of-8 DDR5
-channels populated, Windows, stock `torch==2.12.0+cpu`):
-- bf16 4096³ GEMM sustained only **~3 TFLOPS** — that's AVX-512-BF16 class
-  (4× the 0.8 TFLOPS fp32), **not AMX** (which would be ~10–30× higher). AMX
-  tiles sat idle.
-- `tools.bench_step` `distill_tiny`, bf16 autocast, b1×s256: **85 tok/s, 3.0
-  s/step** — far slower than the 5070 would be. Unusable for training as-is.
-- Root cause: stock Windows `torch+cpu` doesn't dispatch AMX. Realising AMX
-  needs **Intel Extension for PyTorch (IPEX)**, almost certainly **Linux** (AMX
-  tile-state enablement is reliable there), retail clocks (the ES caps ~1.9 GHz
-  vs a retail 8480's ~3.8 GHz boost), and **all 8 memory channels** populated.
-- **Takeaway:** the ~95-TFLOPS AMX figure is *latent in the silicon but gated
-  behind a real software/config project* — it is not plug-and-play, especially
-  on Windows. Validate AMX is actually engaged (a bf16 GEMM should hit tens of
-  TFLOPS, not 3) *before* assuming the speedup. Until then a CUDA GPU wins
-  outright on this workload.
+**Measured on the on-hand ES 8480 (2026-06-08) — AMX runs, but DDR5 starves it.**
+Benchmarked on a Sapphire Rapids **8480 engineering sample** (56C, 4.7 GHz turbo,
+**2-of-8** DDR5-4800 channels populated, ASUS W790, Windows, stock
+`torch==2.12.0+cpu`).
 
-*(Side effect of this benchmark: it surfaced and fixed a latent autocast bug —
+*Correcting an earlier wrong call in this doc:* AMX **is** engaged.
+`ONEDNN_VERBOSE=1` shows bf16 matmuls dispatching to the
+`brg_matmul:avx10_1_512_amx` kernel — the AMX path, exactly as HWiNFO's
+feature list reports. The bottleneck is **memory bandwidth, not the tiles.**
+
+Steady-state bf16 GEMM throughput vs working-set size (≈100 MB L2+L3):
+
+| Matrix | TFLOPS | Note |
+|--------|-------:|------|
+| 1024³ | 7 | cache-resident |
+| 2048³ | **16** | ~25 MB, fits → AMX shining |
+| 4096³ | 4 | ~100 MB, thrashes → tiles starve |
+| 8192³ | 9 | DRAM-bound |
+
+Cache-resident matrices hit ~16 TFLOPS; once the working set spills to DRAM the
+AMX tiles starve and throughput collapses — the classic signature of a
+**2-of-8-channel** config (~¼ the platform's bandwidth). This is *precisely* why
+an 8480 on DDR5 underperforms a Xeon Max on HBM: identical AMX compute, but HBM
+(>1 TB/s) keeps the tiles fed. `tools.bench_step` `distill_tiny` (b1×s256) ran
+**85 tok/s** here — the small per-op matmuls + MoE scatter + recurrent loop sit
+largely in the memory-bound regime.
+
+- **Highest-ROI lever (cheap): populate all 8 DDR5 channels.** 2→8 ≈ **4×
+  bandwidth**, directly attacking the starvation that caps real throughput — six
+  more DIMMs (~a few hundred $) before considering a Xeon Max. Won't reach HBM,
+  but should multiply the 85 tok/s materially. **Re-benchmark after.**
+- Retail clocks (ES caps short of a retail 8480's ~3.8 GHz boost) and IPEX
+  tuning are secondary; the memory channels are the dominant fix.
+- **Revised takeaway:** AMX is real and working on this box — it's
+  *bandwidth-limited, not software-limited*. Fix memory channels first, re-measure
+  vs the 5070, then decide on a Xeon Max (whose HBM is the thing that makes AMX
+  fly). My earlier "AMX not engaged / needs IPEX+Linux" framing was wrong.
+
+*(Side effect of this exercise: it surfaced and fixed a latent autocast bug —
 `MoEFFN.index_add_` dispatch wasn't dtype-consistent under mixed precision. The
 CUDA training path dodged it by dtype coincidence; now fixed for all paths.)*
 
