@@ -94,10 +94,12 @@ class UncertaintyGatedGenerator:
         prompt_len = input_ids.shape[1]
 
         # We snapshot the pre-step cache before each new token so we can
-        # rewind if the uncertainty gate fires. The naive approach would
-        # be deepcopy(cache), but on large models that doubles memory; we
-        # store a one-tensor-clone per layer instead and pay only for the
-        # incremental K/V delta of a single decode step.
+        # rewind if the uncertainty gate fires. No tensor copies are needed
+        # (P1.6 — the old code cloned EVERY cache tensor EVERY step, O(S)
+        # memory traffic per token): the attention layers never mutate stored
+        # tensors in place — each step they `cat` into a NEW tensor and
+        # REPLACE the entry — so a structure-only snapshot holding references
+        # to the pre-step tensors is a correct zero-copy rewind.
         kv_cache: dict = {}
 
         for step in range(max_new_tokens):
@@ -108,7 +110,7 @@ class UncertaintyGatedGenerator:
                 cur_ids = input_ids[:, -1:]
                 start_pos = prompt_len + step - 1
 
-            snapshot = {k: {kk: vv.clone() for kk, vv in v.items()} for k, v in kv_cache.items()}
+            snapshot = {k: dict(v) for k, v in kv_cache.items()}
 
             logits, unc = self.model(
                 cur_ids, n_loops=self.min_loops, kv_cache=kv_cache, start_pos=start_pos,

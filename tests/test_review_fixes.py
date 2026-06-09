@@ -183,6 +183,47 @@ def test_ms_injection_precompute_blend_matches_forward():
 
 
 # ---------------------------------------------------------------------------
+# P1.6 — zero-copy KV-cache rewind in UncertaintyGatedGenerator
+# ---------------------------------------------------------------------------
+
+
+def test_structure_snapshot_is_a_correct_cache_rewind():
+    # The rewind contract: attention layers REPLACE cache entries (cat -> new
+    # tensor -> store), never mutating stored tensors in place — so a
+    # structure-only snapshot (shared refs, no clones) must restore the exact
+    # pre-step cache after a forward has grown the live cache.
+    m = MythOuro(_cfg()).eval()
+    kv: dict = {}
+    prompt = torch.randint(0, 128, (1, 5))
+    m(prompt, n_loops=2, kv_cache=kv, start_pos=0)             # prefill
+
+    reference = {
+        k: {kk: vv.clone() for kk, vv in v.items()} for k, v in kv.items()
+    }
+    snapshot = {k: dict(v) for k, v in kv.items()}             # zero-copy
+
+    nxt = torch.randint(0, 128, (1, 1))
+    m(nxt, n_loops=2, kv_cache=kv, start_pos=5)                # grows the cache
+
+    # Live cache grew; snapshot still holds the exact pre-step tensors.
+    for key, entry in reference.items():
+        for kk, ref_t in entry.items():
+            assert kv[key][kk].shape[1] > ref_t.shape[1]       # grew
+            assert torch.equal(snapshot[key][kk], ref_t), (key, kk)
+
+
+def test_uncertainty_gated_always_redo_path():
+    from mythouro.inference import UncertaintyGatedGenerator
+
+    m = MythOuro(_cfg()).eval()
+    prompt = torch.randint(0, 128, (1, 6))
+    gen = UncertaintyGatedGenerator(m, min_loops=2, max_loops=4, threshold=0.0)
+    out = gen.generate(prompt, max_new_tokens=4)
+    assert out.shape == (1, 10)
+    assert torch.equal(out[:, :6], prompt)
+
+
+# ---------------------------------------------------------------------------
 # P0.4 — ContinuousDepthwiseBatcher with cross-loop attention and a shrinking
 # active set: no ragged-buffer crash, and per-row outputs match a single-row
 # reference forward (rows must never see another sequence's history).
