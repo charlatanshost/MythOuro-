@@ -273,20 +273,29 @@ def _load_checkpoint_into_model(model, checkpoint_path: str) -> int:
 def _build_model_from_config(checkpoint_path: Optional[str] = None):
     """Construct an MythOuro and (optionally) load weights from disk.
 
-    The default variant is `mythouro_1b` so the CLI is usable out of the
-    box; for tiny CPU smoke runs, pass `--config-name tiny` (handled
-    upstream by the caller setting the env var) — or just call
-    `run_eval` directly from Python with a model you already built.
+    When a checkpoint is given, the model is rebuilt from the checkpoint's OWN
+    saved `cfg` — so any variant (distill_tiny … 1b) loads correctly. (Previously
+    this hardcoded `mythouro_1b`, so the standalone CLI could only eval a 1b
+    checkpoint and size-mismatched on everything else; the archived eval JSONs
+    came from in-training eval, not this path.) With no checkpoint, falls back to
+    a `mythouro_1b` skeleton for a bare smoke.
     """
     from mythouro import MythOuro
-    from mythouro.variants import mythouro_1b
 
-    cfg = mythouro_1b()
-    model = MythOuro(cfg)
     if checkpoint_path:
-        step = _load_checkpoint_into_model(model, checkpoint_path)
-        logger.info(f"eval: loaded checkpoint from step {step}")
-    return model
+        ckpt = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+        cfg = ckpt.get("cfg")
+        if cfg is None:                          # legacy checkpoints w/o pickled cfg
+            from mythouro.variants import mythouro_1b
+            cfg = mythouro_1b()
+        model = MythOuro(cfg)
+        state = ckpt["model"] if "model" in ckpt else ckpt
+        model.load_state_dict(state)
+        logger.info(f"eval: loaded checkpoint from step {int(ckpt.get('step', 0))}")
+        return model
+
+    from mythouro.variants import mythouro_1b
+    return MythOuro(mythouro_1b())
 
 
 def main():
@@ -320,8 +329,10 @@ def main():
         help="Path to write a JSON report. Parent directories are created.",
     )
     parser.add_argument(
-        "--tokenizer", default="EleutherAI/gpt-neo-125m",
-        help="Tokenizer model id (anything MythOuroTokenizer accepts).",
+        "--tokenizer", default="ByteDance/Ouro-2.6B-Thinking",
+        help="Tokenizer model id (anything MythOuroTokenizer accepts). Default "
+             "matches the Ouro-aligned vocab (49152) the distill checkpoints use; "
+             "a mismatched-vocab tokenizer yields out-of-range token ids.",
     )
     args = parser.parse_args()
 

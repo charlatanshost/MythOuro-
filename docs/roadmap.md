@@ -1050,6 +1050,40 @@ Far-horizon — only after a stable 1B base is shipped:
 Institutional memory. If any of these come back in a future session,
 the fix is already known — saves hours of re-debugging.
 
+### Code-review P0 fixes (2026-06-09)
+
+External review (Fable 5), independently verified against the code and fixed —
+all were **invariant violations the 303-test suite didn't catch** (it had no
+zero-init / telemetry-coverage / emission-parity invariants; now added):
+
+- **P0.1 — `_init_weights` clobbered deliberate zero-inits.** The blanket
+  N(0,0.02) ran *after* submodules zero-init, so `CrossLoopAttention.o_proj`
+  (identity residual) and `UncertaintyHead.net[-1]` (neutral 0.5) were random in
+  all v1–v5 checkpoints. *Fix:* those layers mark `_skip_global_init=True`.
+- **P0.2 — MoE router telemetry saw only the last loop.** The single recurrent
+  MoEFFN is called n_loops×, but `_last_router_logits`/counts were overwritten
+  each call → aux losses, the DeepSeek-V3 bias updater, and the cv/min%/max%
+  metrics only constrained loop K−1. *Fix:* `_loop_body` returns the telemetry
+  (checkpoint-safe, grad-tracked); `RecurrentBlock` accumulates across all loops.
+- **P0.3 — eval emitted a never-trained path.** Training returns `h_K`; eval
+  returned the ACT blend `h_out`, which under-summed for non-halting positions
+  **and** was never seen by the coda/head in training. *Fix:* return `h_K` at
+  inference too (ACT = early-exit criterion only). **Re-baseline (same v2
+  weights, fixed code): PPL 46.3→39.25, ECE 0.058→0.042, loop_eff 0.500 unchanged
+  — a free capability/calibration gain.** See
+  [`reports/rebaseline_v2_after_p0_fixes.md`](../reports/rebaseline_v2_after_p0_fixes.md).
+- **Also fixed:** `eval.harness` hardcoded `mythouro_1b` (couldn't load other
+  checkpoints) and defaulted to a wrong-vocab tokenizer (gpt-neo, 50k) →
+  out-of-range ids on the 49152-vocab models. Both corrected. *Open:* the eval
+  metrics don't clamp inputs to `max_seq_len`.
+
+**Caveats to existing conclusions:** the v3/v5 **cv numbers** (incl. open-Q#1's
+"expert-count ceiling") were measured through P0.2 (last-loop-only), so treat
+them as indicative, not exact. All archived eval numbers were measured through
+P0.3's `h_out` path, so they were **pessimistic**. v1–v5 were *trained* under
+P0.1+P0.2, so **a fresh run on the fixed code should improve further** — the
+re-baseline only captures P0.3's emission gain on already-trained weights.
+
 ### Training / architecture
 
 **ACT loop collapse — depth distribution pins to one bucket**
@@ -1167,7 +1201,7 @@ the fix is already known — saves hours of re-debugging.
 
 These are MythOuro-specific questions where existing literature doesn't fully answer. Worth tracking as we learn more.
 
-1. **Does MoE expansion compound across rounds?** **ANSWERED (2026-06-06): No — it stops compounding by the second round at this scale.** First round (24→48, v3) clearly compounded: recovered all 3 halt mechanisms, tightened cv to 0.19. Second round (48→96, v5) hit the **expert-count ceiling** — cv wouldn't tighten below ~0.5, min% stayed ~0.1–0.4, and a 7-prompt inspector read came out **net-comparable to v4** (2 better, 2 worse on the standard 4; in-domain prompts confirmed correct register + clean halting but scale-bound gibberish content). Conclusion: at 632M / ~20–40M tokens, 96 experts is more than the model can find distinct work for. **Don't do a third expansion; the next lever is width (Net2Wider) or scale (more params + data + compute), not more experts or more SFT.**
+1. **Does MoE expansion compound across rounds?** **ANSWERED (2026-06-06), but SOFTENED (2026-06-09): No — it stops compounding by the second round at this scale, though the cv evidence is now suspect.** First round (24→48, v3) clearly compounded: recovered all 3 halt mechanisms, tightened cv to 0.19. Second round (48→96, v5) hit the **expert-count ceiling** — cv wouldn't tighten below ~0.5, min% stayed ~0.1–0.4, and a 7-prompt inspector read came out **net-comparable to v4**. **Caveat (P0.2):** every cv/min%/max% number here was measured through the last-loop-only telemetry bug, so the *cv* evidence isn't trustworthy — treat it as indicative. The **inspector read independently supports the ceiling**, so the conclusion likely holds, but it should be **re-confirmed after the P0.2 fix** (re-run a short expansion with all-loop routing balance). Conclusion (provisional): **don't do a third expansion; the next lever is width (Net2Wider) or scale, not more experts** — but verify the cv post-fix before treating it as settled.
 2. **What's the right depth-reg coefficient post-promotion?** Currently kept at 0.1 across all runs. Empirically the halt distribution stays uniform; is there a coefficient that allows *more* adaptive depth at inference without re-triggering loop collapse?
 3. **Does the ConfidenceAwareGenerator stop-threshold need per-checkpoint retuning?** v2 hit `stop='confidence'` on trivia; v3 didn't. Suggests the calibration shifted with the larger pool.
 4. **Can we promote AND maintain a custom teacher in distillation?** I.e., distill the promoted v3 from Ouro-2.6B again, or do the new experts disrupt logit-matching?
