@@ -112,6 +112,77 @@ def test_aux_loss_grad_live_under_gradient_checkpointing():
 
 
 # ---------------------------------------------------------------------------
+# P1.3 — sorted MoE dispatch must equal a naive per-token reference
+# ---------------------------------------------------------------------------
+
+
+def test_moe_sorted_dispatch_matches_naive_reference():
+    import torch.nn.functional as F
+    from mythouro.main import MoEFFN
+
+    torch.manual_seed(0)
+    cfg = _cfg(n_experts=6, n_experts_per_tok=3, expert_dim=16)
+    ffn = MoEFFN(cfg).eval()
+    # Non-zero router bias so the biased-topk path is exercised too.
+    ffn.router_bias.uniform_(-0.5, 0.5)
+
+    x = torch.randn(2, 5, cfg.dim)
+    out = ffn(x)
+
+    # Independent reference: recompute the routing decisions and apply each
+    # expert token by token (no sorting, no batching).
+    flat = x.view(-1, cfg.dim)
+    logits = ffn.router(flat)
+    scores = F.softmax(logits, dim=-1)
+    _, topk_idx = (logits + ffn.router_bias).topk(ffn.topk, dim=-1)
+    topk_scores = scores.gather(-1, topk_idx)
+    topk_scores = topk_scores / topk_scores.sum(dim=-1, keepdim=True)
+
+    ref = torch.zeros_like(flat)
+    for i in range(flat.shape[0]):
+        for k in range(ffn.topk):
+            eid = int(topk_idx[i, k])
+            ref[i] += ffn.routed_experts[eid](flat[i : i + 1])[0] * topk_scores[i, k]
+    for shared in ffn.shared_experts:
+        ref += shared(flat)
+
+    assert torch.allclose(out.view(-1, cfg.dim), ref, atol=1e-5), (
+        (out.view(-1, cfg.dim) - ref).abs().max().item()
+    )
+
+
+def test_moe_dispatch_gradient_flows_through_gates_and_experts():
+    from mythouro.main import MoEFFN
+
+    torch.manual_seed(1)
+    ffn = MoEFFN(_cfg()).train()
+    x = torch.randn(2, 4, 64, requires_grad=True)
+    ffn(x).sum().backward()
+    assert x.grad is not None and torch.isfinite(x.grad).all()
+    assert ffn.router.weight.grad is not None          # via the gate scores
+    assert any(
+        p.grad is not None and float(p.grad.abs().sum()) > 0
+        for e in ffn.routed_experts for p in e.parameters()
+    )
+
+
+# ---------------------------------------------------------------------------
+# P1.4 — multi-scale injection hoist: precompute+blend == per-loop forward
+# ---------------------------------------------------------------------------
+
+
+def test_ms_injection_precompute_blend_matches_forward():
+    from mythouro.main import MultiScaleInjection
+
+    torch.manual_seed(0)
+    ms = MultiScaleInjection(dim=64, max_loops=4, window_size=4).eval()
+    e = torch.randn(2, 10, 64)
+    views = ms.precompute(e)
+    for t in range(4):
+        assert torch.allclose(ms.blend_views(views, t), ms(e, t), atol=1e-6)
+
+
+# ---------------------------------------------------------------------------
 # P0.4 — ContinuousDepthwiseBatcher with cross-loop attention and a shrinking
 # active set: no ragged-buffer crash, and per-row outputs match a single-row
 # reference forward (rows must never see another sequence's history).

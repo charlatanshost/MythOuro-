@@ -784,19 +784,36 @@ class MoEFFN(nn.Module):
             torch.arange(N, device=x.device).repeat_interleave(K)
         )                                                          # (N*K,)
 
+        # Sorted dispatch (P1.3). The previous loop ran `sel.any()` per expert —
+        # a HOST SYNC per expert per loop per recompute (96 experts × 4 loops ×
+        # 2 with gradient checkpointing ≈ 768 syncs per micro-step in the v5
+        # regime). Instead: one argsort groups the (token, slot) rows by expert,
+        # and ONE host transfer (`counts.tolist()`) gives the segment lengths,
+        # so empty experts are skipped on the Python side with no device round
+        # trips. This also removes the per-expert boolean-mask graph breaks
+        # (torch.compile-friendlier).
+        order = torch.argsort(flat_expert_ids)                    # (N*K,)
+        sorted_tok = token_index[order]                           # (N*K,)
+        sorted_gate = flat_gate[order]                            # (N*K, 1)
+        sorted_in = flat[sorted_tok]                              # (N*K, D)
+        counts_list = self._last_expert_counts.tolist()           # 1 host sync
+
         out = torch.zeros_like(flat)
-        for eid in range(self.n_experts):
-            sel = flat_expert_ids == eid
-            if not sel.any():
+        start = 0
+        for eid, n in enumerate(counts_list):
+            if n == 0:
                 continue
-            tok = token_index[sel]                                # (M,)
-            gate = flat_gate[sel]                                 # (M, 1)
-            expert_out = self.routed_experts[eid](flat[tok]) * gate
+            end = start + n
+            expert_out = (
+                self.routed_experts[eid](sorted_in[start:end])
+                * sorted_gate[start:end]
+            )
             # `.to(out.dtype)` keeps the scatter dtype-consistent under
             # autocast (where the expert Linear emits bf16 but `out` may be the
             # fp32 input activation). No-op when dtypes already match — i.e. on
             # the native-bf16 / fp32 paths.
-            out.index_add_(0, tok, expert_out.to(out.dtype))
+            out.index_add_(0, sorted_tok[start:end], expert_out.to(out.dtype))
+            start = end
 
         # shared experts always fire for every token
         for shared in self.shared_experts:
@@ -1177,6 +1194,29 @@ class MultiScaleInjection(nn.Module):
         """Global mean pool broadcast to every position."""
         return e.mean(dim=1, keepdim=True).expand_as(e)
 
+    def precompute(self, e: torch.Tensor) -> "tuple[torch.Tensor, ...]":
+        """
+        Project the three views of `e` once (P1.4). Only the 3-way blend
+        weights depend on the loop index — `e` is frozen across loops in
+        RecurrentBlock — so callers injecting the SAME `e` every loop hoist
+        this out of the loop and call `blend_views` per iteration, saving
+        3·(K−1) full dim×dim GEMMs over B×T per forward.
+        """
+        return (
+            self.proj_fine(e),
+            self.proj_coarse(self._coarse(e)),
+            self.proj_global(self._global(e)),
+        )
+
+    def blend_views(
+        self, views: "tuple[torch.Tensor, ...]", loop_t: int
+    ) -> torch.Tensor:
+        """Blend precomputed views with this loop's softmax weights."""
+        t_idx = min(loop_t, self.max_loops - 1)
+        w = F.softmax(self.blend[t_idx], dim=0)                # (3,)
+        e_fine, e_coarse, e_global = views
+        return w[0] * e_fine + w[1] * e_coarse + w[2] * e_global
+
     def forward(self, e: torch.Tensor, loop_t: int) -> torch.Tensor:
         """
         Args:
@@ -1185,13 +1225,12 @@ class MultiScaleInjection(nn.Module):
 
         Returns:
             (B, T, dim) blended injection signal for this loop.
+
+        Kept for callers whose `e` CHANGES per loop (RetrievalAugmentedInjector,
+        the depthwise batcher's shifting active subset); the frozen-`e` fast
+        path is precompute() + blend_views().
         """
-        t_idx = min(loop_t, self.max_loops - 1)
-        w = F.softmax(self.blend[t_idx], dim=0)                # (3,)
-        e_fine = self.proj_fine(e)
-        e_coarse = self.proj_coarse(self._coarse(e))
-        e_global = self.proj_global(self._global(e))
-        return w[0] * e_fine + w[1] * e_coarse + w[2] * e_global
+        return self.blend_views(self.precompute(e), loop_t)
 
 
 # ---------------------------------------------------------------------------
@@ -1596,10 +1635,16 @@ class RecurrentBlock(nn.Module):
 
         use_ckpt = self.use_ckpt and self.training and kv_cache is None
 
+        # Multi-scale injection: `e` is frozen across loops, so project the
+        # three views ONCE (P1.4) and only re-blend per loop — saves 3·(K−1)
+        # dim×dim GEMMs per forward vs projecting inside the loop.
+        ms_views = self.ms_inject.precompute(e) if self.use_ms else None
+
         for t in range(n_loops):
-            # Multi-scale injection: blend fine / coarse / global views of e
-            # with learned per-loop weights. Falls back to plain e if disabled.
-            e_inject = self.ms_inject(e, t) if self.use_ms else e
+            # Per-loop blend of the precomputed fine / coarse / global views.
+            e_inject = (
+                self.ms_inject.blend_views(ms_views, t) if self.use_ms else e
+            )
 
             if use_ckpt:
                 h_new, rlogits, counts = ckpt_util.checkpoint(
