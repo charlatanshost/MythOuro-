@@ -44,30 +44,54 @@ Legend: ✅ done · ⬜ todo · 🔁 partial
   `mythouro_distill_tiny` vs `mythouro_distill_tiny_dense`, ≥2 seeds, ~4–5 h/arm
   on the 5070 (per the wired spec in this roadmap's "Gating experiment").
 
-## P1 — performance / measurement (the review's items, unstarted)
+## P1 — performance / measurement
 
-- ⬜ **P1.1** MLA caches RoPE keys expanded per-head (~2–3× cache bloat) → cache
-  `(B,T,1,rope_dim)`, broadcast at attention.
-- ⬜ **P1.2** MLA decode lacks weight absorption (O(S) recompute/token/loop) →
-  DeepSeek absorption (inference-only rewrite). *Spec into the Rust runtime.*
-- ⬜ **P1.3** MoE dispatch host syncs (`sel.any()` per expert per loop) — ~768
-  syncs/micro-step in the v5 regime; plausibly a real chunk of the 33 s/step.
-  *Fix:* drop the `.any()` guard or argsort+split dispatch. **Do before/with the
-  ablation** (also unblocks `torch.compile`). Verify with `bench_step`.
-- ⬜ **P1.4** Multi-scale injection recomputes the 3 projections every loop
-  (`e` is frozen) → precompute once, blend per loop.
-- ⬜ **P1.5** ACT gives no decode speedup; `generate` default `n_loops=8` > trained
-  4 → change default to `cfg.max_loop_iters`; (opt) decode early-exit backfill.
-- ⬜ **P1.6** `UncertaintyGatedGenerator` clones the whole KV cache every step →
-  length-slice rewind.
-- ⬜ **P1.7** `SpeculativeDecoder` slower than vanilla (no-cache drafting, verify
-  depth 16) → cached drafting + aligned depths.
-- ⬜ **P1.8** small hot-path items (one cleanup PR): LoRA `t_idx` H2D transfer;
-  `loop_index_embedding` reallocates each call; `_causal_mask` materialized every
-  forward (use `is_causal`); skip training-mode `h_out` accumulation (now dead
-  after P0.3); gradient-checkpoint side-effect assertion; fast-tokenizer check.
-- ⬜ **P1.9** `distillation_loss` soft KL ignores `ignore_index` → mask padded
-  rows (harmless now, footgun at scale-up).
+- ✅ **P1.1** MLA rope-key cache bloat → caches compact `(B,S,1,rope_dim)`,
+  broadcast at attention (commit f66a524). Cached-decode-vs-full-forward
+  equivalence test added. **Finding:** with multi-scale injection / cross-loop
+  attention ON, cached single-token decode *legitimately* diverges from a full
+  forward (window pooling / loop snapshots only see the current token at
+  decode) — pre-existing Part-2 semantics, feeds the P2.6 complexity budget.
+- ⬜ **P1.2** MLA decode lacks weight absorption (O(S) `kv_up` recompute per
+  token per loop) → DeepSeek absorption: fold `W_uk` into the query path
+  (`q_nope @ W_uk^T`, score directly against cached `c_kv`) and `W_uv` into
+  `wo`, attention in latent space, zero per-step reconstruction. Inference-only
+  rewrite; **bake into the Rust runtime from day one**. Needs GPU validation.
+- ✅ **P1.3** MoE dispatch host syncs → argsort-grouped dispatch, ONE host
+  transfer per call; torch.compile-friendlier (commit fe1bfbe). Equivalence
+  test vs naive per-token reference. CPU bench neutral within noise as
+  expected (the syncs only exist on CUDA) — **A/B on the 5070**: before =
+  31a48b0, after = fe1bfbe+, ideally on a 96-expert config.
+- ✅ **P1.4** multi-scale injection hoist → `precompute()` once per forward +
+  `blend_views()` per loop (commit fe1bfbe).
+- 🔁 **P1.5** (a) ✅ `generate` defaults to `cfg.max_loop_iters` (was 8 = 2×
+  trained depth). (b) ⬜ decode early-exit cache-backfill — *semantic* change
+  (backfills deeper-loop K/V with loop-t values), wants GPU validation; (c) =
+  the Rust ACT-compaction work.
+- ✅ **P1.6** zero-copy cache rewind (commit 352f266) — better than the
+  review's length-slice: cache entries are replaced, never mutated in place,
+  so a structure-only ref snapshot is a correct rewind with zero copies.
+- 🔁 **P1.7** (commit 6dd0506) ✅ verify depth aligned to trained; ✅ residual
+  resample reuses stored draft dists (was: full extra draft forward); ✅ bonus
+  token sampled from existing verify logits (was: full extra verify forward).
+  ⬜ **Remaining — cached drafting (design, ready to implement):** two
+  *depth-separate* caches (draft@d, verify@v — loop cache keys differ in
+  count, so one shared cache can't serve both). Maintain per-cache
+  `committed_len`; each phase feeds the tokens beyond its commit point; after
+  acceptance of `a` candidates, roll BOTH caches back by **length-slicing**
+  every entry to `committed + fed_prefix + a` along dim 1 (valid because
+  causal K/V for a kept position is independent of the dropped suffix; the
+  verify pass's own cache writes provide the kept positions). Mind the sink
+  offset (prefill cache lengths include sink positions). Needs GPU validation.
+- 🔁 **P1.8** ✅ LoRA `t_idx` H2D; ✅ `loop_index_embedding` memo cache; ✅
+  vestigial ACT-blend `h_out` accumulation removed entirely (dead since
+  P0.3); ✅ ckpt side-effect covered by the P0.2 grad-liveness test. ⬜
+  `_causal_mask` → `is_causal` SDPA refactor (touches the attention cascade +
+  cached-decode mask alignment; real win — SDPA's fused causal path — but
+  wants GPU validation). ⬜ fast-tokenizer check (one-liner, anytime). FineWeb
+  buffer pointer: skipped per review (irrelevant at current scale).
+- ✅ **P1.9** distillation soft-KL now masked to `ignore_index`-valid positions
+  (commit 6998ec5).
 
 ## P2 — strategic (the review's items)
 
@@ -77,17 +101,25 @@ Legend: ✅ done · ⬜ todo · 🔁 partial
   signal. (P0.3 took option 2 short-term; this is the option-3 upgrade.)
 - ⬜ **P2.3** Consider Muon optimizer for from-scratch runs (½ the AdamW state).
 - ⬜ **P2.4** `torch.compile` on the dense ablation arm (needs P1.3).
-- ⬜ **P2.5** Quarantine/delete `mythouro/moda.py` (1063-line unused duplicate;
-  name-collides with MoDr).
+- ✅ **P2.5** `moda.py` quarantined to `examples/` next to its only consumer
+  (commit 9b2d1ee); the package no longer ships it.
 - ⬜ **P2.6** Define a frozen minimal config (loops + LTI + dense FFN, rest off),
   A/B each mechanism back in — several were not doing what their comments claimed.
 - ⬜ **P2.7** "Fix release" re-baseline: full v4 eval + inspector on the same
   checkpoint, diff vs archived. (Partial: v2 ppl/ece/loop_eff done above.)
 
-## Suggested next-session order (from the review)
-1. ✅ ~~P0.4 + P0.5 (finish the P0 tier) + the eval-metric `max_seq_len` clamp.~~
-   **P0 tier complete (2026-06-09).**
-2. **P1.3** (MoE dispatch) + **P1.4** (MS-injection hoist) — `bench_step` before/after.
-3. **MoE-vs-dense ablation** (P2.1), optionally `torch.compile` the dense arm (P2.4).
-4. **Per-step weighted loop loss** (P2.2) — if it wins, supersedes P0.3's option 2.
-5. P1.1/P1.2 MLA fixes (+ spec into the Rust runtime doc); P1.5–P1.7; P2.5 anytime.
+## Suggested next-session order (updated 2026-06-09, second pass)
+1. ✅ ~~P0 tier + eval clamp~~ — complete.
+2. ✅ ~~P1.3 + P1.4~~; ✅ P1.1, P1.5a, P1.6, P1.7-subset, P1.8-most, P1.9, P2.5.
+3. **On the 5070 (user-run, no training):** A/B `bench_step --device cuda:0`
+   before(31a48b0)/after(main) to measure the P1.3 sync win.
+4. **Training runs — deliberately deferred by user (2026-06-09: "save
+   retraining for later"):** MoE-vs-dense ablation (P2.1, fully unblocked),
+   fresh retrain on fixed code, per-step weighted loop loss (P2.2). All wired;
+   run when the user gives the go.
+5. Code work remaining: **P1.2** (MLA absorption, spec above), **P1.7 cached
+   drafting** (design spec'd above), **P1.5b** decode backfill, **P1.8**
+   `is_causal` refactor + fast-tokenizer check — all want GPU validation;
+   **P2.6** minimal-config definition (doc work, can do anytime); P2.3/P2.4
+   ride along with the deferred training runs; **P2.7** re-baseline rides the
+   fix-release (v2 partial done).
