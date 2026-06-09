@@ -251,6 +251,20 @@ This also **validates the quantization roadmap**: quant was modest at 632M, but 
      (CUDA→XPU) and its achieved tok/s, before any $800–1000 B70 purchase
 ```
 
+> **XPU port: DONE (2026-06-09), turnkey for B70 testing.** The CUDA→XPU port is
+> built and merged — `mythouro/device.py` abstracts cuda/xpu/cpu (torch.xpu is a
+> native 1:1 mirror of torch.cuda since PyTorch 2.5; no IPEX/Linux needed —
+> Windows is supported), wired through sft/distill/eval/inspect/bench_step. **The
+> NVIDIA path is byte-identical** (on a cuda device every helper returns what the
+> old hardcoded code did; complex RoPE is still the default; 217 tests pass). The
+> only XPU op risk — RoPE's complex ops (`view_as_complex`/`polar`) — has a
+> `rope_real` fallback (real cos/sin, *identical* rotation, equivalence-tested),
+> exposed as `bench_step --rope-real`. So on a B70 the whole test is:
+> `pip install torch --index-url …/whl/xpu` →
+> `python -m tools.bench_step --device xpu` (add `--rope-real` if apply_rope
+> errors) → real tok/s. Only hardware can confirm op coverage + MFU; the code is
+> ready.
+
 ### Sequencing rule: Rust comes AFTER training, never before
 Rust is a deployment optimization for a *frozen, coherent* model; from-scratch produces that model, and the architecture may change during it — building Rust first means rebuilding it. Order: **train → freeze → quantize → Rust.**
 

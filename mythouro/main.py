@@ -215,6 +215,12 @@ class MythOuroConfig:
     recurrent_dense: bool = False
     recurrent_dense_ffn_dim: int = 0
 
+    # Use a real-valued (cos/sin) RoPE table instead of the default complex one,
+    # for backends without complex-tensor op support (e.g. some Intel XPU
+    # coverage). Mathematically identical rotation — safe to flip on a checkpoint
+    # trained the other way. See precompute_rope_freqs / apply_rope.
+    rope_real: bool = False
+
 
 # ---------------------------------------------------------------------------
 # RMSNorm
@@ -257,25 +263,33 @@ class RMSNorm(nn.Module):
 
 
 def precompute_rope_freqs(
-    dim: int, max_len: int, theta: float = 500000.0
+    dim: int, max_len: int, theta: float = 500000.0, real: bool = False
 ) -> torch.Tensor:
     """
-    Precompute complex-valued RoPE rotation matrices for positions 0..max_len-1.
+    Precompute RoPE rotation tables for positions 0..max_len-1.
 
-    Each position gets a complex phasor e^{i·m·θ_k} for each frequency pair k.
-    Stored as a complex tensor so that rotation is a single pointwise multiply.
+    Each position gets a phasor e^{i·m·θ_k} for each frequency pair k.
 
     Args:
         dim     -- head dimension (must be even); frequencies are computed for dim//2 pairs
         max_len -- maximum sequence length to precompute
         theta   -- RoPE base (higher = slower frequency decay; 500k is the LLaMA-3 default)
+        real    -- if False (default), return a **complex64** tensor of shape
+                   (max_len, dim//2) — rotation is a single complex multiply.
+                   If True, return a **real** tensor of shape (max_len, dim//2, 2)
+                   holding (cos, sin), for backends without complex-tensor support
+                   (e.g. some Intel XPU op coverage). The two encode the *same*
+                   rotation — `apply_rope` dispatches on the tensor's dtype, so a
+                   checkpoint trained one way runs identically the other way.
 
     Returns:
-        complex64 tensor of shape (max_len, dim//2)
+        complex64 (max_len, dim//2)  OR  float32 (max_len, dim//2, 2) if real.
     """
     freqs = 1.0 / (theta ** (torch.arange(0, dim, 2, dtype=torch.float32) / dim))
     t = torch.arange(max_len, dtype=torch.float32)
     freqs = torch.outer(t, freqs)
+    if real:
+        return torch.stack([freqs.cos(), freqs.sin()], dim=-1)
     return torch.polar(torch.ones_like(freqs), freqs)
 
 
@@ -283,25 +297,38 @@ def apply_rope(x: torch.Tensor, freqs_cis: torch.Tensor) -> torch.Tensor:
     """
     Apply rotary positional embeddings to query or key tensors.
 
-    Interprets each pair of adjacent features as a 2D complex number and
-    multiplies by the precomputed phasor for that position, rotating the
-    representation in the complex plane without changing its norm.
+    Interprets each pair of adjacent features as a 2D rotation and rotates it by
+    the precomputed phasor for that position, without changing its norm.
+
+    Two backends, selected by `freqs_cis`'s dtype (see `precompute_rope_freqs`):
+      - **complex** `freqs_cis` (T, head_dim//2): a single complex multiply.
+      - **real** `freqs_cis` (T, head_dim//2, 2) holding (cos, sin): the same
+        rotation in pure real arithmetic — no `view_as_complex` / `polar`, for
+        backends where complex ops are unsupported or slow (Intel XPU).
 
     Args:
         x         -- tensor of shape (B, T, H, head_dim); head_dim must be even
-        freqs_cis -- precomputed complex frequencies of shape (T, head_dim//2),
-                     already sliced to exactly the positions being processed
-                     (caller is responsible for correct start_pos offset)
+        freqs_cis -- precomputed rotation table, already sliced to the positions
+                     being processed (caller handles the start_pos offset)
 
     Returns:
         Rotated tensor of the same shape and dtype as x
     """
-    xc = torch.view_as_complex(x.float().reshape(*x.shape[:-1], -1, 2))
-    return (
-        torch.view_as_real(xc * freqs_cis.unsqueeze(0).unsqueeze(2))
-        .flatten(-2)
-        .to(x.dtype)
-    )
+    if freqs_cis.is_complex():
+        xc = torch.view_as_complex(x.float().reshape(*x.shape[:-1], -1, 2))
+        return (
+            torch.view_as_real(xc * freqs_cis.unsqueeze(0).unsqueeze(2))
+            .flatten(-2)
+            .to(x.dtype)
+        )
+    # Real path: freqs_cis[..., 0] = cos, [..., 1] = sin, shape (T, head_dim//2).
+    xr = x.float().reshape(*x.shape[:-1], -1, 2)          # (B, T, H, D//2, 2)
+    x_even, x_odd = xr[..., 0], xr[..., 1]                # (B, T, H, D//2)
+    cos = freqs_cis[..., 0].unsqueeze(0).unsqueeze(2)     # (1, T, 1, D//2)
+    sin = freqs_cis[..., 1].unsqueeze(0).unsqueeze(2)
+    out_even = x_even * cos - x_odd * sin
+    out_odd = x_even * sin + x_odd * cos
+    return torch.stack([out_even, out_odd], dim=-1).flatten(-2).to(x.dtype)
 
 
 # ---------------------------------------------------------------------------
@@ -1817,12 +1844,13 @@ class MythOuro(nn.Module):
         # RoPE table is sized to max_seq_len + n_sink_tokens so sink positions
         # plus the longest real sequence stay within precomputed frequencies.
         rope_len = cfg.max_seq_len + cfg.n_sink_tokens
+        rope_real = getattr(cfg, "rope_real", False)
         freqs = precompute_rope_freqs(
-            cfg.dim // cfg.n_heads, rope_len, cfg.rope_theta
+            cfg.dim // cfg.n_heads, rope_len, cfg.rope_theta, real=rope_real
         )
         self.register_buffer("freqs_cis", freqs)
         freqs_mla = precompute_rope_freqs(
-            cfg.qk_rope_head_dim, rope_len, cfg.rope_theta
+            cfg.qk_rope_head_dim, rope_len, cfg.rope_theta, real=rope_real
         )
         self.register_buffer("freqs_cis_mla", freqs_mla)
 

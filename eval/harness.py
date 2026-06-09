@@ -330,7 +330,8 @@ def main():
 
     model = _build_model_from_config(args.checkpoint)
 
-    device = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
+    from mythouro import device as dev
+    device = dev.pick_device(args.device)   # cuda:0 > xpu > cpu
     model = model.to(device)
 
     run_eval(

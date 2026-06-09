@@ -444,10 +444,8 @@ def main():
         sys.exit(1)
 
     # ── Pick the device ──────────────────────────────────────────────
-    if args.device:
-        device = args.device
-    else:
-        device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    from mythouro import device as dev
+    device = dev.pick_device(args.device)   # explicit > cuda:0 > xpu > cpu
 
     print(f"loading: {ckpt_path}")
     print(f"device:  {device}")

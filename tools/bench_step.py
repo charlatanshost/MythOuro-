@@ -50,6 +50,7 @@ sys.path.insert(0, __import__("os").path.dirname(
 
 import mythouro.variants as variants  # noqa: E402
 from mythouro.main import MythOuro, MythOuroConfig  # noqa: E402
+from mythouro import device as dev  # noqa: E402
 
 
 def run_benchmark(
@@ -75,12 +76,10 @@ def run_benchmark(
     model.train(backward)
     vocab = model.cfg.vocab_size
 
-    is_cuda = device.startswith("cuda")
-    autocast_device = "cuda" if is_cuda else "cpu"
+    autocast_device = dev.autocast_type(device)   # cuda | xpu | cpu
 
     def _sync():
-        if is_cuda:
-            torch.cuda.synchronize()
+        dev.synchronize(device)
 
     # autocast only applies to the low-precision dtypes; fp32 runs plainly.
     if dtype == torch.float32:
@@ -136,15 +135,23 @@ def _parse_args(argv=None) -> argparse.Namespace:
     p.add_argument("--backward", action=argparse.BooleanOptionalAction, default=True,
                    help="Time forward+backward (default) or --no-backward for fwd-only.")
     p.add_argument("--dtype", default="bf16", choices=["bf16", "fp16", "fp32"])
+    p.add_argument(
+        "--rope-real", action="store_true",
+        help="Use the real-valued (cos/sin) RoPE table instead of complex — for "
+             "backends without complex-tensor op support (e.g. Intel XPU). Same "
+             "math; flip this if `--device xpu` errors inside apply_rope.",
+    )
     return p.parse_args(argv)
 
 
 def main():
     args = _parse_args()
-    device = args.device or ("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = dev.pick_device(args.device)         # explicit, else cuda:0 / xpu / cpu
     dtype = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}[args.dtype]
 
     cfg: MythOuroConfig = getattr(variants, args.variant)()
+    if args.rope_real:
+        cfg.rope_real = True
     model = MythOuro(cfg)
     n_params = sum(p.numel() for p in model.parameters())
 

@@ -93,6 +93,7 @@ from mythouro.variants import (
     mythouro_1b, mythouro_3b, mythouro_10b, mythouro_50b, mythouro_100b,
     mythouro_500b, mythouro_1t,
 )
+from mythouro import device as dev
 
 
 _VARIANT_FUNCS = {
@@ -211,28 +212,25 @@ def main():
     # We validate the requested device exists before any allocation to fail
     # loudly rather than waste 5 minutes building the model on a phantom GPU.
     if args.student_device is None:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+        device = dev.pick_device(None)        # cuda:0 > xpu > cpu
     else:
         device = args.student_device
-        if device.startswith("cuda"):
-            if not torch.cuda.is_available():
+        if dev.is_accelerator(device):
+            if not dev.is_available(device):
                 raise RuntimeError(
-                    f"--student-device={device!r} but CUDA is unavailable"
+                    f"--student-device={device!r} but "
+                    f"{dev.backend(device)} is unavailable"
                 )
-            # `cuda` alone means cuda:0; `cuda:N` selects device N
+            # `cuda`/`xpu` alone means index 0; `cuda:N` / `xpu:N` selects N.
             idx = int(device.split(":", 1)[1]) if ":" in device else 0
-            n_devices = torch.cuda.device_count()
+            n_devices = dev.device_count(device)
             if idx >= n_devices:
                 raise RuntimeError(
-                    f"--student-device={device!r} but only {n_devices} CUDA "
-                    f"device(s) visible (run `nvidia-smi` to check)."
+                    f"--student-device={device!r} but only {n_devices} "
+                    f"{dev.backend(device)} device(s) visible."
                 )
 
-    amp_dtype = (
-        torch.bfloat16
-        if torch.cuda.is_available() and torch.cuda.is_bf16_supported()
-        else torch.float16
-    )
+    amp_dtype = torch.bfloat16 if dev.bf16_supported(device) else torch.float16
 
     # ------------------------------------------------------------------
     # Tokenizer + student
@@ -285,7 +283,7 @@ def main():
                              + list(esp_probe.parameters()),
         ),
         betas=(0.9, 0.95),
-        fused=torch.cuda.is_available(),
+        fused=dev.fused_adam_supported(device),
     )
 
     # ------------------------------------------------------------------
@@ -321,8 +319,8 @@ def main():
     depth_rng = _random.Random(0)
 
     amp_ctx = (
-        torch.amp.autocast(device_type="cuda", dtype=amp_dtype)
-        if "cuda" in device else nullcontext()
+        torch.amp.autocast(device_type=dev.autocast_type(device), dtype=amp_dtype)
+        if dev.is_accelerator(device) else nullcontext()
     )
 
     shutdown = ShutdownHandler()

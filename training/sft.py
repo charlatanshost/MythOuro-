@@ -80,6 +80,7 @@ from mythouro.variants import (
     mythouro_500b, mythouro_1t,
 )
 from mythouro.grow import apply_sentinel_to_router_biases
+from mythouro import device as dev
 
 
 _VARIANT_FUNCS = {
@@ -314,29 +315,14 @@ def masked_ce_loss(
 def main():
     args = _parse_args()
 
-    # Device resolution: explicit > cuda:0 > cpu.
-    if args.device is None:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-    else:
-        device = args.device
-        if device.startswith("cuda"):
-            if not torch.cuda.is_available():
-                raise RuntimeError(
-                    f"--device={device!r} but CUDA is unavailable"
-                )
-            idx = int(device.split(":", 1)[1]) if ":" in device else 0
-            n_devices = torch.cuda.device_count()
-            if idx >= n_devices:
-                raise RuntimeError(
-                    f"--device={device!r} but only {n_devices} CUDA "
-                    f"device(s) visible."
-                )
+    # Device resolution: explicit > cuda:0 > xpu > cpu (CUDA / Intel XPU / CPU).
+    device = dev.pick_device(args.device)
+    if dev.is_accelerator(device) and not dev.is_available(device):
+        raise RuntimeError(
+            f"--device={device!r} but {dev.backend(device)} is unavailable"
+        )
 
-    amp_dtype = (
-        torch.bfloat16
-        if torch.cuda.is_available() and torch.cuda.is_bf16_supported()
-        else torch.float16
-    )
+    amp_dtype = torch.bfloat16 if dev.bf16_supported(device) else torch.float16
 
     # ------------------------------------------------------------------
     # Tokenizer + student
@@ -396,7 +382,7 @@ def main():
         optimizer = torch.optim.AdamW(
             optimizer_groups,
             betas=(0.9, 0.95),
-            fused=torch.cuda.is_available(),
+            fused=dev.fused_adam_supported(device),
         )
 
     # ------------------------------------------------------------------
@@ -462,8 +448,8 @@ def main():
     depth_rng = _random.Random(0)
 
     amp_ctx = (
-        torch.amp.autocast(device_type="cuda", dtype=amp_dtype)
-        if "cuda" in device else nullcontext()
+        torch.amp.autocast(device_type=dev.autocast_type(device), dtype=amp_dtype)
+        if dev.is_accelerator(device) else nullcontext()
     )
 
     shutdown = ShutdownHandler()
