@@ -553,6 +553,41 @@ largely in the memory-bound regime.
 `MoEFFN.index_add_` dispatch wasn't dtype-consistent under mixed precision. The
 CUDA training path dodged it by dtype coincidence; now fixed for all paths.)*
 
+##### Xeon Max build checklist (decided 2026-06-08)
+
+Committed to a dedicated Max rig — the deciding factor is **RAM-shortage
+arbitrage**: at current ECC DDR5 RDIMM pricing, the 64 GB HBM is effectively
+*free fast memory* bundled into the CPU, sidestepping ~$4k of DIMMs *and* fitting
+a 3B. This holds regardless of the exact tok/s. (Pre-buy benchmarking is off the
+table — Intel Tiber Cloud's Xeon Max signup is dead and the part is too niche to
+rent elsewhere — so the plan is **buy, measure day one**.)
+
+- **CPU:** Xeon Max 9462 / 9460 / 9480 — all share **64 GB HBM2e + ~1.6 TB/s**;
+  the only difference is AMX compute (~68 / 78 / 95 TFLOPS peak ≈ 32 / 40 / 56
+  cores). HBM feeds them equally, so **more cores = strictly faster** for this
+  compute-bound workload — pick by budget. An **ES** is the cheap route (accept
+  the clock/stability variance, as on the current 8480 ES).
+- **Board:** Gigabyte **MS33-CE0** (1S LGA4677 / C741, 8-ch) or MS03. **Not the
+  2S MS73** for single-job training — two sockets = two HBM pools over UPI
+  (NUMA), not a unified pool.
+- **Memory mode:** **HBM-only** (64 GB, no DIMMs) — the whole point. Fits a 3B +
+  activations with *streamed* data. Add DDR (HBM-caching mode) only if a slower
+  capacity tier is later needed; for training it isn't.
+- **Cooler:** LGA4677 **AIO** (already running one on the 8480 — carries over;
+  handles the 350 W).
+- **Software:** AMX works **out of the box on stock Windows `torch+cpu`** —
+  confirmed: `ONEDNN_VERBOSE` shows `avx10_1_512_amx`. No IPEX/Linux required
+  (that earlier worry was wrong); they're optional later tuning.
+- **Day one:** `python -m tools.bench_step --variant mythouro_distill_tiny
+  --device cpu --batch 8 --seq-len 512`, then rescale the training-time table by
+  `(measured ÷ estimate)`. Confirm AMX is firing with `ONEDNN_VERBOSE=1` on a big
+  bf16 GEMM (want tens of TFLOPS, fed by HBM — no 2-channel starvation this time).
+- **Role / expectations:** dedicated trainer + capacity box for ≤3B that the
+  12 GB 5070 can't hold; frees the work rig. The 5070 stays the **fast** card for
+  ≤1B-that-fits. Training a 3B on the Max is still slow (CPU-AMX class, ~year
+  scale) — for a *fast* 3B run, rented A100/H100. The Max = **fit + iterate +
+  hold**, not raw speed.
+
 #### Other accelerants
 
 | If you get… | Then unlock |
