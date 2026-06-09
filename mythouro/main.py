@@ -721,6 +721,16 @@ class MoEFFN(nn.Module):
             ]
         )
 
+        # Per-call (overwritten) telemetry, read by `_loop_body`.
+        self._last_router_logits: "Optional[torch.Tensor]" = None
+        self._last_expert_counts: "Optional[torch.Tensor]" = None
+        # Per-forward accumulators populated by RecurrentBlock across ALL loops
+        # (P0.2). The router logits buffer keeps gradient (aux losses); the
+        # expert-count sum is detached. Read by collect_router_logits /
+        # collect_expert_counts.
+        self._router_logits_buf: "list[torch.Tensor]" = []
+        self._expert_counts_sum: "Optional[torch.Tensor]" = None
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Args:
@@ -1447,7 +1457,7 @@ class RecurrentBlock(nn.Module):
         mask: Optional[torch.Tensor],
         kv_cache: Optional[dict],
         t: int,
-    ) -> torch.Tensor:
+    ) -> "tuple[torch.Tensor, Optional[torch.Tensor], Optional[torch.Tensor]]":
         """
         One loop iteration. Factored out so it can be wrapped by
         torch.utils.checkpoint to recompute activations on the backward pass.
@@ -1455,13 +1465,24 @@ class RecurrentBlock(nn.Module):
         `e_inject` is the per-loop injection signal — either the original
         Prelude output (single-scale) or the multi-scale blend produced by
         MultiScaleInjection for this loop index.
+
+        Returns `(h_new, router_logits, expert_counts)`. The MoE telemetry is
+        *returned* (not just stashed on the FFN) so it flows through the
+        checkpoint boundary and is grad-tracked / recompute-safe — this is what
+        lets `RecurrentBlock.forward` accumulate per-loop routing across ALL
+        loops (P0.2) instead of seeing only the last one. `None` for the dense
+        recurrent FFN.
         """
         h_loop = loop_index_embedding(h, t, self.loop_dim)
         combined = self.norm(h_loop + e_inject)
         cache_key = f"recurrent_loop_{t}"
         trans_out = self.block(combined, freqs_cis, mask, kv_cache, cache_key)
         trans_out = trans_out + self.lora(trans_out, t)
-        return self.injection(h, e_inject, trans_out, loop_t=t)
+        h_new = self.injection(h, e_inject, trans_out, loop_t=t)
+        ffn = self.block.ffn
+        rlogits = getattr(ffn, "_last_router_logits", None)   # grad-tracked
+        counts = getattr(ffn, "_last_expert_counts", None)    # detached
+        return h_new, rlogits, counts
 
     def forward(
         self,
@@ -1536,6 +1557,18 @@ class RecurrentBlock(nn.Module):
         collect = self.collect_trajectory and kv_cache is None and not self.training
         traj_states: list[torch.Tensor] = []
 
+        # P0.2: accumulate MoE routing telemetry across ALL loops (not just the
+        # last). Reset the FFN's per-forward buffers here; append the returned
+        # (grad-tracked) logits and (detached) counts each loop below. The
+        # appends run in this forward loop only — torch.utils.checkpoint's
+        # backward recompute re-runs `_loop_body` internally but NOT this loop,
+        # so there's no double-counting.
+        ffn = self.block.ffn
+        ffn_is_moe = isinstance(ffn, MoEFFN)
+        if ffn_is_moe:
+            ffn._router_logits_buf = []
+            ffn._expert_counts_sum = None
+
         use_ckpt = self.use_ckpt and self.training and kv_cache is None
 
         for t in range(n_loops):
@@ -1544,13 +1577,22 @@ class RecurrentBlock(nn.Module):
             e_inject = self.ms_inject(e, t) if self.use_ms else e
 
             if use_ckpt:
-                h_new = ckpt_util.checkpoint(
+                h_new, rlogits, counts = ckpt_util.checkpoint(
                     self._loop_body,
                     h, e_inject, freqs_cis, mask, None, t,
                     use_reentrant=False,
                 )
             else:
-                h_new = self._loop_body(h, e_inject, freqs_cis, mask, kv_cache, t)
+                h_new, rlogits, counts = self._loop_body(
+                    h, e_inject, freqs_cis, mask, kv_cache, t
+                )
+
+            if ffn_is_moe and rlogits is not None:
+                ffn._router_logits_buf.append(rlogits)
+                ffn._expert_counts_sum = (
+                    counts if ffn._expert_counts_sum is None
+                    else ffn._expert_counts_sum + counts
+                )
 
             # Cross-loop attention residual. Kept outside the checkpoint
             # because it mutates `loop_state_buf` in-place — checkpointed

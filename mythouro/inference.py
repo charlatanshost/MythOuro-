@@ -556,8 +556,10 @@ class ContinuousDepthwiseBatcher:
             # Per-loop injection signal (multi-scale aware)
             e_inject = rec.ms_inject(e_active, t) if rec.use_ms else e_active
 
-            # One loop body iteration on the active subset
-            h_new_active = rec._loop_body(
+            # One loop body iteration on the active subset.
+            # _loop_body returns (h_new, router_logits, expert_counts) since
+            # P0.2; this batcher only needs the hidden state.
+            h_new_active, _, _ = rec._loop_body(
                 h_active, e_inject, freqs, mask, None, t,
             )
 
@@ -733,7 +735,7 @@ class RetrievalAugmentedInjector:
                 e_step = e
 
             e_inject = rec.ms_inject(e_step, t) if rec.use_ms else e_step
-            h = rec._loop_body(h, e_inject, freqs, mask, None, t)
+            h, _, _ = rec._loop_body(h, e_inject, freqs, mask, None, t)  # P0.2: 3-tuple
             if rec.use_cross:
                 h = rec.cross_loop_attn(h, t, loop_state_buf)
 
@@ -832,9 +834,11 @@ class CoTDistillationTrainer:
         original = rec_block._loop_body
 
         def _patched(h, e_inject, freqs_cis, mask, kv_cache, t):
-            h_new = original(h, e_inject, freqs_cis, mask, kv_cache, t)
-            loop_states[t] = h_new
-            return h_new
+            # _loop_body returns (h_new, router_logits, expert_counts) since
+            # P0.2; record the hidden state, pass the full tuple through.
+            out = original(h, e_inject, freqs_cis, mask, kv_cache, t)
+            loop_states[t] = out[0]
+            return out
 
         rec_block._loop_body = _patched
         full_ids = torch.cat([question_ids, answer_ids], dim=1)

@@ -85,7 +85,16 @@ def collect_router_logits(model: nn.Module) -> list[torch.Tensor]:
 
     buf: list[torch.Tensor] = []
     for mod in model.modules():
-        if isinstance(mod, MoEFFN) and getattr(mod, "_last_router_logits", None) is not None:
+        if not isinstance(mod, MoEFFN):
+            continue
+        # P0.2: prefer the per-forward buffer holding ALL loops' router logits
+        # (one (N, E) tensor per recurrent loop). Fall back to the single
+        # last-call stash for contexts that didn't loop (e.g. a bare MoEFFN
+        # forward outside RecurrentBlock).
+        per_loop = getattr(mod, "_router_logits_buf", None)
+        if per_loop:
+            buf.extend(per_loop)
+        elif getattr(mod, "_last_router_logits", None) is not None:
             buf.append(mod._last_router_logits)
     return buf
 
@@ -97,22 +106,28 @@ def collect_router_logits(model: nn.Module) -> list[torch.Tensor]:
 
 def collect_expert_counts(model: nn.Module) -> "dict[str, torch.Tensor]":
     """
-    Snapshot the `_last_expert_counts` tensor (shape: `(n_experts,)`) from
-    every MoEFFN. Keyed by the module's qualified name so multiple MoE
-    layers in the same model can be updated independently.
+    Snapshot per-expert dispatch counts (shape `(n_experts,)`) from every
+    MoEFFN, keyed by qualified name so multiple MoE layers update independently.
 
-    Called once per micro-step in the training loop; the trainer
-    accumulates across grad-accum micro-steps before calling
-    `update_router_bias_from_counts`.
+    P0.2: returns counts **summed across all recurrent loops** (`_expert_counts_sum`),
+    so the DeepSeek-V3 bias updater balances total per-forward expert usage, not
+    just the last loop's. Falls back to the single last-call stash if the sum
+    isn't populated (non-recurrent context).
+
+    Called once per micro-step; the trainer accumulates across grad-accum
+    micro-steps before calling `update_router_bias_from_counts`.
     """
     from mythouro.main import MoEFFN
 
     out: "dict[str, torch.Tensor]" = {}
     for name, mod in model.named_modules():
-        if isinstance(mod, MoEFFN):
+        if not isinstance(mod, MoEFFN):
+            continue
+        counts = getattr(mod, "_expert_counts_sum", None)
+        if counts is None:
             counts = getattr(mod, "_last_expert_counts", None)
-            if counts is not None:
-                out[name] = counts.detach().clone()
+        if counts is not None:
+            out[name] = counts.detach().clone()
     return out
 
 

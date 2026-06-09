@@ -58,3 +58,49 @@ def test_uncertainty_head_starts_neutral_half():
     assert torch.allclose(u, torch.full_like(u, 0.5), atol=1e-6), (
         u.min().item(), u.max().item()
     )
+
+
+# ---------------------------------------------------------------------------
+# P0.2 — router telemetry must cover ALL loops, not just the last
+# ---------------------------------------------------------------------------
+
+
+def test_router_telemetry_covers_all_loops():
+    from mythouro.training_utils import collect_router_logits, collect_expert_counts
+
+    K = 4
+    m = MythOuro(_cfg(max_loop_iters=K)).train()   # train mode → no early exit
+    topk = m.cfg.n_experts_per_tok
+    m(torch.randint(0, 128, (2, 5)), n_loops=K)
+
+    logits = collect_router_logits(m)
+    assert len(logits) == K, (
+        f"expected one router-logits tensor per loop ({K}), got {len(logits)} "
+        "— telemetry is still capturing only the last loop (P0.2)"
+    )
+    rows_per_loop = logits[0].shape[0]
+
+    counts = collect_expert_counts(m)
+    total = float(next(iter(counts.values())).sum().item())
+    assert total == K * rows_per_loop * topk, (total, K, rows_per_loop, topk)
+
+
+def test_aux_loss_grad_live_under_gradient_checkpointing():
+    # The fragile path the review flagged: telemetry stashed inside the
+    # checkpointed _loop_body. After the P0.2 fix it flows through the
+    # checkpoint return, so aux-loss gradient reaches the router weights.
+    from mythouro.training_utils import (
+        collect_router_logits, load_balance_loss, sparse_activation_loss,
+    )
+
+    m = MythOuro(_cfg(gradient_checkpointing=True, max_loop_iters=3)).train()
+    logits, _ = m(torch.randint(0, 128, (2, 6)), n_loops=3)
+    rbuf = collect_router_logits(m)
+    loss = (
+        logits.float().mean()
+        + load_balance_loss(rbuf, topk=m.cfg.n_experts_per_tok)
+        + sparse_activation_loss(rbuf)
+    )
+    loss.backward()
+    g = m.recurrent.block.ffn.router.weight.grad
+    assert g is not None and torch.isfinite(g).all() and float(g.abs().sum()) > 0

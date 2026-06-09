@@ -374,16 +374,18 @@ class TestLoopDepthAnnealer:
 
 
 class TestCollectors:
-    def test_collect_router_logits_one_per_moe_layer(self):
+    def test_collect_router_logits_one_per_loop(self):
+        # P0.2: the single recurrent MoEFFN is called once per loop, and
+        # telemetry now captures EVERY loop (not just the last). So a K-loop
+        # forward in train mode (no early exit) yields K router-logits tensors.
         cfg = _tiny_cfg()
-        model = MythOuro(cfg)
+        model = MythOuro(cfg).train()
         ids = torch.randint(0, cfg.vocab_size, (B, T))
         model(ids)
         buf = collect_router_logits(model)
-        # Recurrent block contains exactly one MoEFFN.
-        assert len(buf) == 1
-        N, E = buf[0].shape
-        assert E == cfg.n_experts
+        assert len(buf) == cfg.max_loop_iters, (len(buf), cfg.max_loop_iters)
+        for t in buf:
+            assert t.shape[-1] == cfg.n_experts
 
     def test_collect_expert_counts_one_per_moe_layer(self):
         cfg = _tiny_cfg()
