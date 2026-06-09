@@ -567,9 +567,15 @@ rent elsewhere — so the plan is **buy, measure day one**.)
   cores). HBM feeds them equally, so **more cores = strictly faster** for this
   compute-bound workload — pick by budget. An **ES** is the cheap route (accept
   the clock/stability variance, as on the current 8480 ES).
-- **Board:** Gigabyte **MS33-CE0** (1S LGA4677 / C741, 8-ch) or MS03. **Not the
-  2S MS73** for single-job training — two sockets = two HBM pools over UPI
-  (NUMA), not a unified pool.
+- **Board:** Gigabyte **MS03-CE0** (1S LGA4677 / C741, ATX, 8 DIMM, 7× PCIe
+  Gen5) — confirmed to support the **Xeon CPU Max Series**, ATX fits a standard
+  case + the on-hand LGA4677 AIO, and the most GPU slots. Alt: **MS33-CP0**
+  (E-ATX, 16 DIMM, OCP 3.0) also supports Max if you want OCP networking.
+  **Avoid the MS33-AR0** — listed as 4th-Gen Xeon Scalable only, **no Max
+  Series** support. **Not the 2S MS73** for single-job training (two HBM pools
+  over UPI = NUMA, not a unified pool). *(Note: "MS33-CE0" doesn't exist — the
+  CE0 SKU is the MS03 ATX line.)* Verify the exact Max SKU is on the board's CPU
+  QVL and the BIOS exposes HBM mode before buying, especially for an ES chip.
 - **Memory mode:** **HBM-only** (64 GB, no DIMMs) — the whole point. Fits a 3B +
   activations with *streamed* data. Add DDR (HBM-caching mode) only if a slower
   capacity tier is later needed; for training it isn't.
