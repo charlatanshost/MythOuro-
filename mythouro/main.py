@@ -1624,6 +1624,9 @@ class RecurrentBlock(nn.Module):
                         torch.tensor(t, device=h.device, dtype=halt_step.dtype),
                         halt_step,
                     )
+                    # Commit the converged state so the emitted h_K is the
+                    # deepest-run hidden state (P0.3), not the prior loop's.
+                    h = h_new
                     if collect:
                         traj_states.append(h_new)
                     break
@@ -1726,20 +1729,21 @@ class RecurrentBlock(nn.Module):
                 torch.stack(traj_states, dim=2).detach() if traj_states else None
             )
 
-        # During training, return the FINAL loop's hidden state directly.
-        # The ACT-weighted sum `h_out = Σ_t w_t · h_t` gives the optimizer a
-        # direct knob — λ values — to choose which loop's output flows to
-        # the task loss. Empirically the distillation gradient finds this
-        # knob and pins λ₀≈1.0 (output = h_0, all other loops ignored),
-        # collapsing the recurrent depth no matter how strong the depth
-        # regulariser. Returning h instead severs that gradient path: the
-        # main task loss now flows through every loop iteration, and ACT
-        # halt probabilities are shaped purely by the depth regulariser
-        # (which pulls toward uniform). At inference, h_out is still used
-        # so ACT can give per-token adaptive depth.
-        if self.training and kv_cache is None:
-            return h
-        return h_out
+        # Always return the FINAL loop's hidden state h_K — at training AND
+        # inference (P0.3). Rationale:
+        #   - Training returns h_K because the ACT-weighted sum `Σ w_t·h_t` gave
+        #     the optimizer a knob to pin λ₀≈1.0 (output=h_0), collapsing depth
+        #     regardless of the depth regulariser. Returning h_K severs that path
+        #     so the task loss flows through every loop.
+        #   - Inference previously returned `h_out` (the weighted sum), but (a)
+        #     it under-summed for positions that never crossed act_threshold (no
+        #     final remainder commit) and (b) the coda/head were ONLY ever trained
+        #     on h_K, so h_out was a never-trained emission path. Returning h_K
+        #     here makes inference consistent with training and removes both bugs.
+        # ACT is now purely an early-exit CRITERION (drives the halt-all break and
+        # `last_halt_step` telemetry), not an output blender. `h_out` is retained
+        # only as vestigial accounting and is slated for removal (P1.8).
+        return h
 
 
 # ---------------------------------------------------------------------------

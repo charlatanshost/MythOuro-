@@ -104,3 +104,25 @@ def test_aux_loss_grad_live_under_gradient_checkpointing():
     loss.backward()
     g = m.recurrent.block.ffn.router.weight.grad
     assert g is not None and torch.isfinite(g).all() and float(g.abs().sum()) > 0
+
+
+# ---------------------------------------------------------------------------
+# P0.3 — eval emits h_K (same path training optimized), not the h_out blend
+# ---------------------------------------------------------------------------
+
+
+def test_train_eval_emission_parity():
+    # With ACT early-exit disabled (threshold unreachable, convergence off) all
+    # loops run in both modes, and both now return the final loop state h_K — so
+    # train-mode and eval-mode forwards must produce identical logits (dropout
+    # is 0). Before P0.3, eval returned the under-summed h_out → they'd differ.
+    m = MythOuro(_cfg(
+        act_threshold=1e9, convergence_eps=0.0, gradient_checkpointing=False,
+    ))
+    x = torch.randint(0, 128, (2, 6))
+    with torch.no_grad():
+        m.train()
+        lt, _ = m(x, n_loops=4)
+        m.eval()
+        le, _ = m(x, n_loops=4)
+    assert torch.allclose(lt, le, atol=1e-5), (lt - le).abs().max().item()
