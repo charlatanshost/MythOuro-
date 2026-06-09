@@ -1,5 +1,9 @@
 import torch
-from mythouro.moda import MoDAConfig, MoDAModel
+# moda.py lives alongside this example (quarantined out of the mythouro
+# package, P2.5: a 1063-line standalone model duplicate that nothing in
+# the pipeline imports, kept only for this demo; also avoids name
+# collision with the MoDr roadmap direction).
+from moda import MoDAConfig, MoDAModel
 
 
 # ---------------------------------------------------------------------------
