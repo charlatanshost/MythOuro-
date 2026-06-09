@@ -1380,15 +1380,27 @@ def distillation_loss(
         t_probs = F.softmax(teacher_logits.float() / T, dim=-1)
 
     # `F.kl_div` expects log-probs for the FIRST argument and probs for the
-    # SECOND, computing Σ second · (log second − first). batchmean averages
-    # over the leading flattened dimension only (B·T here), matching the
-    # standard reduction.
+    # SECOND, computing Σ second · (log second − first).
     V = student_logits.shape[-1]
-    soft = F.kl_div(
+    kl_rows = F.kl_div(
         s_log_probs.view(-1, V),
         t_probs.view(-1, V),
-        reduction="batchmean",
-    ) * (T * T)
+        reduction="none",
+    ).sum(dim=-1)                                       # (B·T,) per-position KL
+
+    # P1.9: the hard CE respects ignore_index but the soft KL previously
+    # averaged over ALL positions — harmless on packed distillation data (no
+    # padding) but a silent footgun for blended phases with padded/masked rows.
+    # Mask the KL to the same positions the CE trains on.
+    if targets is not None:
+        valid = (targets.view(-1) != ignore_index)
+        n_valid = int(valid.sum())
+        if n_valid == 0:
+            soft = kl_rows.sum() * 0.0                  # keep graph, zero loss
+        else:
+            soft = kl_rows[valid].mean() * (T * T)
+    else:
+        soft = kl_rows.mean() * (T * T)
 
     if targets is None:
         return alpha * soft, {"soft": float(soft.item()), "hard": 0.0}

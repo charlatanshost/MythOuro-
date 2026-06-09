@@ -827,6 +827,16 @@ class MoEFFN(nn.Module):
 # ---------------------------------------------------------------------------
 
 
+# Memo for loop_index_embedding's constant bias vectors (P1.8). The embedding
+# depends only on (loop_t, loop_dim, dim, theta, device, dtype) — recomputing
+# it built 4-5 small tensors per loop per forward (kernel-launch overhead on
+# CUDA). Bounded: entries are dim-sized vectors; the cap guards pathological
+# key churn (many devices/dtypes/depths) by resetting, which only costs a
+# rebuild on next use.
+_LOOP_EMB_CACHE: "dict[tuple, torch.Tensor]" = {}
+_LOOP_EMB_CACHE_CAP = 512
+
+
 def loop_index_embedding(
     h: torch.Tensor, loop_t: int, loop_dim: int, theta: float = 10000.0
 ) -> torch.Tensor:
@@ -848,14 +858,20 @@ def loop_index_embedding(
     Returns:
         h with a sinusoidal bias added to its first loop_dim channels; same shape
     """
-    freqs = 1.0 / (
-        theta
-        ** (torch.arange(0, loop_dim, 2, device=h.device, dtype=h.dtype) / loop_dim)
-    )
-    angles = loop_t * freqs  # (loop_dim//2,)
-    emb = torch.cat([angles.sin(), angles.cos()], dim=-1)[:loop_dim]
-    emb_full = torch.zeros(h.shape[-1], device=h.device, dtype=h.dtype)
-    emb_full[:loop_dim] = emb
+    key = (loop_t, loop_dim, h.shape[-1], theta, h.device, h.dtype)
+    emb_full = _LOOP_EMB_CACHE.get(key)
+    if emb_full is None:
+        freqs = 1.0 / (
+            theta
+            ** (torch.arange(0, loop_dim, 2, device=h.device, dtype=h.dtype) / loop_dim)
+        )
+        angles = loop_t * freqs  # (loop_dim//2,)
+        emb = torch.cat([angles.sin(), angles.cos()], dim=-1)[:loop_dim]
+        emb_full = torch.zeros(h.shape[-1], device=h.device, dtype=h.dtype)
+        emb_full[:loop_dim] = emb
+        if len(_LOOP_EMB_CACHE) >= _LOOP_EMB_CACHE_CAP:
+            _LOOP_EMB_CACHE.clear()
+        _LOOP_EMB_CACHE[key] = emb_full
     return h + emb_full.unsqueeze(0).unsqueeze(0)
 
 
@@ -919,7 +935,10 @@ class LoRAAdapter(nn.Module):
             Delta tensor of shape (B, T, dim) to be added to the block output.
         """
         t_idx = min(loop_t, self.max_loops - 1)
-        s = self.scale(torch.tensor(t_idx, device=x.device))       # (rank,)
+        # Index the embedding weight directly — `self.scale(torch.tensor(...))`
+        # built a fresh index tensor on-device every loop (a host-to-device
+        # transfer per loop per step on CUDA, P1.8). Same value, same gradient.
+        s = self.scale.weight[t_idx]                               # (rank,)
         down = self.down(x) * s                                    # (B, T, rank)
         B_t = self.B[t_idx]                                        # (rank, dim)
         return down @ B_t                                          # (B, T, dim)
@@ -1594,7 +1613,6 @@ class RecurrentBlock(nn.Module):
 
         halted = torch.zeros(B, T, device=h.device, dtype=torch.bool)
         cumulative_p = torch.zeros(B, T, device=h.device)
-        h_out = torch.zeros_like(h)
         h_prev: Optional[torch.Tensor] = None
         loop_state_buf: list[torch.Tensor] = []          # for cross-loop attention
 
@@ -1681,8 +1699,6 @@ class RecurrentBlock(nn.Module):
             ):
                 delta = (h_new - h_prev).norm(dim=-1)              # (B, T)
                 if (delta < self.conv_eps).all():
-                    remainder = (1.0 - cumulative_p).clamp(min=0)
-                    h_out = h_out + remainder.unsqueeze(-1) * h_new
                     # Any positions that hadn't already crossed the ACT
                     # threshold get assigned this loop as their halt step
                     # — they "converged" rather than "halted", but for
@@ -1712,20 +1728,10 @@ class RecurrentBlock(nn.Module):
             loop_halt_probs.append(p)
             still_running = ~halted
 
-            # ACT remainder trick: once cumulative_p + p crosses threshold,
-            # assign the remaining probability mass as the final weight.
-            # Gate by still_running so halted positions contribute exactly
-            # once (on the halting step) and zero thereafter — otherwise
-            # threshold<1 leaves a non-zero remainder that leaks every step.
-            remainder = (1.0 - cumulative_p).clamp(min=0)
-            weight = torch.where(
-                cumulative_p + p >= self.cfg.act_threshold,
-                remainder,
-                p,
-            )
-            weight = weight * still_running.float()
-            h_out = h_out + weight.unsqueeze(-1) * h
-
+            # ACT is purely a halt CRITERION since P0.3 (the emission is h_K);
+            # the old ACT-weighted h_out blend was removed as dead compute
+            # (P1.8) — it cost a (B,T,D) multiply-accumulate per loop in both
+            # train and eval for an output nothing consumed.
             cumulative_p = cumulative_p + p * still_running.float()
             newly_halted = (cumulative_p >= self.cfg.act_threshold) & ~halted
             halt_step = torch.where(
@@ -1811,8 +1817,8 @@ class RecurrentBlock(nn.Module):
         #     on h_K, so h_out was a never-trained emission path. Returning h_K
         #     here makes inference consistent with training and removes both bugs.
         # ACT is now purely an early-exit CRITERION (drives the halt-all break and
-        # `last_halt_step` telemetry), not an output blender. `h_out` is retained
-        # only as vestigial accounting and is slated for removal (P1.8).
+        # `last_halt_step` telemetry), not an output blender. The old ACT-weighted
+        # `h_out` accumulation was removed entirely as dead compute (P1.8).
         return h
 
 
@@ -2194,7 +2200,7 @@ class MythOuro(nn.Module):
         self,
         input_ids: torch.Tensor,
         max_new_tokens: int = 64,
-        n_loops: int = 8,
+        n_loops: "Optional[int]" = None,
         temperature: float = 1.0,
         top_k: int = 50,
     ) -> torch.Tensor:
@@ -2207,18 +2213,23 @@ class MythOuro(nn.Module):
         token per step rather than the full growing sequence.
 
         n_loops can be set higher than the training value to extrapolate to
-        harder problems at inference time (depth extrapolation property).
+        harder problems at inference time (depth extrapolation property) —
+        but it must be an explicit opt-in: the old default of 8 silently ran
+        2× the distill configs' trained depth (P1.5), paying double compute in
+        a regime the README itself flags as degradation-prone.
 
         Args:
             input_ids      -- prompt token indices of shape (B, T)
             max_new_tokens -- number of tokens to generate
-            n_loops        -- recurrent loop depth for each decode step
+            n_loops        -- recurrent loop depth for each decode step;
+                              default: cfg.max_loop_iters (the trained depth)
             temperature    -- softmax temperature; lower = more greedy
             top_k          -- restrict sampling to top-K logits (0 = disabled)
 
         Returns:
             Token indices of shape (B, T + max_new_tokens)
         """
+        n_loops = n_loops or self.cfg.max_loop_iters
         kv_cache: dict = {}
         prompt_len = input_ids.shape[1]
         for step in range(max_new_tokens):
