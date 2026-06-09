@@ -542,8 +542,7 @@ class ContinuousDepthwiseBatcher:
         rec = model.recurrent
         halted_seq = torch.zeros(B, device=device, dtype=torch.bool)
         cumulative_p = torch.zeros(B, T, device=device)
-        h_out = torch.zeros_like(h)
-        loop_state_buf: list[torch.Tensor] = []
+        loop_state_buf: list[torch.Tensor] = []      # full-B snapshots (P0.4)
 
         for t in range(n_loops):
             active_idx = (~halted_seq).nonzero(as_tuple=True)[0]
@@ -563,37 +562,46 @@ class ContinuousDepthwiseBatcher:
                 h_active, e_inject, freqs, mask, None, t,
             )
 
-            # Cross-loop attention residual (operates only on active rows)
-            if rec.use_cross:
-                h_new_active = rec.cross_loop_attn(h_new_active, t, loop_state_buf)
-
             # Splice updated rows back into the full-batch hidden state
+            # (halted rows keep their frozen halt-time state).
             h[active_idx] = h_new_active
 
-            # ACT accounting on active rows
+            # Cross-loop attention residual (P0.4). The buffer must hold
+            # FULL-batch snapshots so row i of every entry is always the same
+            # sequence — appending active-subset states (the old behaviour)
+            # produced ragged batch dims (crash in the attention `cat`) and,
+            # worse, silently attended row i to another sequence's history once
+            # the active set shrank. Snapshot the spliced full-B state (clone:
+            # `h` is mutated in place across loops, and _maybe_snapshot stores
+            # a storage-sharing detach), then attend on a per-row slice.
+            if rec.use_cross:
+                cross = rec.cross_loop_attn
+                if t % cross.store_every == 0:
+                    cross._maybe_snapshot(h.clone(), t, loop_state_buf)
+                sliced = [s[active_idx] for s in loop_state_buf]
+                h_new_active = cross._attend(h_new_active, sliced)
+                h[active_idx] = h_new_active
+
+            # ACT accounting on active rows — purely a halt CRITERION (P0.3:
+            # the emitted state is the per-row final h_K, not an ACT blend).
             p_active = rec.act(h_new_active)                       # (B_act, T)
-            remainder = (1.0 - cumulative_p[active_idx]).clamp(min=0)
             threshold = rec.cfg.act_threshold
-            weight = torch.where(
-                cumulative_p[active_idx] + p_active >= threshold,
-                remainder,
-                p_active,
-            )
-            h_out[active_idx] = h_out[active_idx] + weight.unsqueeze(-1) * h_new_active
             cumulative_p[active_idx] = cumulative_p[active_idx] + p_active
 
             # Mark sequences whose ALL token positions have crossed threshold
             row_halted = (cumulative_p[active_idx] >= threshold).all(dim=1)
             halted_seq[active_idx[row_halted]] = True
 
-        # Coda (full batch — halted rows have a converged h_out)
+        # Coda on the per-row final states: each row's h is frozen at its halt
+        # loop (its own h_K) — consistent with the post-P0.3 main path, which
+        # emits h_K rather than the never-trained ACT-weighted blend.
         for i, layer in enumerate(model.coda):
-            h_out = layer(h_out, freqs, mask, None, cache_key=f"coda_{i}")
+            h = layer(h, freqs, mask, None, cache_key=f"coda_{i}")
 
         if sink_len:
-            h_out = model.sink.strip(h_out)
+            h = model.sink.strip(h)
 
-        normed = model.norm(h_out)
+        normed = model.norm(h)
         return model.head(normed), model.uncertainty(normed)
 
 

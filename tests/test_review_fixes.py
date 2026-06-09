@@ -111,6 +111,86 @@ def test_aux_loss_grad_live_under_gradient_checkpointing():
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# P0.4 — ContinuousDepthwiseBatcher with cross-loop attention and a shrinking
+# active set: no ragged-buffer crash, and per-row outputs match a single-row
+# reference forward (rows must never see another sequence's history).
+# ---------------------------------------------------------------------------
+
+
+class _ScheduledHalt(torch.nn.Module):
+    """ACT stub emitting a fixed halt schedule: halt_loops[i] is the loop at
+    which original row i emits p=1.0 (None = never halts). Tracks the loop
+    index by call count; assumes callers pass active rows in original order
+    (active_idx from nonzero() is sorted, so they do)."""
+
+    def __init__(self, halt_loops: "list[int | None]"):
+        super().__init__()
+        self.halt_loops = halt_loops
+        self.t = 0
+
+    def forward(self, h: torch.Tensor) -> torch.Tensor:
+        B_act, T, _ = h.shape
+        active = [
+            i for i, hl in enumerate(self.halt_loops)
+            if hl is None or hl >= self.t
+        ]
+        assert len(active) == B_act, (self.t, len(active), B_act)
+        p = torch.zeros(B_act, T, device=h.device)
+        for j, orig in enumerate(active):
+            if self.halt_loops[orig] == self.t:
+                p[j] = 1.0
+        self.t += 1
+        return p
+
+
+def _batcher_cfg():
+    return _cfg(
+        max_loop_iters=4,
+        cross_loop_store_every=1,   # snapshot every loop → stresses the buffer
+        convergence_eps=0.0,        # disable convergence early-exit
+        dropout=0.0,
+    )
+
+
+def test_batcher_cross_loop_shrinking_active_set_no_crash():
+    from mythouro.inference import ContinuousDepthwiseBatcher
+
+    torch.manual_seed(0)
+    m = MythOuro(_batcher_cfg()).eval()
+    # Rows halt at loops 0, 2, never → active set shrinks 3 → 2 → 2 → 1.
+    m.recurrent.act = _ScheduledHalt([0, 2, None])
+
+    x = torch.randint(0, 128, (3, 6))
+    logits, unc = ContinuousDepthwiseBatcher(m).forward(x, n_loops=4)
+    assert logits.shape == (3, 6, 128)
+    assert unc.shape == (3, 6)
+    assert torch.isfinite(logits.float()).all()
+
+
+def test_batcher_rows_match_single_row_reference():
+    from mythouro.inference import ContinuousDepthwiseBatcher
+
+    torch.manual_seed(0)
+    m = MythOuro(_batcher_cfg()).eval()
+    x = torch.randint(0, 128, (3, 6))
+    halt_loops: "list[int | None]" = [0, 2, None]
+
+    m.recurrent.act = _ScheduledHalt(halt_loops)
+    batched, _ = ContinuousDepthwiseBatcher(m).forward(x, n_loops=4)
+
+    # Reference: each row alone through the plain forward (eval mode halts via
+    # the halt-all break at the same loop the batcher froze it). Fresh stub per
+    # run so the schedule's call counter restarts.
+    for i in range(3):
+        m.recurrent.act = _ScheduledHalt([halt_loops[i]])
+        ref, _ = m(x[i : i + 1], n_loops=4)
+        assert torch.allclose(batched[i : i + 1], ref, atol=1e-4), (
+            f"row {i} (halt_loop={halt_loops[i]}): max diff "
+            f"{(batched[i:i+1] - ref).abs().max().item()}"
+        )
+
+
 def test_train_eval_emission_parity():
     # With ACT early-exit disabled (threshold unreachable, convergence off) all
     # loops run in both modes, and both now return the final loop state h_K — so

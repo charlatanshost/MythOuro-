@@ -1248,6 +1248,28 @@ class CrossLoopAttention(nn.Module):
 
         self.norm = RMSNorm(dim)
 
+    def _maybe_snapshot(
+        self,
+        h: torch.Tensor,
+        loop_t: int,
+        loop_state_buffer: list,
+    ) -> None:
+        """
+        Append `h` (detached) to the buffer on every `store_every`-th loop and
+        trim to `buffer_cap`. Split out from `forward` so callers that manage
+        row alignment themselves (ContinuousDepthwiseBatcher, which must store
+        full-batch snapshots while attending on an active subset — P0.4) can
+        snapshot and attend independently.
+
+        NOTE: stores `h.detach()`, which shares storage with `h`. Callers that
+        mutate their hidden state in place afterwards (the batcher's row splice)
+        must pass a clone.
+        """
+        if loop_t % self.store_every == 0:
+            loop_state_buffer.append(h.detach())
+            while len(loop_state_buffer) > self.buffer_cap:
+                loop_state_buffer.pop(0)
+
     def forward(
         self,
         h: torch.Tensor,                  # (B, T, dim)
@@ -1265,14 +1287,17 @@ class CrossLoopAttention(nn.Module):
         Returns:
             h + cross-loop attention residual, same shape as h.
         """
-        B, T, D = h.shape
+        self._maybe_snapshot(h, loop_t, loop_state_buffer)
+        return self._attend(h, loop_state_buffer)
 
-        # Snapshot the current state every N loops (detached — the buffer is
-        # a queryable history, not part of the autograd graph).
-        if loop_t % self.store_every == 0:
-            loop_state_buffer.append(h.detach())
-            while len(loop_state_buffer) > self.buffer_cap:
-                loop_state_buffer.pop(0)
+    def _attend(self, h: torch.Tensor, loop_state_buffer: list) -> torch.Tensor:
+        """
+        Attend over the buffered history. Every buffer entry must have the SAME
+        batch dim as `h` and row i of every entry must be the same sequence as
+        row i of `h` — attention is per-batch-row, so misaligned rows silently
+        attend to another sequence's history.
+        """
+        B, T, D = h.shape
 
         # Nothing to attend to yet → identity.
         if not loop_state_buffer:
