@@ -107,6 +107,9 @@ def perplexity(
     name = "perplexity"
     t0 = time.perf_counter()
     n_loops = n_loops or model.cfg.max_loop_iters
+    # Clamp to the model's positional budget — a seq_len above max_seq_len
+    # indexes past the RoPE/embedding tables and crashes mid-eval.
+    seq_len = min(seq_len, model.cfg.max_seq_len)
 
     ds = _safe_load_dataset(dataset_name, name=dataset_config, split="train", streaming=True)
     if ds is None:
@@ -349,6 +352,7 @@ def loop_efficiency(
     name = "loop_efficiency"
     t0 = time.perf_counter()
     n_loops = n_loops or model.cfg.max_loop_iters
+    seq_len = min(seq_len, model.cfg.max_seq_len)   # see perplexity
 
     ds = _safe_load_dataset(dataset_name, name=dataset_config, split="train", streaming=True)
     if ds is None:
@@ -440,6 +444,7 @@ def expected_calibration_error(
     name = "expected_calibration_error"
     t0 = time.perf_counter()
     n_loops = n_loops or model.cfg.max_loop_iters
+    seq_len = min(seq_len, model.cfg.max_seq_len)   # see perplexity
 
     ds = _safe_load_dataset(dataset_name, name=dataset_config, split="train", streaming=True)
     if ds is None:

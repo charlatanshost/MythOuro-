@@ -1349,7 +1349,7 @@ class BestOfTrajectoryGenerator:
         *,
         n_loops: int = 8,
         eos_token_id: "int | None" = None,
-        min_loops: int = 1,
+        min_loops: int = 2,
         force_full_depth: bool = False,
         cycle_window: int = 32,
         cycle_min_len: int = 4,
@@ -1363,8 +1363,13 @@ class BestOfTrajectoryGenerator:
             min_loops        -- floor on the selectable depth: loops shallower
                                 than this are excluded from the argmin unless the
                                 trajectory is shorter (early convergence).
-                                Prevents collapsing onto loop 0 when the head is
-                                miscalibrated early.
+                                Default 2 (exclude loop 0): the per-loop
+                                calibration audit (P0.5, tools/per_loop_calibration)
+                                measured the UncertaintyHead as badly miscalibrated
+                                at loop 0 on v2 AND v4 (ECE ~0.17–0.22, error
+                                UNDERSTATED by ~0.2 — the loop-curriculum starts at
+                                2, so loop 0 was never an emission loop during
+                                training). Loop-0 argmin "wins" are inflated.
             force_full_depth -- suppress ACT's early-exit so every step scores
                                 the full n_loops (counterfactual measurement —
                                 see MythOuro.forward_trajectory).
@@ -1465,12 +1470,14 @@ def best_of_trajectory_generate(
     *,
     n_loops: int = 8,
     eos_token_id: "int | None" = None,
-    min_loops: int = 1,
+    min_loops: int = 2,
     force_full_depth: bool = False,
     temperature: float = 1.0,
     top_k: int = 50,
 ) -> "dict[str, object]":
-    """One-shot helper that constructs BestOfTrajectoryGenerator and calls generate."""
+    """One-shot helper that constructs BestOfTrajectoryGenerator and calls generate.
+    min_loops defaults to 2 — see BestOfTrajectoryGenerator (loop 0 measured
+    miscalibrated, P0.5)."""
     return BestOfTrajectoryGenerator(
         model,
         n_loops=n_loops,

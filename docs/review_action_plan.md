@@ -16,28 +16,24 @@ Legend: ✅ done · ⬜ todo · 🔁 partial
   accumulation via `_loop_body` return. (commit 50cffa1) +2 tests.
 - ✅ **P0.3** eval emitted never-trained `h_out` → return `h_K`. (commit 557affd)
   +1 parity test. **Re-baseline: PPL 46.3→39.25, ECE 0.058→0.042 on v2.**
-- ⬜ **P0.4** `ContinuousDepthwiseBatcher` cross-loop buffer **batch mismatch**
-  when the active set shrinks (ragged `cat` in `CrossLoopAttention`). Verified
-  *likely real* (inference.py:546–565). *Fix:* index buffer per original row
-  (store full-B snapshots, slice by `active_idx`), or disable cross-loop in this
-  batcher, or pad/scatter active rows back before buffering. *Test:* mixed-halt
-  batch + `use_cross_loop_attention=True` → no crash; late-halting row matches a
-  reference full-depth forward. (Note: I already fixed the 3-tuple-unpack crash
-  there for P0.2; the *batch-dim* mismatch is the remaining P0.4 issue.)
-- ⬜ **P0.5** `UncertaintyHead` calibration validity — trained on `h_K` logits,
-  consumed on per-loop states in `forward_trajectory`/best-of-trajectory.
-  *Fix before MoDr:* measure ECE per-loop on a held-out set
-  (`forward_trajectory(force_full_depth=True)`); if poor, prefer **per-loop CE**
-  as the MoDr best-exit supervision target (already the roadmap's safer option).
+- ✅ **P0.4** batcher cross-loop buffer batch/row mismatch → CrossLoopAttention
+  split into `_maybe_snapshot`+`_attend`; batcher stores full-B snapshots, attends
+  on per-row slices, and emits per-row h_K (P0.3-consistent) instead of the h_out
+  blend. (commit e0cf187) +2 tests incl. per-row equivalence vs single-row forward.
+- ✅ **P0.5** per-loop calibration MEASURED (`tools/per_loop_calibration.py`, run
+  on v2+v4 → `reports/per_loop_calibration_p05.md`): loops 1–3 calibrated (ECE
+  0.01–0.04), **loop 0 badly miscalibrated** (ECE 0.17–0.22, error understated
+  ~0.2 — curriculum starts at 2, loop 0 never an emission loop). Consequences
+  applied: `BestOfTrajectoryGenerator` defaults `min_loops=2`; **MoDr supervision
+  = per-loop CE (mandated, not just "safer")**; roadmap MoDr section updated.
 
 ## Bonus (done while re-baselining)
 - ✅ `eval.harness` rebuilds from the checkpoint's own cfg (was hardcoded
   `mythouro_1b`). (commit ea395b2)
 - ✅ `eval.harness --tokenizer` default → Ouro 49152 vocab (was gpt-neo 50k →
   out-of-range ids).
-- ⬜ eval **metrics don't clamp inputs to `max_seq_len`** (long doc → RoPE/embed
-  index error). *Fix:* clamp `seq_len` to `cfg.max_seq_len` in metrics.py
-  perplexity/ece/loop_efficiency. (Worked around by small default seq_len.)
+- ✅ eval metrics clamp `seq_len` to `cfg.max_seq_len`
+  (perplexity/loop_efficiency/ece — done with P0.5's commit).
 
 ## The high-value next move
 - ⬜ **Fresh training run on the fixed code.** The re-baseline only captured
@@ -89,7 +85,8 @@ Legend: ✅ done · ⬜ todo · 🔁 partial
   checkpoint, diff vs archived. (Partial: v2 ppl/ece/loop_eff done above.)
 
 ## Suggested next-session order (from the review)
-1. **P0.4 + P0.5** (finish the P0 tier) + the eval-metric `max_seq_len` clamp.
+1. ✅ ~~P0.4 + P0.5 (finish the P0 tier) + the eval-metric `max_seq_len` clamp.~~
+   **P0 tier complete (2026-06-09).**
 2. **P1.3** (MoE dispatch) + **P1.4** (MS-injection hoist) — `bench_step` before/after.
 3. **MoE-vs-dense ablation** (P2.1), optionally `torch.compile` the dense arm (P2.4).
 4. **Per-step weighted loop loss** (P2.2) — if it wins, supersedes P0.3's option 2.

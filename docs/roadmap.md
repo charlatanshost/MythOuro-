@@ -1543,12 +1543,19 @@ MoDr is the natural next architecture step; if MoE goes, MoDr is moot.
    target matches `forward_trajectory` argmin; depth regulariser still fires;
    no-NaN train step.
 
-**Open question for the build:** the best-exit target is only as good as the
-uncertainty head's calibration (today it's a *proxy* for correctness, validated
-at ECE ~0.04 on v1 but unverified at the gibberish ceiling). Before MoDr ships,
-confirm on a coherent checkpoint that "lowest-uncertainty loop" actually
-correlates with "lowest-CE loop" — otherwise the teacher is teaching the wrong
-exit. Until then, the per-loop-CE target is the safer supervision signal.
+**ANSWERED (2026-06-09, P0.5 audit): supervise MoDr with per-loop CE, NOT
+uncertainty-argmin.** `tools/per_loop_calibration.py` measured per-loop ECE on
+v2 and v4 (`reports/per_loop_calibration_p05.md`): the head is well-calibrated
+at loops 1–3 (ECE 0.01–0.04) but **badly miscalibrated at loop 0** (ECE
+0.17–0.22, error *understated* by ~0.2 — the loop curriculum starts at 2, so
+loop 0 was never an emission loop and the head never saw it). An
+uncertainty-argmin teacher would systematically over-select loop 0.
+Consequences: per-loop CE is the mandated best-exit target;
+`BestOfTrajectoryGenerator` now defaults `min_loops=2` (loop 0 excluded from
+the argmin); the earlier "v4 prefers loop 0 on some prompts" reads were partly
+a calibration artifact. To unlock all-loop uncertainty selection later: add a
+per-loop calibration term in training (BCE against per-loop argmax error at
+every loop), or start the curriculum at 1.
 
 **Relation to prior art.** This is the project's own framing of Mixture-of-Depths
 (Raposo et al.) adapted to a *recurrent* (weight-shared, looped) block rather

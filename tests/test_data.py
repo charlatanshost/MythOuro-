@@ -24,6 +24,12 @@ from data.dedup import MinHashDeduplicator, dedup_jsonl, stream_dedup
 from data.contamination import ContaminationFilter, _ngrams, _normalise
 from data.tokenizer_eval import _BUILTIN_SAMPLES
 
+try:
+    import datasketch  # noqa: F401 — optional `data` extra
+    _HAS_DATASKETCH = True
+except ImportError:
+    _HAS_DATASKETCH = False
+
 
 # ---------------------------------------------------------------------------
 # Dedup
@@ -57,6 +63,11 @@ _DOC_C = (
 )
 
 
+@pytest.mark.skipif(
+    not _HAS_DATASKETCH,
+    reason="datasketch not installed (optional `data` extra) — "
+           "MinHashDeduplicator raises ImportError on construction",
+)
 class TestMinHashDeduplicator:
     def test_first_doc_is_kept(self):
         d = MinHashDeduplicator()
