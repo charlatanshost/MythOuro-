@@ -173,13 +173,15 @@ class SpeculativeDecoder:
         self,
         model: nn.Module,
         draft_loops: int = 2,
-        verify_loops: int = 16,
+        verify_loops: "int | None" = None,
         K: int = 8,
         temperature: float = 1.0,
     ):
         self.model = model
         self.draft_loops = draft_loops
-        self.verify_loops = verify_loops
+        # P1.7: the old default (16) silently ran 4x the distill configs'
+        # trained depth on every verify pass. Default to the trained depth.
+        self.verify_loops = verify_loops or model.cfg.max_loop_iters
         self.K = K
         self.temperature = max(temperature, 1e-5)
 
@@ -201,6 +203,9 @@ class SpeculativeDecoder:
             # ── 1. Draft K tokens autoregressively at draft_loops depth ──
             draft_tokens: list[torch.Tensor] = []
             draft_probs: list[torch.Tensor] = []
+            draft_dists: list[torch.Tensor] = []   # full q per step (P1.7) —
+            # K×(B,V) floats is trivial memory and saves a full draft forward
+            # on every rejection (the residual resample needs the whole q).
             seq = input_ids
             for _ in range(self.K):
                 logits, _ = self.model(seq, n_loops=self.draft_loops)
@@ -208,6 +213,7 @@ class SpeculativeDecoder:
                 tok = torch.multinomial(q, num_samples=1)                   # (B, 1)
                 draft_tokens.append(tok)
                 draft_probs.append(q.gather(-1, tok).squeeze(-1))           # (B,)
+                draft_dists.append(q)
                 seq = torch.cat([seq, tok], dim=1)
 
             # ── 2. Verify all K candidates in a single parallel forward ──
@@ -250,12 +256,11 @@ class SpeculativeDecoder:
             # sample one extra from p_{K+1} so we always emit ≥1 token.
             if accepted < self.K:
                 # Sample from the residual distribution at the rejected
-                # position. We recompute q at that position from a fresh
-                # draft forward over the accepted prefix to keep the
-                # acceptance test mathematically correct.
-                draft_prefix = seq[:, : seq.shape[1] - self.K + accepted]
-                q_logits, _ = self.model(draft_prefix, n_loops=self.draft_loops)
-                q_r = F.softmax(q_logits[:, -1, :] / self.temperature, dim=-1)
+                # position, using the draft distribution STORED during
+                # drafting (P1.7 — identical to the old fresh-forward
+                # recompute, since the draft context at that position is the
+                # same; just without paying a full extra draft forward).
+                q_r = draft_dists[accepted]
                 p_r = p_dist[:, accepted, :]
                 residual = (p_r - q_r).clamp(min=0)
                 residual = residual / residual.sum(dim=-1, keepdim=True).clamp_min(1e-12)
@@ -263,9 +268,11 @@ class SpeculativeDecoder:
                 input_ids = torch.cat([input_ids, tok_new], dim=1)
                 produced += 1
             else:
-                # All K accepted; emit one bonus token from p_{K} = next-pos
-                logits_extra, _ = self.model(input_ids, n_loops=self.verify_loops)
-                p_extra = F.softmax(logits_extra[:, -1, :] / self.temperature, dim=-1)
+                # All K accepted; emit one bonus token. The verify forward's
+                # LAST position is cand_{K-1}, whose logits ARE the bonus
+                # distribution — the old code paid an entire extra verify
+                # forward to recompute logits it already had (P1.7).
+                p_extra = F.softmax(logits_v[:, -1, :] / self.temperature, dim=-1)
                 tok_extra = torch.multinomial(p_extra, num_samples=1)
                 input_ids = torch.cat([input_ids, tok_extra], dim=1)
                 produced += 1
