@@ -586,14 +586,12 @@ class MLAttention(nn.Module):
         kv_raw = self.kv_down(x)
         c_kv = kv_raw[..., : self.kv_lora_rank]  # (B, T, lora_rank)  ← cached
         k_rope = kv_raw[..., self.kv_lora_rank :]  # (B, T, rope_dim)
-        # expand rope keys across heads and apply RoPE before caching so
-        # retrieved keys are already positionally encoded
-        k_rope = (
-            k_rope.unsqueeze(2)
-            .expand(B, T, self.n_heads, self.qk_rope_dim)
-            .contiguous()
-        )
-        k_rope = apply_rope(k_rope, freqs_cis)  # (B, T, H, rope_dim) ← cached
+        # RoPE rotation is head-independent, so rotate ONE head slot and cache
+        # the compact (B, T, 1, rope_dim) form (P1.1: the old code expanded to
+        # all n_heads BEFORE caching, multiplying this cache component by
+        # n_heads — e.g. 16× pure duplication — further multiplied by the
+        # per-loop cache keys). Broadcast across heads at attention time.
+        k_rope = apply_rope(k_rope.unsqueeze(2), freqs_cis)  # (B,T,1,rope) ← cached
 
         if kv_cache is not None:
             if cache_key in kv_cache:
@@ -608,7 +606,10 @@ class MLAttention(nn.Module):
         kv = kv.view(B, S, self.n_heads, self.qk_nope_dim + self.v_dim)
         k_nope = kv[..., : self.qk_nope_dim]  # (B, S, H, nope)
         v = kv[..., self.qk_nope_dim :]  # (B, S, H, v_dim)
-        k = torch.cat([k_nope, k_rope], dim=-1)  # (B, S, H, nope+rope)
+        # Expand the shared rope keys across heads (a broadcast view — the cat
+        # below materialises the combined K exactly as before).
+        k_rope_b = k_rope.expand(B, S, self.n_heads, self.qk_rope_dim)
+        k = torch.cat([k_nope, k_rope_b], dim=-1)  # (B, S, H, nope+rope)
 
         # MLA cascade. Skips FA2 because MLA's nope+rope key concatenation
         # doesn't map onto flash_attn's API as cleanly as it does on

@@ -183,6 +183,50 @@ def test_ms_injection_precompute_blend_matches_forward():
 
 
 # ---------------------------------------------------------------------------
+# P1.1 — MLA caches the COMPACT shared rope keys, and cached decode still
+# matches the no-cache forward (the numerical contract that matters).
+# ---------------------------------------------------------------------------
+
+
+def test_mla_cache_stores_compact_rope_keys():
+    m = MythOuro(_cfg(attn_type="mla")).eval()
+    kv: dict = {}
+    x = torch.randint(0, 128, (2, 6))
+    m(x, n_loops=2, kv_cache=kv, start_pos=0)
+    rope_entries = [v["k_rope"] for v in kv.values() if "k_rope" in v]
+    assert rope_entries, "no MLA cache entries written"
+    for t in rope_entries:
+        # (B, S, 1, rope_dim) — shared across heads, NOT expanded to n_heads.
+        assert t.shape[2] == 1, t.shape
+
+
+def test_mla_cached_decode_matches_full_forward():
+    # NOTE: multi-scale injection and cross-loop attention are turned OFF here
+    # — both are position-context-dependent (window pooling / all-position loop
+    # snapshots), so cached single-token decode legitimately differs from a
+    # full-sequence forward when they're on (pre-existing Part-2 semantics,
+    # independent of the cache layout this test pins).
+    torch.manual_seed(0)
+    m = MythOuro(_cfg(
+        attn_type="mla", convergence_eps=0.0,
+        use_multiscale_injection=False, use_cross_loop_attention=False,
+    )).eval()
+    ids = torch.randint(0, 128, (1, 7))
+
+    # Reference: one full no-cache forward over the whole sequence.
+    ref, _ = m(ids, n_loops=2)
+
+    # Cached: prefill on the first 6 tokens, then decode the 7th.
+    kv: dict = {}
+    m(ids[:, :6], n_loops=2, kv_cache=kv, start_pos=0)
+    step, _ = m(ids[:, 6:7], n_loops=2, kv_cache=kv, start_pos=6)
+
+    assert torch.allclose(step[0, -1], ref[0, -1], atol=1e-4), (
+        (step[0, -1] - ref[0, -1]).abs().max().item()
+    )
+
+
+# ---------------------------------------------------------------------------
 # P1.6 — zero-copy KV-cache rewind in UncertaintyGatedGenerator
 # ---------------------------------------------------------------------------
 
