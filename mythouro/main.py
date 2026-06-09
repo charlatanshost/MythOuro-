@@ -1232,6 +1232,9 @@ class CrossLoopAttention(nn.Module):
         for p in (self.q_proj, self.k_proj, self.v_proj):
             nn.init.normal_(p.weight, std=0.02)
         nn.init.zeros_(self.o_proj.weight)     # identity residual at init
+        # Protect this zero-init from MythOuro._init_weights' blanket N(0,0.02)
+        # re-init (else the identity-residual property is silently destroyed).
+        self.o_proj._skip_global_init = True
 
         self.norm = RMSNorm(dim)
 
@@ -1787,6 +1790,9 @@ class UncertaintyHead(nn.Module):
         )
         nn.init.zeros_(self.net[-1].weight)
         nn.init.zeros_(self.net[-1].bias)
+        # Protect this zero-init from MythOuro._init_weights' blanket re-init,
+        # so the head starts at sigmoid(0)=0.5 (calibrated neutral) as intended.
+        self.net[-1]._skip_global_init = True
 
     def forward(self, h: torch.Tensor) -> torch.Tensor:
         """
@@ -1873,8 +1879,19 @@ class MythOuro(nn.Module):
         self._init_weights()
 
     def _init_weights(self) -> None:
-        """Initialize all linear and embedding weights with N(0, 0.02)."""
+        """
+        Initialize linear and embedding weights with N(0, 0.02).
+
+        Skips modules that self-initialize and mark themselves with
+        `_skip_global_init = True` (e.g. `CrossLoopAttention.o_proj` and
+        `UncertaintyHead.net[-1]`, which are deliberately zero-init). Without
+        this guard the blanket re-init silently overwrites those zero-inits —
+        the bug that made cross-loop attention inject noise from step 0 and the
+        uncertainty head start off-neutral in all v1–v5 checkpoints (P0.1).
+        """
         for m in self.modules():
+            if getattr(m, "_skip_global_init", False):
+                continue
             if isinstance(m, nn.Linear):
                 nn.init.normal_(m.weight, std=0.02)
             elif isinstance(m, nn.Embedding):
