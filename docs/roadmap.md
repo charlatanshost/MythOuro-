@@ -1076,6 +1076,17 @@ the fix is already known — saves hours of re-debugging.
 - *Root cause*: many instruction datasets ship as a single parquet file (`num_shards=1`); `.shard(num_shards=2, ...)` on those crashes inside the streaming library.
 - *Fix*: only call `.shard()` when `total_shards > 1`. Use `num_workers=0` in DataLoader for single-process runs. See `MixedSFTDataset._open_source` in [mythouro/sft_data.py](../mythouro/sft_data.py).
 
+**"Training is slow" — usually a misread, not a real slowdown**
+- *Symptom*: the per-step `tok/s` looks tiny (e.g. "11.4", "0.3") and seems to decline as training progresses; wall-clock per session looks long.
+- *Root causes (three, none of them the GPU)*:
+  1. **The log prints `tok/s` with a `k` suffix** — "3.3k tok/s" is 3,300, not 3.3. SFT v2 (RTX 5070, micro-batch 2, seq 512) ran a healthy **~2–3.3k tok/s**, verified against the on-disk logs.
+  2. **The decline with steps is the `LoopCurriculum`** (`start_loops=2 → 4`): more loops = ~2× the compute, so tok/s halving from 3.3k → ~1.7k across the run is *by design*, not a regression.
+  3. **Wall-clock conflates training with debugging.** The v2 card says "~6 h", but date-cross-checking the screenshots vs the eval files (step 1000 @ 09:38, 2000 @ 10:51, 3000 @ 12:12) shows the *clean* 3,000-step run was **08:34→12:12 ≈ 3.6 h**; the other ~2 h was failed restarts — the `0.0% accept / build_reject` BatchEncoding stalls above + repeated 1.5M-example dataset reloads.
+- *The real lever is hardware, on two axes* (both help, independently):
+  - **More VRAM** → bigger batch → less GPU starvation. The 5070 at batch-2 sustains ~3k tok/s but `bench_step` at batch-8 hit **6,852** — so ~½ the card is locked behind 12 GB. A 24 GB+ card or the Max's 64 GB unlocks it.
+  - **More dense-BF16 TFLOPS** → raises the compute ceiling itself (the 5070 is segmented to ~33.9). A faster card lifts the ~6,852 batch-8 ceiling, not just the batch.
+  A card with *both* (4090 24 GB / 5090 32 GB) cuts training time on both axes at once.
+
 ### Checkpoint / resume
 
 **Grown checkpoint refuses to load — `KeyError: 'param_groups'`**
