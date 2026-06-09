@@ -1076,16 +1076,35 @@ the fix is already known — saves hours of re-debugging.
 - *Root cause*: many instruction datasets ship as a single parquet file (`num_shards=1`); `.shard(num_shards=2, ...)` on those crashes inside the streaming library.
 - *Fix*: only call `.shard()` when `total_shards > 1`. Use `num_workers=0` in DataLoader for single-process runs. See `MixedSFTDataset._open_source` in [mythouro/sft_data.py](../mythouro/sft_data.py).
 
-**"Training is slow" — usually a misread, not a real slowdown**
-- *Symptom*: the per-step `tok/s` looks tiny (e.g. "11.4", "0.3") and seems to decline as training progresses; wall-clock per session looks long.
-- *Root causes (three, none of them the GPU)*:
-  1. **The log prints `tok/s` with a `k` suffix** — "3.3k tok/s" is 3,300, not 3.3. SFT v2 (RTX 5070, micro-batch 2, seq 512) ran a healthy **~2–3.3k tok/s**, verified against the on-disk logs.
-  2. **The decline with steps is the `LoopCurriculum`** (`start_loops=2 → 4`): more loops = ~2× the compute, so tok/s halving from 3.3k → ~1.7k across the run is *by design*, not a regression.
-  3. **Wall-clock conflates training with debugging.** The v2 card says "~6 h", but date-cross-checking the screenshots vs the eval files (step 1000 @ 09:38, 2000 @ 10:51, 3000 @ 12:12) shows the *clean* 3,000-step run was **08:34→12:12 ≈ 3.6 h**; the other ~2 h was failed restarts — the `0.0% accept / build_reject` BatchEncoding stalls above + repeated 1.5M-example dataset reloads.
-- *The real lever is hardware, on two axes* (both help, independently):
-  - **More VRAM** → bigger batch → less GPU starvation. The 5070 at batch-2 sustains ~3k tok/s but `bench_step` at batch-8 hit **6,852** — so ~½ the card is locked behind 12 GB. A 24 GB+ card or the Max's 64 GB unlocks it.
-  - **More dense-BF16 TFLOPS** → raises the compute ceiling itself (the 5070 is segmented to ~33.9). A faster card lifts the ~6,852 batch-8 ceiling, not just the batch.
-  A card with *both* (4090 24 GB / 5090 32 GB) cuts training time on both axes at once.
+**"Training is slow" — partly a misread (light runs), partly real (heavy runs)**
+- *Symptom*: the per-step `tok/s` looks tiny (e.g. "11.4", "0.3"); seems to decline as training progresses; heavy runs take many hours.
+- *The misread part (light SFT runs were fine)*:
+  1. **The log prints `tok/s` with a `k` suffix** — "3.3k tok/s" is 3,300, not 3.3. The light SFT runs (278M, RTX 5070) ran a healthy **~2–3.3k tok/s**, verified against the on-disk logs.
+  2. **The decline with steps is the `LoopCurriculum`** (`start_loops=2 → 4`): more loops = ~2× compute, so tok/s halving from 3.3k → ~1.7k across a run is *by design*.
+  3. **Wall-clock conflates training with debugging** — restarts, the `0.0% accept / build_reject` BatchEncoding stalls above, and repeated 1.5M-example dataset reloads inflate the session time well beyond the clean training time.
+- *The REAL part — the heavy MoE-grown runs (v3–v5) are genuinely slow.* Per-step
+  time, **measured from checkpoint save-timestamps** (these runs have no cards/eval
+  JSONs — reconstructed cards added 2026-06-08):
+
+  | Run | Model | s/step | ~tok/s |
+  |-----|-------|-------:|-------:|
+  | v2 (light SFT) | 278M, 24 exp | ~4.4 | ~1,900 |
+  | v3 | 420M, 48 exp | **~8** | ~1,500 |
+  | v4 | 420M, fp32 Adam | **~13** | ~950 |
+  | v5 | 632M, 96 exp | **~33** | **~370** |
+
+  v5 ground **~8 h for ~900 steps**. The slowdown is **bigger model + 96-expert MoE
+  dispatch + micro-batch 1 (forced by 12 GB)** — i.e. the heavy runs are
+  **VRAM-gated**, dropping to the worst-case batch-1 utilisation regime.
+- *The lever is hardware, on two independent axes*:
+  - **More VRAM** → bigger batch → escape the micro-batch-1 strangulation that
+    dominates the heavy runs. The 5070 at batch-2 sustains ~3k tok/s but
+    `bench_step` at batch-8 hit **6,852** — ~½ the card is locked behind 12 GB.
+  - **More dense-BF16 TFLOPS** → raises the compute ceiling (the 5070 is segmented
+    to ~33.9). A faster card lifts the ~6,852 batch-8 ceiling itself.
+  A card with *both* (4090 24 GB / 5090 32 GB) compounds them. Note this is a
+  *new-card* purchase, not a free config win — the 5070 is already at its genuine
+  limit for what fits 12 GB.
 
 ### Checkpoint / resume
 

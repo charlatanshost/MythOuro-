@@ -292,7 +292,9 @@ flycheck_*.el
 
 # === MythOuro: large trained artifacts (DO NOT commit to GitHub) ===
 # Model weights and checkpoints — tens of GB, exceed GitHub's 100MB/file limit.
-archived_models/
+# NOTE: archived_models/ is NOT blanket-ignored so its small MODEL_CARD.md +
+# eval JSONs get versioned (provenance). The *.pt rule below keeps the weights
+# out regardless of directory.
 checkpoints_distill/
 checkpoints_sft/
 checkpoints_grown/
