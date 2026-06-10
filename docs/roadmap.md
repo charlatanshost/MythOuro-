@@ -1405,11 +1405,11 @@ arm runs through the existing `distill.py` / `sft.py` unchanged.
 **Run it (both arms, matched everything but the FFN):**
 ```powershell
 # MoE arm (= the existing distill_tiny recipe)
-python -m training.distill --trust-remote-code --teacher-device cuda:1 `
+python -m training.distill --trust-remote-code --teacher-device cuda:2 `
     --student-variant mythouro_distill_tiny `
     --total-steps 4000 --seed 0 --eval --eval-every 1000 --ckpt-dir checkpoints_ablation_moe
 # Dense arm (same flags, dense variant; MoE aux terms vanish to 0 automatically)
-python -m training.distill --trust-remote-code --teacher-device cuda:1 `
+python -m training.distill --trust-remote-code --teacher-device cuda:2 `
     --student-variant mythouro_distill_tiny_dense `
     --total-steps 4000 --seed 0 --eval --eval-every 1000 --ckpt-dir checkpoints_ablation_dense
 ```
@@ -1419,10 +1419,14 @@ eval harness / inspector.
 **Teacher placement (measured 2026-06-09):** `--teacher-device cuda:0`
 (cohabitation with the student on the 12 GB card) **OOMs at micro-batch 2** —
 the v1 "fits in ~9 GB" sizing was theoretical; the real v1 run used two cards.
-Put the teacher on a second GPU (`cuda:1`/`cuda:2`, 5.2 GB bf16 fits the 8 GB
-cards) — or, single-card, drop to `--micro-batch 1`. Both 20-step GPU smokes
-(MoE + dense arms, `reports/gpu_smoke_distill_*.txt`) ran clean on the
-two-card layout.
+Put the teacher on a second GPU — **mind the index mapping, it is not
+intuitive**: on this rig `cuda:0` = 5070, **`cuda:1` = 4060**, **`cuda:2` =
+5060**. The documented role split wants the teacher on the **5060 → use
+`cuda:2`** (the 4060 is reserved for parallel eval). Single-card fallback:
+`--micro-batch 1`. Both 20-step GPU smokes (MoE + dense arms,
+`reports/gpu_smoke_distill_*.txt`) ran clean two-card (teacher landed on the
+4060 via cuda:1 — works, either 8 GB card fits the 5.2 GB teacher, but cuda:2
+is the intended layout).
 
 ### Protocol
 
