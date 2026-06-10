@@ -143,7 +143,11 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "(load_distillation_teacher refuses to return a "
                         "mismatched teacher).")
     p.add_argument("--total-steps", type=int, default=5000)
-    p.add_argument("--warmup-steps", type=int, default=200)
+    p.add_argument("--warmup-steps", type=int, default=500,
+               help="v1's proven from-scratch recipe used 500. The old "
+                    "default (200) hit full LR too early on a fresh 4-loop "
+                    "recurrent model -> transient deep-loop gradient spikes "
+                    "-> flatline (see roadmap failure modes, 2026-06-10).")
     p.add_argument("--micro-batch", type=int, default=2)
     p.add_argument("--grad-accum", type=int, default=4)
     p.add_argument("--seq-len", type=int, default=512)
@@ -156,7 +160,7 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--lb-coeff", type=float, default=1e-2)
     p.add_argument("--unc-coeff", type=float, default=5e-2)
     p.add_argument("--sparse-coeff", type=float, default=1e-3)
-    p.add_argument("--depth-reg-coeff", type=float, default=1e-1,
+    p.add_argument("--depth-reg-coeff", type=float, default=0.3,
                    help="PonderNet × Ouro KL-to-uniform regulariser on the "
                         "halt distribution. Default 1e-1 actively prevents "
                         "the ACT loop-collapse failure mode (halt distribution "

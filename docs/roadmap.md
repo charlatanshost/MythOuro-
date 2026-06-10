@@ -1051,6 +1051,29 @@ Far-horizon — only after a stable 1B base is shipped:
 Institutional memory. If any of these come back in a future session,
 the fix is already known — saves hours of re-debugging.
 
+### Script defaults are NOT the proven recipe (2026-06-10)
+- *Symptom*: both ablation arms (MoE AND dense) flatlined identically from
+  scratch — hard CE stuck at ~7.6–8 after step ~20, eval PPL in the thousands
+  (v1 was at 368 by step 1000), transient gradient-norm spikes (32→2743)
+  concentrated on deep-loop batches, weights NOT diverged (max component
+  growth 1.36×), data stream verified clean.
+- *Root cause*: the runs used `training/distill.py`'s DEFAULTS (warmup 200,
+  depth-reg 0.1, mb2/ga4) — but v1's "final successful run" used **warmup 500,
+  depth-reg 0.3, mb1/ga8**, recorded only in the v1 MODEL_CARD provenance.
+  Warmup 200 hits full 3e-4 LR at step 200 on a fresh 4-loop recurrent model →
+  early instability → bad basin → flatline. The proven recipe lived in the
+  model card, not the code.
+- *Diagnosis chain that isolated it* (each step cheap): depth-sweep eval
+  (killed "h_K eval artifact"), init-stats comparison (killed "dense FFN too
+  hot"), checkpoint weight forensics (killed "runaway divergence"), 30-step
+  resume probe (found the gnorm spikes + flatline), MoE control arm
+  (reproduced the flatline → killed "dense arch"), data-stream decode (clean),
+  v1 model-card command diff (the answer).
+- *Fix*: `distill.py` defaults now ARE the proven recipe (warmup 500,
+  depth-reg 0.3); ablation commands updated. **Rule: when reproducing a run,
+  diff your command against the MODEL_CARD provenance command, never trust
+  script defaults.**
+
 ### Code-review P0 fixes (2026-06-09)
 
 External review (Fable 5), independently verified against the code and fixed —
@@ -1407,11 +1430,13 @@ arm runs through the existing `distill.py` / `sft.py` unchanged.
 # MoE arm (= the existing distill_tiny recipe)
 python -m training.distill --trust-remote-code --teacher-device cuda:2 `
     --student-variant mythouro_distill_tiny `
-    --total-steps 4000 --seed 0 --eval --eval-every 1000 --ckpt-dir checkpoints_ablation_moe
+    --warmup-steps 500 --depth-reg-coeff 0.3 --micro-batch 1 --grad-accum 8 `
+    --start-loops 2 --random-depth --total-steps 4000 --seed 0 --eval --eval-every 1000 --ckpt-dir checkpoints_ablation_moe
 # Dense arm (same flags, dense variant; MoE aux terms vanish to 0 automatically)
 python -m training.distill --trust-remote-code --teacher-device cuda:2 `
     --student-variant mythouro_distill_tiny_dense `
-    --total-steps 4000 --seed 0 --eval --eval-every 1000 --ckpt-dir checkpoints_ablation_dense
+    --warmup-steps 500 --depth-reg-coeff 0.3 --micro-batch 1 --grad-accum 8 `
+    --start-loops 2 --random-depth --total-steps 4000 --seed 0 --eval --eval-every 1000 --ckpt-dir checkpoints_ablation_dense
 ```
 Repeat each with `--seed 1` for the ≥2-seed requirement, then compare with the
 eval harness / inspector.
