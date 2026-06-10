@@ -162,12 +162,10 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--sparse-coeff", type=float, default=1e-3)
     p.add_argument("--depth-reg-coeff", type=float, default=0.3,
                    help="PonderNet × Ouro KL-to-uniform regulariser on the "
-                        "halt distribution. Default 1e-1 actively prevents "
-                        "the ACT loop-collapse failure mode (halt distribution "
-                        "pinned to one bucket → loops unused). Empirically, "
-                        "1e-2 was too weak against the distillation gradient "
-                        "pulling λ→1 (~0.1%% of total loss); 1e-1 gives ~7%% "
-                        "and actually moves λ. Pass 0.0 to disable.")
+                        "halt distribution; prevents ACT loop-collapse. "
+                        "Default 0.3 = v1's proven final recipe (its model-"
+                        "card command), not the 1e-1 the earlier help text "
+                        "suggested. Pass 0.0 to disable.")
     p.add_argument("--ckpt-dir", default="checkpoints_distill")
     p.add_argument("--ckpt-every", type=int, default=500)
     p.add_argument("--log-every", type=int, default=10)
