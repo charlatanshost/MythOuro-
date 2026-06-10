@@ -1,8 +1,8 @@
 # Code-review action plan — status tracker
 
 Tracks the external review (`mythouro_code_review_findings.md`, Fable 5,
-2026-06-09), independently verified against the code. **Pick up here next
-session.** Done items link to their commit; TODO items keep the review's notes.
+2026-06-09), independently verified against the code. Last audited
+2026-06-10 (post ablation arm 1). **Pick up here next session.** Done items link to their commit; TODO items keep the review's notes.
 
 Legend: ✅ done · ⬜ todo · 🔁 partial
 
@@ -59,18 +59,31 @@ Everything that gates a trustworthy training run:
   the 12 GB card OOMs at micro-batch 2 — use a second GPU (cuda:1/2) or
   micro-batch 1; roadmap ablation commands updated accordingly.
 - ⬜ Optional: the P1.3 GPU A/B (`bench_step` on 31a48b0 vs main).
-- **Run-time decision:** `--start-loops 1` (calibrates the head at loop 0, new
-  recipe) vs `2` (matches v1–v5). Whichever is picked, use it for BOTH ablation
-  arms.
+- ✅ **Run-time decisions DECIDED (2026-06-10, the hard way):** `--start-loops 2`
+  + v1's proven hyperparameters (warmup 500, depth-reg 0.3, mb1/ga8). The first
+  ablation attempt used the script DEFAULTS (warmup 200, depth-reg 0.1) — both
+  arms flatlined identically; root-caused and fixed (defaults now encode the
+  proven recipe; full diagnosis chain in roadmap failure modes). The
+  start-loops-1 loop-0-calibration experiment is parked as a future single-
+  variable test.
 
-## The high-value next move
-- ⬜ **Fresh training run on the fixed code.** The re-baseline only captured
-  P0.3's emission gain on *already-trained* weights; v1–v5 were *trained* under
-  P0.1 (clobbered inits) + P0.2 (last-loop balance), so a fresh run should
-  improve further. Natural candidate: the **MoE-vs-dense ablation** — now both
-  *unblocked* (P0.2 fixed → MoE arm balances correctly) and *more trustworthy*.
-  `mythouro_distill_tiny` vs `mythouro_distill_tiny_dense`, ≥2 seeds, ~4–5 h/arm
-  on the 5070 (per the wired spec in this roadmap's "Gating experiment").
+## Training status (2026-06-10)
+- ✅ **Fresh training on the fixed code: CONFIRMED a major improvement.**
+  Ablation **arm 1 (MoE, seed 0) COMPLETE**: final **PPL 5.72 vs v1's 37.4 —
+  6.5× better in 1,000 fewer steps**, loop_eff 0.500, ECE 0.015. Trajectory
+  560→112→11.1→5.72; crossover past v1 at the full-depth curriculum phase.
+  Likely mechanism: P0.1 (v1 trained with noise-injecting clobbered o_proj) +
+  P0.2 + proven recipe. Full cross-run table: `docs/training_runs.md`. Evals
+  archived as sidecars in `checkpoints_ablation_moe_s0/`.
+- ⬜ **Remaining ablation runs (user-gated — launch ONLY on explicit user go):**
+  dense_s0, then moe_s1 + dense_s1. Commands in the roadmap "Gating experiment"
+  section (proven recipe + `--teacher-device cuda:2`). Decision rule is
+  pre-registered there.
+- ⬜ **New tooling item from the false alarm:** per-run eval output path —
+  `eval_results/distill_step_*.json` filenames collide across runs (a stale v1
+  file masqueraded as a live regression on 2026-06-10). Until fixed in code,
+  the convention: copy each run's eval JSONs into its checkpoint dir
+  immediately after the run.
 
 ## P1 — performance / measurement
 
@@ -116,14 +129,15 @@ Everything that gates a trustworthy training run:
   P0.3); ✅ ckpt side-effect covered by the P0.2 grad-liveness test. ⬜
   `_causal_mask` → `is_causal` SDPA refactor (touches the attention cascade +
   cached-decode mask alignment; real win — SDPA's fused causal path — but
-  wants GPU validation). ⬜ fast-tokenizer check (one-liner, anytime). FineWeb
-  buffer pointer: skipped per review (irrelevant at current scale).
+  wants GPU validation). ✅ fast-tokenizer check: `is_fast=True` (Ouro tokenizer
+  resolves to the Rust implementation — nothing to do). FineWeb buffer pointer:
+  skipped per review (irrelevant at current scale).
 - ✅ **P1.9** distillation soft-KL now masked to `ignore_index`-valid positions
   (commit 6998ec5).
 
 ## P2 — strategic (the review's items)
 
-- ⬜ **P2.1** Run the MoE-vs-dense ablation (after P0.2 ✅ + ideally P1.3).
+- 🔁 **P2.1** MoE-vs-dense ablation IN PROGRESS: arm 1/4 (MoE s0) complete (PPL 5.72 — see Training status above); dense_s0 + both seed-1 runs queued, user-gated.
 - ⬜ **P2.2** Promote per-step weighted loop loss (`--loop-loss per_step_weighted`)
   above Net2Wider — principled fix for P0.3/P0.5, trains exit gates with task
   signal. (P0.3 took option 2 short-term; this is the option-3 upgrade.)
@@ -133,21 +147,23 @@ Everything that gates a trustworthy training run:
   (commit 9b2d1ee); the package no longer ships it.
 - ⬜ **P2.6** Define a frozen minimal config (loops + LTI + dense FFN, rest off),
   A/B each mechanism back in — several were not doing what their comments claimed.
-- ⬜ **P2.7** "Fix release" re-baseline: full v4 eval + inspector on the same
-  checkpoint, diff vs archived. (Partial: v2 ppl/ece/loop_eff done above.)
+- 🔁 **P2.7** "Fix release" re-baseline: v2 ppl/ece/loop_eff done (above);
+  the moe_s0 fresh run now provides the strongest before/after evidence
+  (6.5× over v1). Still open: full v4 eval + inspector diff on the same
+  checkpoint — lower priority now that fresh-run evidence exists.
 
-## Suggested next-session order (updated 2026-06-09, second pass)
-1. ✅ ~~P0 tier + eval clamp~~ — complete.
-2. ✅ ~~P1.3 + P1.4~~; ✅ P1.1, P1.5a, P1.6, P1.7-subset, P1.8-most, P1.9, P2.5.
-3. **On the 5070 (user-run, no training):** A/B `bench_step --device cuda:0`
-   before(31a48b0)/after(main) to measure the P1.3 sync win.
-4. **Training runs — deliberately deferred by user (2026-06-09: "save
-   retraining for later"):** MoE-vs-dense ablation (P2.1, fully unblocked),
-   fresh retrain on fixed code, per-step weighted loop loss (P2.2). All wired;
-   run when the user gives the go.
-5. Code work remaining: **P1.2** (MLA absorption, spec above), **P1.7 cached
-   drafting** (design spec'd above), **P1.5b** decode backfill, **P1.8**
-   `is_causal` refactor + fast-tokenizer check — all want GPU validation;
-   **P2.6** minimal-config definition (doc work, can do anytime); P2.3/P2.4
-   ride along with the deferred training runs; **P2.7** re-baseline rides the
-   fix-release (v2 partial done).
+## Suggested next-session order (updated 2026-06-10, post-arm-1)
+1. ✅ P0 tier · P1 (except the GPU-validation items) · P2.5 · GPU smokes ·
+   **ablation arm 1 (MoE s0): PPL 5.72, 6.5× over v1.**
+2. **Training (user-gated, launch only on explicit go):** dense_s0 → first
+   real MoE-vs-dense readout against moe_s0's 560/112/11.1/5.72 trajectory;
+   then seed-1 repeats. Apply the pre-registered decision rule.
+3. **Tooling:** per-run eval output path (the filename-collision fix);
+   optional P1.3 GPU A/B bench.
+4. Code work remaining (all want GPU validation): **P1.2** MLA absorption
+   (spec above), **P1.7 cached drafting** (design above), **P1.5b** decode
+   backfill, **P1.8** `is_causal` refactor.
+5. Strategy: **P2.6** minimal-config definition (doc work, anytime);
+   **P2.2** per-step weighted loop loss (training experiment, user-gated);
+   P2.3 Muon + P2.4 torch.compile ride along with future runs; P2.7 v4-diff
+   (deprioritised — fresh-run evidence supersedes).
