@@ -102,26 +102,42 @@ Where to find code that implements specific concepts:
 
 ---
 
-## Where we are (as of 2026-06-05)
+## Where we are (as of 2026-06-10)
 
 ### Shipped reference checkpoints
 
 | Checkpoint | Variant | Params | Method | Status |
 |------------|---------|-------:|--------|--------|
-| `mythouro_distill_tiny_v1` | distill_tiny | 278M | Logit distillation from Ouro-2.6B-Thinking (5K steps) | ✓ Archived |
-| `mythouro_distill_tiny_sft_v2` | distill_tiny | 278M | SFT on Magicoder + MetaMath (3K steps) | ✓ Archived |
-| `mythouro_distill_small_grown_v3` | distill_small | 420M | MoE expansion (24→48 experts) + 3K SFT steps | ✓ Archived |
-| `mythouro_distill_small_v4` | distill_small | 420M | OpenHermes-augmented SFT @ seq_len=768 (fp32 AdamW; bnb unavailable on CUDA 13.2) | ✓ Archived |
-| `mythouro_distill_xl_grown_v5` | distill_xl | 632M | MoE expansion 48→96 + ~2.4K SFT steps @ 8-bit AdamW | ✓ Archived (step 2887) — **expert-count ceiling** data point: net-comparable to v4, 2nd expansion did not compound |
+| `mythouro_distill_tiny_v1` | distill_tiny | 278M | Logit distillation from Ouro-2.6B-Thinking (5K steps) | ✓ Archived — **pre-fix code** (trained under P0.1/P0.2 bugs) |
+| `mythouro_distill_tiny_sft_v2` | distill_tiny | 278M | SFT on Magicoder + MetaMath (3K steps) | ✓ Archived (pre-fix) |
+| `mythouro_distill_small_grown_v3` | distill_small | 420M | MoE expansion (24→48 experts) + 3K SFT steps | ✓ Archived (pre-fix) |
+| `mythouro_distill_small_v4` | distill_small | 420M | OpenHermes-augmented SFT @ seq_len=768 | ✓ Archived (pre-fix) |
+| `mythouro_distill_xl_grown_v5` | distill_xl | 632M | MoE expansion 48→96 + ~2.4K SFT steps | ✓ Archived (pre-fix) — **expert-count ceiling** data point (cv evidence softened post-P0.2; inspector read still supports it) |
+| **`moe_s0`** (ablation arm 1) | distill_tiny | 278M | From-scratch distillation on **fixed code + proven recipe** (4K steps, seed 0) | ✓ **Current best: PPL 5.72 vs v1's 37.4 (6.5× better, 1K fewer steps)**, loop_eff 0.500, ECE 0.015. `checkpoints_ablation_moe_s0/` |
+
+Full cross-run stats: [docs/training_runs.md](training_runs.md).
+
+### Code state (post-review, 2026-06-09/10)
+
+External code review (Fable 5) found and we fixed **5 correctness bugs** —
+notably P0.1 (v1–v5 all trained with noise injected via a clobbered zero-init)
+and P0.3 (eval emitted a never-trained path) — plus most of the P1 perf items.
+The moe_s0 run above is the proof the fixes matter. Trackers:
+[review_action_plan.md](review_action_plan.md) ·
+[mythouro_code_review_findings.md](mythouro_code_review_findings.md).
 
 ### Pipeline infrastructure built and tested
 
-- **Distillation training** ([training/distill.py](OpenMythos-main/training/distill.py)) — Hinton-style logit distillation with auxiliary heads
-- **SFT training** ([training/sft.py](OpenMythos-main/training/sft.py)) — masked-CE on response tokens only, growth-checkpoint-aware
-- **MoE expansion** ([mythouro/grow.py](OpenMythos-main/mythouro/grow.py)) — function-preserving promotion with sentinel-bias decay
-- **Eval harness** ([eval/harness.py](OpenMythos-main/eval/harness.py)) — perplexity, ECE, loop_efficiency, ARC, GSM8K
-- **Checkpoint inspector** ([inspect_checkpoint.py](OpenMythos-main/inspect_checkpoint.py)) — qualitative diagnostics per prompt
-- **Tests**: 303/303 passing across the codebase
+- **Distillation training** ([training/distill.py](../training/distill.py)) — Hinton-style logit distillation; defaults now encode the proven recipe
+- **SFT training** ([training/sft.py](../training/sft.py)) — masked-CE on response tokens only, growth-checkpoint-aware
+- **MoE expansion** ([mythouro/grow.py](../mythouro/grow.py)) — function-preserving promotion with sentinel-bias decay
+- **Dense ablation arm** ([mythouro/variants.py](../mythouro/variants.py) `mythouro_distill_tiny_dense`) — matched-active dense twin for the MoE-vs-dense gating experiment
+- **Eval harness** ([eval/harness.py](../eval/harness.py)) — perplexity, ECE, loop_efficiency, ARC, GSM8K; loads any checkpoint's own cfg
+- **Checkpoint inspector** ([inspect_checkpoint.py](../inspect_checkpoint.py)) — per-prompt diagnostics incl. best-of-trajectory A/B + forced-depth probe
+- **Calibration audit** ([tools/per_loop_calibration.py](../tools/per_loop_calibration.py)) — per-loop ECE (the P0.5 tool)
+- **Step benchmark** ([tools/bench_step.py](../tools/bench_step.py)) — achieved tok/s on the real model, CUDA/XPU/CPU
+- **Device abstraction** ([mythouro/device.py](../mythouro/device.py)) — `--device xpu` turnkey for Intel cards; NVIDIA path unchanged
+- **Tests**: 313+ passing (incl. the new invariant tests the review showed were missing)
 
 ---
 
