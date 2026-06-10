@@ -143,6 +143,16 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--random-depth", action="store_true",
                    help="Per batch, sample unroll depth uniformly in "
                         "[start_loops, curriculum.get(step)].")
+    p.add_argument("--seed", type=int, default=0,
+                   help="Seeds torch / python RNG (model init, depth sampling, "
+                        "dropout). Required for the >=2-seed ablation protocol. "
+                        "Note: HF streaming data order is not fully seeded.")
+    p.add_argument("--start-loops", type=int, default=2,
+                   help="LoopCurriculum starting depth. NOTE (P0.5 audit): with "
+                        "the default 2, loop index 0 is never an emission loop, "
+                        "so the UncertaintyHead ends up badly miscalibrated at "
+                        "loop 0 (ECE ~0.2 on v2/v4). Use 1 if you want the head "
+                        "calibrated across ALL loops (e.g. for MoDr labels).")
     p.add_argument("--eval", "-e", action="store_true")
     p.add_argument("--eval-every", type=int, default=500)
     p.add_argument("--eval-max-samples", type=int, default=50)
@@ -324,6 +334,11 @@ def main():
 
     amp_dtype = torch.bfloat16 if dev.bf16_supported(device) else torch.float16
 
+    # Seed BEFORE model construction so init is reproducible per --seed.
+    import random as _random_seed
+    torch.manual_seed(args.seed)
+    _random_seed.seed(args.seed)
+
     # ------------------------------------------------------------------
     # Tokenizer + student
     # ------------------------------------------------------------------
@@ -439,13 +454,13 @@ def main():
         dataset, batch_size=args.micro_batch, num_workers=0, pin_memory=True,
     )
     curriculum = LoopCurriculum(
-        start_loops=2,
+        start_loops=args.start_loops,
         max_loops=cfg.max_loop_iters,
         warmup_steps=max(args.warmup_steps * 2, args.total_steps // 20),
         total_steps=args.total_steps // 2,
     )
     import random as _random
-    depth_rng = _random.Random(0)
+    depth_rng = _random.Random(args.seed)
 
     amp_ctx = (
         torch.amp.autocast(device_type=dev.autocast_type(device), dtype=amp_dtype)

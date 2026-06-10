@@ -171,6 +171,16 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                    help="REQUIRED for the default Ouro teacher (it ships a "
                         "custom modeling_ouro.py). Set whenever the teacher "
                         "repo includes custom modeling code.")
+    p.add_argument("--seed", type=int, default=0,
+                   help="Seeds torch / python RNG (model init, depth sampling, "
+                        "dropout). Required for the >=2-seed ablation protocol. "
+                        "Note: HF streaming data order is not fully seeded.")
+    p.add_argument("--start-loops", type=int, default=2,
+                   help="LoopCurriculum starting depth. NOTE (P0.5 audit): with "
+                        "the default 2, loop index 0 is never an emission loop, "
+                        "so the UncertaintyHead ends up badly miscalibrated at "
+                        "loop 0 (ECE ~0.2 on v2/v4). Use 1 if you want the head "
+                        "calibrated across ALL loops (e.g. for MoDr labels).")
     p.add_argument("--random-depth", action="store_true",
                    help="Per batch, sample unroll depth uniformly in "
                         "[start_loops, curriculum.get(step)] instead of "
@@ -231,6 +241,11 @@ def main():
                 )
 
     amp_dtype = torch.bfloat16 if dev.bf16_supported(device) else torch.float16
+
+    # Seed BEFORE model construction so init is reproducible per --seed.
+    import random as _random_seed
+    torch.manual_seed(args.seed)
+    _random_seed.seed(args.seed)
 
     # ------------------------------------------------------------------
     # Tokenizer + student
@@ -306,7 +321,7 @@ def main():
     )
 
     curriculum = LoopCurriculum(
-        start_loops=2,
+        start_loops=args.start_loops,
         max_loops=cfg.max_loop_iters,
         warmup_steps=max(args.warmup_steps * 2, args.total_steps // 20),
         total_steps=args.total_steps // 2,
@@ -316,7 +331,7 @@ def main():
     # `curriculum.get(step)` (fixed) to `curriculum.get_sampled(step, rng)`
     # (random uniform in [start, get(step)]). Seeded for reproducibility.
     import random as _random
-    depth_rng = _random.Random(0)
+    depth_rng = _random.Random(args.seed)
 
     amp_ctx = (
         torch.amp.autocast(device_type=dev.autocast_type(device), dtype=amp_dtype)
