@@ -35,6 +35,25 @@ Legend: ✅ done · ⬜ todo · 🔁 partial
 - ✅ eval metrics clamp `seq_len` to `cfg.max_seq_len`
   (perplexity/loop_efficiency/ece — done with P0.5's commit).
 
+## Pre-training checklist (status as of 2026-06-09)
+
+Everything that gates a trustworthy training run:
+
+- ✅ P0.1–P0.3 (the bugs that would pollute a fresh run: init, routing balance,
+  emission) — fixed + tested.
+- ✅ `--seed` + `--start-loops` flags exist in both training scripts (commit
+  b7e0b1d) — the ≥2-seed ablation protocol is now actually runnable.
+- ⬜ **GPU smoke (user-run, ~10 min, MUST do before any overnight):** this
+  session's hot-path changes (P0.2 checkpoint-flow telemetry, P1.3 dispatch,
+  the autocast MoE fix, h_out removal) were CPU-validated only. Run ~50–100
+  steps on the 5070 and eyeball the log: loss decreasing, no NaN, sane tok/s,
+  MoE util line non-degenerate. E.g.
+  `python -m training.sft --resume archived_models/mythouro_distill_tiny_v1/step_0005000.pt --total-steps 50 --seed 0`
+- ⬜ Optional: the P1.3 GPU A/B (`bench_step` on 31a48b0 vs main).
+- **Run-time decision:** `--start-loops 1` (calibrates the head at loop 0, new
+  recipe) vs `2` (matches v1–v5). Whichever is picked, use it for BOTH ablation
+  arms.
+
 ## The high-value next move
 - ⬜ **Fresh training run on the fixed code.** The re-baseline only captured
   P0.3's emission gain on *already-trained* weights; v1–v5 were *trained* under
