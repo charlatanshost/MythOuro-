@@ -180,7 +180,7 @@ Ranked by leverage for the current single-card budget:
 
 ### Growth axes (next promotion candidates)
 
-Proven: **MoE expansion** round 1 (24 → 48 experts, v3) via [mythouro/grow.py](OpenMythos-main/mythouro/grow.py).
+Proven: **MoE expansion** round 1 (24 → 48 experts, v3) via [mythouro/grow.py](../mythouro/grow.py).
 **Tapped out:** MoE expansion round 2 (48 → 96, v5) hit the expert-count ceiling
 (2026-06-06) — do not repeat.
 
