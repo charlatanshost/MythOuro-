@@ -43,12 +43,13 @@ Everything that gates a trustworthy training run:
   emission) — fixed + tested.
 - ✅ `--seed` + `--start-loops` flags exist in both training scripts (commit
   b7e0b1d) — the ≥2-seed ablation protocol is now actually runnable.
-- ⬜ **GPU smoke (user-run, ~10 min, MUST do before any overnight):** this
-  session's hot-path changes (P0.2 checkpoint-flow telemetry, P1.3 dispatch,
-  the autocast MoE fix, h_out removal) were CPU-validated only. Run ~50–100
-  steps on the 5070 and eyeball the log: loss decreasing, no NaN, sane tok/s,
-  MoE util line non-degenerate. E.g.
-  `python -m training.sft --resume archived_models/mythouro_distill_tiny_v1/step_0005000.pt --total-steps 50 --seed 0`
+- ✅ **GPU smoke PASSED (2026-06-09, `reports/gpu_smoke_50step.txt`):** 50 SFT
+  steps on the 5070 through ALL of this session's hot-path changes (P0.2
+  telemetry-through-checkpoint, P1.3 sorted dispatch, autocast MoE fix, h_out
+  removal, --seed/--start-loops). Loss 2.71→2.3-2.4, lb 2.17→1.55 (the
+  P0.2-fixed balancing visibly working), depth-reg live, resp_frac 0.36-0.54,
+  n_loops sampling 2-4, gnorm finite, 1.4-2.5k tok/s (matches historical),
+  checkpoint save OK. **Code is cleared for training.**
 - ⬜ Optional: the P1.3 GPU A/B (`bench_step` on 31a48b0 vs main).
 - **Run-time decision:** `--start-loops 1` (calibrates the head at loop 0, new
   recipe) vs `2` (matches v1–v5). Whichever is picked, use it for BOTH ablation
