@@ -50,6 +50,14 @@ Everything that gates a trustworthy training run:
   P0.2-fixed balancing visibly working), depth-reg live, resp_frac 0.36-0.54,
   n_loops sampling 2-4, gnorm finite, 1.4-2.5k tok/s (matches historical),
   checkpoint save OK. **Code is cleared for training.**
+- ✅ **Distill-path GPU smoke PASSED, both ablation arms (2026-06-09,
+  `reports/gpu_smoke_distill_{moe,dense}.txt`):** 20 from-scratch steps each,
+  teacher on cuda:1. MoE arm: soft/hard losses live through the P1.9-masked
+  KL, hard CE 9.29→7.86, lb 1.72→1.19 declining. Dense arm (first-ever real
+  steps): lb/sparse EXACTLY 0 (aux losses vanish as designed), loss tracks the
+  MoE arm at the same seed. **Operational finding:** teacher cohabitation on
+  the 12 GB card OOMs at micro-batch 2 — use a second GPU (cuda:1/2) or
+  micro-batch 1; roadmap ablation commands updated accordingly.
 - ⬜ Optional: the P1.3 GPU A/B (`bench_step` on 31a48b0 vs main).
 - **Run-time decision:** `--start-loops 1` (calibrates the head at loop 0, new
   recipe) vs `2` (matches v1–v5). Whichever is picked, use it for BOTH ablation

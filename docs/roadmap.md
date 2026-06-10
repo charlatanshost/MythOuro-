@@ -1405,14 +1405,24 @@ arm runs through the existing `distill.py` / `sft.py` unchanged.
 **Run it (both arms, matched everything but the FFN):**
 ```powershell
 # MoE arm (= the existing distill_tiny recipe)
-python -m training.distill --trust-remote-code --student-variant mythouro_distill_tiny `
+python -m training.distill --trust-remote-code --teacher-device cuda:1 `
+    --student-variant mythouro_distill_tiny `
     --total-steps 4000 --seed 0 --eval --eval-every 1000 --ckpt-dir checkpoints_ablation_moe
 # Dense arm (same flags, dense variant; MoE aux terms vanish to 0 automatically)
-python -m training.distill --trust-remote-code --student-variant mythouro_distill_tiny_dense `
+python -m training.distill --trust-remote-code --teacher-device cuda:1 `
+    --student-variant mythouro_distill_tiny_dense `
     --total-steps 4000 --seed 0 --eval --eval-every 1000 --ckpt-dir checkpoints_ablation_dense
 ```
 Repeat each with `--seed 1` for the ≥2-seed requirement, then compare with the
 eval harness / inspector.
+
+**Teacher placement (measured 2026-06-09):** `--teacher-device cuda:0`
+(cohabitation with the student on the 12 GB card) **OOMs at micro-batch 2** —
+the v1 "fits in ~9 GB" sizing was theoretical; the real v1 run used two cards.
+Put the teacher on a second GPU (`cuda:1`/`cuda:2`, 5.2 GB bf16 fits the 8 GB
+cards) — or, single-card, drop to `--micro-batch 1`. Both 20-step GPU smokes
+(MoE + dense arms, `reports/gpu_smoke_distill_*.txt`) ran clean on the
+two-card layout.
 
 ### Protocol
 
