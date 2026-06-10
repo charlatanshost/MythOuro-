@@ -11,7 +11,9 @@ conversation history.
 > in, and no responsibility for, these changes or the fork's direction. See the
 > README "Acknowledgements" section.
 
-**Status as of 2026-06-06:** 303/303 tests pass. Full distillation → SFT →
+**Status as of 2026-06-10:** 313+ tests pass. External code review fixed 5
+correctness bugs (see the 2026-06-09/10 section at the bottom); first run on
+the fixed code beat v1's final PPL by 6.5×. Full distillation → SFT →
 model-growth pipeline validated end-to-end on consumer hardware. Trained
 reference checkpoints v1 (278M distilled) through v5 (632M, 2nd MoE expansion to
 96 experts) archived. **v5 hit the expert-count ceiling** — net-comparable to v4
@@ -820,3 +822,111 @@ Verified on the real variant: MoE arm **278.9 M** total / dense arm **180.5 M**
 (98 M idle routed-expert capacity removed), dense recurrent FFN width **15360**.
 The MoE-only aux losses already short-circuit to 0 on a model with no MoE layers,
 so the dense arm runs through the existing training scripts unchanged.
+
+---
+
+# 2026-06-09/10 update — external code review, fixes, and the first run on fixed code
+
+The largest correctness pass since the original build. An external review
+(Claude Fable 5, full text: [`docs/mythouro_code_review_findings.md`](docs/mythouro_code_review_findings.md))
+found 5 correctness bugs (P0), 9 perf/measurement issues (P1), and 7 strategic
+items (P2). Every finding was independently verified against the code before
+acting. Status tracker: [`docs/review_action_plan.md`](docs/review_action_plan.md).
+Cross-run stats: [`docs/training_runs.md`](docs/training_runs.md).
+
+## The five correctness bugs (what was wrong, what we did, why it matters)
+
+1. **P0.1 — `_init_weights` clobbered deliberate zero-inits.** The blanket
+   N(0,0.02) re-init ran *after* submodules set their zero-inits, so
+   `CrossLoopAttention.o_proj` (meant to start as an identity residual) and
+   `UncertaintyHead.net[-1]` (meant to start at neutral 0.5) were random — i.e.
+   **v1–v5 trained their entire runs with noise injected into the hidden state
+   every loop.** Fix: protected layers mark `_skip_global_init`. This is the
+   prime suspect for why the post-fix run (below) trains so much better.
+2. **P0.2 — MoE router telemetry only saw the LAST loop.** The single recurrent
+   MoEFFN runs n_loops× per forward but its telemetry was overwritten each
+   call, so the aux losses and the DeepSeek-V3 bias updater only balanced loop
+   K−1 — and the v5 "expert-ceiling" cv numbers were measured through this
+   (conclusion softened in the roadmap). Fix: telemetry returned through the
+   gradient-checkpoint boundary and accumulated across all loops.
+3. **P0.3 — eval emitted a never-trained path.** Training returns `h_K`; eval
+   returned the ACT blend `h_out`, which under-summed for non-halting positions
+   AND was never seen by the coda/head during training. Fix: emit `h_K`
+   everywhere; ACT is purely an early-exit criterion. **Re-baseline on the same
+   v2 weights: PPL 46.3→39.25, ECE 0.058→0.042 — free measured capability.**
+   All archived eval numbers were pessimistic.
+4. **P0.4 — depthwise batcher attended across the wrong rows.** Cross-loop
+   buffer held active-subset snapshots; as rows halted, batch dims went ragged
+   and row identities drifted (a sequence could attend to another sequence's
+   loop history). Fix: full-batch snapshots, per-row slicing, h_K emission.
+   Pinned by a per-row equivalence test vs single-row forwards.
+5. **P0.5 — uncertainty head consumed on distributions it was never calibrated
+   on.** Measured per-loop ECE (new tool `tools/per_loop_calibration.py`) on v2
+   and v4: loops 1–3 calibrated (0.01–0.04), **loop 0 badly miscalibrated
+   (0.17–0.22, error understated ~0.2)** — the loop curriculum starts at 2, so
+   loop 0 was never an emission loop. Consequences: best-of-trajectory defaults
+   `min_loops=2`; **MoDr supervision target = per-loop CE (mandated)**; the
+   earlier "model prefers loop 0" reads were partly a calibration artifact.
+
+Plus: eval harness now rebuilds from the checkpoint's own cfg (was hardcoded to
+`mythouro_1b`), defaults to the Ouro tokenizer (was wrong-vocab gpt-neo), and
+clamps eval seq_len to `max_seq_len`.
+
+## P1 fixes (perf / measurement)
+
+Sorted MoE dispatch (one host sync instead of ~768/micro-step in the v5
+regime); MLA caches compact shared rope keys (~n_heads× less rope cache);
+multi-scale injection projections hoisted out of the loop; `generate` defaults
+to the trained depth; zero-copy KV rewind in UncertaintyGatedGenerator;
+SpeculativeDecoder loses two redundant full forwards per step; LoRA H2D
+transfer and loop-embedding reallocation removed; dead ACT-blend accumulation
+deleted; distill soft-KL masked to valid positions. Remaining P1 items (MLA
+absorption, cached drafting, is_causal refactor) carry written specs in the
+action plan and want GPU validation. `moda.py` (1,063-line unused upstream
+duplicate) quarantined to `examples/` (P2.5).
+
+## New invariant tests
+
+The 303-green suite missed P0.1/P0.2 because they're invariant violations, not
+logic errors. Added: zero-init survival, telemetry coverage, train/eval
+emission parity, aux-gradient liveness under checkpointing, batcher per-row
+equivalence, dispatch-vs-naive equivalence, per-loop-uncertainty contracts.
+Suite now 313+ passing.
+
+## Two operational incidents (both documented in roadmap failure modes)
+
+1. **Script defaults ≠ proven recipe.** The first ablation attempt used
+   `distill.py` defaults (warmup 200, depth-reg 0.1) — both arms flatlined
+   identically (CE stuck ~7.6–8, transient deep-loop gnorm spikes to 2743,
+   weights sane). Diagnosis chain (depth-sweep eval, init comparison, weight
+   forensics, resume probe, MoE control arm, data decode) ended at v1's
+   MODEL_CARD provenance command: **warmup 500, depth-reg 0.3, mb1/ga8**.
+   Defaults now encode the proven recipe. Rule: *diff against the model card's
+   command; never trust script defaults.*
+2. **Eval filename collision.** `eval_results/distill_step_*.json` collide
+   across runs — a stale v1 file masqueraded as a live regression. Convention:
+   copy each run's eval JSONs into its checkpoint dir as sidecars; a per-run
+   eval path is on the tooling list.
+
+## First training run on the fixed code: ablation arm 1 (MoE, seed 0)
+
+**Final PPL 5.72 vs v1's 37.4 — 6.5× better in 1,000 fewer steps** (trajectory
+560 → 112 → 11.1 → 5.72; loop_eff 0.500 dead-center; ECE 0.015). Same
+architecture, data, and teacher as v1 — the delta is the fixed code (P0.1/P0.2)
+plus the proven recipe. Caveat: absolute PPL is flattered by FineWeb train/eval
+stream overlap (applies equally to v1, so the relative gain stands). Dense arm
+and seed-1 runs are wired and **user-gated**.
+
+## Also this period
+
+- **CUDA→XPU device abstraction** (`mythouro/device.py`) + real-valued RoPE
+  fallback (`rope_real`) — `--device xpu` is turnkey for Intel Arc/Battlemage;
+  NVIDIA path byte-identical. Plus `tools/bench_step.py` (achieved-tok/s
+  benchmark) and the hardware analysis it powered (measured: 5070 = 6,852
+  tok/s @ b8; Xeon-8480-on-2-channels = 373; conclusion: VRAM, not TFLOPS, is
+  the local bottleneck).
+- **Reconstructed MODEL_CARDs for v3/v4/v5** (from roadmap + checkpoint
+  timestamps) and versioned all cards + eval JSONs (archived_models/ was
+  accidentally blanket-gitignored).
+- `--seed` / `--start-loops` flags in both training scripts; training-runs
+  comparison doc; science+medical domain expansion added to the data roadmap.

@@ -75,6 +75,7 @@ authoritative documents and where to find what:
 | [docs/datasets.md](datasets.md) | Dataset reference — what corpora we use and how. |
 | [docs/growth_design.md](growth_design.md) | MoE expansion / model growth design notes. Read before promoting a checkpoint. |
 | [docs/fork_vs_openmythos.md](fork_vs_openmythos.md) | Verified code-level diff of this fork against upstream `kyegomez/OpenMythos`. |
+| [docs/mythouro_code_review_findings.md](mythouro_code_review_findings.md) | The external code review itself (Fable 5, 2026-06-09) — the source document for the action plan. |
 | [docs/review_action_plan.md](review_action_plan.md) | Code-review (P0–P2) status tracker — what's fixed, what's left. **Resume here.** |
 | [docs/training_runs.md](training_runs.md) | Comparison table of every training session's eval stats (PPL/loop_eff/ECE trajectories, recipes, raw-data paths). Update after each run. |
 | `archived_models/<name>/MODEL_CARD.md` | Per-checkpoint provenance: training config, eval results, behavioural validation, limitations. One per shipped reference checkpoint. |
@@ -887,6 +888,20 @@ Project-specific terms used throughout the code and docs:
 | **soft / hard loss** | Distillation: `soft` = distance to teacher logits, `hard` = CE against gold tokens |
 | **ECE** | Expected Calibration Error — how well predicted confidence matches actual correctness (lower = better calibrated) |
 | **UncertaintyHead** | Per-token uncertainty predictor; the `ConfidenceAwareGenerator` uses it to halt/refuse low-confidence generation |
+| **h_K (emission)** | The final loop's hidden state — what the model emits at BOTH training and inference since P0.3. The old eval path emitted the ACT-weighted blend `h_out`, a never-trained mixture (removed). |
+| **gnorm** | Gradient norm before clipping (clip caps actual updates at 1.0). Healthy: single digits. Hundreds–thousands = chaotic landscape; the step still has norm 1 but points in noise directions → learning stalls (the flatline-incident signature). |
+| **LoopCurriculum / `--start-loops` / `--random-depth`** | Training depth schedule: hold at `start_loops`, ramp linearly to `max_loop_iters` by mid-run. `--random-depth` samples each step's depth uniformly in [start, current cap]. Caveat: depths below `start_loops` are never emission depths → uncertainty head uncalibrated there (the loop-0 finding, P0.5). |
+| **warmup (LR)** | Steps before full learning rate. The proven from-scratch recipe needs 500 — 200 destabilised a fresh 4-loop recurrent model (see failure modes 2026-06-10). Distinct from the *curriculum* warmup and the *new-component* warmup. |
+| **best-of-trajectory** | Inference experiment: score every loop's output with the UncertaintyHead, emit the most-confident depth per token. Diagnostic-grade (no KV cache); `min_loops=2` default excludes the miscalibrated loop 0. |
+| **forced-depth probe (`--force-full-depth`)** | Measurement override suppressing ACT's early exits so all `n_loops` run — exposes the counterfactual loops ACT skips ("would deeper have helped?"). Pure measurement, weights untouched. |
+| **per-loop calibration / best-exit teacher** | ECE measured per loop index (`tools/per_loop_calibration.py`). The "best exit" per token (lowest per-loop CE) is MoDr's supervision target — per-loop CE, NOT uncertainty-argmin (loop-0 miscalibration would poison it). |
+| **MoDr** | Mixture-of-Depth routing (candidate direction): one learned router emitting expert choice AND per-token recurrence depth, trained teacher/student (forced-depth trajectory = teacher; cheap router = student). Gated behind the MoE-vs-dense ablation. |
+| **matched-active (ablation)** | The dense arm's FFN width is sized so its params/FLOPs per token equal the MoE arm's *activated* FFN per token (`expert_dim·topk·(1+n_shared)`) — same compute, different total capacity. |
+| **sidecar evals** | Per-run eval JSONs copied into the run's checkpoint dir immediately after a run — because `eval_results/` filenames collide across runs (caused a false alarm 2026-06-10). |
+| **proven recipe** | v1's final successful hyperparameters (warmup 500, depth-reg 0.3, mb1/ga8), recorded in its MODEL_CARD provenance and now the `distill.py` defaults. Rule: diff against the model card's command, never trust old defaults. |
+| **P0 / P1 / P2** | Review priorities: P0 = correctness (fix before training), P1 = perf/measurement validity, P2 = strategic. Tracker: `docs/review_action_plan.md`. |
+| **XPU / `rope_real`** | `torch.xpu` = Intel GPU backend (native ≥ PyTorch 2.5); `mythouro/device.py` abstracts cuda/xpu/cpu. `rope_real` swaps the complex RoPE table for an equivalent cos/sin form for backends without complex-op support. |
+| **tok/s (k-suffix!)** | The training log prints `2.5k tok/s` = 2,500. Misreading the k once spawned a multi-day "training is slow" investigation (it wasn't). |
 
 ---
 
