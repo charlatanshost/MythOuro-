@@ -43,10 +43,21 @@ hybrid that draws on three distinct lineages but is identical to none of them:
 **What's genuinely original here** (not inherited from any of the above):
 - The distillation → SFT → MoE-growth training pipeline and its tooling
 - Function-preserving **MoE expansion** (sentinel-bias promotion) on a recurrent-MoE architecture — [`docs/growth_design.md`](docs/growth_design.md)
-- The trained reference checkpoints (278M v1 → 420M v4) and their end-to-end validation
+- The trained reference checkpoints (278M v1 → 632M v5, plus the post-fix ablation runs) and their end-to-end validation — [`docs/training_runs.md`](docs/training_runs.md)
 - A single-card consumer-hardware training recipe (8-bit Adam, staged seq-len, growth-based scaling)
+- A pre-registered **MoE-vs-dense ablation** at matched active compute, and the measured depth/calibration findings feeding the MoDr direction — [`docs/roadmap.md`](docs/roadmap.md)
 
-**Honest scale note:** the trained checkpoints are **278M–420M proof-of-concept
+**Current state (2026-06-11):** an external code review found 5 correctness
+bugs — notably that **v1–v5 all trained with a clobbered zero-init silently
+injecting noise into the hidden state every loop**. All fixed (with the
+invariant tests that were missing); full record in
+[`docs/review_action_plan.md`](docs/review_action_plan.md). The first
+from-scratch run on the fixed code finished **6.5× better perplexity than v1
+at the same size in fewer steps**, and the MoE-vs-dense ablation (3 of 4 arms
+complete) shows the sparse capacity earning its keep at matched compute.
+Cross-run results: [`docs/training_runs.md`](docs/training_runs.md).
+
+**Honest scale note:** the trained checkpoints are **278M–632M proof-of-concept
 models.** They validate that the architecture + recipe work end-to-end (stable
 training, balanced MoE routing, calibrated uncertainty, all three halt
 mechanisms firing) — but they do **not** produce coherent text. That's a
@@ -163,7 +174,8 @@ logits, uncertainty = model(ids, n_loops=4)
 print(f"[{attn_type.upper()}] Logits shape: {logits.shape}")
 print(f"[{attn_type.upper()}] Uncertainty shape: {uncertainty.shape}")
 
-out = model.generate(ids, max_new_tokens=8, n_loops=8)
+out = model.generate(ids, max_new_tokens=8)   # n_loops defaults to the trained depth;
+                                              # raise it explicitly for depth extrapolation
 print(f"[{attn_type.upper()}] Generated shape: {out.shape}")
 
 A = model.recurrent.injection.get_A()
@@ -274,8 +286,12 @@ distill_tiny  278M  ──── SFT ────►  distill_tiny  278M  (instr
 | **Model growth** | [`tools/grow_checkpoint.py`](tools/grow_checkpoint.py) | Function-preserving **MoE expansion** (e.g. 24 → 48 routed experts) via [`mythouro/grow.py`](mythouro/grow.py). New experts are zero-gated + sentinel-biased at promotion so the model's output is byte-identical, then a decay schedule eases them into the routing. See [`docs/growth_design.md`](docs/growth_design.md). |
 | **Inspect** | [`inspect_checkpoint.py`](inspect_checkpoint.py) | Per-prompt diagnostics: generated text, per-token uncertainty trace, ACT halt distribution, MoE utilisation. |
 
-The full lineage, per-checkpoint eval results, hardware notes, failure-mode
-recovery patterns, and forward plan live in [`docs/roadmap.md`](docs/roadmap.md).
+`training/distill.py`'s defaults encode the **proven recipe** (warmup 500,
+depth-reg 0.3 — recovered from v1's model-card provenance after the script
+defaults flatlined a run; see the roadmap's failure modes). Cross-run eval
+results live in [`docs/training_runs.md`](docs/training_runs.md); the full
+lineage, hardware notes, failure-mode recovery patterns, and forward plan in
+[`docs/roadmap.md`](docs/roadmap.md).
 
 ---
 
@@ -287,6 +303,10 @@ recovery patterns, and forward plan live in [`docs/roadmap.md`](docs/roadmap.md)
 | [`docs/mythouro.md`](docs/mythouro.md) | Full API reference for the `MythOuro` class — constructor, `forward`, `generate`, all sub-modules, configuration reference, and usage examples |
 | [`docs/growth_design.md`](docs/growth_design.md) | MoE-expansion / model-growth design notes — the function-preserving promotion algorithm and its training contract |
 | [`docs/datasets.md`](docs/datasets.md) | Recommended training datasets with token budget guidance per model size |
+| [`docs/training_runs.md`](docs/training_runs.md) | **Cross-run results table** — every training session's eval stats, trajectories, and behavioural reads |
+| [`docs/review_action_plan.md`](docs/review_action_plan.md) | Code-review (P0–P2) status tracker — what was broken, what's fixed, what's queued |
+| [`docs/mythouro_code_review_findings.md`](docs/mythouro_code_review_findings.md) | The external code review itself (the source document for the fixes) |
+| [`docs/fork_vs_openmythos.md`](docs/fork_vs_openmythos.md) | Verified code-level diff of this fork against upstream OpenMythos |
 
 ---
 
