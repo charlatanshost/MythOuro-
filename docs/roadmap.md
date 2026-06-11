@@ -865,7 +865,7 @@ listed here so the data decision is made before the engineering, not during.
 
 ### Planned domain expansion: science + medical (user goal, 2026-06-10)
 
-Add science/medical as a data *kind* across the stages — per the variety
+**Clean-provenance candidates now live in [docs/clean_sft_datasets.md](clean_sft_datasets.md)** (MIRIAD, PubMedQA, ChemData, OpenWebMath-SFT — all OpenAI-free, superseding the GPT-provenance-flagged sets below where they overlap). Add science/medical as a data *kind* across the stages — per the variety
 principle below, a new domain is exactly the kind of addition that has moved
 behaviour at this scale. Candidates by stage (verify licenses at use time):
 
@@ -993,7 +993,7 @@ Full writeup in the README's "Licensing & data provenance" section. Short versio
 
 - **Code**: MIT. **Teacher** (`ByteDance/Ouro-2.6B-Thinking`): **Apache 2.0** — clean for distillation/redistribution with attribution.
 - **The gating issue**: the SFT datasets (OpenHermes 2.5, MetaMathQA, Magicoder-Evol-Instruct) all contain **OpenAI-generated data**, whose terms restrict training competing models. Fine for private research; a real constraint if distributing/commercialising the SFT'd checkpoints.
-- **To get a cleanly-distributable checkpoint**: retrain SFT on non-OpenAI-provenance data (Dolly-15k, documented Tulu-3 subsets, or self-generated from an Apache/MIT model). Distillation data (FineWeb-Edu, OpenWebMath, CodeParrot) is open-provenance and fine.
+- **To get a cleanly-distributable checkpoint**: retrain SFT on non-OpenAI-provenance data — **a vetted registry now exists: [docs/clean_sft_datasets.md](clean_sft_datasets.md)** (Tulu-3, OASST2, OpenMathInstruct-2, NuminaMath, OpenCodeInstruct, MIRIAD, PubMedQA, ChemData — chat, math, code, medical, hard sciences). Distillation data (FineWeb-Edu, OpenWebMath, CodeParrot) is open-provenance and fine.
 
 ---
 
