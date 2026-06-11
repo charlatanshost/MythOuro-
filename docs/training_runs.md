@@ -70,6 +70,31 @@ the full-depth curriculum phase (step 2000+) kicks in.
 | 3000 | 0.496 | 0.011 |
 | 4000 | **0.500** (design-band center) | 0.015 |
 
+## Behavioural read: moe_s0 test prompts (2026-06-11)
+
+Inspector on the PPL-5.72 checkpoint (4-prompt set, T=0.7/top_k=40, raw output:
+`reports/inspect_moe_s0.txt`). **Context: distill-only, no SFT** — the fair
+comparison is v1 (also distill-only), not the SFT'd v2/v4.
+
+| Prompt | Output character | Stop | Notes |
+|--------|------------------|------|-------|
+| "The recurrent depth transformer is" | degenerate repetition ("compared"×12) | `cycle` ✅ | guard fired |
+| ChatML "What is 2+2?" | newline/digit loops | `cycle` ✅ | no chat structure (expected pre-SFT) |
+| `def fibonacci(n):` | **correctly indented `
+    """` docstring opening**, then collapse | `cycle` ✅ | genuine learned code convention — the one bright spot |
+| Roman Empire trivia | "R R R R…" | `cycle` ✅ | guard fired |
+
+**Findings:**
+1. Real *structure* learning is visible (the docstring), but open-ended
+   generation still collapses into repetition attractors — classic small-LM
+   degeneration; halt depth steady at 2.0; cycle guard 4/4.
+2. **The PPL-vs-generation gap reinforces the stream-overlap caveat** on the
+   absolute 5.72 — hold the absolute number loosely; relative comparisons
+   (vs v1, vs dense) remain methodologically sound.
+3. Behavioural quality at this scale historically arrives with **SFT** (v4's
+   registers/halts all came from it) — this read strengthens the case for
+   SFT-ing this base as the next pipeline step.
+
 ## Where the raw data lives
 
 | Run | Eval JSONs |
