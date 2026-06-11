@@ -1316,6 +1316,30 @@ These are research-paper-sized questions individually; flagged here so we don't 
 
 ---
 
+## Candidate experiment: train at depth 6 (does the extrapolation headroom survive per-loop CE?)
+
+**Question (user, 2026-06-11):** the forced-depth probe showed uncertainty still
+falling at loops 4–7 on some prompts — should we train those depths?
+
+**Why the probe doesn't settle it:** loops 4–7 were never emission loops, and
+P0.5 proved the UncertaintyHead is unreliable exactly there (loop 0's readings
+were off by ~0.2 for the same reason). The extrapolation signal was measured
+with the proxy outside its calibrated range and was never checked against
+per-loop CE. It may be real; it may be the loop-0 artifact's deep-end twin.
+
+**Why the ablation runs were right to stay at 4:** the Ouro teacher computes
+targets at exactly 4 recurrent passes (deeper student loops chase no deeper
+signal during distillation); Ouro's own curve peaks at 3–4 loops; and +50%
+recurrent compute mid-protocol would have been an uncontrolled variable.
+
+**The experiment (queued, post-SFT):** one run at `max_loop_iters=6`
+(curriculum ramp to 6), scored by **per-loop CE** via
+`forward_trajectory(force_full_depth=True)` against the 4-loop arm — single
+variable, ~6–7 h. Decision value: if depth 5–6 carries genuine trainable CE
+gains, MoDr's depth policy has real headroom to allocate (and the depth-6
+config earns a slot); if not, 4 is confirmed as the scale-appropriate depth
+and the extrapolation findings get re-labelled as proxy artifacts.
+
 ## Candidate experiment: Ouro-style per-step weighted loop loss
 
 A ready-to-run experiment, documented so it can be picked up in a future
