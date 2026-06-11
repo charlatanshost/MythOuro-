@@ -26,7 +26,8 @@ eval JSONs where they exist (paths in the last column). Update after each run.
 | *(flatline)* | 06-10 | dense + MoE, both | ablation attempt on **script defaults** (warmup 200, depth-reg 0.1) | ~2000 | 4,462–8,301 | 1.0 (no halt) | — | **dead** — see failure modes; root-caused to recipe defaults |
 | **moe_s0** | 06-10 | MoE 24exp / 278M | ablation arm 1: distill from scratch; proven recipe; **post-fix code** | 4000 | **5.72** | 0.500 | 0.015 | ✅ **6.5× better than v1 final in 1k fewer steps** |
 | **dense_s0** | 06-10/11 | dense / 180M | ablation arm 2: same recipe/seed as moe_s0, FFN only difference | 4000 | **22.66** | 0.500 | 0.026 | ✅ complete — **MoE wins 4.0× at seed 0**; note dense still beats v1's 37.4 |
-| moe_s1 / dense_s1 | — | — | seed-1 repeats | — | — | — | — | queued |
+| **moe_s1** | 06-11 | MoE 24exp / 278M | ablation arm 3: seed-1 repeat of moe_s0 | 4000 | **22.23** | 0.500 | 0.025 | ✅ complete — **~4× seed spread vs moe_s0 (5.72)**; ≈ dense_s0 (22.66). dense_s1 now decisive |
+| dense_s1 | — | dense / 180M | ablation arm 4 — awaiting go | — | — | — | — | queued — **the decisive within-seed-1 comparison** |
 
 ¹ SFT specialises toward chat; web-text PPL rises by design.
 ² v3–v5 predate per-run eval archiving — only inspector/behavioural results in
@@ -34,13 +35,20 @@ their MODEL_CARDs (reconstructed 2026-06-08).
 
 ## PPL trajectory (per 1k-step eval)
 
-| Step | v1 (old eval) | v2-SFT (old eval) | **moe_s0 (fixed code)** | **dense_s0 (fixed code)** |
-|-----:|------:|------:|------:|------:|
-| 1000 | 368.4 | 48.5 | 559.9 | 578.0 |
-| 2000 | 178.6 | 46.5 | 112.1 | 150.3 |
-| 3000 | 81.7 | 46.3 | **11.1** | 33.6 |
-| 4000 | 51.8 | — | **5.72** | 22.7 |
-| 5000 | 37.4 | — | — | — |
+| Step | v1 (old eval) | v2-SFT (old eval) | **moe_s0** | **dense_s0** | **moe_s1** |
+|-----:|------:|------:|------:|------:|------:|
+| 1000 | 368.4 | 48.5 | 559.9 | 578.0 | 475.4 |
+| 2000 | 178.6 | 46.5 | 112.1 | 150.3 | 122.9 |
+| 3000 | 81.7 | 46.3 | **11.1** | 33.6 | 34.0 |
+| 4000 | 51.8 | — | **5.72** | 22.7 | 22.2 |
+| 5000 | 37.4 | — | — | — | — |
+
+**Seed-variance note (2026-06-11):** moe_s1 finished at 22.2 — a ~4× spread vs
+moe_s0 (5.72) on the identical arm/recipe, and ≈ dense_s0 (22.66). The
+within-seed-0 MoE margin (4.0×) therefore does NOT yet generalise; **dense_s1
+is the decisive run** (within-seed-1 pairing). Per the pre-registered rule, no
+cross-seed verdict until it posts. Constant across all three fixed-code runs:
+loop_eff converges to exactly 0.500.
 
 **Seed-0 ablation readout:** MoE/dense PPL ratio grows 1.0× → 1.3× → 3.0× →
 **4.0×** across training — the sparse capacity (98M idle params at matched
