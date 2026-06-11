@@ -137,7 +137,7 @@ Everything that gates a trustworthy training run:
 
 ## P2 — strategic (the review's items)
 
-- 🔁 **P2.1** MoE-vs-dense ablation IN PROGRESS: arm 1/4 (MoE s0) complete (PPL 5.72 — see Training status above); dense_s0 + both seed-1 runs queued, user-gated.
+- 🔁 **P2.1** MoE-vs-dense ablation: seed 0 COMPLETE, both arms — **MoE wins 4.0× (5.72 vs 22.66), gap grows with training; MoE retained per the pre-registered rule, pending seed-1 confirmation** (moe_s1 + dense_s1 queued, user-gated).
 - ⬜ **P2.2** Promote per-step weighted loop loss (`--loop-loss per_step_weighted`)
   above Net2Wider — principled fix for P0.3/P0.5, trains exit gates with task
   signal. (P0.3 took option 2 short-term; this is the option-3 upgrade.)

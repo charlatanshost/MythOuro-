@@ -25,7 +25,7 @@ eval JSONs where they exist (paths in the last column). Update after each run.
 | **v5** | 06-06 | MoE 96exp / 632M | 2nd MoE growth + SFT | 2887 | n/a² | — | — | archived; expert-ceiling data point |
 | *(flatline)* | 06-10 | dense + MoE, both | ablation attempt on **script defaults** (warmup 200, depth-reg 0.1) | ~2000 | 4,462–8,301 | 1.0 (no halt) | — | **dead** — see failure modes; root-caused to recipe defaults |
 | **moe_s0** | 06-10 | MoE 24exp / 278M | ablation arm 1: distill from scratch; proven recipe; **post-fix code** | 4000 | **5.72** | 0.500 | 0.015 | ✅ **6.5× better than v1 final in 1k fewer steps** |
-| dense_s0 | — | dense / 180M | ablation arm 2 — awaiting go | — | — | — | — | queued |
+| **dense_s0** | 06-10/11 | dense / 180M | ablation arm 2: same recipe/seed as moe_s0, FFN only difference | 4000 | **22.66** | 0.500 | 0.026 | ✅ complete — **MoE wins 4.0× at seed 0**; note dense still beats v1's 37.4 |
 | moe_s1 / dense_s1 | — | — | seed-1 repeats | — | — | — | — | queued |
 
 ¹ SFT specialises toward chat; web-text PPL rises by design.
@@ -34,13 +34,20 @@ their MODEL_CARDs (reconstructed 2026-06-08).
 
 ## PPL trajectory (per 1k-step eval)
 
-| Step | v1 (old eval) | v2-SFT (old eval) | **moe_s0 (fixed code)** |
-|-----:|------:|------:|------:|
-| 1000 | 368.4 | 48.5 | 559.9 |
-| 2000 | 178.6 | 46.5 | 112.1 |
-| 3000 | 81.7 | 46.3 | **11.1** |
-| 4000 | 51.8 | — | **5.72** |
-| 5000 | 37.4 | — | — |
+| Step | v1 (old eval) | v2-SFT (old eval) | **moe_s0 (fixed code)** | **dense_s0 (fixed code)** |
+|-----:|------:|------:|------:|------:|
+| 1000 | 368.4 | 48.5 | 559.9 | 578.0 |
+| 2000 | 178.6 | 46.5 | 112.1 | 150.3 |
+| 3000 | 81.7 | 46.3 | **11.1** | 33.6 |
+| 4000 | 51.8 | — | **5.72** | 22.7 |
+| 5000 | 37.4 | — | — | — |
+
+**Seed-0 ablation readout:** MoE/dense PPL ratio grows 1.0× → 1.3× → 3.0× →
+**4.0×** across training — the sparse capacity (98M idle params at matched
+active compute) is increasingly *used* as training matures. Both arms converge
+to loop_eff exactly 0.500. Pre-registered rule (keep MoE if >5–10% better):
+**MoE retained, pending seed-1 confirmation.** Dense sidecars:
+`checkpoints_ablation_dense_s0/`.
 
 Note the crossover: moe_s0 starts *slower* (560 vs 368 at step 1000 — longer
 warmup in effect) then collapses past v1 between steps 2000–3000, exactly as

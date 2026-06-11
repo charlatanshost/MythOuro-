@@ -1001,6 +1001,7 @@ Full writeup in the README's "Licensing & data provenance" section. Short versio
 | 2026-06-03 to 2026-06-04 | SFT pipeline build + 3K-step v2 SFT | v2 archived |
 | 2026-06-04 | MoE expansion design + implementation + v3 grown run | v3 archived (cv 0.19, exceptional routing) |
 | 2026-06-05 | OpenHermes re-add + 8-bit Adam wiring; v4 run at seq_len=768 (bnb blocked by CUDA 13.2) | v4 archived — all 3 halt mechanisms firing, 4/4 prompts halt cleanly |
+| 2026-06-10/11 | Ablation arm 2 (dense, seed 0) trained overnight | **MoE-vs-dense seed-0 verdict: MoE wins 4.0×** (dense 22.66 vs MoE 5.72 final PPL; gap grows with training). MoE retained per pre-registered rule, pending seed 1. Dense still beats v1 — fixes+recipe lifted everything. |
 | 2026-06-09/10 | External code review (Fable 5): P0.1–P0.5 + most P1s fixed, invariant tests added; v2 re-baseline (PPL 46.3→39.25 from P0.3 alone); per-loop calibration audit (loop 0 miscalibrated → MoDr target = per-loop CE); GPU smokes both training paths; first ablation attempt flatlined → root cause: script defaults ≠ v1's proven recipe (warmup 500/depth-reg 0.3) → defaults fixed | **Ablation arm 1 (MoE, seed 0) COMPLETE on fixed code + proven recipe: final PPL 5.72 vs v1's 37.4 (6.5× better in 1k fewer steps), loop_eff 0.500, ECE 0.015.** Likely mechanism: P0.1 (v1 trained with noise-injecting clobbered o_proj) + P0.2 (all-loop balancing). Caveat: FineWeb train/eval stream overlap may flatter absolute PPL — applies equally to v1, so the relative gain stands; don't quote 5.7 against external baselines. Evals archived in checkpoints_ablation_moe_s0/. Dense arm + seed-1 runs await user go. |
 | 2026-06-06 | bnb fixed (cuda130 auto-detect); 2nd MoE expansion 48→96 (`distill_xl`, 632M); v5 run to step 2887; full docs/attribution/licensing pass; hardware analysis (A10 identified as best-fit upgrade) | v5 archived — **expert-count ceiling hit**: 2nd expansion net-comparable to v4 (7-prompt inspector), cv wouldn't tighten below ~0.5. Q#1 answered. Next lever: width/scale, not more experts. |
 
@@ -1463,6 +1464,18 @@ keep). Spec'd here so it's ready to run when there's GPU time.
 does the MoE recurrent FFN beat a plain dense FFN on eval? If a dense model within
 noise of MoE, sparsity isn't paying for itself at this scale and the routing
 machinery is removable.
+
+### SEED-0 RESULT (2026-06-11): MoE wins 4.0× — retained, pending seed 1
+
+Both arms run (fixed code, proven recipe, seed 0, identical but the FFN):
+dense final PPL **22.66** vs MoE **5.72** — and the gap GROWS with training
+(1.0× @1k → 1.3× @2k → 3.0× @3k → 4.0× @4k), i.e. the sparse capacity is
+progressively utilised. Per the pre-registered rule (>5–10% = keep MoE):
+**MoE earns its complexity at this scale — decision pending seed-1
+confirmation** (runs queued, user-gated). Consequences if seed 1 confirms:
+MoDr proceeds as the full unified expert+depth router; the dense variant stays
+as the ablation control. Nuance: dense (22.7) still beat v1's 37.4 — the code
+fixes + recipe lifted both arms. Data: `docs/training_runs.md`.
 
 ### Matched-active (matched-compute) configs — the primary comparison
 
