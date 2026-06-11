@@ -670,6 +670,20 @@ So inference-efficiency work is a **large-model, deployment-phase** lever. Don't
 burn a session quantizing the current model expecting big wins — the payoff
 arrives at 7B+ scale and/or real serving load.
 
+### QAT — when and when not (decided 2026-06-10)
+
+**QAT does not improve training** — it inserts simulated quantization noise so
+the *deployed quantized* model loses less accuracy, at the cost of ~10–30%
+slower steps and a slightly worse full-precision model. Therefore: **no QAT for
+any current-scale training** (≤1B isn't deployed quantized — nothing to gain).
+The one planned use: the **3B → INT4 deployment path** — standard play is bf16
+training → **short QAT finetune at the end** → quantize (never QAT-from-
+scratch). The component-aware map below still governs what stays high-precision
+(router, LTI A/B, ACT/uncertainty heads); `inference.py`'s existing
+`quantization_aware_training_hooks` already skip those. Not to be confused with
+8-bit Adam (optimizer-state quantization, already in use, unrelated to deployed
+precision).
+
 ### The three approaches (for when it's worth doing)
 
 | # | Approach | When | Notes |
