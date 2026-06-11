@@ -158,8 +158,7 @@ Everything that gates a trustworthy training run:
 2. **Training (user-gated, launch only on explicit go):** dense_s0 → first
    real MoE-vs-dense readout against moe_s0's 560/112/11.1/5.72 trajectory;
    then seed-1 repeats. Apply the pre-registered decision rule.
-3. **Tooling:** per-run eval output path (the filename-collision fix);
-   optional P1.3 GPU A/B bench.
+3. **Tooling:** per-run eval output path (the filename-collision fix); shared teacher server for parallel runs (1 teacher on the 5060 serving 2 students on 5070+4060 — unlocks 2x run throughput for seed sweeps / P2.6; design note in roadmap hardware section); optional P1.3 GPU A/B bench.
 4. Code work remaining (all want GPU validation): **P1.2** MLA absorption
    (spec above), **P1.7 cached drafting** (design above), **P1.5b** decode
    backfill, **P1.8** `is_causal` refactor.

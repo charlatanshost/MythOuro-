@@ -431,6 +431,19 @@ The workstation has three cards, all **native bf16** (no fp16 conversion needed)
 | RTX 5060 | 8 GB | Blackwell | **Teacher host** during distillation — where the v1 teacher ran (Ouro-2.6B ~5.2 GB bf16) |
 | RTX 4060 | 8 GB | Ada | **Parallel eval** (proposed) — run the harness on saved checkpoints while the 5070 trains. *Never used yet.* |
 
+**Parallel training runs on this rig (assessed 2026-06-11):** placement, not
+aggregate VRAM, is the blocker. Four pieces (2 students + 2 teachers) don't fit
+3 cards cleanly — with teachers on the 5060 + 4060 (both proven hosts), the
+second *student* has no slot, and squeezing two students onto the 5070 halves
+each run's compute (parallel ≈ sequential wall-clock, plus OOM risk). **The
+unlock is a shared teacher server:** both runs use the identical frozen
+teacher, so ONE copy on the 5060 serving logits to two training processes
+frees the 4060 for a second student — true 2× run throughput, comfortable
+margins. ~A session of code (IPC + batched serving); worth building before any
+seed sweep or the P2.6 config matrix. (A 24 GB card achieves the same by
+hosting a full student+teacher pair on one device — another concrete entry in
+the more-VRAM ledger.)
+
 **Do NOT FSDP these three together for training.** MythOuro is *compute-bound*
 (the recurrent loops multiply compute per step without multiplying
 communication), so the PCIe-sync penalty (no NVLink) hurts, and the
