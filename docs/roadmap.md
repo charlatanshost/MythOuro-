@@ -989,6 +989,17 @@ When to apply which technique:
 
 ## Licensing & data provenance (gate before distributing weights)
 
+**DECISION (2026-06-11): clean-provenance data is the DEFAULT for all future
+SFT.** The user may open-source or productise MythOuro; no future checkpoint
+should carry the OpenAI-ToS constraint. The OpenHermes/Magicoder/MetaMathQA
+mix is retired for new runs (v1–v5 remain archived research artifacts with the
+constraint documented). Source: [docs/clean_sft_datasets.md](clean_sft_datasets.md).
+With distillation data (FineWeb-Edu etc.) and the teacher (Ouro, Apache 2.0)
+already clean, **the entire forward pipeline is now distribution-safe.**
+Accepted tradeoff: v6-vs-v4 behavioural comparisons conflate new-base ×
+new-data (decided knowingly). If/when productised: revisit the naming/
+disclaimer posture and unpark the safety-alignment item first.
+
 Full writeup in the README's "Licensing & data provenance" section. Short version:
 
 - **Code**: MIT. **Teacher** (`ByteDance/Ouro-2.6B-Thinking`): **Apache 2.0** — clean for distillation/redistribution with attribution.
