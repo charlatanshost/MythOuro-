@@ -51,7 +51,7 @@ open-weight models (Llama 3.1, Qwen 2.5) or execution loops.
 * **Primary use:** Deep mathematical reasoning, GSM8K-style optimization,
   multi-step numerical logic.
 
-### NuminaMath-CoT (⚠ verify id — likely `AI-MO/NuminaMath-CoT`)
+### NuminaMath-CoT (`AI-MO/NuminaMath-CoT` ✅ verified)
 * **License:** Apache 2.0 / MIT (derived from open math competitions and
   public datasets)
 * **Description:** 850k+ math problems with chain-of-thought solutions,
@@ -60,7 +60,7 @@ open-weight models (Llama 3.1, Qwen 2.5) or execution loops.
 
 ## 3. Coding & Software Engineering
 
-### OpenCodeInstruct (⚠ verify id — likely `nvidia/OpenCodeInstruct`)
+### OpenCodeInstruct (`nvidia/OpenCodeInstruct` ✅ verified — ships unit-test execution status; failing samples filtered at ingestion)
 * **License:** Permissive / open source (check subset alignment at ingestion)
 * **Description:** ~5M coding instruction samples using OSS-Instruct-style
   methodology via open architectures, with **compiler execution feedback
@@ -69,7 +69,7 @@ open-weight models (Llama 3.1, Qwen 2.5) or execution loops.
 
 ## 4. Medical & Life Sciences
 
-### MIRIAD (⚠ verify id) — Medical Instruction and RetrIeval Dataset
+### MIRIAD (`miriad/miriad-4.4M` ✅ verified) — Medical Instruction and RetrIeval Dataset
 * **License:** ODC-By v1.0 (permits commercial modification/reuse/distribution
   with attribution).
 * **Description:** Million-scale structured medical QA; synthetic generation
@@ -86,14 +86,14 @@ open-weight models (Llama 3.1, Qwen 2.5) or execution loops.
 
 ## 5. Engineering, Physics, & Hard Sciences
 
-### OpenWebMath SFT pipeline / AutoMATH components (⚠ verify specific mirrors)
+### OpenWebMath SFT pipeline / AutoMATH components (not yet ingested — no canonical id; revisit if the hard-sciences ratio needs more depth)
 * **License:** MIT / Apache 2.0 (varies by mirror; derived from open-access
   scientific text).
 * **Description:** SFT data from open-access engineering/math/physics papers,
   converted into structured markdown + code-execution problems.
 * **Primary use:** Hard-sciences intuition, formula evaluation.
 
-### ChemLLM SFT components (`AI4Chem/ChemData` ⚠ verify)
+### ChemLLM SFT components (`AI4Chem/ChemData700K` ✅ verified)
 * **License:** Apache 2.0 / CC-BY 4.0
 * **Description:** Structured chemical files (SMILES strings) mapped to
   natural-language descriptions of molecular behaviour and reactions.
