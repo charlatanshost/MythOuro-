@@ -27,7 +27,7 @@ eval JSONs where they exist (paths in the last column). Update after each run.
 | **moe_s0** | 06-10 | MoE 24exp / 278M | ablation arm 1: distill from scratch; proven recipe; **post-fix code** | 4000 | **5.72** | 0.500 | 0.015 | ✅ **6.5× better than v1 final in 1k fewer steps** |
 | **dense_s0** | 06-10/11 | dense / 180M | ablation arm 2: same recipe/seed as moe_s0, FFN only difference | 4000 | **22.66** | 0.500 | 0.026 | ✅ complete — **MoE wins 4.0× at seed 0**; note dense still beats v1's 37.4 |
 | **moe_s1** | 06-11 | MoE 24exp / 278M | ablation arm 3: seed-1 repeat of moe_s0 | 4000 | **22.23** | 0.500 | 0.025 | ✅ complete — **~4× seed spread vs moe_s0 (5.72)**; ≈ dense_s0 (22.66). dense_s1 now decisive |
-| dense_s1 | — | dense / 180M | ablation arm 4 — awaiting go | — | — | — | — | queued — **the decisive within-seed-1 comparison** |
+| **dense_s1** | 06-12 | dense / 180M | ablation arm 4: seed-1 repeat of dense_s0 | 4000 | **20.83** | 0.500 | 0.041 | ✅ complete — **dense BEATS MoE at seed 1** (20.83 < moe_s1 22.23); seeds disagree |
 
 ¹ SFT specialises toward chat; web-text PPL rises by design.
 ² v3–v5 predate per-run eval archiving — only inspector/behavioural results in
@@ -35,27 +35,45 @@ their MODEL_CARDs (reconstructed 2026-06-08).
 
 ## PPL trajectory (per 1k-step eval)
 
-| Step | v1 (old eval) | v2-SFT (old eval) | **moe_s0** | **dense_s0** | **moe_s1** |
+| Step | v1 (old eval) | **moe_s0** | **dense_s0** | **moe_s1** | **dense_s1** |
 |-----:|------:|------:|------:|------:|------:|
-| 1000 | 368.4 | 48.5 | 559.9 | 578.0 | 475.4 |
-| 2000 | 178.6 | 46.5 | 112.1 | 150.3 | 122.9 |
-| 3000 | 81.7 | 46.3 | **11.1** | 33.6 | 34.0 |
-| 4000 | 51.8 | — | **5.72** | 22.7 | 22.2 |
-| 5000 | 37.4 | — | — | — | — |
+| 1000 | 368.4 | 559.9 | 578.0 | 475.4 | 525.9 |
+| 2000 | 178.6 | 112.1 | 150.3 | 122.9 | 132.1 |
+| 3000 | 81.7 | **11.1** | 33.6 | 34.0 | 31.3 |
+| 4000 | 51.8 | **5.72** | 22.7 | 22.2 | 20.8 |
 
-**Seed-variance note (2026-06-11):** moe_s1 finished at 22.2 — a ~4× spread vs
-moe_s0 (5.72) on the identical arm/recipe, and ≈ dense_s0 (22.66). The
-within-seed-0 MoE margin (4.0×) therefore does NOT yet generalise; **dense_s1
-is the decisive run** (within-seed-1 pairing). Per the pre-registered rule, no
-cross-seed verdict until it posts. Constant across all three fixed-code runs:
-loop_eff converges to exactly 0.500.
+## ABLATION VERDICT (2026-06-12): inconclusive — no robust MoE advantage; seed variance dominates
 
-**Seed-0 ablation readout:** MoE/dense PPL ratio grows 1.0× → 1.3× → 3.0× →
-**4.0×** across training — the sparse capacity (98M idle params at matched
-active compute) is increasingly *used* as training matures. Both arms converge
-to loop_eff exactly 0.500. Pre-registered rule (keep MoE if >5–10% better):
-**MoE retained, pending seed-1 confirmation.** Dense sidecars:
-`checkpoints_ablation_dense_s0/`.
+Complete 2×2 (within-seed is the only valid MoE-vs-dense comparison):
+
+| | seed 0 | seed 1 |
+|---|---:|---:|
+| **MoE** | 5.72 | 22.23 |
+| **dense** | 22.66 | 20.83 |
+| winner | MoE 4.0× | **dense 1.07×** |
+
+**The seeds disagree on direction.** Three of four runs cluster at 20.8–22.7;
+only `moe_s0` (5.72) is an outlier. Applying the pre-registered rule (keep MoE
+only if >5–10% better *across* seeds): **NOT satisfied** — seed 1 favours dense.
+Honest conclusion: **`moe_s0`'s 5.72 was a favourable-seed outlier, not an
+architecture win; MoE shows no robust advantage at this scale/seed-count.**
+
+The real finding is **seed variance**: a 4× PPL swing from seed alone means
+4000-step / ~16M-token runs are *underpowered* to separate architecture from
+noise — the comparison is premature, not settled in dense's favour either.
+Constant across all four fixed-code runs: loop_eff converges to exactly 0.500.
+
+**Consequences:**
+- **MoDr's gate is NOT cleanly passed** — do not commit to the unified
+  expert+depth router on this evidence.
+- To actually resolve it: (a) more seeds (≥3–5) and/or (b) longer runs (token
+  count is the variance lever) before claiming either way; or (c) adopt dense
+  for simplicity, since MoE's extra complexity is currently unjustified by data.
+- `moe_s0` (5.72) remains the **best single checkpoint** and the right SFT base
+  (v6) regardless — "best checkpoint" and "architecture verdict" are separate
+  questions. Its luck doesn't make it worse; it just isn't *evidence for MoE*.
+
+Dense sidecars: `checkpoints_ablation_dense_s{0,1}/`.
 
 Note the crossover: moe_s0 starts *slower* (560 vs 368 at step 1000 — longer
 warmup in effect) then collapses past v1 between steps 2000–3000, exactly as
