@@ -71,11 +71,49 @@ _SFT_MIX_RATIOS = {
     "code":    0.30,
 }
 
-# (key, repo, config, split)
+# (key, repo, config, split, cap) — cap=None loads the full split; an int cap
+# loads `train[:cap]` (non-streaming slice: cached on disk, Arrow-memory-
+# mapped, bounded RAM — consistent with the anti-streaming stance below).
 _SFT_DATASET_SPECS = [
-    ("general", "teknium/OpenHermes-2.5",                None, "train"),
-    ("math",    "meta-math/MetaMathQA",                  None, "train"),
-    ("code",    "ise-uiuc/Magicoder-Evol-Instruct-110K", None, "train"),
+    ("general", "teknium/OpenHermes-2.5",                None, "train", None),
+    ("math",    "meta-math/MetaMathQA",                  None, "train", None),
+    ("code",    "ise-uiuc/Magicoder-Evol-Instruct-110K", None, "train", None),
+]
+
+# ---------------------------------------------------------------------------
+# CLEAN mix (default since 2026-06-11) — zero OpenAI-output provenance.
+# Registry + license notes: docs/clean_sft_datasets.md. The legacy mix above
+# is retained for reproducing v2/v4-era runs via mix="legacy"; new checkpoints
+# must not inherit the OpenAI-ToS constraint (user decision — see roadmap
+# "Licensing & data provenance").
+#
+# OASST note: raw OpenAssistant/oasst2 is tree-structured + multilingual;
+# Tulu-3 already contains a converted, flattened OASST slice
+# (source=ai2-adapt-dev/oasst1_converted), so it is ingested via Tulu.
+#
+# OpenMathInstruct-2 is built by augmenting GSM8K-style problems
+# (problem_source=augmented_gsm8k) — the contamination filter vs the GSM8K
+# test split is MANDATORY for this mix (on by default in MixedSFTDataset).
+# ---------------------------------------------------------------------------
+
+_CLEAN_MIX_RATIOS = {
+    "clean_general":  0.30,
+    "clean_math":     0.18,
+    "clean_numina":   0.12,
+    "clean_code":     0.20,
+    "clean_miriad":   0.07,
+    "clean_pubmedqa": 0.05,
+    "clean_chem":     0.08,
+}
+
+_CLEAN_DATASET_SPECS = [
+    ("clean_general",  "allenai/tulu-3-sft-mixture", None,             "train", 300_000),
+    ("clean_math",     "nvidia/OpenMathInstruct-2",  None,             "train", 250_000),
+    ("clean_numina",   "AI-MO/NuminaMath-CoT",       None,             "train", 150_000),
+    ("clean_code",     "nvidia/OpenCodeInstruct",    None,             "train", 200_000),
+    ("clean_miriad",   "miriad/miriad-4.4M",         None,             "train", 100_000),
+    ("clean_pubmedqa", "qiaojin/PubMedQA",           "pqa_artificial", "train", 100_000),
+    ("clean_chem",     "AI4Chem/ChemData700K",       None,             "train", 100_000),
 ]
 
 
@@ -137,10 +175,137 @@ def _to_messages_metamath(sample: dict) -> Optional[list[dict]]:
     ]
 
 
+def _to_messages_passthrough(sample: dict) -> Optional[list[dict]]:
+    """
+    For sources shipping a ready `messages` list of {"role", "content"}
+    dicts (Tulu-3 SFT mixture, NuminaMath-CoT). Validates roles/content and
+    requires at least one user + one assistant turn.
+    """
+    msgs = []
+    for m in sample.get("messages") or []:
+        role = m.get("role")
+        content = m.get("content")
+        if role not in ("system", "user", "assistant") or not content:
+            continue
+        msgs.append({"role": role, "content": content})
+    has_user = any(m["role"] == "user" for m in msgs)
+    has_assistant = any(m["role"] == "assistant" for m in msgs)
+    if not (has_user and has_assistant):
+        return None
+    return msgs
+
+
+def _to_messages_openmath(sample: dict) -> Optional[list[dict]]:
+    """OpenMathInstruct-2: (problem, generated_solution)."""
+    problem = sample.get("problem")
+    solution = sample.get("generated_solution")
+    if not problem or not solution:
+        return None
+    return [
+        {"role": "user",      "content": problem},
+        {"role": "assistant", "content": solution},
+    ]
+
+
+def _to_messages_opencode(sample: dict) -> Optional[list[dict]]:
+    """
+    OpenCodeInstruct: (input, output) plus unit-test execution metadata.
+    Where an execution status is recorded and not passing, the sample is
+    dropped — the dataset's verification loop is its main quality signal.
+    """
+    inp = sample.get("input")
+    out = sample.get("output")
+    if not inp or not out:
+        return None
+    status = sample.get("tests_execution_status")
+    if status and str(status).lower() not in ("pass", "passed", "success", "all_passed"):
+        return None
+    return [
+        {"role": "user",      "content": inp},
+        {"role": "assistant", "content": out},
+    ]
+
+
+def _to_messages_pubmedqa(sample: dict) -> Optional[list[dict]]:
+    """
+    PubMedQA (pqa_artificial): abstract contexts + question → long_answer
+    with the final yes/no/maybe decision appended.
+    """
+    question = sample.get("question")
+    long_answer = sample.get("long_answer")
+    decision = sample.get("final_decision")
+    if not question or not long_answer:
+        return None
+    ctx = sample.get("context") or {}
+    contexts = ctx.get("contexts") if isinstance(ctx, dict) else None
+    user = question
+    if contexts:
+        user = "\n\n".join(str(c) for c in contexts[:4]) + "\n\nQuestion: " + question
+    assistant = long_answer
+    if decision:
+        assistant = f"{long_answer}\n\nFinal answer: {decision}"
+    return [
+        {"role": "user",      "content": user},
+        {"role": "assistant", "content": assistant},
+    ]
+
+
+def _to_messages_miriad(sample: dict) -> Optional[list[dict]]:
+    """
+    MIRIAD-4.4M: (question, answer) medical QA grounded in S2ORC papers.
+    Answers are self-contained; the source passage is omitted to keep
+    prompts inside the seq budget.
+    """
+    question = sample.get("question")
+    answer = sample.get("answer")
+    if not question or not answer:
+        return None
+    return [
+        {"role": "user",      "content": question},
+        {"role": "assistant", "content": answer},
+    ]
+
+
+def _to_messages_chemdata(sample: dict) -> Optional[list[dict]]:
+    """
+    ChemData700K: alpaca-style (instruction, input, output) with an optional
+    `history` of prior (q, a) pairs prepended as turns.
+    """
+    instruction = (sample.get("instruction") or "").strip()
+    inp = (sample.get("input") or "").strip()
+    out = sample.get("output")
+    if instruction and inp:
+        user = instruction + "\n\n" + inp
+    else:
+        user = instruction or inp
+    if not user or not out:
+        return None
+    msgs = []
+    for pair in sample.get("history") or []:
+        try:
+            q, a = pair[0], pair[1]
+        except (IndexError, TypeError, KeyError):
+            continue
+        if q and a:
+            msgs.append({"role": "user", "content": q})
+            msgs.append({"role": "assistant", "content": a})
+    msgs.append({"role": "user", "content": user})
+    msgs.append({"role": "assistant", "content": out})
+    return msgs
+
+
 _ADAPTERS = {
     "general": _to_messages_openhermes,
     "code":    _to_messages_magicoder,
     "math":    _to_messages_metamath,
+    # Clean mix (docs/clean_sft_datasets.md)
+    "clean_general":  _to_messages_passthrough,
+    "clean_math":     _to_messages_openmath,
+    "clean_numina":   _to_messages_passthrough,
+    "clean_code":     _to_messages_opencode,
+    "clean_miriad":   _to_messages_miriad,
+    "clean_pubmedqa": _to_messages_pubmedqa,
+    "clean_chem":     _to_messages_chemdata,
 }
 
 
@@ -311,14 +476,36 @@ class MixedSFTDataset(IterableDataset):
         rank: int = 0,
         world_size: int = 1,
         *,
+        mix: str = "clean",
         mix_ratios: Optional[dict] = None,
+        contamination_filter: "Optional[bool]" = None,
         seed: int = 0,
     ):
+        """
+        mix -- "clean" (default since 2026-06-11: zero OpenAI-output
+               provenance, see docs/clean_sft_datasets.md) or "legacy"
+               (the v2/v4-era OpenHermes/Magicoder/MetaMathQA mix, kept for
+               reproduction; carries the OpenAI-ToS distribution constraint).
+        contamination_filter -- drop samples whose assistant text contains
+               verbatim 13-grams from the GSM8K/ARC eval benchmarks
+               (data/contamination.py). Default: ON for the clean mix
+               (OpenMathInstruct-2 is augmented FROM GSM8K-style problems),
+               OFF for legacy (preserves v2/v4 reproduction byte-for-byte).
+        """
+        if mix not in ("clean", "legacy"):
+            raise ValueError(f"mix must be 'clean' or 'legacy'; got {mix!r}")
         self.tokenizer = tokenizer
         self.seq_len = seq_len
         self.rank = rank
         self.world_size = world_size
-        self.ratios = mix_ratios or _SFT_MIX_RATIOS
+        self.mix = mix
+        self.specs = _CLEAN_DATASET_SPECS if mix == "clean" else _SFT_DATASET_SPECS
+        default_ratios = _CLEAN_MIX_RATIOS if mix == "clean" else _SFT_MIX_RATIOS
+        self.ratios = mix_ratios or default_ratios
+        self.contamination_filter = (
+            (mix == "clean") if contamination_filter is None
+            else contamination_filter
+        )
         self.seed = seed
 
     def _open_source(
@@ -328,6 +515,7 @@ class MixedSFTDataset(IterableDataset):
         split: str,
         total_shards: int,
         shard_index: int,
+        cap: Optional[int] = None,
     ) -> Optional[Iterator]:
         """
         Open one HF dataset and return an iterator. Returns None on failure.
@@ -361,9 +549,14 @@ class MixedSFTDataset(IterableDataset):
         """
         from datasets import load_dataset
 
+        # Capped sources (the clean mix's million-scale sets) load a split
+        # slice: still non-streaming (cached on disk, loud failures, Arrow
+        # memory-mapped so RAM stays bounded), just bounded rows.
+        effective_split = f"{split}[:{cap}]" if cap else split
+
         try:
             ds = load_dataset(
-                repo, name=config, split=split, streaming=False,
+                repo, name=config, split=effective_split, streaming=False,
             )
         except Exception as exc:                              # noqa: BLE001
             logger.warning(
@@ -398,15 +591,17 @@ class MixedSFTDataset(IterableDataset):
 
         # Open each source independently.
         active: list[dict] = []
-        for key, repo, config, split in _SFT_DATASET_SPECS:
+        for key, repo, config, split, cap in self.specs:
             if self.ratios.get(key, 0.0) <= 0:
                 continue
-            it = self._open_source(repo, config, split, total_shards, shard_index)
+            it = self._open_source(
+                repo, config, split, total_shards, shard_index, cap=cap,
+            )
             if it is None:
                 continue
             active.append({
                 "key": key, "repo": repo, "config": config, "split": split,
-                "iter": it, "weight": self.ratios[key],
+                "cap": cap, "iter": it, "weight": self.ratios[key],
                 "adapter": _ADAPTERS[key],
             })
 
@@ -415,6 +610,28 @@ class MixedSFTDataset(IterableDataset):
                 "MixedSFTDataset: no sources opened successfully. "
                 "Check network access and HuggingFace dataset availability."
             )
+
+        # Eval-benchmark contamination guard (clean mix default). Built once
+        # per iterator; checks ASSISTANT-side text for verbatim 13-grams from
+        # the benchmarks we eval on. Mandatory for the clean mix because
+        # OpenMathInstruct-2 is augmented from GSM8K-style problems.
+        contam = None
+        if self.contamination_filter:
+            try:
+                from data.contamination import ContaminationFilter
+                contam = ContaminationFilter(["gsm8k", "arc"])
+                contam.build_index()
+                logger.info(
+                    f"MixedSFTDataset: contamination filter active "
+                    f"({contam.stats['ngrams']:,} benchmark 13-grams)"
+                )
+            except Exception as exc:                          # noqa: BLE001
+                logger.warning(
+                    f"MixedSFTDataset: contamination filter unavailable "
+                    f"({exc}) — proceeding WITHOUT it. Do not distribute a "
+                    "checkpoint trained this way without re-checking overlap."
+                )
+                contam = None
 
         rng = random.Random(self.seed + shard_index)
 
@@ -450,7 +667,7 @@ class MixedSFTDataset(IterableDataset):
                 # Re-open exhausted source from the top of its shard.
                 src["iter"] = self._open_source(
                     src["repo"], src["config"], src["split"],
-                    total_shards, shard_index,
+                    total_shards, shard_index, cap=src["cap"],
                 )
                 if src["iter"] is None:
                     active.remove(src)
@@ -465,6 +682,14 @@ class MixedSFTDataset(IterableDataset):
                 continue
 
             messages = src["adapter"](sample)
+            if messages is not None and contam is not None:
+                assistant_text = "\n".join(
+                    m["content"] for m in messages if m["role"] == "assistant"
+                )
+                if contam.is_contaminated(assistant_text):
+                    reasons = stats[key]["reject_reasons"]
+                    reasons["contaminated"] = reasons.get("contaminated", 0) + 1
+                    messages = None
             if messages is None:
                 stats[key]["no_messages"] += 1
             else:

@@ -86,15 +86,24 @@ Everything that gates a trustworthy training run:
   immediately after the run.
 
 ## Next pipeline step (decided 2026-06-11): clean-data SFT on the ablation winner
-- ⬜ **Ingestion session first** (code, no GPU): schema adapters in
-  `MixedSFTDataset` for the clean registry sources (Tulu-3, OASST2,
-  OpenMathInstruct-2 subsample, NuminaMath subsample, OpenCodeInstruct
-  subsample, MIRIAD/PubMedQA, ChemData) + verify ⚠ HF ids + run
-  `data/dedup.py` across the math sets + **`data/contamination.py` vs GSM8K/ARC**
-  (we eval on these). Registry: docs/clean_sft_datasets.md.
+- ✅ **Ingestion session DONE (2026-06-11):** all 8 registry ids verified live
+  by streaming probe; 7 adapters written against the probed schemas (OASST
+  ingested via Tulu-3's converted slice — raw oasst2 is tree-structured/
+  multilingual); `MixedSFTDataset(mix="clean")` is the default with per-source
+  caps (non-streaming split slices, Arrow-mmapped), OpenCodeInstruct
+  execution-status filtering, and the **GSM8K/ARC contamination guard ON by
+  default** (mandatory: OpenMathInstruct-2 = augmented_gsm8k; verified live,
+  125,477 benchmark 13-grams). `--data-mix clean|legacy` +
+  `--no-contamination-filter` in sft.py. +9 tests (43 SFT-side green).
+  End-to-end validated on live data (PubMedQA + ChemData through tokenizer/
+  mask/filter). Large-slice pre-download running
+  (`reports/clean_mix_predownload.log`). Note: per-source dedup across the two
+  math sets deferred — the per-sample 13-gram eval guard covers the
+  contamination risk; cross-set near-dup dilution is a quality (not validity)
+  concern at our subsample sizes.
 - ⬜ Then **SFT moe_s0 on the clean mix** ("v6", user-gated) → the first
-  distributable-grade checkpoint. seq_len ≥ 1024 (the OpenHermes lesson
-  applies to multi-turn Tulu/OASST too).
+  distributable-grade checkpoint. seq_len ≥ 1024 (multi-turn Tulu needs the
+  budget, same as the OpenHermes lesson).
 
 ## P1 — performance / measurement
 

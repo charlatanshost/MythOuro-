@@ -7,8 +7,18 @@ documented in the roadmap ("Licensing & data provenance"): the current SFT mix
 constraining distribution. Everything here was generated or verified via
 open-weight models (Llama 3.1, Qwen 2.5) or execution loops.
 
-> Compiled by the user, 2026-06-11. **Verify exact HF ids + license text at
-> ingestion time** — ids marked ⚠ need confirmation.
+> Compiled by the user, 2026-06-11. **All HF ids verified live by streaming
+> probe on 2026-06-11** (schemas confirmed; adapters in `mythouro/sft_data.py`
+> are written against the probed schemas). Verified ids: `allenai/tulu-3-sft-mixture`, `OpenAssistant/oasst2` (ingested via Tulu's
+> converted slice instead — see notes), `nvidia/OpenMathInstruct-2`,
+> `AI-MO/NuminaMath-CoT`, `nvidia/OpenCodeInstruct`, `qiaojin/PubMedQA`
+> (pqa_artificial), `AI4Chem/ChemData700K`, `miriad/miriad-4.4M`.
+>
+> **IMPLEMENTED 2026-06-11**: `MixedSFTDataset(mix="clean")` is the DEFAULT
+> (`training/sft.py --data-mix clean|legacy`), with per-source caps via
+> non-streaming split slices, execution-status filtering on OpenCodeInstruct,
+> and the GSM8K/ARC contamination guard ON by default (OpenMathInstruct-2 is
+> augmented_gsm8k — verified live: 125,477 benchmark 13-grams indexed).
 
 ---
 

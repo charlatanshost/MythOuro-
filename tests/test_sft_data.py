@@ -388,3 +388,111 @@ class TestMaskedCeLoss:
             reduction="mean",
         )
         assert torch.allclose(masked, plain_second_half, atol=1e-6)
+
+
+# ---------------------------------------------------------------------------
+# Clean-mix adapters (docs/clean_sft_datasets.md) — synthetic rows mirror the
+# real schemas verified by streaming probe on 2026-06-11.
+# ---------------------------------------------------------------------------
+
+from mythouro.sft_data import (  # noqa: E402
+    _ADAPTERS,
+    _CLEAN_DATASET_SPECS,
+    _CLEAN_MIX_RATIOS,
+    _SFT_DATASET_SPECS,
+    _to_messages_passthrough,
+    _to_messages_openmath,
+    _to_messages_opencode,
+    _to_messages_pubmedqa,
+    _to_messages_miriad,
+    _to_messages_chemdata,
+    MixedSFTDataset,
+)
+
+
+class TestCleanAdapters:
+    def test_passthrough_tulu_numina(self):
+        row = {"messages": [
+            {"role": "user", "content": "Create a snippet"},
+            {"role": "assistant", "content": "Here it is"},
+        ]}
+        msgs = _to_messages_passthrough(row)
+        assert msgs == row["messages"]
+        # Missing assistant turn → rejected
+        assert _to_messages_passthrough(
+            {"messages": [{"role": "user", "content": "hi"}]}) is None
+        # Bad roles filtered
+        assert _to_messages_passthrough(
+            {"messages": [{"role": "tool", "content": "x"}]}) is None
+
+    def test_openmath(self):
+        row = {"problem": "Ava plans a trip", "generated_solution": "5 people",
+               "expected_answer": "45", "problem_source": "augmented_gsm8k"}
+        msgs = _to_messages_openmath(row)
+        assert msgs[0] == {"role": "user", "content": "Ava plans a trip"}
+        assert msgs[1]["role"] == "assistant"
+        assert _to_messages_openmath({"problem": "x"}) is None
+
+    def test_opencode_drops_failed_tests(self):
+        ok = {"input": "Write max_tasks", "output": "```python\n...```",
+              "tests_execution_status": "pass"}
+        bad = dict(ok, tests_execution_status="failed")
+        none_status = {"input": "q", "output": "a"}
+        assert _to_messages_opencode(ok) is not None
+        assert _to_messages_opencode(bad) is None
+        assert _to_messages_opencode(none_status) is not None  # absent = keep
+
+    def test_pubmedqa(self):
+        row = {"question": "Are ILC2s increased?",
+               "context": {"contexts": ["CRS is heterogeneous", "More text"]},
+               "long_answer": "ILC2s are elevated", "final_decision": "yes"}
+        msgs = _to_messages_pubmedqa(row)
+        assert "Question: Are ILC2s increased?" in msgs[0]["content"]
+        assert "CRS is heterogeneous" in msgs[0]["content"]
+        assert msgs[1]["content"].endswith("Final answer: yes")
+
+    def test_miriad(self):
+        msgs = _to_messages_miriad(
+            {"question": "Clinical features?", "answer": "The features are..."})
+        assert msgs[0]["role"] == "user" and msgs[1]["role"] == "assistant"
+        assert _to_messages_miriad({"question": "q"}) is None
+
+    def test_chemdata_with_history(self):
+        row = {"instruction": "", "input": "What is the yield for X?",
+               "history": [["prior q", "prior a"]], "output": "In an ideal..."}
+        msgs = _to_messages_chemdata(row)
+        assert len(msgs) == 4                       # history pair + final pair
+        assert msgs[0]["content"] == "prior q"
+        assert msgs[2]["content"] == "What is the yield for X?"
+        assert _to_messages_chemdata({"instruction": "", "input": "",
+                                      "output": "x"}) is None
+
+
+class TestCleanMixWiring:
+    def test_ratios_sum_to_one_and_align_with_specs_and_adapters(self):
+        assert abs(sum(_CLEAN_MIX_RATIOS.values()) - 1.0) < 1e-9
+        spec_keys = {k for k, *_ in _CLEAN_DATASET_SPECS}
+        assert spec_keys == set(_CLEAN_MIX_RATIOS)
+        assert spec_keys <= set(_ADAPTERS)
+        # Every clean source carries a cap (the registry's giant sets).
+        for _, _, _, _, cap in _CLEAN_DATASET_SPECS:
+            assert isinstance(cap, int) and cap > 0
+
+    def test_legacy_specs_are_five_tuples_with_no_cap(self):
+        for _, _, _, _, cap in _SFT_DATASET_SPECS:
+            assert cap is None
+
+    def test_mix_selection_and_defaults(self):
+        tok = _FakeTokenizer()
+        clean = MixedSFTDataset(tok, 128)                       # default
+        assert clean.mix == "clean"
+        assert clean.specs is _CLEAN_DATASET_SPECS
+        assert clean.contamination_filter is True               # on for clean
+        legacy = MixedSFTDataset(tok, 128, mix="legacy")
+        assert legacy.specs is _SFT_DATASET_SPECS
+        assert legacy.contamination_filter is False             # off for legacy
+        override = MixedSFTDataset(tok, 128, contamination_filter=False)
+        assert override.contamination_filter is False
+        import pytest
+        with pytest.raises(ValueError):
+            MixedSFTDataset(tok, 128, mix="bogus")

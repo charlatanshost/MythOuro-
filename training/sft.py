@@ -143,6 +143,20 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--random-depth", action="store_true",
                    help="Per batch, sample unroll depth uniformly in "
                         "[start_loops, curriculum.get(step)].")
+    p.add_argument("--data-mix", choices=["clean", "legacy"], default="clean",
+                   help="SFT data mix. 'clean' (default since 2026-06-11) = "
+                        "zero OpenAI-output provenance (Tulu-3, "
+                        "OpenMathInstruct-2, NuminaMath, OpenCodeInstruct, "
+                        "MIRIAD, PubMedQA, ChemData — see "
+                        "docs/clean_sft_datasets.md); produces distributable "
+                        "checkpoints. 'legacy' = the v2/v4-era OpenHermes/"
+                        "Magicoder/MetaMathQA mix (reproduction only; carries "
+                        "the OpenAI-ToS constraint).")
+    p.add_argument("--no-contamination-filter", action="store_true",
+                   help="Disable the eval-benchmark contamination guard "
+                        "(GSM8K/ARC 13-grams). On by default for the clean "
+                        "mix because OpenMathInstruct-2 is augmented from "
+                        "GSM8K-style problems.")
     p.add_argument("--seed", type=int, default=0,
                    help="Seeds torch / python RNG (model init, depth sampling, "
                         "dropout). Required for the >=2-seed ablation protocol. "
@@ -441,7 +455,12 @@ def main():
     # ------------------------------------------------------------------
     # Data
     # ------------------------------------------------------------------
-    dataset = MixedSFTDataset(encoding, args.seq_len, rank=0, world_size=1)
+    dataset = MixedSFTDataset(
+        encoding, args.seq_len, rank=0, world_size=1,
+        mix=args.data_mix,
+        contamination_filter=(False if args.no_contamination_filter else None),
+        seed=args.seed,
+    )
     # num_workers=0 runs data loading in the main process. Many of the
     # popular instruction datasets (OpenHermes, Magicoder, MetaMathQA)
     # ship as a single shard, and HF's streaming-sharded iterator throws
