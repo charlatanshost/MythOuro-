@@ -197,10 +197,29 @@ rented A100. The data pipeline + MoE-bias all-reduce are already DDP-ready
 real use is **parallel independent experiments** (config/seed sweeps), not
 speeding one run.
 
-**Tokens before params:** a 278M model on ~1B tokens almost certainly beats a
-1B model on 16M tokens, and costs VRAM you don't have to spend (params) vs time
-you can rent (tokens). Grow params only after token volume stops being the
-bottleneck.
+**Why teacher/student GPU overlap doesn't rescue local distill throughput
+(measured + tried 2026-06-13):** the distill step is sequential — teacher
+forward (5060) then student step (5070) — so the student GPU is idle during
+the teacher forward. Measured per-step (mb1, seq512): **teacher 541 ms vs
+student 286 ms** (teacher 65%), so the theoretical overlap ceiling is ~1.53×.
+But it's unreachable in-process: (1) **async prefetch is a no-op** — the Ouro
+teacher's custom forward self-syncs (reads tensor values mid-forward), so the
+call blocks; (2) **threaded prefetch is *slower*** (measured 0.4k vs 0.6k
+tok/s) — the teacher forward is Python-heavy (recurrent, custom mask/cache
+logic) and **holds the GIL**, starving the student thread. Only a separate
+teacher *process* (no shared GIL, IPC the logits) could claim the 1.53×, and
+that's a heavy build for a ceiling a rented GPU laps. Also measured: the
+teacher scales **super-linearly** with batch (541→1464→2542 ms for mb 1/2/4 —
+memory-bound on the 8 GB 5060), so bigger batch makes distill *worse*, not
+better (the student loves batch — 286→328 ms for 4× work — but the teacher
+swamps it). Net: **local distill throughput is teacher-bound and not
+improvable by batch or in-process overlap; reverted both attempts.**
+
+**Tokens before params** is softened (2026-06-13): the user's own v1→v4
+history shows scaling params *did* increase coherency at this token budget, so
+**both levers work** — params is the empirically-validated, locally-feasible
+one (grow moe_s0 → ~650M, fits the 5070), tokens is the bigger theoretical gap
+that needs rented throughput. Pursue params locally now; rent for tokens later.
 
 ---
 
