@@ -104,6 +104,21 @@ Everything that gates a trustworthy training run:
 - ⬜ Then **SFT moe_s0 on the clean mix** ("v6", user-gated) → the first
   distributable-grade checkpoint. seq_len ≥ 1024 (multi-turn Tulu needs the
   budget, same as the OpenHermes lesson).
+- ✅ **OpenCodeInstruct `tests_execution_status` parsing bug (2026-06-12) —
+  FIXED + VERIFIED.** *Not a Fable 5 review finding* — a fork-introduced
+  clean-mix ingestion bug (so not "P0.x"; the P-series tracks the external
+  review). The `_to_messages_opencode` adapter compared a JSON-encoded list
+  (e.g. `'["pass","pass","fail"]'`) as a scalar string, always failing the
+  `not in ("pass", ...)` check → rejected **100%** of `clean_code` samples.
+  Confirmed by v6-attempt-1's own diagnostics: `clean_code: 0/5790 (0.0%
+  accept)` across 1532 steps (it trained code-blind). Fix (commit bf20338,
+  Gemini's catch, verified against the live schema): JSON-parse the list,
+  accept iff ALL unit tests pass; `import json` hoisted; test strengthened to
+  the real list schema. **Pre-flight after fix: all 7 clean sources yield,
+  `clean_code` ~10% realized** (all-pass + length rejection vs its 20% pick
+  weight — code-light but flowing; bump the ratio if more is wanted).
+  v6-attempt-1 discarded; restart cleared (checkpoints removed, mix-health
+  green).
 
 ## P1 — performance / measurement
 
