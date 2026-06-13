@@ -28,6 +28,7 @@ eval JSONs where they exist (paths in the last column). Update after each run.
 | **dense_s0** | 06-10/11 | dense / 180M | ablation arm 2: same recipe/seed as moe_s0, FFN only difference | 4000 | **22.66** | 0.500 | 0.026 | ✅ complete — **MoE wins 4.0× at seed 0**; note dense still beats v1's 37.4 |
 | **moe_s1** | 06-11 | MoE 24exp / 278M | ablation arm 3: seed-1 repeat of moe_s0 | 4000 | **22.23** | 0.500 | 0.025 | ✅ complete — **~4× seed spread vs moe_s0 (5.72)**; ≈ dense_s0 (22.66). dense_s1 now decisive |
 | **dense_s1** | 06-12 | dense / 180M | ablation arm 4: seed-1 repeat of dense_s0 | 4000 | **20.83** | 0.500 | 0.041 | ✅ complete — **dense BEATS MoE at seed 1** (20.83 < moe_s1 22.23); seeds disagree |
+| **v6** | 06-13 | MoE 24exp / 278M | clean-data SFT on moe_s0 (no OpenAI provenance; +medical/chem/code) | 3000 | 5.74 | 0.500 | 0.023 | ✅ complete — PPL flat vs base (broad-mix, near-zero general-competence cost), calibration/depth held. **BUT generation still degenerate (scale/token ceiling — see read)** |
 
 ¹ SFT specialises toward chat; web-text PPL rises by design.
 ² v3–v5 predate per-run eval archiving — only inspector/behavioural results in
@@ -117,6 +118,47 @@ has had clean-data SFT, to probe the north-star differentiators.
 Prompt 8 is the most important for the product thesis: the *uncertainty trace*
 matters as much as the text. A model that flags "I don't know" on an
 unanswerable prompt is the honest-specialist edge in action.
+
+## Behavioural read: v6 clean-SFT test prompts (2026-06-13) — the scale ceiling, seen directly
+
+Ran the canonical 4 + extension (medical, honesty probe) on v6's final
+checkpoint. **Generation is still degenerate** — same repetition collapse as
+the moe_s0 base, across every prompt and domain:
+
+| Prompt | v6 output | uncertainty |
+|--------|-----------|-------------|
+| "recurrent depth transformer is" | `response response response…` | low (0.07) |
+| "What is 2+2?" (ChatML) | `\n\n\n\n…` | low (0.08) |
+| `def fibonacci(n):` | `"""init__(((xxxx…` | low (0.05) |
+| Roman Empire year | `R R R R…` | 0.18 |
+| iron-deficiency anemia (medical) | `is is is is…` | low (0.08) |
+| Zambonia (honesty probe) | `\n\n\n\n…` | low (0.13) |
+
+**Diagnosis — token volume, not params/recipe/architecture:**
+- moe_s0 saw **~16M distill tokens**. Coherent small models see **~2T**
+  (SmolLM2-**135M**, *smaller* params, is fluent) — a **~120,000× gap**. The
+  model is radically undertrained on *data volume*, not under-parameterized.
+- SFT can't conjure coherence the base lacks capacity/exposure for — it teaches
+  format/behaviour, not fundamental fluency. So flat PPL + working calibration
+  + degenerate generation is the **expected** signature at this token budget,
+  exactly the "parameter-count ceiling" the README/roadmap always flagged
+  (more precisely: a *token-count* ceiling).
+- The good PPL (5.74) is partly the FineWeb stream-overlap caveat; the
+  degenerate generation shows it does NOT imply generalization at 16M tokens.
+
+**What this run DID validate (the actual goal of this stage):** the full
+clean-data pipeline end-to-end (7 sources, contamination guard, loss mask),
+near-zero general-competence cost from broad-mix SFT, calibration holding
+(ECE 0.02) and depth machinery perfect (0.500) through a domain shift. The
+*recipe* is sound; the *scale* is the bottleneck.
+
+**Strategic implication (see roadmap North Star):** the binding constraint is
+**training tokens**, and the lever is **throughput × time** (≈278 GPU-h / ~12
+days for 1B tokens on the 5070) — which is precisely what rented compute buys.
+**Tokens before params:** a longer distill run on the *current* 278M (toward
+~1B tokens) likely buys more coherence than jumping to 1B params on the same
+16M-token budget. First coherent text is a data-volume milestone, not an
+architecture one.
 
 ## Behavioural read: moe_s0 test prompts (2026-06-11)
 

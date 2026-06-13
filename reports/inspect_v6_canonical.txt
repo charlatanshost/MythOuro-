@@ -1,0 +1,72 @@
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[32m2026-06-13 09:07:38.673[0m | [33m[1mWARNING [0m | [36mmythouro.main[0m:[36mwarn_once[0m:[36m77[0m - [33m[1mGQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=None).[0m
+loading: checkpoints_v6_clean_sft/step_0003000.pt
+device:  cpu
+step:    3000
+params:  278,871,411
+vocab:   49152  max_loops=4
+
+================================================================================
+prompt: 'The recurrent depth transformer is'
+--------------------------------------------------------------------------------
+prompt tokens : 5
+diagnostic    : uncertainty mean=0.501 max=0.969
+                halt distribution per loop = [0.349, 0.248, 0.403]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.040  (min=0.0%  max=16.7%)
+
+greedy generation (T=0.7 top_k=40):
+  ' able want want want response response response response response response response response response response response response response response response response response response response response response response response response response response response response response response response response response response response response'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  ' very very very too too too too too too too too too'
+  uncertainty trace: mean=0.071  min=0.036  max=0.177
+
+================================================================================
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+--------------------------------------------------------------------------------
+prompt tokens : 16
+diagnostic    : uncertainty mean=0.116 max=0.795
+                halt distribution per loop = [0.365, 0.262, 0.373]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=0.711  (min=0.0%  max=12.5%)
+
+greedy generation (T=0.7 top_k=40):
+  '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+
+confidence-aware generation  (stop='confidence', 4 tokens emitted):
+  '\n\n\n\n'
+  uncertainty trace: mean=0.080  min=0.043  max=0.176
+
+================================================================================
+prompt: 'def fibonacci(n):'
+--------------------------------------------------------------------------------
+prompt tokens : 6
+diagnostic    : uncertainty mean=0.200 max=0.886
+                halt distribution per loop = [0.37, 0.263, 0.368]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=0.896  (min=0.0%  max=12.5%)
+
+greedy generation (T=0.7 top_k=40):
+  '\n    """init__(((xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  '\n    \n       \n       \n       \n       \n       ffffff'
+  uncertainty trace: mean=0.054  min=0.011  max=0.429
+
+================================================================================
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+--------------------------------------------------------------------------------
+prompt tokens : 15
+diagnostic    : uncertainty mean=0.257 max=0.970
+                halt distribution per loop = [0.367, 0.265, 0.367]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=0.737  (min=0.0%  max=9.2%)
+
+greedy generation (T=0.7 top_k=40):
+  ' R R R R R R R R R R R R R R R Rovovovovovovovovovovovovovovovovovovovovovov B B'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  ' R R R R R R R R R R R R'
+  uncertainty trace: mean=0.176  min=0.127  max=0.364
