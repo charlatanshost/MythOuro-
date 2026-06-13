@@ -178,19 +178,24 @@ tokens. One A100/H100 on Linux gives NCCL, a single fast homogeneous device, no
 teacher-memory squeeze — ~1B tokens in roughly a day for tens of dollars. That
 single rented card beats the local 3-GPU option on every axis.
 
-**Why NOT multi-GPU DDP on the local rig (assessed 2026-06-13):** would be a
-real build (distill.py is single-process: `rank=0, world_size=1`) for a poor
-payoff. Blockers: (1) **no NCCL on Windows — gloo only** → gradient all-reduce
-over CPU sockets, eroding most of the gain for a small fast-matmul model;
-(2) **heterogeneous cards** (5070 12 GB / 4060 8 GB / 5060 8 GB) → DDP runs at
-the slowest card's pace, batch capped by the smallest VRAM; (3) **teacher per
-replica** (5.2 GB) barely fits an 8 GB card alongside the student. Realistic
-~1.3–1.8×, not 3×. The data pipeline + MoE-bias all-reduce are already
-DDP-ready (`MixedDataset` rank/world_size sharding, `_maybe_all_reduce_counts`)
-— so if DDP is ever wanted, it's a Linux + multi-homogeneous-GPU move, not a
-Windows-consumer-rig one. The 3 local cards' real use is **parallel independent
-experiments** (config/seed sweeps, one teacher+student per card), not speeding
-a single run.
+**Why multi-GPU data-parallel distillation is IMPOSSIBLE on the local rig
+(tested empirically 2026-06-13 — not theory):** a direct memory test put a
+teacher + trainable student + fp32 Adam on the 4060 → **OOM at 7.16 GB during
+the first forward**, before finishing one step. Data-parallel needs a teacher
+(5.2 GB) on *every* rank, and that won't fit alongside a training student in
+8 GB — so only the 5070 (12 GB) can hold a full distillation replica, and you
+can't data-parallel with one eligible card. 8-bit Adam reclaims only ~1 GB;
+fragmentation still sinks it. Compounding factors even if memory allowed:
+**no NCCL on Windows (gloo-only)** → gradient all-reduce over CPU sockets;
+**heterogeneous cards** → runs at the slowest/smallest. The only local
+multi-GPU path that *could* exist is a **shared teacher server** (teacher alone
+on the 4060 serving logits to student replicas on 5070 + 5060) — a real build
+(DDP + inter-process logit serving) on gloo for ~1.5×, not worth it vs one
+rented A100. The data pipeline + MoE-bias all-reduce are already DDP-ready
+(`MixedDataset` rank/world_size, `_maybe_all_reduce_counts`), so DDP is a future
+**Linux + homogeneous-GPU** move (incl. rented multi-GPU). The 3 local cards'
+real use is **parallel independent experiments** (config/seed sweeps), not
+speeding one run.
 
 **Tokens before params:** a 278M model on ~1B tokens almost certainly beats a
 1B model on 16M tokens, and costs VRAM you don't have to spend (params) vs time
