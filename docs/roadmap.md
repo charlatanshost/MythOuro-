@@ -223,6 +223,56 @@ that needs rented throughput. Pursue params locally now; rent for tokens later.
 
 ---
 
+## Planned capability (post-coherence): retrieval → continual learning
+
+A future direction (user goal, 2026-06-13), sequenced AFTER the base produces
+coherent text — retrieval amplifies a model that can read and synthesise; it
+cannot create comprehension. Two stages, escalating in ambition and risk.
+
+**Stage A — RAG (retrieval-augmented generation), the near-ish, safe step.**
+Embed a corpus (the clean medical/science data first, or a web snapshot),
+retrieve top-k relevant chunks per query, feed them into context. Inference-
+time, no retraining. Why it fits the north star: it offloads *knowledge* to an
+external store so the small model only has to *reason over* facts — a 1B+RAG
+beats a 7B-without-RAG on factual tasks, and it's the *right* design for the
+medical wedge (retrieve from PubMed + cite, never hallucinate from weights).
+Scaffolding exists (`RetrievalAugmentedInjector` in inference.py — untested at
+scale; standard prompt-context RAG is the likely real implementation).
+Knowledge stays **external**: updatable, citable, safe.
+
+**Stage B — continual learning from retrieval (the user's vision: "what it
+searches adds to its training").** Fold retrieved/searched information back
+into the weights so the model permanently learns it. Genuinely powerful, and
+genuinely hard — the known failure modes are why it's a multi-stage research
+goal, not a feature:
+- *Catastrophic forgetting*: naive training on new data erodes old skills →
+  needs replay/rehearsal or parameter-isolation.
+- *Provenance/poisoning*: training on retrieved web text = training on possibly
+  wrong/adversarial content → the model learns falsehoods. Especially dangerous
+  for medical.
+- *Model collapse*: training on self-selected / self-generated data amplifies
+  the model's own errors (a documented phenomenon).
+- *Architectural tension*: baking knowledge into weights LOSES RAG's citability
+  + updatability and REINTRODUCES hallucination risk. The thing that makes
+  knowledge safe (external, sourced) is exactly what Stage B gives up.
+
+**The safe path to the vision — curated offline retrain loop, NOT live online
+weight updates.** Don't update weights live from web search (poisoning + collapse
+risk). Instead: RAG at inference (Stage A) + a *human-in-the-loop curation
+step* where good retrieved/searched content is filtered into the training
+corpus for the *next* training round. This reuses the data-quality machinery
+already built — `data/contamination.py` (eval leakage), `data/dedup.py`
+(near-dup), provenance discipline (clean_sft_datasets.md) — as the gate that
+keeps poisoned/garbage data out. Periodic, curated, verifiable; the model
+improves across training rounds from vetted retrieved knowledge, without the
+live-online-learning landmines.
+
+**Sequencing:** coherence (Stage Two) → Stage A RAG → curated-retrain loop →
+(only if ever justified) live continual learning. Each step is a real project;
+the first one that matters is still just reaching coherent text.
+
+---
+
 ## Where we are (as of 2026-06-12)
 
 ### Shipped reference checkpoints
