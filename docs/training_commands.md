@@ -112,7 +112,38 @@ python -m tools.bench_step --variant mythouro_distill_tiny --device cuda:0
 | `--data-mix clean` | Clean SFT mix (default; no OpenAI provenance) |
 | `--data-mix legacy` | v2/v4-era OpenHermes mix (reproduction only) |
 | `--no-contamination-filter` | Disable GSM8K/ARC 13-gram guard (on by default for clean) |
+| `--use-8bit-adam` | Quantize optimizer state to 8-bit (bitsandbytes) — see VRAM playbook |
 | `--ckpt-dir <dir>` | Where to save checkpoints |
+
+---
+
+## VRAM playbook (12 GB 5070)
+
+Baseline: v6 SFT (278M, seq 1024, mb1/ga16) sits at **~9.5 GB**. Past grown-MoE
+runs (v3–v5) ran stably up to **~11.7 GB**, so ~2.5 GB headroom here is
+comfortable — *don't add compression to runs that already fit.* Pull a lever
+only when you deliberately push past the ceiling.
+
+**Reduction options** (bang-for-buck order):
+
+| Lever | Saves | Cost | Status |
+|-------|-------|------|--------|
+| `--use-8bit-adam` | ~2 GB (quantizes Adam m/v state, the biggest consumer) | none meaningful; convergence near-identical | **ready** — flag exists, bitsandbytes 0.49.2 installed. Smoke-test ~20 steps first (v4 hit a bnb CUDA-binary snag on 13.2; `_configure_bnb_cuda_version` handles it) |
+| Gradient checkpointing | already saving (recurrent loops recompute) | recompute time | **already ON** by default |
+| Shorter `--seq-len` | ~linear in activations | multi-turn / long-doc quality | avoid unless needed |
+| LoRA-only SFT (freeze base, train per-loop adapters) | *huge* (no optimizer state on frozen base) | slightly less plasticity; needs wiring | architecture HAS per-loop LoRA; not yet wired for freeze-base SFT |
+| Paged AdamW (bnb) | spills optimizer to RAM on spikes | speed on spill | one bnb swap |
+
+**When to pull which** (the three pressure cases that eat the 2.5 GB reserve):
+
+- **Longer sequence** (seq-len > 1024, long-doc/multi-turn): activations scale
+  ~linearly → `--use-8bit-adam` to reclaim the headroom.
+- **Bigger batch** (micro-batch 2): roughly doubles activation memory →
+  `--use-8bit-adam`, and/or paged AdamW for spike safety.
+- **Bigger base model** (the 1B-on-the-5070 milestone): fp32 Adam state alone
+  is ~8 GB and won't coexist with model + activations → `--use-8bit-adam`
+  becomes **mandatory**, LoRA-only SFT becomes attractive. This is the wall
+  that caps single-card model size.
 
 ---
 
