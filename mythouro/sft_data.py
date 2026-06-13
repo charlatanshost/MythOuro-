@@ -41,6 +41,7 @@ to halt instead of rambling.
 
 from __future__ import annotations
 
+import json
 import random
 from typing import Iterator, Optional
 
@@ -217,9 +218,23 @@ def _to_messages_opencode(sample: dict) -> Optional[list[dict]]:
     out = sample.get("output")
     if not inp or not out:
         return None
+    # tests_execution_status is a JSON-encoded LIST of per-unit-test results,
+    # e.g. '["pass", "pass", "fail", ...]' (verified live, 2026-06-12). Require
+    # EVERY test to pass — the dataset's execution verification is its whole
+    # quality signal. (The earlier scalar comparison rejected 100% of samples
+    # because it matched the whole list-string against "pass".)
+    _PASS = ("pass", "passed", "success", "all_passed")
     status = sample.get("tests_execution_status")
-    if status and str(status).lower() not in ("pass", "passed", "success", "all_passed"):
-        return None
+    if status:
+        try:
+            parsed = json.loads(status) if isinstance(status, str) else status
+        except (json.JSONDecodeError, TypeError):
+            parsed = status
+        if isinstance(parsed, list):
+            if not all(str(s).lower() in _PASS for s in parsed):
+                return None
+        elif str(parsed).lower() not in _PASS:
+            return None
     return [
         {"role": "user",      "content": inp},
         {"role": "assistant", "content": out},

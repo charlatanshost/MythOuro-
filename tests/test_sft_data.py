@@ -434,13 +434,21 @@ class TestCleanAdapters:
         assert _to_messages_openmath({"problem": "x"}) is None
 
     def test_opencode_drops_failed_tests(self):
-        ok = {"input": "Write max_tasks", "output": "```python\n...```",
-              "tests_execution_status": "pass"}
-        bad = dict(ok, tests_execution_status="failed")
+        # tests_execution_status is a JSON-encoded LIST string (verified live
+        # 2026-06-12): '["pass", "pass", "fail"]'. Require all-pass — a scalar
+        # comparison here rejected 100% of samples (the whole list-string is
+        # never literally "pass").
+        base = {"input": "Write max_tasks", "output": "```python\n...```"}
+        keep = dict(base, tests_execution_status='["pass", "pass", "pass"]')
+        one_fail = dict(base, tests_execution_status='["pass", "fail", "pass"]')
+        all_fail = dict(base, tests_execution_status='["fail", "fail"]')
         none_status = {"input": "q", "output": "a"}
-        assert _to_messages_opencode(ok) is not None
-        assert _to_messages_opencode(bad) is None
+        scalar = dict(base, tests_execution_status="pass")     # back-compat
+        assert _to_messages_opencode(keep) is not None
+        assert _to_messages_opencode(one_fail) is None         # the real-schema bug
+        assert _to_messages_opencode(all_fail) is None
         assert _to_messages_opencode(none_status) is not None  # absent = keep
+        assert _to_messages_opencode(scalar) is not None
 
     def test_pubmedqa(self):
         row = {"question": "Are ILC2s increased?",
