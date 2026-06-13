@@ -155,6 +155,50 @@ Where to find code that implements specific concepts:
 
 ---
 
+## Stage two: the token-volume scale-up (the path to first coherent text)
+
+**The binding constraint is training tokens, not params or architecture**
+(established 2026-06-13 by the v6 behavioural read — see `training_runs.md`).
+moe_s0 saw ~16M distill tokens; coherent small models see ~2T (SmolLM2-135M is
+*smaller* and fluent). The whole stage-one body of work (bug fixes, recipe,
+ablation, clean data, calibration) is validated — what's missing is **data
+volume**, and the lever is **throughput × time**.
+
+**Step 1 — the cheap de-risk probe (free, ~1.5 days, no new code):** run the
+current 278M distill ~10× longer → **~160M tokens** (`--total-steps ~40000`,
+proven recipe), then run the test-prompt suite. Decision:
+- gibberish → partial words → phrases as tokens climb ⇒ **tokens confirmed as
+  the lever**; rent for the full run.
+- still pure gibberish at 10× ⇒ important negative; investigate before spending.
+This answers "do more tokens fix coherence?" for the price of patience, before
+any rental.
+
+**Step 2 — the real run = rented compute, NOT this rig.** Target ~1B+ distill
+tokens. One A100/H100 on Linux gives NCCL, a single fast homogeneous device, no
+teacher-memory squeeze — ~1B tokens in roughly a day for tens of dollars. That
+single rented card beats the local 3-GPU option on every axis.
+
+**Why NOT multi-GPU DDP on the local rig (assessed 2026-06-13):** would be a
+real build (distill.py is single-process: `rank=0, world_size=1`) for a poor
+payoff. Blockers: (1) **no NCCL on Windows — gloo only** → gradient all-reduce
+over CPU sockets, eroding most of the gain for a small fast-matmul model;
+(2) **heterogeneous cards** (5070 12 GB / 4060 8 GB / 5060 8 GB) → DDP runs at
+the slowest card's pace, batch capped by the smallest VRAM; (3) **teacher per
+replica** (5.2 GB) barely fits an 8 GB card alongside the student. Realistic
+~1.3–1.8×, not 3×. The data pipeline + MoE-bias all-reduce are already
+DDP-ready (`MixedDataset` rank/world_size sharding, `_maybe_all_reduce_counts`)
+— so if DDP is ever wanted, it's a Linux + multi-homogeneous-GPU move, not a
+Windows-consumer-rig one. The 3 local cards' real use is **parallel independent
+experiments** (config/seed sweeps, one teacher+student per card), not speeding
+a single run.
+
+**Tokens before params:** a 278M model on ~1B tokens almost certainly beats a
+1B model on 16M tokens, and costs VRAM you don't have to spend (params) vs time
+you can rent (tokens). Grow params only after token volume stops being the
+bottleneck.
+
+---
+
 ## Where we are (as of 2026-06-12)
 
 ### Shipped reference checkpoints
