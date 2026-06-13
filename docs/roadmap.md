@@ -221,6 +221,22 @@ history shows scaling params *did* increase coherency at this token budget, so
 one (grow moe_s0 → ~650M, fits the 5070), tokens is the bigger theoretical gap
 that needs rented throughput. Pursue params locally now; rent for tokens later.
 
+**QUEUED experiment (next session, after the current continuation finishes):
+`torch.compile` the teacher.** The diagnosis that motivates it: during the
+teacher forward the 5060 only hits ~35% util — it idles *between* kernels
+because the Ouro teacher is recurrent + custom-Python and pays per-kernel
+launch overhead (eager mode). `torch.compile(teacher)` fuses kernels and cuts
+that Python launch overhead, which could shrink the ~541 ms teacher forward
+*directly* — and since distill is teacher-bound, a faster teacher speeds every
+step (potentially a bigger win than overlap, which only hides the student's
+286 ms). Cheap to try (one line; fails fast if it doesn't compile). Risk: HF
+custom modeling (Ouro's recurrent forward) doesn't always compile cleanly.
+Order of throughput levers: (1) try torch.compile teacher [cheap, root-cause];
+(2) teacher-process server [the overlap design — works only across processes,
+not threads (GIL); ~1.4× ceiling; fiddly on Windows, no CUDA-IPC]; (3) rent
+[laps both]. The threaded prefetch was already tried and was *slower* (GIL
+contention) — see the overlap finding above.
+
 ---
 
 ## Planned capability (post-coherence): retrieval → continual learning
