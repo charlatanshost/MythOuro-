@@ -287,6 +287,30 @@ live-online-learning landmines.
 (only if ever justified) live continual learning. Each step is a real project;
 the first one that matters is still just reaching coherent text.
 
+### Parallel-loop ensemble (evaluated 2026-06-13, deferred post-coherence)
+
+Idea (from a Grok thread, vetted): run N parallel recurrent paths, each with
+its own best-of-trajectory exit, then review the paths' best-exits against each
+other — a two-level selection (within-path trajectory pick + across-path
+ensemble). **Not redundant with best-of-trajectory** (it layers on top), and a
+real technique (test-time compute / self-consistency). Verdict: **deferred,
+because the version with real value is expensive and gated on coherence.**
+- *Shared-weight paths* (one model, perturbed injection/routing/n_loops): paths
+  are highly correlated → cross-path review rarely helps → K× compute, thin gain.
+- *Different-seed paths*: genuinely decorrelated (our seed variance proves it:
+  5.72 vs 22) → legitimate ensemble — but it's an **N-model ensemble = N× the
+  distillation cost**, and you can't ensemble models that aren't *individually*
+  coherent yet (the precondition).
+- The across-path *referee* leans on the uncertainty head, which P0.5 measured
+  as miscalibrated at some depths → fix calibration before any ensemble-by-
+  uncertainty.
+- Ensembling correlated-wrong outputs from a pre-coherent base = wrong;
+  test-time-compute scaling helps *most* on capable bases, least at small scale.
+Revisit only with: a coherent base + spare compute for N models + P0.5 fixed.
+Caveat on AI-sourced suggestions: vet against the actual code/bottleneck — the
+original sketch had bugs (same block object N× = identical paths, K× compute for
+zero diversity) and cited nonexistent DDP support.
+
 ---
 
 ## Where we are (as of 2026-06-12)
