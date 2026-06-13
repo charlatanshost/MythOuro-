@@ -19,6 +19,58 @@ in this fork beyond that foundation, and no responsibility for its direction or
 current state. The teacher (`ByteDance/Ouro-2.6B-Thinking`) is Apache 2.0. See
 the README "Acknowledgements" and "Licensing & data provenance" sections.
 
+---
+
+## North star — what we are actually building (2026-06-12)
+
+**Goal: a local LLM worth *using* — not a science project, and not a benchmark
+challenger to frontier models.** The product axis matters more than the
+research axis. We are not trying to out-score Qwen/Llama on general benchmarks
+(they trained on 10–18 *trillion* tokens over millions of GPU-hours; no
+architecture cleverness closes that data gap). We win on axes they neglect.
+
+**Methodology — validate cheap, then scale (this is how the labs actually do
+it).** Every frontier model descends from small ablation runs that settle the
+recipe before the expensive run. The current 278M–632M work is the **test
+bench**, not the ceiling: find the bugs cheap (we found 5), prove the recipe
+cheap (warmup 500 / depth-reg 0.3), settle architecture questions cheap. When
+scale comes — better hardware over time, and rented compute when justified —
+it scales a recipe that's already debugged and measured, so the money isn't
+wasted. The cheap discipline now is *what makes the expensive run later pay
+off.*
+
+**The three differentiators — and they COMPOUND with scale, they're not a
+small-model consolation:**
+1. **Calibrated honesty.** Most small local models hallucinate with total
+   confidence — their worst, most-complained-about flaw. MythOuro has a
+   working calibrated uncertainty head (ECE 0.01–0.04, demonstrated). A model
+   that reliably says "I don't know" is *more useful* than a same-size model
+   that doesn't — and a 3B that knows its limits beats a 3B that doesn't.
+2. **Adaptive compute.** Recurrent-depth + ACT spends more on hard tokens,
+   less on easy ones (loop_eff converges to exactly 0.500 across every run —
+   the machinery is rock-solid and architecture-independent). Nobody's local
+   model does this.
+3. **Domain specialization (the wedge).** A small model fine-tuned *hard* on
+   one domain can beat a general 7B *on that domain*. The clean science/medical
+   data (docs/clean_sft_datasets.md) is the first wedge.
+
+**Positioning:** *a small, fast, honest, domain-specialized model that knows
+its limits* — exactly what the big local LLMs are worse at, not just smaller
+versions of.
+
+**What this means for decisions:**
+- **Stop optimizing architecture at small scale.** The MoE-vs-dense ablation
+  came back inconclusive (seed variance > architecture effect at 278M;
+  docs/training_runs.md). That does NOT close MoE — MoE's benefits are *known
+  to emerge at scale*, which is why every frontier model uses it. **Re-ask the
+  MoE question at the scale where it's designed to matter (≥1B); keep MoE as
+  the live default for the scale-up.** Don't burn more small-scale GPU on it.
+- **First-order levers are scale, data quality, and the wedge** — not the FFN
+  type. Optimize those.
+- **Next concrete milestone:** v6 (clean-data SFT on the best base) → does an
+  honest specialist emerge? Then scale toward 1B on the single card, 3B on
+  rented compute, differentiators intact.
+
 Compute constraint baseline: **single workstation — RTX 5070 (12 GB) + RTX 5060
 (8 GB) + RTX 4060 (8 GB), all native bf16, overnight-only training windows.**
 Anything multi-week of continuous compute belongs to the "needs cloud or
@@ -102,7 +154,7 @@ Where to find code that implements specific concepts:
 
 ---
 
-## Where we are (as of 2026-06-10)
+## Where we are (as of 2026-06-12)
 
 ### Shipped reference checkpoints
 
@@ -117,7 +169,7 @@ Where to find code that implements specific concepts:
 
 Full cross-run stats: [docs/training_runs.md](training_runs.md).
 
-### Code state (post-review, 2026-06-09/10)
+### Code state (post-review, 2026-06-09/10; updated 2026-06-12)
 
 External code review (Fable 5) found and we fixed **5 correctness bugs** —
 notably P0.1 (v1–v5 all trained with noise injected via a clobbered zero-init)
@@ -125,6 +177,18 @@ and P0.3 (eval emitted a never-trained path) — plus most of the P1 perf items.
 The moe_s0 run above is the proof the fixes matter. Trackers:
 [review_action_plan.md](review_action_plan.md) ·
 [mythouro_code_review_findings.md](mythouro_code_review_findings.md).
+
+**P0.6 — OpenCodeInstruct adapter silently rejected 100% of code samples
+(fixed 2026-06-12 12:46 ET).** The `_to_messages_opencode` adapter in
+`mythouro/sft_data.py` checked `str(status).lower() not in ("pass", ...)`
+against `tests_execution_status`, but the field is a **JSON-encoded list**
+(e.g., `'["pass", "pass", "fail"]'`), not a scalar string. The stringified
+list never matches any of the expected values, so **every `clean_code` sample
+was dropped** — confirmed by diagnostic logs: `clean_code: 0/5790 (0.0%
+accept)` across the entire v6-attempt-1 run (steps 1–1532). Fix: parse the
+JSON list and accept only samples where ALL individual tests passed.
+**Consequence:** v6-attempt-1 (steps 1–1532) trained with zero code data;
+run stopped, checkpoint discarded, restart required with the fix.
 
 ### Pipeline infrastructure built and tested
 
@@ -1702,9 +1766,37 @@ MoDr is the natural next architecture step; if MoE goes, MoDr is moot.
 3. Keep the depth regulariser (KL-to-uniform) as the anti-collapse guard, and the
    `min_loops` floor so the student can't collapse onto loop 0.
 4. Train the teacher target offline first (cache best-exit labels with
-   `--force-full-depth`) so the student trains against fixed labels — cheaper and
-   more stable than computing full-depth trajectories every step.
-5. Tests: router emits both heads; `K=1` reduces to current behaviour; best-exit
+   `--force**Relation to prior art.** This is the project's own framing of Mixture-of-Depths
+(Raposo et al.) adapted to a *recurrent* (weight-shared, looped) block rather
+than a deep spatial network.
+
+---
+
+## Test Prompts
+
+Use these prompts with `inspect_checkpoint.py` to test the model's capabilities across the different domains in the clean SFT mix. 
+
+> **Note on PowerShell:** Using angle brackets like `<ckpt_path>` in PowerShell will cause a `ParserError`. The examples below use a real path (`checkpoints_v6_clean_sft/step_0003000.pt`). If your checkpoint is named differently, just replace the path.
+
+### Code Generation (`clean_code`)
+```bash
+python inspect_checkpoint.py --ckpt checkpoints_v6_clean_sft/step_0003000.pt --device cuda:0 --prompt "Write a Python function to find the longest common subsequence of two strings. Include type hints and comments explaining the dynamic programming matrix."
+```
+
+### Math & Reasoning (`clean_math`, `clean_numina`)
+```bash
+python inspect_checkpoint.py --ckpt checkpoints_v6_clean_sft/step_0003000.pt --device cuda:0 --prompt "A train leaves Chicago at 2 PM traveling at 60 mph. Another train leaves at 3 PM traveling in the same direction at 80 mph. What time will the second train catch up to the first?"
+```
+
+### Medical/Science QA (`clean_pubmedqa`, `clean_chem`)
+```bash
+python inspect_checkpoint.py --ckpt checkpoints_v6_clean_sft/step_0003000.pt --device cuda:0 --prompt "What are the common symptoms and recommended treatments for acute bronchitis? Please provide a structured answer."
+```
+
+### General Instruction Following (`clean_general`, `clean_miriad`)
+```bash
+python inspect_checkpoint.py --ckpt checkpoints_v6_clean_sft/step_0003000.pt --device cuda:0 --prompt "Explain the concept of 'entropy' in thermodynamics to a high school student, using an everyday analogy."
+```ds; `K=1` reduces to current behaviour; best-exit
    target matches `forward_trajectory` argmin; depth regulariser still fires;
    no-NaN train step.
 
