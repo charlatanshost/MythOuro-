@@ -124,6 +124,16 @@ runs (v3–v5) ran stably up to **~11.7 GB**, so ~2.5 GB headroom here is
 comfortable — *don't add compression to runs that already fit.* Pull a lever
 only when you deliberately push past the ceiling.
 
+**Micro-batch throughput (measured 2026-06-13):** student-only bench (seq 1024,
+5070) — mb1 2,865 tok/s, **mb2 4,616 (1.61×)**, mb4 5,557 (saturating), mb8 OOM.
+BUT the gain only materialises when the *student* is the bottleneck:
+- **SFT (no teacher): use `--micro-batch 2`** — ~1.6× free throughput, fits
+  (student 8.6 GB w/ grad-checkpointing, far below the bench's no-checkpoint 10 GB).
+- **Distillation: micro-batch does NOT help** — the 2.6B teacher forward
+  dominates and scales with batch, so mb2 ≈ mb1 end-to-end (~0.8k tok/s, both
+  cards fit: student 8.6/12, teacher 5.9/8, no spill needed). Distill token
+  volume = wall-clock or rent, not batch.
+
 **Reduction options** (bang-for-buck order):
 
 | Lever | Saves | Cost | Status |
