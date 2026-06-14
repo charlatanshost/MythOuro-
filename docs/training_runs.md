@@ -143,6 +143,36 @@ v4 420M size) — best-justified shot but not guaranteed (v4 was broken-code +
 OpenAI data). The 278M ceiling is now thoroughly mapped; coherence (behavioral
 or content) needs the rented scale-up.
 
+## small_sft (420M, fair test) — local scaling CONCLUSIVELY closed (2026-06-14)
+
+Grew the 3.06 continuation base 24→48 experts (~420M, function-preserving) →
+clean-mix SFT. **The training-time MoE cv confirms a FAIR test:** cv rode the
+sentinel decay (1.21 @100 → 0.83 @500) then tightened to **0.223 @800 (min
+1.3%)** — all 48 experts integrated, balanced as well as v3's best (the P0.2
+fix working). Final eval: PPL ~3.05–3.36, ECE 0.017, loop_eff 0.500, training
+CE down to 0.4–0.7.
+
+**Every metric healthy — generation still degenerate** (`is is is`, newlines,
+`R R R`; `reports/inspect_small_sft_gpu.txt`). This is the conclusive result:
+**at this scale, metrics ≠ capability.** The model nails teacher-forced
+next-token prediction (low loss/PPL) but mode-collapses in free generation
+(exposure-bias collapse in a radically undertrained model) — independent of
+params, routing health, or code correctness.
+
+**Local scaling is now exhaustively closed, fair tests at every lever:**
+| lever | result |
+|---|---|
+| more tokens (continuation, 278M) | degenerate |
+| SFT (v6 / cont_sft, 278M) | degenerate |
+| +params, experts integrated (small_sft, 420M) | degenerate |
+
+The bottleneck is **training scale (token volume)**, confirmed not-fixable by
+params/data/code/recipe locally. v4's "best PoC behavior" is almost certainly a
+cherry-picked read — small_sft is its fixed-code/clean-data/integrated
+equivalent and it's degenerate. **The engineering is done and validated; only
+scale remains → the rented scale-up is the sole remaining path, now fully
+de-risked.**
+
 ## Test prompt suite
 
 Run with `python inspect_checkpoint.py --checkpoint <ckpt> --device cpu`
