@@ -221,8 +221,37 @@ history shows scaling params *did* increase coherency at this token budget, so
 one (grow moe_s0 → ~650M, fits the 5070), tokens is the bigger theoretical gap
 that needs rented throughput. Pursue params locally now; rent for tokens later.
 
-**QUEUED experiment (next session, after the current continuation finishes):
-`torch.compile` the teacher.** The diagnosis that motivates it: during the
+### PRIORITY next-session experiment: distill throughput (workers + compile)
+
+The real bottleneck is **data supply, not compute** (established 2026-06-13):
+GPU util stayed low (~12%/35%) while tok/s *rose* late in the run → the GPUs
+wait on data the whole time; tok/s tracks how fast the CPU pipeline feeds them.
+Per-micro-step: ~827 ms compute (teacher 541 + student 286) vs ~1450 ms wall →
+**~620 ms is data-supply stall**. And the rig is a **56-core Xeon 8480** running
+the dataloader at `num_workers=2` (distill.py:322) — ~54 cores idle. Two stacked
+levers, run as a quick A/B next session before the next long distill:
+
+1. **`num_workers` A/B (the big one).** Bump 2 → 4 → 8 → 16, measure tok/s, find
+   saturation (= where the GPU becomes the real bottleneck). Potential **~1.5–
+   1.75×** by collapsing the 620 ms data stall toward the 827 ms compute floor.
+   Watch for: (a) HF streaming "list index out of range" when workers exceed
+   shards — distill data is multi-shard so likely fine, but that's the failure
+   mode; (b) the 8480's 2/8-channel memory bandwidth may cap effective workers
+   around 8–16, not 56. First lever all session that targets the TRUE bottleneck
+   AND uses owned hardware.
+2. **`torch.compile(teacher)` — lowers the compute floor the workers feed.** During
+   the teacher forward the 5060 only hits ~35% util — it idles between kernels
+   (recurrent + custom-Python Ouro forward, eager-mode launch overhead).
+   `torch.compile(teacher)` fuses kernels / cuts launch overhead → could shrink
+   the 541 ms teacher forward directly (distill is teacher-bound, so a faster
+   teacher speeds every step). One line; fails fast if HF custom modeling won't
+   compile. The two stack: workers kill the data stall, compile lowers the floor.
+
+Lower-priority / fallback throughput levers (see the overlap finding below):
+teacher-process server (~1.4× overlap, process-only due to GIL, Windows-fiddly);
+rent (laps all of it). Original single-lever note:
+
+**`torch.compile` the teacher.** The diagnosis that motivates it: during the
 teacher forward the 5060 only hits ~35% util — it idles *between* kernels
 because the Ouro teacher is recurrent + custom-Python and pays per-kernel
 launch overhead (eager mode). `torch.compile(teacher)` fuses kernels and cuts
