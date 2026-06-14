@@ -130,6 +130,7 @@ authoritative documents and where to find what:
 | [docs/mythouro_code_review_findings.md](mythouro_code_review_findings.md) | The external code review itself (Fable 5, 2026-06-09) — the source document for the action plan. |
 | [docs/review_action_plan.md](review_action_plan.md) | Code-review (P0–P2) status tracker — what's fixed, what's left. **Resume here.** |
 | [docs/training_commands.md](training_commands.md) | Copy-paste-ready training/eval command reference + flag table. |
+| [docs/hardware_options.md](hardware_options.md) | Scale-up hardware decision — rent vs buy, Intel PVC/A100/MI210/3090 options, the teacher-on-XPU de-risk gate. |
 | [docs/training_runs.md](training_runs.md) | Comparison table of every training session's eval stats (PPL/loop_eff/ECE trajectories, recipes, raw-data paths). Update after each run. |
 | `archived_models/<name>/MODEL_CARD.md` | Per-checkpoint provenance: training config, eval results, behavioural validation, limitations. One per shipped reference checkpoint. |
 | `CHANGES.md` | Changelog at the codebase root — features added per session. |
