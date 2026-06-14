@@ -156,6 +156,61 @@ Where to find code that implements specific concepts:
 
 ---
 
+## Strategy: exhaust the local rig before spending capital (2026-06-14)
+
+**Principle:** a new rig or rented compute add *exponential* cost; the current
+rig is ~free (time + electricity). So **wring every signal out of local before
+committing capital** — commit only once the evidence says scale will pay off.
+Same "validate cheap before committing" discipline that's caught every wrong
+turn.
+
+**The decision criterion (what justifies the spend):** does generation
+**improve monotonically** as local resources increase? **Positive sign already
+on record (2026-06-14):** v4 (more cumulative SFT) generates varied,
+domain-relevant word-salad with appropriate uncertainty; small_sft (one SFT
+pass) mode-collapses to repetition — same size, same code. So *more SFT visibly
+moves the needle.* If the trajectory keeps climbing (repetition → word-salad →
+phrases → coherence) as SFT / experts / width increase → **scale will pay off,
+commit.** If it plateaus at word-salad regardless → scale is *required* (and
+confirmed not a recipe problem). Either outcome de-risks the spend.
+
+**Local-exhaustion sequence (all ~free, no capital):**
+1. **Continued 420M SFT** — does more SFT reach v4-class varied generation?
+   (running 2026-06-14; small_sft was under-SFT'd — one 3k pass vs v4's ~6.5k).
+2. **More SFT / boost chat-register data** — SFT is the demonstrated lever and
+   is VRAM-cheap (~10 GB, no quantize); pour it in. v4 credits OpenHermes with
+   "unlocking the social register" → if SFT plateaus, enrich the clean mix's
+   chat ratio (Tulu) before anything else.
+3. **Grow 48→96 (632M) + 8-bit Adam + heavy SFT** — re-test the v5 expert
+   ceiling on FIXED code + proper SFT. Legitimate retest: v5's ceiling was
+   measured under broken code (P0.1 noise, P0.2-corrupted cv) AND truncated SFT
+   (stopped step 2,887). All three now improvable. Caveat: more experts = more
+   capacity a token-starved model may not fill — genuinely uncertain, hence
+   worth the local test. Fits ~11.7 GB (v5 precedent).
+4. **Build Net2Wider** (`grow_width.py`, ~2 sessions, unbuilt) — width growth
+   toward ~1B, the one growth axis never tried; pure dev time, no capital.
+
+**VRAM ladder:** SFT on 420M ~10 GB (no quantize, lots of runway) → 632M needs
+8-bit Adam (~11.7 GB) → ~1B = true local wall (even 8-bit Adam won't fit) =
+where capital finally becomes necessary. "Quantize" here = **8-bit Adam
+(optimizer state)**, a clean ~2 GB saver — NOT QAT (that's the separate
+3B→INT4 deployment endgame).
+
+**Capital is INCREMENTAL, never all-or-nothing (de-risks "what if scale is
+pointless?").** The fear: spend big, still get gibberish, money wasted. The
+safeguard: when local signs say "go," **rent a SMALL step first** (e.g. a few
+$ of A100 time for ~100–200M tokens at a bigger size) and check the
+monotonic-improvement criterion *continues at scale* before committing more.
+You spend a little to confirm success keeps climbing — not a fortune to
+discover failure. Why the evidence favors scale working (not gibberish
+forever): the teacher (Ouro-2.6B) is coherent, the architecture is a proven
+family (transformer + MoE both scale to coherence in published models),
+LLM scaling laws are among ML's most robust findings, every local lever moves
+generation the right way (PPL ↓ with tokens; v4 >> small_sft with more SFT),
+and all health metrics are clean (no pathology — just undertraining). The real
+risk isn't "broken design," it's "coherence needs more tokens than the budget"
+— a budget question, answered incrementally, not an all-in gamble.
+
 ## Stage two: the token-volume scale-up (the path to first coherent text)
 
 **The binding constraint is training tokens, not params or architecture**
