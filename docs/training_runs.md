@@ -89,6 +89,34 @@ the full-depth curriculum phase (step 2000+) kicks in.
 | 3000 | 0.496 | 0.011 |
 | 4000 | **0.500** (design-band center) | 0.015 |
 
+## Continuation (moe_s0 → 32M tokens) — the definitive local-coherence test (2026-06-13)
+
+Continued moe_s0 (warm restart, lr 1e-4) from step 4000 → 8000 (~16M → ~32M
+distill tokens). **PPL trajectory: 5.72 → 4.04 → 3.52 → 3.18 → 3.057** (each
++~4M tokens; drops halving → plateau ~3.0). ECE 0.0052 (best ever), loop_eff
+0.500 throughout. Best checkpoint the project has: `checkpoints_distill_cont/
+step_0008000.pt`.
+
+**But generation is STILL degenerate** (`reports/inspect_cont8000.txt`): every
+prompt → pure repetition (`a a point point`, `is is is`, `R R R`), same class
+as the moe_s0 base, low uncertainty on its own garbage. **2× the tokens halved
+PPL but bought zero coherence.**
+
+**Verdict — the local-coherence question is settled (negative):**
+- PPL (teacher-forced next-token objective) and free-generation coherence are
+  **decoupled** at this scale — the model mode-collapses in autoregression
+  regardless of how low PPL goes. Low PPL ≠ can talk.
+- 32M tokens is ~60,000× short of coherent small models (~2T); 2× was never
+  going to cross it. Incremental local distill **lowers PPL but does not buy
+  coherence** — now proven, not theorized.
+- Combined with v4 (632M, also sub-coherent), **coherent text is not reachable
+  at the params/data budget the local rig provides.** It needs the real
+  scale-up (more params AND vastly more tokens) = rented compute. The local rig
+  validates pipeline + recipe; it cannot produce a coherent model.
+- SFT on this base (the next planned experiment) will likely give a v4-class
+  result: better *behavioral* surface (register/format/halting) but not content
+  coherence — SFT styles fluency the base has, and this base lacks it.
+
 ## Test prompt suite
 
 Run with `python inspect_checkpoint.py --checkpoint <ckpt> --device cpu`

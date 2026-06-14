@@ -1,0 +1,72 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[32m2026-06-13 23:33:57.571[0m | [33m[1mWARNING [0m | [36mmythouro.main[0m:[36mwarn_once[0m:[36m77[0m - [33m[1mGQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=None).[0m
+loading: checkpoints_distill_cont/step_0008000.pt
+device:  cpu
+step:    8000
+params:  278,871,411
+vocab:   49152  max_loops=4
+
+================================================================================
+prompt: 'The recurrent depth transformer is'
+--------------------------------------------------------------------------------
+prompt tokens : 5
+diagnostic    : uncertainty mean=0.433 max=0.979
+                halt distribution per loop = [0.346, 0.284, 0.37]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.077  (min=0.0%  max=16.7%)
+
+greedy generation (T=0.7 top_k=40):
+  ' a a a a a a a a a a point point point point point point point point point point point point point point point point point point point point point point point point point point point point point point'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  ' is is is is is is is is is is is is'
+  uncertainty trace: mean=0.038  min=0.019  max=0.217
+
+================================================================================
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+--------------------------------------------------------------------------------
+prompt tokens : 16
+diagnostic    : uncertainty mean=0.117 max=0.779
+                halt distribution per loop = [0.34, 0.289, 0.372]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=0.648  (min=1.2%  max=11.2%)
+
+greedy generation (T=0.7 top_k=40):
+  'What is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  'What is is is is is is is is is is is'
+  uncertainty trace: mean=0.027  min=0.011  max=0.102
+
+================================================================================
+prompt: 'def fibonacci(n):'
+--------------------------------------------------------------------------------
+prompt tokens : 6
+diagnostic    : uncertainty mean=0.305 max=0.911
+                halt distribution per loop = [0.348, 0.282, 0.371]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=0.914  (min=0.0%  max=12.5%)
+
+greedy generation (T=0.7 top_k=40):
+  ' ) ) ) ) ) ) ) ) ) ) ) ) 111111111100000000000000000'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  '\n   \n   AAAAAAAAAA'
+  uncertainty trace: mean=0.047  min=0.016  max=0.101
+
+================================================================================
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+--------------------------------------------------------------------------------
+prompt tokens : 15
+diagnostic    : uncertainty mean=0.156 max=0.931
+                halt distribution per loop = [0.355, 0.293, 0.352]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=0.810  (min=0.0%  max=13.2%)
+
+greedy generation (T=0.7 top_k=40):
+  ' R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  ' R R R R R R R R R R R R'
+  uncertainty trace: mean=0.077  min=0.010  max=0.356
