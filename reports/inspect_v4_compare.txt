@@ -1,0 +1,72 @@
+loading: archived_models/mythouro_distill_small_v4/step_0003000.pt
+device:  cuda:0
+step:    3000
+params:  396,866,931
+vocab:   49152  max_loops=4
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+
+================================================================================
+prompt: 'The recurrent depth transformer is'
+--------------------------------------------------------------------------------
+prompt tokens : 5
+[32m2026-06-14 13:22:21.386[0m | [33m[1mWARNING [0m | [36mmythouro.main[0m:[36mwarn_once[0m:[36m77[0m - [33m[1mGQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).[0m
+diagnostic    : uncertainty mean=0.501 max=0.996
+                halt distribution per loop = [0.402, 0.312, 0.287]
+                halt step mean = 1.89  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.896  (min=0.0%  max=16.7%)
+
+greedy generation (T=0.7 top_k=40):
+  ".\n1/ Let's 1 call for(4) the mile flow.\n1/ Check if new during_2 light,1/"
+
+confidence-aware generation  (stop='max_new_tokens', 32 tokens emitted):
+  '. 18">\treturn array, \'Solner found the fourth\';[2]]\treturn array, \'Isner upon 4\'.sorted,'
+  uncertainty trace: mean=0.475  min=0.016  max=0.965
+
+================================================================================
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+--------------------------------------------------------------------------------
+prompt tokens : 16
+diagnostic    : uncertainty mean=0.545 max=0.992
+                halt distribution per loop = [0.372, 0.283, 0.345]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.202  (min=0.0%  max=10.0%)
+
+greedy generation (T=0.7 top_k=40):
+  "As the product of 2&9 each.4 <Welcome_matrix0'd\nFirst in the product and ≈9) \\box1$."
+
+confidence-aware generation  (stop='max_new_tokens', 32 tokens emitted):
+  "5.e the coordinate TABLE?\n5.e the i simple (`box == 'box': '', send1 gives us on the 4,\n             open"
+  uncertainty trace: mean=0.552  min=0.035  max=0.957
+
+================================================================================
+prompt: 'def fibonacci(n):'
+--------------------------------------------------------------------------------
+prompt tokens : 6
+diagnostic    : uncertainty mean=0.533 max=0.984
+                halt distribution per loop = [0.394, 0.312, 0.294]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=2.149  (min=0.0%  max=20.0%)
+
+greedy generation (T=0.7 top_k=40):
+  '(input.SolDERE 106.findA\').console() / 4, "\n            console_ed Solution_ex",'
+
+confidence-aware generation  (stop='max_new_tokens', 32 tokens emitted):
+  "\n    'javaStep.i_dataset' > Contract(year) * The array.i_dict &Sum(year)` = 'openStep,"
+  uncertainty trace: mean=0.481  min=0.014  max=0.950
+
+================================================================================
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+--------------------------------------------------------------------------------
+prompt tokens : 15
+diagnostic    : uncertainty mean=0.657 max=0.992
+                halt distribution per loop = [0.378, 0.295, 0.327]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.378  (min=0.0%  max=13.2%)
+
+greedy generation (T=0.7 top_k=40):
+  ' length keep the City})\nSubstminDate_: length and Text-based (1000). **Enter_: tInputDate_```,'
+
+confidence-aware generation  (stop='max_new_tokens', 32 tokens emitted):
+  " RWhen-reverse_0\n                                ().array, M-sorted2$. From `user=0` (1. std.array is named 'your2"
+  uncertainty trace: mean=0.558  min=0.119  max=0.963

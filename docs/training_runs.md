@@ -173,6 +173,32 @@ equivalent and it's degenerate. **The engineering is done and validated; only
 scale remains → the rented scale-up is the sole remaining path, now fully
 de-risked.**
 
+## v4 vs small_sft head-to-head (2026-06-14) — RETRACTION: local path NOT closed
+
+Ran the same prompts on archived **v4** (it still exists) vs small_sft, same
+current code (`reports/inspect_v4_compare.txt`). **v4 is categorically better:**
+- math prompt → `"product of 2&9... ≈9) ox1$"` (attempts a math answer, LaTeX);
+  code → `"console()... Solution"`; history → `"City... Date (1000)"`.
+- **Does NOT mode-collapse** (varied tokens, never `is is is`), attempts
+  domain-relevant content, and uncertainty is high+appropriate (0.47–0.56, knows
+  it's unsure) vs small_sft's confidently-wrong 0.03–0.06.
+
+It's word-salad, not coherent — but it's genuinely *"more than what we have,"*
+exactly as the user said. **The prior "local scaling conclusively closed" /
+"metrics ≠ capability is the whole story" conclusion was WRONG and is retracted.**
+
+Why v4 > small_sft (NOT the emission — both ran identical h_K code, so it's the
+weights/training):
+- **Cumulative SFT:** v4 had ~6,500 SFT steps *on 420M* (v3 3,500 + v4 3,000) +
+  3,000 at 278M. **small_sft had ONE 3,000-step pass.** ~½–⅓ the exposure → the
+  prime suspect: small_sft is **under-SFT'd**.
+- **Chat data:** v4's card credits OpenHermes with "unlocking the social
+  register"; small_sft's clean mix may carry weaker chat-register data.
+
+**Action:** continue SFT-ing small_sft toward v4's exposure (~6,500+ 420M-SFT
+steps) and watch whether it crosses from repetition into v4-style varied
+generation. The local path has more to give — small_sft was just under-trained.
+
 ## Test prompt suite
 
 Run with `python inspect_checkpoint.py --checkpoint <ckpt> --device cpu`
