@@ -117,6 +117,32 @@ PPL but bought zero coherence.**
   result: better *behavioral* surface (register/format/halting) but not content
   coherence — SFT styles fluency the base has, and this base lacks it.
 
+## cont_sft (SFT on the 3.06 distill base) — 278M floor confirmed (2026-06-14)
+
+Clean-mix SFT on the continuation base (278M, PPL 3.06 → 3.38 post-SFT, ECE
+0.0077). **Generation still degenerate** (`reports/inspect_cont_sft_gpu.txt`):
+`is is is`, newlines, faint code-indent echo on the fib prompt — same class as
+v6. Does NOT halt on `<|im_end|>` (just newlines).
+
+**The better base did NOT make SFT's behavioral gains take at 278M.** Three
+independent confirmations now that **278M is below the behavioral-coherence
+floor regardless of tokens/base/data/code**: continuation (more tokens), v6
+(clean SFT on 5.72 base), cont_sft (clean SFT on 3.06 base). The only config
+that ever showed behavioral coherence was **v4 at 420M** — and that card's
+claims were likely optimistic (v2, also 278M, almost certainly looked like
+this; its halting/guard write-up was cherry-picked).
+
+**Honesty-thesis caveat:** uncertainty traces are 0.005–0.044 (very low) on
+the degenerate output — the model is *confident in its garbage*. The eval ECE
+(0.0077) measures next-token calibration on REAL text; it does NOT transfer to
+the model judging its own free generation. "Honest specialist" behaviour is
+not present at this scale.
+
+**Decision implication:** next behavioral test = grow 24→48 → SFT (reach the
+v4 420M size) — best-justified shot but not guaranteed (v4 was broken-code +
+OpenAI data). The 278M ceiling is now thoroughly mapped; coherence (behavioral
+or content) needs the rented scale-up.
+
 ## Test prompt suite
 
 Run with `python inspect_checkpoint.py --checkpoint <ckpt> --device cpu`
