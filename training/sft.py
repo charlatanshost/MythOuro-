@@ -137,13 +137,25 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--depth-reg-coeff", type=float, default=1e-1,
                    help="Same loop-collapse guard as distillation. SFT can "
                         "also push ACT toward halt-early; keep this on.")
+    p.add_argument("--recurrent-state-noise", type=float, default=0.0,
+                   help="Anti-collapse Gaussian noise on the recurrent state "
+                        "each loop (σ·RMS(h), training only). Replaces the P0.1 "
+                        "accidental noise that kept generation from collapsing. "
+                        "0.0 = off. Try 0.02–0.1. Best set at the distill stage; "
+                        "available here too for SFT-only experiments.")
+    p.add_argument("--use-sandwich-norm", action="store_true",
+                   help="Match a checkpoint trained with Huginn sandwich norm "
+                        "(must equal the base's cfg or weights won't load).")
+    p.add_argument("--use-depth-aware-init", action="store_true",
+                   help="No effect when resuming (weights are loaded); present "
+                        "for parity with distill.py.")
     p.add_argument("--ckpt-dir", default="checkpoints_sft")
     p.add_argument("--ckpt-every", type=int, default=500)
     p.add_argument("--log-every", type=int, default=10)
     p.add_argument("--random-depth", action="store_true",
                    help="Per batch, sample unroll depth uniformly in "
                         "[start_loops, curriculum.get(step)].")
-    p.add_argument("--data-mix", choices=["clean", "legacy"], default="clean",
+    p.add_argument("--data-mix", choices=["clean", "clean_chat", "legacy"], default="clean",
                    help="SFT data mix. 'clean' (default since 2026-06-11) = "
                         "zero OpenAI-output provenance (Tulu-3, "
                         "OpenMathInstruct-2, NuminaMath, OpenCodeInstruct, "
@@ -362,6 +374,9 @@ def main():
     cfg = _VARIANT_FUNCS[args.student_variant]()
     cfg.vocab_size = vocab_size
     cfg.max_seq_len = args.seq_len
+    cfg.recurrent_state_noise = args.recurrent_state_noise
+    cfg.use_sandwich_norm = args.use_sandwich_norm
+    cfg.use_depth_aware_init = args.use_depth_aware_init
 
     student = MythOuro(cfg).to(device)
     n_params = sum(p.numel() for p in student.parameters())

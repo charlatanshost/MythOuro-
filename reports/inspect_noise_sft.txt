@@ -1,0 +1,124 @@
+loading: checkpoints_noise_sft/step_0003000.pt
+device:  cuda:0
+step:    3000
+params:  396,866,931
+vocab:   49152  max_loops=4
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+
+================================================================================
+prompt: 'The recurrent depth transformer is'
+--------------------------------------------------------------------------------
+prompt tokens : 5
+2026-06-15 16:16:36.452 | WARNING  | mythouro.main:warn_once:77 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).
+diagnostic    : uncertainty mean=0.442 max=0.999
+                halt distribution per loop = [0.36, 0.266, 0.374]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.592  (min=0.0%  max=11.1%)
+
+greedy generation (T=0.7 top_k=40):
+  ' also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also also'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  ' to to to to to to to to to to to to'
+  uncertainty trace: mean=0.035  min=0.013  max=0.125
+
+best-of-trajectory generation [ACT-respecting]  (stop='cycle', 32 tokens emitted):
+  ' is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is is'
+  loops actually run: mean=3.0  (n_loops=4; ACT halts all positions early)
+  chosen-loop depth: mean=1.91
+  chosen-loop histogram (loop -> count): {1: 3, 2: 29}
+  picked below deepest-run loop: 3/32 tokens (9%)
+  emitted-loop uncertainty: mean=0.022  min=0.002  max=0.053
+  mean uncertainty by loop depth: [0.159, 0.043, 0.022]
+  -> uncertainty min at loop 2  (min at deepest-run loop -> more loops cut uncertainty (monotonic-down))
+  token[0] per-loop uncertainty: [0.048, 0.031, 0.023]
+  token[1] per-loop uncertainty: [0.022, 0.008, 0.005]
+  token[2] per-loop uncertainty: [0.045, 0.025, 0.014]
+
+================================================================================
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+--------------------------------------------------------------------------------
+prompt tokens : 16
+diagnostic    : uncertainty mean=0.106 max=0.912
+                halt distribution per loop = [0.371, 0.278, 0.351]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.189  (min=0.0%  max=11.2%)
+
+greedy generation (T=0.7 top_k=40):
+  '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+
+confidence-aware generation  (stop='confidence', 4 tokens emitted):
+  '\n\n\n\n'
+  uncertainty trace: mean=0.019  min=0.003  max=0.062
+
+best-of-trajectory generation [ACT-respecting]  (stop='cycle', 32 tokens emitted):
+  '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+  loops actually run: mean=3.0  (n_loops=4; ACT halts all positions early)
+  chosen-loop depth: mean=2.00
+  chosen-loop histogram (loop -> count): {2: 32}
+  picked below deepest-run loop: 0/32 tokens (0%)
+  emitted-loop uncertainty: mean=0.109  min=0.003  max=0.256
+  mean uncertainty by loop depth: [0.382, 0.209, 0.109]
+  -> uncertainty min at loop 2  (min at deepest-run loop -> more loops cut uncertainty (monotonic-down))
+  token[0] per-loop uncertainty: [0.158, 0.003, 0.003]
+  token[1] per-loop uncertainty: [0.287, 0.014, 0.005]
+  token[2] per-loop uncertainty: [0.344, 0.037, 0.011]
+
+================================================================================
+prompt: 'def fibonacci(n):'
+--------------------------------------------------------------------------------
+prompt tokens : 6
+diagnostic    : uncertainty mean=0.260 max=0.998
+                halt distribution per loop = [0.367, 0.273, 0.359]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.552  (min=0.0%  max=12.5%)
+
+greedy generation (T=0.7 top_k=40):
+  '):):),),),),),),), - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  '):):):): | | | | | | | |'
+  uncertainty trace: mean=0.018  min=0.008  max=0.031
+
+best-of-trajectory generation [ACT-respecting]  (stop='cycle', 32 tokens emitted):
+  '):):):):):):):\n    to]\n    # # # # # # # # # # # # # # # # # # # # #'
+  loops actually run: mean=3.0  (n_loops=4; ACT halts all positions early)
+  chosen-loop depth: mean=1.88
+  chosen-loop histogram (loop -> count): {1: 4, 2: 28}
+  picked below deepest-run loop: 4/32 tokens (12%)
+  emitted-loop uncertainty: mean=0.025  min=0.004  max=0.206
+  mean uncertainty by loop depth: [0.345, 0.044, 0.027]
+  -> uncertainty min at loop 2  (min at deepest-run loop -> more loops cut uncertainty (monotonic-down))
+  token[0] per-loop uncertainty: [0.562, 0.048, 0.025]
+  token[1] per-loop uncertainty: [0.847, 0.059, 0.027]
+  token[2] per-loop uncertainty: [0.806, 0.044, 0.031]
+
+================================================================================
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+--------------------------------------------------------------------------------
+prompt tokens : 15
+diagnostic    : uncertainty mean=0.191 max=0.982
+                halt distribution per loop = [0.367, 0.277, 0.356]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.049  (min=0.0%  max=7.9%)
+
+greedy generation (T=0.7 top_k=40):
+  ' R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R R\n\n\n\n\n\n\n\n\n\n\n\n'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  ' R R R R R R R R R R R R'
+  uncertainty trace: mean=0.091  min=0.014  max=0.408
+
+best-of-trajectory generation [ACT-respecting]  (stop='cycle', 32 tokens emitted):
+  '::::::::::::::::::::::::::::::::'
+  loops actually run: mean=3.0  (n_loops=4; ACT halts all positions early)
+  chosen-loop depth: mean=1.97
+  chosen-loop histogram (loop -> count): {1: 1, 2: 31}
+  picked below deepest-run loop: 1/32 tokens (3%)
+  emitted-loop uncertainty: mean=0.019  min=0.001  max=0.051
+  mean uncertainty by loop depth: [0.385, 0.035, 0.02]
+  -> uncertainty min at loop 2  (min at deepest-run loop -> more loops cut uncertainty (monotonic-down))
+  token[0] per-loop uncertainty: [0.038, 0.023, 0.078]
+  token[1] per-loop uncertainty: [0.143, 0.029, 0.009]
+  token[2] per-loop uncertainty: [0.323, 0.02, 0.005]

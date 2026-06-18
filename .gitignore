@@ -300,6 +300,10 @@ checkpoints_sft/
 checkpoints_grown/
 checkpoints_grown_v4/
 checkpoints_grown_v5/
+checkpoints_small_sft/
+checkpoints_freshrevkl/
+checkpoints_revkl_test/
+checkpoints_noise_test/
 *.pt
 *.pth
 *.bin

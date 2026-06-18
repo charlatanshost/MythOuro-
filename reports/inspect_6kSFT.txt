@@ -1,0 +1,72 @@
+loading: checkpoints_small_sft/step_0003000.pt
+device:  cuda:0
+step:    3000
+params:  396,866,931
+vocab:   49152  max_loops=4
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+
+================================================================================
+prompt: 'The recurrent depth transformer is'
+--------------------------------------------------------------------------------
+prompt tokens : 5
+[32m2026-06-14 23:11:15.074[0m | [33m[1mWARNING [0m | [36mmythouro.main[0m:[36mwarn_once[0m:[36m77[0m - [33m[1mGQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).[0m
+diagnostic    : uncertainty mean=0.424 max=0.993
+                halt distribution per loop = [0.405, 0.283, 0.312]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.468  (min=0.0%  max=8.3%)
+
+greedy generation (T=0.7 top_k=40):
+  '(((((((((((((((((((((((((((((((('
+
+confidence-aware generation  (stop='confidence', 4 tokens emitted):
+  '????'
+  uncertainty trace: mean=0.018  min=0.005  max=0.037
+
+================================================================================
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+--------------------------------------------------------------------------------
+prompt tokens : 16
+diagnostic    : uncertainty mean=0.115 max=0.928
+                halt distribution per loop = [0.413, 0.287, 0.3]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.196  (min=0.0%  max=10.0%)
+
+greedy generation (T=0.7 top_k=40):
+  '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+
+confidence-aware generation  (stop='confidence', 4 tokens emitted):
+  '\n\n\n\n'
+  uncertainty trace: mean=0.004  min=0.002  max=0.007
+
+================================================================================
+prompt: 'def fibonacci(n):'
+--------------------------------------------------------------------------------
+prompt tokens : 6
+diagnostic    : uncertainty mean=0.152 max=0.880
+                halt distribution per loop = [0.41, 0.291, 0.299]
+                halt step mean = 1.90  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.294  (min=0.0%  max=10.0%)
+
+greedy generation (T=0.7 top_k=40):
+  ' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  ' * * * * * * * * * * * *'
+  uncertainty trace: mean=0.013  min=0.003  max=0.019
+
+================================================================================
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+--------------------------------------------------------------------------------
+prompt tokens : 15
+diagnostic    : uncertainty mean=0.166 max=0.946
+                halt distribution per loop = [0.413, 0.284, 0.302]
+                halt step mean = 2.00  (0 = halted immediately, 4 = ran full depth)
+                MoE router CV=1.073  (min=0.0%  max=10.5%)
+
+greedy generation (T=0.7 top_k=40):
+  '::::::::::::::::::::::::::::::::'
+
+confidence-aware generation  (stop='cycle', 12 tokens emitted):
+  '::::::::::::'
+  uncertainty trace: mean=0.002  min=0.001  max=0.010

@@ -87,6 +87,19 @@ Approximately `n_experts_per_tok / n_experts = 6.25%` of routed expert parameter
 | `act_threshold` | `float` | `0.99` | ACT cumulative halting threshold; loop exits per-position once this is exceeded |
 | `rope_theta` | `float` | `500000.0` | RoPE base frequency (LLaMA-3 default; higher = slower frequency decay over sequence positions) |
 | `lora_rank` | `int` | `16` | Rank of the depth-wise LoRA adapter applied inside each loop iteration |
+| `recurrent_state_noise` | `float` | `0.0` | Training-only σ·RMS(h) Gaussian noise on the recurrent state each loop. Anti-collapse regulariser (replaces the accidental P0.1 noise). `0` = off. |
+| `use_sandwich_norm` | `bool` | `False` | Huginn-style extra post-sublayer RMSNorm in every TransformerBlock. Changes architecture (carried in cfg_dict); fresh runs only. **Demoted** — targets a recurrent collapse we don't have (see `review_action_plan.md`). |
+| `use_depth_aware_init` | `bool` | `False` | Takase/Huginn depth-aware init: residual-output projections (attn `wo`, FFN `down`) get std²=1/(5·h·l). Fresh runs only. |
+
+> **Diagnostic-only runtime attribute (not a cfg field):**
+> `RecurrentBlock.inference_noise` (default `False`) — when set, applies
+> `recurrent_state_noise` at *eval* too. Used by `tools/collapse_metrics.py`
+> `--inference-noise` to probe the exposure-bias spiral; not a training/cfg knob.
+>
+> **Generation degeneration (2026-06-16):** free generation of undertrained
+> checkpoints spirals into a repetition attractor (*exposure bias*), NOT a
+> hidden-state collapse — the recurrent representations stay healthy. See
+> `training_runs.md` (06-16) and `references.md`.
 
 ---
 

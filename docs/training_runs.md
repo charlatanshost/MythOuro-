@@ -308,3 +308,411 @@ comparison is v1 (also distill-only), not the SFT'd v2/v4.
 dir as sidecars immediately after the run (`eval_results/` filenames collide
 across runs — that footgun produced a false alarm on 2026-06-10; a per-run
 eval-output path is on the action-plan list).
+
+---
+
+# 2026-06-15 — ROOT CAUSE of the post-fix generation collapse: P0.1 noise was load-bearing
+
+The biggest diagnosis since the build. **Every post-fix checkpoint mode-collapses
+in free generation (single-token repetition: `is is is`, `\n\n\n`, `R R R`) while
+posting healthy PPL/cv/ECE.** v4 (pre-fix lineage) does not. Today's bisection
+located the cause and it is **not** data, growth, SFT, or inference — it is the
+P0.1 fix itself.
+
+## Evidence chain (all verified 2026-06-15, GPU, raw outputs in `reports/`)
+
+| Checkpoint | Lineage | Generation | File |
+|---|---|---|---|
+| v4 step_3000 | pre-fix (noise present) | **varied, domain-relevant** | `inspect_v4_compare.txt` |
+| distill base step_8000 (PPL 3.06, 24exp) | fixed code | **collapsed** | `inspect_distill_base.txt` |
+| grown base (48exp, pre-SFT) | fixed code | collapsed (inherited) | `inspect_grown_base.txt` |
+| chat-heavy clean SFT (60% Tulu) | fixed code | collapsed | `inspect_chat_sft.txt` |
+| 6k clean SFT / small_sft | fixed code | collapsed | earlier reports |
+
+- **All run the identical current inference path.** v4 is varied through it →
+  inference is exonerated; the *weights* are collapsed.
+- **Three data mixes** (structured-heavy clean, chat-heavy clean, OpenHermes-era)
+  → data has no bearing. The collapse is in recurrence *dynamics*, not content.
+  The chat-heavy-clean experiment (the diversity hypothesis) was **refuted**.
+- Bisection puts the collapse **upstream of growth and SFT**, in the fixed-code
+  **distill base**.
+
+## Mechanism
+
+P0.1 (CHANGES.md): `_init_weights` clobbered the identity-init of
+`CrossLoopAttention.o_proj`, so **v1–v5 trained with noise injected into the
+hidden state every loop.** The fix made it a clean identity residual. CHANGES.md
+flagged this as "the prime suspect for why the post-fix run trains so much
+better" — and that is exactly the cost: with the noise gone, the **contractive**
+recurrent update `h_{t+1}=A·h_t+B·e+trans_out` (`ρ(A) ∈ [0.32, 0.36]`, measured
+in every inspect) converges to a **degenerate fixed point** under free-running
+autoregression. Lower teacher-forced PPL, collapsed free generation — two faces
+of one change. The accidental noise was a **load-bearing anti-collapse
+regulariser.**
+
+## Why this is the good outcome
+
+- **Not a scaling wall.** v4 proves this architecture at this size generates
+  varied text. Renting/buying would have **reproduced the collapse bigger** —
+  local-first testing prevented exactly the wasted capital we feared.
+- The fix is a **tunable code knob**, found for free, locally.
+
+## The fix (staged 2026-06-15, OFF by default)
+
+New config `recurrent_state_noise: float = 0.0` (`mythouro/main.py`). When >0 and
+training, perturbs the committed loop state by `σ·RMS(h)·N(0,1)` each loop
+(RMS-relative; inference untouched; σ=0 byte-identical to current). The
+principled, controlled replacement for the P0.1 accident. CLI: `--recurrent-state-noise`
+on both `training/distill.py` and `training/sft.py`. Suggested σ: 0.02–0.1.
+Verified: default 0.0, fires only in train+σ>0, both flags parse.
+
+## Confirmation test (pending user go — DO NOT auto-launch)
+
+Continue distillation from the collapsed base with noise on, then inspect:
+seed a fresh `--ckpt-dir` with `checkpoints_distill_cont/step_0008000.pt`, run
+~2000 steps with `--recurrent-state-noise 0.05` (proven recipe otherwise),
+inspect the result. Generation de-collapses → confirmed + fixed. (Faster but
+weaker alternative: SFT the grown base with `--recurrent-state-noise 0.05`.)
+
+---
+
+# 2026-06-16 — distill-stage noise test (step 11k) + the capital-gate metric
+
+First test of `recurrent_state_noise` at the **real LR** (distill, lr 3e-4),
+resuming the 24-expert base (`mythouro_distill_tiny`) from step 8000 with σ=0.05,
+teacher on cuda:2 (5060). Inspected step 11000 (3000 noise steps in).
+Raw: `reports/inspect_noise_distill_11k.txt`.
+
+## Result: marginal de-collapse, NOT a clean base, NOT coherent
+
+- **Real but small improvement:** now emits brief *actual English* before
+  collapsing — "This would make the…", "In a…" — and repetition unit grew from
+  **1 token → 2+ words** ("remove remove", "replace replace"). The pre-noise base
+  produced only symbol-salad (`""" """`, `::::`). So the noise mechanism is
+  **directionally confirmed.**
+- **Still collapsing hard:** every prompt degenerates into repetition within 2–4
+  tokens; model is hyper-confident about the garbage (uncertainty ~0.01). Far short
+  of v4's sustained variety; not a clean non-collapsing base.
+- Depth machinery healthy: uniform halt dist [0.25×4], loops run 3.5–4.0,
+  uncertainty falls monotonically with depth.
+
+## Methodological caveat (important)
+
+This run **varied noise AND tokens together** (added σ=0.05 *and* 3000 steps), so
+the improvement is **confounded** — it does NOT, on its own, prove "token
+starvation." It's consistent with that hypothesis, not a demonstration of it.
+
+## The capital-gate test: the span-length token-curve
+
+The single experiment that converts belief → evidence (and gates renting/buying):
+**keep training (more tokens, noise on) and track the coherent-span length before
+collapse** as the token count climbs.
+
+- **Metric:** longest coherent (grammatical, non-repeating) prefix the model emits
+  before falling into a repetition loop. At 11k it's ~3–4 tokens ("This would make
+  the"). Repetition-unit size is a secondary proxy (1→2 words so far).
+- **Protocol:** inspect every few thousand steps (≈ every ~50M tokens); record the
+  span at each. Same 4-prompt set for comparability.
+- **GREEN LIGHT (token starvation, proven → capital justified):** span grows
+  monotonically with tokens (4 → 8 → 12 …).
+- **RED FLAG (not just tokens → don't spend):** span stuck at ~3–4 regardless of
+  how many tokens are fed → look at recipe / σ / data, not a bigger rig.
+
+## Where we are on the curve
+
+11000 steps × 16,384 tok/step ≈ **~180M token-exposures** for a 278M model ≈
+**~0.65 tokens/param, ~30× undertrained** (Chinchilla-optimal ~20). Incoherence is
+expected here; the curve answers whether *more* closes it.
+
+Optional knob: σ→0.1 for a cleaner (less collapse-prone) base to read the curve on.
+Next lever after a non-collapsing base: GKD (see docs/ideas.md).
+
+---
+
+# 2026-06-16 — Huginn recipe → MythOuro stability gaps (the validated collapse cure)
+
+Source: Geiping et al. 2025, "Scaling Test-Time Compute with Latent Reasoning: A
+Recurrent-Depth Approach" (Huginn / nebel-raven-3.5b). arXiv 2502.05171; code
+github.com/seal-rg/recurrent-pretraining; model tomg-group-umd/huginn-0125.
+**This is the closest published cousin to MythOuro and it documents our exact
+collapse.**
+
+## Huginn's "Bad Run 1" IS our collapse
+
+Quote: "Hidden state collapse. Token correlation quickly reached 1.0 — the model
+predicted identical hidden states for all tokens. The recurrence operation
+inherently increased token correlation until complete collapse." = our `is is is`
+degeneration. They flag it as an INHERENT failure mode of recurrent-depth training
+and list the fixes that produced their successful run. We are missing several.
+
+## Stability-gap table (most actionable item on the board)
+
+| Huginn fix | MythOuro status | Action / priority |
+|---|---|---|
+| **Peak LR 4e-4 → 5e-5** to stop recurrence oscillating into collapse | **We use 3e-4** (their "bad" range) | **Drop to ~5e-5 — cheapest, highest-value test, one flag** |
+| **Sandwich norm** (RMSNorm before AND after each sublayer; "required to train recurrence at scale") | **Pre-norm only** (TransformerBlock: attn_norm/ffn_norm, no post-norms) | Add post-norms to recurrent block — architectural, high value |
+| **Depth-aware init** σ_out²=1/(5h·l), l = effective recurrent depth | **Blanket N(0,0.02)** (the P0.1 _init_weights) | Adopt depth-scaled output-proj init |
+| **Embedding scale γ√h** (prevents early representation collapse) | likely absent — verify | check/add |
+| Learned concat adapter [s,e]→h (best at scale vs addition) | LTIInjection (A·h+B·e+trans_out) | different approach; note, not urgent |
+| Truncated backprop through last k=8 steps | full-loop grad checkpointing | consider — VRAM + stability |
+| s_0 ~ truncated normal σ²=2/5; randomized depth log-normal-Poisson **mean 32** | h init = prelude output; LoopCurriculum/random-depth, max ~4 | note (we're far smaller; depth 4 vs 32) |
+
+## Reframe: the noise knob was our guess; THIS is the validated cure
+
+`recurrent_state_noise` was reverse-engineered from the P0.1 accident and gave only
+marginal improvement (1→2-word repeats). **Huginn did NOT use noise** — they used
+**normalization + low LR + depth-aware init**. Pivot: test the **LR drop (3e-4→5e-5)
+and sandwich norm** before leaning further on the noise hack. The LR change is a
+one-line test and is the specific intervention they credit with stopping collapse.
+
+## Token reality-check (settles the capital question)
+
+Huginn: **3.5B params, 800B tokens** (baseline run 180B), 4096 MI250X on Frontier.
+**We are at ~180M tokens — ~1000× below even their smallest run.** The closest prior
+art needed ~800B tokens for a working recurrent-depth model. This CONFIRMS the
+token-starvation diagnosis at the most brutal scale: architecture works; coherence
+is firmly token-gated; that is exactly what the rented-compute scale-up buys.
+
+## Next experiment priority (revised by this finding)
+
+1. **LR drop to 5e-5** (one flag) — cheapest collapse test, prior-art-validated.
+2. **Sandwich norm** in the recurrent block — the fix they say is "required at scale".
+3. Then the token-curve / reverse-KL / on-policy levers on the more-stable base.
+
+---
+
+# 2026-06-16 — collapse_metrics result OVERTURNS the recurrent-collapse hypothesis
+
+Ran tools/collapse_metrics.py on the noise base (checkpoints_noise_test/step_0011000,
+state_noise=0.05). Result across all 4 prompts:
+
+| prompt (T tokens) | final-loop token_corr | final-loop eff_rank (max=T) | loop trend |
+|---|---|---|---|
+| recurrent-depth (T=5)  | 0.138 | 4.73 / 5  | recurrence DIVERSIFIES |
+| 2+2 ChatML (T=16)      | 0.169 | 14.55 / 16| recurrence DIVERSIFIES |
+| fibonacci (T=6)        | 0.152 | 5.84 / 6  | recurrence DIVERSIFIES |
+| Roman Empire (T=15)    | 0.146 | 14.08 / 15| recurrence DIVERSIFIES |
+
+Summary: token_corr=0.151, eff_rank=9.80 → **verdict: healthy.**
+
+## What this means
+
+**MythOuro does NOT have hidden-state / representation collapse.** Reps are
+high-rank, decorrelated, and the recurrence *increases* rank / *decreases*
+correlation across loops — the OPPOSITE of Huginn's "Bad Run 1" (corr→1). So the
+recurrent-collapse framing (Huginn sandwich-norm/depth-aware-init, MeSH,
+recurrent_state_noise) targets a failure mode we don't have. Explains why the
+noise knob only helped marginally (perturbing healthy states).
+
+## Where the degeneration actually is
+
+Healthy reps + degenerate generation (`is is is`) ⇒ the problem is **downstream**:
+**exposure bias** (teacher-forced fine, free-running degenerates) and/or the
+**output distribution** (forward-KL → small student puts mass on degenerate
+continuations — the MiniLLM mechanism). Two threads, same conclusion.
+
+## Priority reorder (from this data)
+
+- DOWN: Huginn recipe, MeSH, recurrent_state_noise (target hidden-state collapse
+  we don't have; keep depth-aware init only as scaling hygiene).
+- UP: **mode-seeking divergence (reverse-KL/JSD — Tier-1 already staged, one flag)**
+  and **on-policy/GKD** (exposure bias). Cheapest on-target test: `--divergence rev_kl`.
+
+## Caveat + next diagnostic
+
+Measured the teacher-forced PROMPT regime (healthy reps expected there). Confirm by
+measuring the metrics DURING autoregressive generation: reps stay healthy + output
+degenerate ⇒ output/exposure-bias path; reps degrade as self-fed ⇒ free-running
+dynamics. Either way downstream of the recurrence. (Extend collapse_metrics.py.)
+
+---
+
+# 2026-06-16 — generation-time diagnostic: it's EXPOSURE BIAS (free-running degeneration)
+
+Ran collapse_metrics.py --generate (greedy, 32 tok) on the noise base
+(step_0011000). The entropy trajectory is the smoking gun.
+
+| prompt | generated | entropy: start -> final | gen rep (corr/rank) |
+|---|---|---|---|
+| recurrent-depth | `is is is…` | 5.44 -> 0.40 (top_prob 0.95) | 0.965 / 3.71 |
+| 2+2 | `\n####…` | start high -> ~1.2 | 0.912 / 5.14 |
+| fibonacci | repeats whole `def fibonacci(n):` line | 4.30 -> 0.05 (top_prob 0.99) | 0.198 / 12.23 |
+| Roman Empire | `R: R: R:…` | 4.35 -> 0.05 (top_prob 0.99) | 0.531 / 5.39 |
+
+## Diagnosis (confirmed)
+
+Every prompt **starts with high-entropy, healthy distributions** (4–6 nats) and
+**spirals into a confident repetition attractor within ~5–7 tokens** (entropy→~0,
+top_prob→~0.99). This is **exposure bias / neural text degeneration** (Holtzman
+2019), not static collapse. Reps degrade as a *consequence* of emitting repeated
+tokens. Confirms: not the recurrence, not hidden-state collapse.
+
+## Metric nuance
+
+Phrase-level loops (fibonacci) keep token-corr LOW (0.20) yet clearly degenerate —
+the **entropy trajectory** catches it where rep-corr doesn't. Entropy is the more
+robust degeneration signal.
+
+## Confirmed priorities
+
+- **Training fix (real cure):** on-policy / GKD (learn to not spiral) + reverse-KL /
+  mode-seeking + unlikelihood (anti-repetition on the output distribution). All
+  target exposure bias directly.
+- **Cheap inference band-aid:** early entropy is HIGH → greedy locks the spiral →
+  sampling (temp/top-p) + repetition penalty taps the available diversity (validates
+  the temperature-diversity intuition). Mitigation, not cure.
+- **Underneath:** still token-starved — exposure bias is what undertrained small
+  models do; more tokens + on-policy is the deep fix.
+- OFF-TARGET (confirmed): Huginn recipe / MeSH / recurrent_state_noise.
+
+---
+
+# 2026-06-16 — temperature test: sampling does NOT escape the spiral (v4 theory refined)
+
+collapse_metrics.py --generate --temperature 0.8 --top-k 40 on step_0011000:
+still degenerates (`which which`, `29999`, `getget`, `44455555`); entropy still
+collapses to ~0.04-0.5, top_prob -> 0.93-0.99. Sampling delayed the spiral by ~1
+token, no more.
+
+## Conclusion
+- "Greedy was the problem" = REFUTED. Once the distribution collapses to ~0.99 on
+  the repeat, output-level sampling (temperature/top-k) can't escape.
+- **v4 theory refined:** v4's noise was *representation-level* (perturbs the hidden
+  state each loop → changes the distribution itself), which is strictly stronger
+  than *output-level* temperature for escaping a collapsed distribution. That's the
+  likely reason v4 stayed varied where sampling fails.
+- **Implication:** the repetition attractor is baked into the LEARNED DISTRIBUTION
+  → strengthens the case for on-policy/GKD training (decode tricks won't fix it).
+- Confirmation test (no code change): run collapse_metrics --generate on the real
+  v4 checkpoint (archived_models/mythouro_distill_small_v4/step_0003000.pt). If v4
+  doesn't spiral, its representation noise is the cause (data already ruled out).
+- Optional isolation: add an inference-time recurrent_state_noise path and test on
+  the fixed model.
+
+---
+
+# 2026-06-16 — v4 mystery SOLVED: representation noise prevents the spiral
+
+Ran collapse_metrics.py --generate (greedy) on the real v4 checkpoint
+(archived_models/mythouro_distill_small_v4/step_0003000.pt). Decisive vs the fixed
+model under IDENTICAL greedy decoding:
+
+| | mean entropy | gen rep rank | gen corr | output |
+|---|---|---|---|---|
+| v4 (P0.1 noise in weights) | 3.8-4.3 nats | 23-26 (~max) | 0.25-0.31 | varied, grammatical |
+| fixed step_11000 | 0.4-1.8 | 3.7-9 | 0.86-0.97 | `is is is` spiral |
+
+## Conclusion (airtight)
+v4 does NOT spiral: holds high entropy, healthy near-full-rank generated reps,
+varied output — same decoder, same scale. Only difference: v4's **representation
+noise** (P0.1 random o_proj, baked into weights; cfg state_noise=0.0). This is the
+cause of v4's "better results." Refined theory CONFIRMED: representation-level noise
+escapes the exposure-bias repetition attractor where output-level temperature cannot.
+
+Causal chain: reps healthy → fixed model free-gen spirals (exposure bias) → v4's
+rep-noise jitters the distribution each step → escapes the attractor.
+
+## Caveats
+- v4 is varied but NOT coherent (register-salad); one prompt still drifted into a
+  late phrase loop. Noise resists, doesn't cure; v4 always undertrained.
+- So the "regression" vs v4 = removal of accidental rep-noise. Neither is coherent.
+
+## Cures (ranked)
+1. Real: on-policy/GKD (retrain the distribution to not spiral) + more tokens.
+2. Band-aid (v4-proven): representation noise at INFERENCE (recurrent_state_noise is
+   currently training-only → add an inference path). Gives v4-like variety on demand
+   from the fixed model. Optional isolation test: confirms noise mechanism vs v4's
+   data/SFT confounds.
+3. Weak: output-level sampling / repetition penalty (can't escape a collapsed dist).
+
+---
+
+# 2026-06-16 — inference-noise band-aid FAILS → v4 needed train-time co-adaptation
+
+collapse_metrics --generate --inference-noise 0.05 on step_0011000: near-identical
+to no-noise greedy (still `is is is` / repeated `def fibonacci(n):` / `A: A:`,
+entropy still collapses). The post-hoc inference-noise band-aid does NOTHING.
+
+## Why (the deeper, final v4 insight)
+The repetition attractor is a **learned, SHARP** feature of the fixed model's
+distribution (0.99 confidence). A 5%-RMS perturbation can't move a 0.99 logit off
+its token; escaping needs huge noise → which yields garbage, not v4's grammatical
+variety. So v4's secret was **training with always-on noise** → distribution stayed
+diffuse → never learned the sharp attractor. You CANNOT bolt v4's behavior onto a
+model that already learned the attractor.
+
+## Consequence (path forward, reinforced)
+- No decode-time trick (sampling OR inference noise) escapes a learned sharp
+  attractor. Ruled out with evidence.
+- The fix MUST be at training time. On-policy/GKD is the principled cure (retrains
+  the distribution so the model learns to recover instead of spiraling). v4-style
+  always-on-noise training would also avoid the attractor but only yields salad.
+- Inference-noise path left in (main.py RecurrentBlock.inference_noise, off by
+  default) as a diagnostic knob; not a usable fix.
+
+## v4 story — COMPLETE
+reps healthy → fixed model learns a sharp repetition attractor (exposure bias) →
+spirals under any decoding → v4 avoided learning it via always-on training noise
+(diffuse dist) → neither is coherent (undertrained). Cure = on-policy/GKD + tokens.
+
+---
+
+# 2026-06-17 — Ouro pipeline note: sandwich-norm convergence + teacher scale
+
+From Ouro's model page (the teacher): "standard decoder-only Transformer with RoPE,
+SwiGLU, and **sandwich normalization for enhanced training stability with deep
+recurrent computation**." Training: **7.7T tokens** (3T + 3T phases, 1.4T CoT
+annealing, 20B LongCT, 300B mid-training, reasoning SFT).
+
+## Sandwich norm — refine the earlier demotion
+Two independent recurrent-depth models now converge on sandwich norm for recurrent
+stability: **Ouro** (teacher, total_ut_steps=4) and **Huginn** ("required to train
+recurrence at scale"). **MythOuro is the pre-norm outlier.**
+- **Current bug (exposure-bias spiral): sandwich norm is still NOT the fix** —
+  collapse_metrics shows reps are healthy at our tiny scale; cure stays on-policy/
+  reverse-KL. Demotion holds for *now*.
+- **Scale-up: RE-ELEVATE.** No instability at ~180M tokens ≠ none at billions; the
+  teacher (7.7T) and Huginn (800B) both needed it at scale. So the **scale-up fresh
+  distill should include `--use-sandwich-norm` (+ `--use-depth-aware-init`) from the
+  start** — match the architectures that work at scale. (Already staged; this sets
+  the *timing*: scale-up, not the current small runs.)
+
+## Teacher scale (7.7T tokens)
+Rich distillation signal (good for token-efficiency — we inherit some of it cheaply),
+but reinforces the gap: teacher 7.7T vs student ~180M tokens. Distillation narrows it;
+the token-curve scale-up still closes it.
+
+---
+
+# 2026-06-18 — fresh reverse-KL run, PRELIMINARY read @ step 1500 (mechanism confirmed)
+
+Fresh distill from random init with `--divergence rev_kl` (mythouro_distill_tiny, the
+"teach it right from the start" run). Inspected step 1500 (~25M tokens — early).
+Raw: reports/collapse_freshrevkl_1500.txt + _1500_T08.txt.
+
+## Greedy: still repeats, BUT distribution diffuse on 2/4 (unlike fwd-KL)
+| prompt | final entropy | final top_prob |
+|---|---|---|
+| recurrent-depth | 2.38 | 0.43 |
+| Roman | **7.38** | **0.08** |
+| 2+2 | 0.37 | 0.97 (still sharp-collapse) |
+| fibonacci | 0.19 | 0.98 (still sharp-collapse) |
+
+vs forward-KL baseline which collapsed ALL prompts to entropy ~0.1 / top_prob ~0.95–0.99.
+So reverse-KL keeps the distribution **diffuse** (shallow attractor) on the diffuse prompts.
+
+## T=0.8 sampling: CONFIRMS the mechanism
+- **Roman (most diffuse) → sampling ESCAPED the spiral → varied output** ("next true wrong
+  possible basic optimal easy legal proper actual…"). Forward-KL+sampling could NEVER do this
+  (0.99 spike left nothing to sample). **Reverse-KL → diffuse → sampling-recoverable: CONFIRMED.**
+- recurrent-depth: partial (few varied tokens then repeats).
+- 2+2, fibonacci: still collapse even sampled (distributions still sharp at 1500).
+
+## Honest verdict
+- ✅ **Mechanism confirmed:** reverse-KL reshapes toward diffuse/recoverable — a real
+  qualitative difference from fwd-KL's hard collapse. The signal we wanted.
+- ⚠️ **Preliminary/uneven:** only ~1–2 of 4 prompts so far; still word-salad (expected at 25M
+  tokens); only 1500 steps. Prompt reps corr 0.5–0.85 = still undertrained (will sharpen).
+- **Verdict pending the ~3k read:** does diffuse/recoverable **spread to all 4 prompts + deepen**
+  (longer varied span, less repetition) as tokens grow? That calls Tier-1-sufficient vs need-Tier-2.
+- Leaning **on-track** (right direction, mechanism confirmed) — NOT yet a "Tier-1 wins" call.

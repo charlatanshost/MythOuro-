@@ -19,6 +19,17 @@ in this fork beyond that foundation, and no responsibility for its direction or
 current state. The teacher (`ByteDance/Ouro-2.6B-Thinking`) is Apache 2.0. See
 the README "Acknowledgements" and "Licensing & data provenance" sections.
 
+**Full research credits:** every paper, dataset, and tool that informed the design
+is catalogued in `docs/references.md` (with how each was used).
+
+**Current status (2026-06-17):** the generation-degeneration investigation is
+complete — it is **exposure bias** (a learned repetition attractor), **not**
+recurrent/hidden-state collapse (reps are healthy; verified with
+`tools/collapse_metrics.py`). v4's old "edge" was train-time noise co-adaptation,
+not capability. Cure = **on-policy/GKD + tokens**; decode/inference-noise band-aids
+ruled out. Full chain in `docs/training_runs.md` (06-16 entries); prioritised
+backlog in `docs/ideas.md`.
+
 ---
 
 ## North star — what we are actually building (2026-06-12)

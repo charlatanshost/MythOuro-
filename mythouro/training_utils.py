@@ -1327,6 +1327,8 @@ def distillation_loss(
     temperature: float = 2.0,
     alpha: float = 0.5,
     ignore_index: int = -100,
+    divergence: str = "fwd_kl",
+    jsd_beta: float = 0.5,
 ) -> "tuple[torch.Tensor, dict]":
     """
     Hinton-style knowledge distillation with an optional gold-label CE blend.
@@ -1374,33 +1376,58 @@ def distillation_loss(
     if T <= 0:
         raise ValueError(f"temperature must be > 0; got {T}")
 
-    # Compute in fp32 to keep KL stable under bf16/fp16 training.
+    # Compute in fp32 to keep the divergence stable under bf16/fp16 training.
+    V = student_logits.shape[-1]
     s_log_probs = F.log_softmax(student_logits.float() / T, dim=-1)
     with torch.no_grad():
-        t_probs = F.softmax(teacher_logits.float() / T, dim=-1)
+        t_log_probs = F.log_softmax(teacher_logits.float() / T, dim=-1)
+        t_probs = t_log_probs.exp()
 
-    # `F.kl_div` expects log-probs for the FIRST argument and probs for the
-    # SECOND, computing Σ second · (log second − first).
-    V = student_logits.shape[-1]
-    kl_rows = F.kl_div(
-        s_log_probs.view(-1, V),
-        t_probs.view(-1, V),
-        reduction="none",
-    ).sum(dim=-1)                                       # (B·T,) per-position KL
+    # Per-position divergence between teacher p_T and student p_S:
+    #   fwd_kl = KL(p_T ‖ p_S)  — Hinton, mode-COVERING (the original default).
+    #            Identical to the previous F.kl_div(s_log_probs, t_probs).
+    #   rev_kl = KL(p_S ‖ p_T)  — MiniLLM, mode-SEEKING: concentrates on the
+    #            teacher's dominant modes, puts little mass on its "void
+    #            regions" → less degenerate generation for a small student
+    #            distilling a much larger teacher. arXiv 2306.08543.
+    #   jsd(β) = β·KL(p_T‖M) + (1−β)·KL(p_S‖M),  M = β·p_T + (1−β)·p_S — the
+    #            interpolation (β→0 ≈ fwd, β→1 ≈ rev). GKD, arXiv 2306.13649.
+    # rev_kl / jsd flow gradient through p_S in BOTH the probs and log-probs;
+    # fwd_kl only needs the log-probs (teacher side is detached above).
+    if divergence == "fwd_kl":
+        div_rows = (t_probs * (t_log_probs - s_log_probs)).sum(dim=-1)
+    elif divergence == "rev_kl":
+        s_probs = s_log_probs.exp()
+        div_rows = (s_probs * (s_log_probs - t_log_probs)).sum(dim=-1)
+    elif divergence == "jsd":
+        b = float(jsd_beta)
+        if not 0.0 <= b <= 1.0:
+            raise ValueError(f"jsd_beta must be in [0, 1]; got {b}")
+        s_probs = s_log_probs.exp()
+        m_log = (b * t_probs + (1.0 - b) * s_probs).clamp_min(1e-9).log()
+        div_rows = (
+            b * (t_probs * (t_log_probs - m_log)).sum(dim=-1)
+            + (1.0 - b) * (s_probs * (s_log_probs - m_log)).sum(dim=-1)
+        )
+    else:
+        raise ValueError(
+            f"divergence must be 'fwd_kl', 'rev_kl', or 'jsd'; got {divergence!r}"
+        )
+    div_rows = div_rows.view(-1)                        # (B·T,) per-position
 
-    # P1.9: the hard CE respects ignore_index but the soft KL previously
+    # P1.9: the hard CE respects ignore_index but the soft term previously
     # averaged over ALL positions — harmless on packed distillation data (no
     # padding) but a silent footgun for blended phases with padded/masked rows.
-    # Mask the KL to the same positions the CE trains on.
+    # Mask the divergence to the same positions the CE trains on.
     if targets is not None:
         valid = (targets.view(-1) != ignore_index)
         n_valid = int(valid.sum())
         if n_valid == 0:
-            soft = kl_rows.sum() * 0.0                  # keep graph, zero loss
+            soft = div_rows.sum() * 0.0                 # keep graph, zero loss
         else:
-            soft = kl_rows[valid].mean() * (T * T)
+            soft = div_rows[valid].mean() * (T * T)
     else:
-        soft = kl_rows.mean() * (T * T)
+        soft = div_rows.mean() * (T * T)
 
     if targets is None:
         return alpha * soft, {"soft": float(soft.item()), "hard": 0.0}

@@ -52,6 +52,21 @@ python -m training.distill --trust-remote-code --teacher-device cuda:2 --student
 
 ---
 
+## Generation-degeneration cure test (next away-run)
+
+Diagnosis: exposure bias (see `training_runs.md` 06-16). Cheapest on-target test —
+**mode-seeking (reverse-KL) distillation**, continued from the 24-expert base:
+```powershell
+New-Item -ItemType Directory -Force checkpoints_revkl_test
+Copy-Item checkpoints_distill_cont/step_0008000.pt checkpoints_revkl_test/step_0008000.pt
+python -m training.distill --student-variant mythouro_distill_tiny --student-device cuda:0 --teacher-device cuda:2 --seq-len 1024 --micro-batch 1 --grad-accum 16 --total-steps 14000 --warmup-steps 500 --lr 3e-4 --depth-reg-coeff 0.3 --divergence rev_kl --trust-remote-code --ckpt-dir checkpoints_revkl_test
+```
+Judge it: `python tools/collapse_metrics.py -c checkpoints_revkl_test/step_0014000.pt --device cuda:0 --generate`.
+Tier-2 (full on-policy + teacher-mix) is gated on this result. (Note: distill uses
+`--student-device`, not `--device`.)
+
+---
+
 ## Compound commands (chained with `;`)
 
 `cmd_a ; cmd_b` runs b after a finishes (even if a errors) — for overnights.
@@ -90,6 +105,21 @@ python -m tools.per_loop_calibration --checkpoint <path.pt> --max-samples 20
 python -m tools.bench_step --variant mythouro_distill_tiny --device cuda:0
 ```
 
+### Collapse / degeneration diagnostics (2026-06-16)
+Quantify generation degeneration (per-loop token-correlation, effective-rank,
+output entropy). Fast, forward-only — runnable in a couple minutes at home.
+```bash
+# static: reps healthy if eff_rank high / token_corr low
+python tools/collapse_metrics.py -c <path.pt> --device cuda:0
+# generation-time: locate the degeneration (reps vs output distribution)
+python tools/collapse_metrics.py -c <path.pt> --device cuda:0 --generate
+# sampling / inference-noise variants (both shown NOT to escape the spiral):
+python tools/collapse_metrics.py -c <path.pt> --device cuda:0 --generate --temperature 0.8 --top-k 40
+python tools/collapse_metrics.py -c <path.pt> --device cuda:0 --generate --inference-noise 0.1
+```
+Verdict (06-16): degeneration is **exposure bias** (a learned repetition
+attractor), NOT recurrent collapse. Full chain in `training_runs.md`.
+
 ---
 
 ## Key flags reference
@@ -111,7 +141,13 @@ python -m tools.bench_step --variant mythouro_distill_tiny --device cuda:0
 | `--eval` / `--eval-every 1000` | Run eval harness at checkpoints, frequency |
 | `--data-mix clean` | Clean SFT mix (default; no OpenAI provenance) |
 | `--data-mix legacy` | v2/v4-era OpenHermes mix (reproduction only) |
+| `--data-mix clean_chat` | Chat-heavy clean mix (Tulu-dominant, low-structured) |
 | `--no-contamination-filter` | Disable GSM8K/ARC 13-gram guard (on by default for clean) |
+| `--divergence {fwd_kl,rev_kl,jsd}` | Distill divergence; rev_kl/jsd = mode-seeking (anti-degeneration). Default fwd_kl = prior behaviour |
+| `--jsd-beta 0.5` | JSD interpolation weight when `--divergence jsd` (β→0≈fwd, β→1≈rev) |
+| `--recurrent-state-noise 0.05` | Training-time hidden-state noise regulariser (default 0 = off) |
+| `--use-sandwich-norm` | Huginn sandwich norm — fresh runs only (DEMOTED; see review_action_plan) |
+| `--use-depth-aware-init` | Huginn/Takase depth-aware init — fresh runs only |
 | `--use-8bit-adam` | Quantize optimizer state to 8-bit (bitsandbytes) — see VRAM playbook |
 | `--ckpt-dir <dir>` | Where to save checkpoints |
 

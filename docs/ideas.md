@@ -1,0 +1,246 @@
+# Ideas backlog
+
+Solo project (owner + Claude). This file exists so we can **collect ideas without
+thrashing** — every promising idea gets logged here and waits its turn, instead of
+interrupting the run in flight. Collecting ≠ implementing.
+
+## The main thread (protect this)
+
+The spine of the work, in order. Ideas *serve* this; they don't replace it.
+
+1. **Fix the degeneration** — UPDATED 2026-06-16: it is **NOT hidden-state collapse**
+   (collapse_metrics: reps healthy / high-rank / recurrence *diversifies* — see
+   training_runs.md 06-16). It's **downstream**: exposure bias + forward-KL output
+   degeneration (the MiniLLM mechanism). Cheapest on-target test: **`--divergence rev_kl`**
+   (Tier-1, staged, one flag); then **on-policy/GKD**. *Demoted:* Huginn recipe / MeSH /
+   recurrent_state_noise (target a collapse we don't have). Confirm regime with
+   generation-time collapse_metrics.
+2. **Token-curve test** — push 5–10× tokens, inspect every ~50M tokens.
+   *Does capability keep growing with tokens?*
+3. That curve is the **go/no-go for capital** (rent A100 / buy a rig) and the
+   **proof artifact** for attracting a collaborator or funding.
+
+## Triage rubric (apply before implementing ANY idea)
+
+An idea moves from backlog → active only if it clears all three:
+
+1. **Does it hit a current bottleneck?** (tokens, or generation collapse) — not a
+   tangential nicety.
+2. **Cheap to test locally?** — can we get signal on the current rig without capital.
+3. **Reversible?** — can we back it out cleanly if it doesn't help.
+
+Three yeses → do it. Otherwise → it stays in the backlog with a note on what would
+change the answer. (Example: "grow the model" failed #1 — wrong lever while
+token-starved. The noise knob passed all three.)
+
+## Backlog
+
+| Idea | Targets | Local test cost | Reversible | Status | Notes |
+|------|---------|-----------------|-----------|--------|-------|
+| **Sandwich norm + depth-aware init** (Huginn recipe; corroborated by Ouro) | **Scale-up stability** (NOT the current bug) | staged code, config-gated | Yes (default off) | **STAGED, RE-SCOPED 2026-06-17** — `--use-sandwich-norm --use-depth-aware-init`. NOT for the current exposure-bias spiral (reps healthy → demoted there). **Re-elevated for the SCALE-UP fresh distill.** | Ouro (teacher) + Huginn BOTH use sandwich norm for recurrent stability at scale; we're the pre-norm outlier. Adopt when scaling, not now. training_runs.md 06-17. |
+| **recurrent_state_noise** (per-loop σ·RMS(h) anti-collapse regulariser) | Collapse | Low (knob, σ=0 = off) | Yes | Tested — marginal (1→2-word repeats). Our reverse-engineered guess; Huginn used norm/LR/init instead | The P0.1-noise replacement. May be redundant with the Huginn recipe. See training_runs.md 06-15/06-16. |
+| **On-policy mode-seeking distillation (GKD + MiniLLM)** — student generates, teacher scores, reverse-KL/JSD divergence, teacher-mixed sampling | **Both** — exposure bias (collapse) + token efficiency | Medium–High (RLHF-like: student samples each on-policy step) | Yes (λ=0 + fwd-KL = current behaviour) | **Tier-1 IMPLEMENTED** (`--divergence {fwd_kl,rev_kl,jsd}` + `--jsd-beta`, verified 2026-06-16); Tier-2 (on-policy sampling + `--teacher-mix-alpha` + length-norm) still to stage | Highest-fit lever. Forward-KL (our current loss) may *cause* collapse in our small-student/big-teacher case → Tier-1 tests that cheaply on fixed data. MiniLLM's **teacher-mixed sampling (α≈0.2) dissolves the "needs a clean base" catch** for Tier-2. |
+| **Multi-Token Prediction (MTP)** (DeepSeek-V3: aux multi-token heads in training, discarded at inference) | Token efficiency (extra training signal) | Medium (add heads + a distill run) | Yes (aux objective, removable) | Backlog | Fits our DeepSeek-V3 routing stack. Enhancement, *not* a collapse fix. From the NTP-alternatives survey (arXiv 2509.24435). |
+| **Data quality (phi-style "textbooks")** (curate higher-quality distill corpus) | Coherence per token | Medium (corpus work) | Yes | Backlog | Small models get coherent on curated data at fewer tokens. Stay OpenAI-free (the clean-data constraint). |
+| **Unlikelihood training** (Welleck et al. 2019) — loss term penalising high prob on repeated tokens | Collapse | Low (aux loss term) | Yes | Backlog — strong cheap lever | Surgical anti-repetition; could layer onto the current run. |
+| **Teacher-generated synthetic data** — use Ouro to generate clean training tokens | **Token supply** (#1 bottleneck) | Medium (gen + curate) | Yes | Backlog — strong | Attacks token *supply*, not just efficiency; fully OpenAI-free. Pairs with phi-style quality. |
+| **Sequence-level KD** (Kim & Rush 2016) — teacher generates sequences offline, student trains on them | Both (cheap exposure-bias help) | Low–Med (offline gen, no per-step sampling) | Yes | Backlog — Tier-2 stepping-stone | Cheaper precursor to full on-policy; no RL loop. |
+
+## Parked (failed triage — recorded so we don't re-litigate)
+
+| Idea | Why parked | What would un-park it |
+|------|-----------|----------------------|
+| Grow the model (more params via 8-bit Adam) | Fails #1 — token-starved (~170× undertrained); bigger model = hungrier, worse | Token-curve shows we've reached compute-optimal at current size |
+| Pivot to diffusion / LCM / non-transformer (from the NTP survey) | Fails #2/#3 — frontier big-lab work; throws away working stack + teacher | A funded team + compute; not a solo move |
+| Pause/think tokens (Goyal et al., arXiv 2310.02226) — extra *width* scratchpad before output | **Already covered** — we do adaptive "think before you speak" via recurrent *depth* + ACT (stronger: adaptive vs fixed-K). Combining width+depth is tangential complexity | A task that needs working-*space* (more hidden vectors), not just iteration-*time* |
+| T-FREE tokenizer-free LLM (Deiseroth et al., arXiv 2406.19223) — hash/trigram sparse embeddings | **Breaks distillation** — no shared vocab → can't KL against Ouro's ~49k-token output space → forces train-from-scratch (= abandons the teacher, our token-efficiency lever). Tempting embedding savings (~⅓ of a 278M model) + 3× micro-batch don't outweigh losing the teacher | A *from-scratch* foundation-model project at real scale (not MythOuro) |
+| Coconut / Chain-of-Continuous-Thought (Hao et al., arXiv 2412.06769) — latent reasoning ACROSS positions (feed hidden state back as next input) | **Right family, wrong phase.** Orthogonal axis to ours (across-position vs our across-depth latent reasoning) — *combining them is an exciting far-future direction* (cf. Huginn's "warm-start recurrent state from prev token"). But Coconut's Stage 0 needs a base that already does coherent *language* CoT; we're ~1000× tokens away from coherent text. Doesn't touch collapse/tokens; needs CoT data + n+1 sequential passes. | A coherent, CoT-capable base exists → then test depth×position latent reasoning |
+| **Parallel looped paths** (owner's original idea) — N independent recurrent paths on the same input, per-token confidence arbitration via the uncertainty head | **Reframed (06-16): a quality / parallel-compute feature, NOT a collapse fix or a speedup.** Real systems insight: recurrent depth is *sequential* (can't parallelize across depth) → independent paths fill otherwise-idle parallel hardware at ~constant latency, arbitrated by the existing best-of-trajectory/uncertainty machinery. Quality-for-compute trade. **Crux: paths must be *deliberately diverse* (injection schedule / routing temp / loop budget / seed)** or they collapse to correlated copies and buy nothing. Plausibly-original combination for recurrent-depth. NOT for training throughput (2× compute = slower training). | A **coherent base** exists → test-time-compute / calibration lever. **Design note written: docs/parallel_loops.md** (incl. the saturate-stranded-decode-compute rationale + honest prior-art). |
+
+**Architectural validation note:** three independent lines — Ouro (recurrent-depth
+teacher), the NTP survey's "latent reasoning / internal loop" category, and pause
+tokens — all converge on *adaptive compute per token before output*. MythOuro is a
+sophisticated instance (adaptive depth via ACT). Good evidence the architecture bet
+is sound; useful for the "is it worth it" case.
+
+---
+
+## Reference shelf (resources for later phases, not active ideas)
+
+| Resource | Relevant when | Notes |
+|----------|---------------|-------|
+| [Awesome-Collection-Token-Reduction](https://github.com/ZLKong/Awesome-Collection-Token-Reduction) | **Deployment / throughput phase** (after we have a coherent model) | "Token *reduction*" = fewer tokens for *compute* efficiency (pruning/merging, KV-cache & prompt compression), mostly inference & vision/VLM. NOT "token *efficiency*" (capability-per-training-token = our bottleneck, see GKD). The KV-compression slice is largely already covered by our **MLA**. |
+| **Huginn (Geiping 2025, arXiv 2502.05171; code seal-rg/recurrent-pretraining; model tomg-group-umd/huginn-0125)** | **MINED → see training_runs.md 06-16** | Closest cousin to MythOuro. Documents our exact collapse + the cure (LR↓, sandwich norm, depth-aware init). Token reality-check: 3.5B/800B tokens. Promoted to a backlog item (Huginn stability recipe). |
+| **linear_cross_entropy_loss** (Geiping, github.com/JonasGeiping/linear_cross_entropy_loss) | Throughput/VRAM phase | Fused head+CE, avoids materialising logits → bigger batch. **Caveat:** distill KL needs full logits → useful for hard-CE/SFT terms, not the distill soft-loss. |
+| **flash-attention** (Dao-AILab) | **Blocked now** | FA2 unsupported on cuda_cc (12,0) = Blackwell 5070; we're on SDPA fallback. Watch for FA3/Blackwell support. |
+| **ml-engineering** (Stas Bekman) | Scale-up phase | Practical training-at-scale reference (throughput, multi-GPU, debugging). |
+| **bpeasy** (gautierdag) — fast BPE training | **Future Rust port only** | Can't swap tokenizers while distilling from Ouro (vocab must match — same constraint as T-FREE). Post-distill / from-scratch tool. |
+| DistiLLM-2 (Ko et al. 2024–25) — skew-KL + adaptive scheduling | When building Tier-2 on-policy | A refinement *of* the on-policy mode-seeking lever (divergence/scheduling). |
+| Neural text degeneration (Holtzman 2019) + contrastive decoding | Deployment / decode-time | Decode-side anti-repetition; we already have confidence/cycle stops. |
+| Deep Equilibrium Models stability (Bai et al. 2019) | Background | Theory for why our contractive recurrence (ρ(A)<1) converges to a fixed point — informs the noise/ρ levers. |
+| **Connected Papers** (connectedpapers.com) — citation-neighborhood discovery | Scouting | Seed from Huginn / GKD / MiniLLM / MoR to surface the recurrent-depth & distillation-efficiency clusters. |
+| **Looped-model scouting cluster** (to mine for transferable fragments) | Ongoing | **Mixture-of-Recursions (2025)** — recursion + routing for adaptive depth (closest to our ACT+MoE; top pick); **Relaxed Recursive Transformers** (Bae, 2410.20672) — recursion + LoRA-per-loop (we do this) + **Continuous Depth-wise Batching** (2–3× decode throughput; ties to parallel_loops saturation); **CoTFormer** — adaptive per-token depth; **Universal Transformers** (Dehghani 2018) + **PonderNet** (Banino 2021) — ACT/halt foundations; **Saunshi 2025** — looped depth-extrapolation theory; **ETD** (2510.07358) — loop reasoning-critical subset added at *mid-training*, +28% GSM8K @1B; **Loop-NN** (2409.14199) — basic looped refinement (superseded by the above). |
+| **MeSH — Memory-as-State-Highways for Recursive Transformers** (2510.07739, ICLR 2026) | **Collapse-relevant — deep-dive candidate** | Names our two failure modes: *uniform computation across iterations* (→ contractive collapse) and *single overloaded hidden state*. Fix: **external memory buffer + per-iteration routing for specialization**. Structural complement to the Huginn recipe (norm/LR/init). Matches bigger non-recursive @1.4B with 33% fewer params; code available. We have partial versions (loop-index embed + LoRA-per-loop). |
+| Throughput levers for distillation (the "speed up training" thread) | Now-ish | Linear-CE (head+CE fuse; helps hard-CE not distill-KL); MTP (backlog); seq-level KD (backlog); **sequence packing** — distill data appears already packed (P1.9 "packed distillation data" note) so likely DONE; num_workers dataloader A/B (queued). |
+| DistiLLM-2 (contrastive / skew-KL) | When building Tier-2 on-policy | Already noted above — refinement of the on-policy mode-seeking lever. |
+
+---
+
+## Deep dive: On-policy distillation / GKD (assessed 2026-06-15)
+
+Source: Agarwal et al., *On-Policy Distillation of Language Models* (GKD), ICLR
+2024, arXiv 2306.13649. Surfaced via the NTP-alternatives survey (2509.24435).
+
+### What it is
+Standard distillation (what we do) trains the student on a **fixed corpus** with
+KL to the teacher — but the student is then evaluated on **its own** generations,
+which it never trained on. That train/inference mismatch is **exposure bias**, and
+it is *exactly* our collapse signature (great teacher-forced loss, degenerate free
+generation). GKD closes the gap: with probability **λ**, the student **generates a
+sequence itself**, and the teacher **scores those self-generated tokens**; with
+prob 1−λ, use the fixed corpus. Loss:
+
+> `L = (1−λ)·E_(x,y)~data[ D(p_T ‖ p_S)(y|x) ] + λ·E_x, y~p_S[ D(p_T ‖ p_S)(y|x) ]`
+
+Key knobs:
+- **λ** (on-policy fraction): 0 = standard KD (us today), 1 = fully on-policy.
+- **Divergence D**: forward KL (mode-covering, our current Hinton KL), reverse KL
+  (mode-**seeking** — chases the teacher's high-prob tokens, *avoids low-quality
+  generations*), or **JSD(β)** interpolating between them (paper uses β=0.1/0.5/0.9).
+- Do **not** backprop through the sampling — treat the student's samples as fixed
+  context, only differentiate the divergence. Stable and simple.
+
+### Why it's the highest-fit idea we have
+- **Attacks our collapse at the root, not the symptom.** The `recurrent_state_noise`
+  knob mechanically perturbs the fixed point; GKD removes the *cause* (the model
+  trains on the distribution it actually produces). Complementary, not competing.
+- **Reverse-KL / JSD are mode-seeking** → less mass on garbage tokens → less
+  repetition/hallucination. Right medicine for a collapse-prone model.
+- **Token-efficient — our #1 bottleneck.** Paper: *on-policy GKD on 5% of the data
+  beats supervised KD on the full dataset.* Relative gains 1.7–2.1×; T5-base GSM8K
+  **10.2% → 20.5%**. That is capability-per-token, exactly what we're starved for.
+- **Fits our stack.** We already run teacher+student with a KL term in
+  `training/distill.py`. GKD = (a) add a divergence option (reverse-KL / JSD(β)),
+  (b) sometimes sample a continuation from the student, (c) score it with the
+  teacher, (d) λ to mix. A generalization of what exists, not a rewrite.
+
+### The catch (sequencing) and the cost
+- **Needs a base that already generates *adequately*.** GKD assumes student samples
+  are usable; the paper starts from SFT'd students, never random/collapsed. **Our
+  current base samples pure garbage** (`is is is`), so fully-on-policy on it would
+  just train on degenerate strings. → **Do the noise fix FIRST** (get a
+  non-collapsing base), *then* GKD. Or bootstrap with λ≈0.25 (mostly fixed data +
+  a little on-policy) and ramp λ up as the student improves.
+- **Sampling overhead ~1.8–2.2×** in the paper (vanilla T5). Ours is **higher** —
+  the student is recurrent-depth, so each sampled token runs the loop + ACT + KV
+  cache, costlier than a plain forward. Real cost on a token-starved local rig, but
+  the token-efficiency win (5% ≈ full) should more than pay for it.
+- **Best divergence is task-dependent** (paper's words) → try JSD(0.5)/(0.9) and
+  reverse-KL; tunable.
+
+### Triage verdict
+Passes all three (hits *both* bottlenecks; local-testable; reversible) — but with a
+**hard dependency: noise fix → non-collapsing base → GKD.** This is the natural
+**next big lever after the noise test**, and plausibly the thing that moves us from
+"varied register-salad" toward coherence by training on-policy under teacher
+correction. Implementation sketch: add `--divergence {fwd_kl,rev_kl,jsd}`,
+`--jsd-beta`, `--onpolicy-lambda`, `--onpolicy-temp` to `distill.py`; reuse the
+existing teacher-forward + KL path; gate sampling behind λ.
+
+---
+
+## Deep dive: MiniLLM / reverse-KL — UNIFIES with GKD (assessed 2026-06-16)
+
+Source: Gu et al., *Knowledge Distillation of Large Language Models* (MiniLLM),
+arXiv 2306.08543.
+
+**Correction to earlier note:** MiniLLM is NOT a cheap drop-in loss swap. It is
+**on-policy + policy-gradient** (student samples each step, PPO-style clipping +
+variance fixes) — *same cost class as GKD*. The value is the **insight**, and it
+**merges with the GKD plan** rather than being a separate, cheaper option.
+
+### The core insight (directly implicates our setup)
+**Mode-seeking (reverse KL) > mode-covering (forward KL)** for distillation,
+*especially* small-student / big-teacher. Forward KL makes the student *cover* all
+teacher modes; when it can't represent them, it dumps mass into "void regions" →
+degenerate text. **We are a 278M student distilling a 2.6B teacher, currently on
+forward KL** → forward KL may be *actively contributing to our collapse*, not just
+failing to stop it. New suspect, and a reason to switch divergence.
+
+### Three takeaways (folding into the GKD lever)
+1. **Reverse-KL / JSD divergence** — the mode-seeking anti-collapse + token-efficiency
+   win. Evidence: exposure-bias error *plateaus* (their Fig 6, vs accumulating for
+   fwd-KL/SeqKD), ECE improves toward teacher, and **diversity preserved** (99%
+   distinct-4-grams — refutes "mode-seeking kills variety").
+2. **Teacher-mixed sampling (α=0.2)**: sample from `α·teacher + (1−α)·student`.
+   **This dissolves GKD's "needs a non-collapsed base" blocker** — the teacher term
+   pulls samples toward sense even on a collapse-prone student, so on-policy can
+   start **on a base like our current one**. Also prevents reward-hacking (student
+   gaming the teacher via repeated phrases). High value.
+3. **Length normalization** — removes short-sequence bias.
+
+### Results / scale / cost
+- 1–6% ROUGE-L over SeqKD across **GPT-2 120M–760M, OPT 1.3–6.7B, LLaMA 7B** (our
+  size range covered); larger gains OOD and on longer responses (≥6 tokens).
+- **Cost: RLHF-like** (sample every step + teacher scoring) — same as GKD, not cheap.
+- Needs white-box teacher (we have it — Ouro).
+- Limitation: gains minimal on very short outputs (small output space → fwd≈rev KL).
+
+### Net
+**MiniLLM + GKD = one lever: "on-policy mode-seeking distillation"** = GKD framework
++ reverse-KL/JSD divergence + teacher-mixed sampling (α≈0.2) + length-norm. The
+teacher-mixed sampling is the unlock that lets us try it *before* a perfectly clean
+base. Updated impl sketch for `distill.py`: `--divergence {fwd_kl,rev_kl,jsd}`,
+`--jsd-beta`, `--onpolicy-lambda`, `--teacher-mix-alpha 0.2`, `--length-norm`,
+`--onpolicy-temp`; reuse teacher-forward path; gate sampling behind λ.
+
+---
+
+## Deep dive: MeSH (Memory-as-State-Highways) — collapse-relevant (assessed 2026-06-16)
+
+Source: Yu et al., "MeSH: Memory-as-State-Highways for Recursive Transformers,"
+arXiv 2510.07739, ICLR 2026. Code available. Pythia 160M–1.4B, 250B tokens.
+
+### Mechanism
+Replaces the single overloaded recurrent state with **external memory + per-iteration
+routers**:
+- Buffer **M** = **B slots** (B = N_loops+3), each (L×D). Init: embeddings in slot 0,
+  rest zero.
+- Per-iteration **write** router: `m_b ← m_b + f_core(h) ⊙ softmax(Lin_write^t(h))_b`.
+- Per-iteration **read** router: `h^{t+1} = Σ_b m_b ⊙ softmax(Lin_read^t(h))_b`.
+- Persistent info → buffer; hidden state → transient workspace. Per-iteration routing
+  ⇒ loops *specialize* instead of one universal transformation.
+
+### Why it fights OUR collapse (with receipts)
+- **Fig 5:** base recursive = "faster spectral decay into lower-dim subspaces" (= our
+  token-correlation→1 / rank collapse); MeSH "maintains high-dimensional structure".
+- **Fig 3:** naive recursion = "first loop dominates" (= Huginn Bad Run 2, loops
+  ignored); MeSH = "all loops contribute". Fixes BOTH recurrent failure modes.
+- Mechanism: externalized memory relieves the single state of persistence-vs-plasticity;
+  per-iteration routing breaks the uniform contractive map → no fixed point.
+
+### Convergence with Huginn (validation)
+MeSH **independently uses depth-aware init** (output-proj std × 1/√(2·N_compute)) —
+the SAME Takase/Huginn init we just staged (`--use-depth-aware-init`). Two independent
+recursive-transformer papers both require it ⇒ strong confidence the staged fix is
+right. The recipes are **complementary**: Huginn = optimization/normalization (sandwich
+norm + low LR + init); MeSH = representational (decouple memory + specialize loops);
+shared root = depth-aware init.
+
+### Map to MythOuro
+- Already approximate per-iteration variation: loop-index embed + LoRA-per-loop.
+- Missing: the B-slot memory buffer + per-iteration read/write routers (modest params
+  K×(D×B+B)). Would replace/augment the LTI-injection update.
+- Moderate architecture change → needs a FRESH distill, config-gateable, reversible.
+
+### Triage + sequencing
+Targets collapse directly; modest overhead; reversible if gated → passes rubric.
+**Sequence AFTER the Huginn recipe** (cheaper, staged). MeSH = the structural lever if
+norm/LR/init alone don't de-collapse; can combine.
+
+### CHEAP fragment usable NOW (no training)
+MeSH's **diagnostics**: singular-value spectrum of recurrent states across loops +
+per-loop contribution. Compute on EXISTING collapsed checkpoints (read-only inference)
+to *quantify* the collapse (rank decay loop-by-loop; later-loop contribution) — the
+analog of Huginn's "token correlation → 1". Gives a tracked metric for whether the
+Huginn recipe / MeSH actually fix it. BUILT: tools/collapse_metrics.py (verified 2026-06-16).

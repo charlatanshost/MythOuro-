@@ -8,10 +8,43 @@ Legend: ✅ done · ⬜ todo · 🔁 partial
 
 ---
 
+## 2026-06-16/17 — generation-degeneration investigation (it's EXPOSURE BIAS)
+
+The post-fix generation collapse was fully diagnosed (chain: `docs/training_runs.md`
+06-15/06-16; sources credited in `docs/references.md`):
+- **NOT recurrent/hidden-state collapse** — reps are healthy (high-rank,
+  decorrelated, recurrence *diversifies*; measured with `tools/collapse_metrics.py`).
+- **IS exposure bias** — a *learned sharp repetition attractor*; free generation
+  spirals (entropy→0) within ~5–7 tokens. **v4's old "edge" = train-time noise
+  co-adaptation** (P0.1's removed noise kept the distribution diffuse), not capability.
+- **Decode-time fixes ruled out** (temperature; inference-noise σ 0.05–0.2 all fail —
+  learned sharp attractor).
+- **Cure = on-policy/GKD + tokens** (training-time).
+
+New code STAGED (all config-gated, default OFF = current behaviour, verified):
+- `recurrent_state_noise` (train) + `inference_noise` (eval diagnostic) — `main.py`.
+- `--divergence {fwd_kl,rev_kl,jsd}` + `--jsd-beta` — `distill.py` (Tier-1
+  mode-seeking; cheapest on-target cure test, one flag). Tier-2 (on-policy +
+  teacher-mix) gated on Tier-1's result.
+- Huginn knobs `--use-sandwich-norm` / `--use-depth-aware-init` (DEMOTED — target a
+  recurrent collapse we don't have; keep depth-aware init as scaling hygiene).
+- `--data-mix clean_chat` (chat-heavy clean mix).
+- `tools/collapse_metrics.py` — rank/correlation/entropy collapse diagnostics.
+
+**Next away-run (cheapest cure test):** `--divergence rev_kl` continue-distill from
+the 24-expert base (command in `docs/training_commands.md`). Backlog: `docs/ideas.md`.
+
+---
+
 ## P0 — correctness (fix before next training run)
 
 - ✅ **P0.1** `_init_weights` clobbered zero-inits → `_skip_global_init` marker.
-  (commit d7c015c) +2 invariant tests.
+  (commit d7c015c) +2 invariant tests. **⚠ Discovered consequence (2026-06-16):**
+  the noise this removed was *load-bearing for generation* — it kept the
+  distribution diffuse and prevented the exposure-bias repetition spiral (this is
+  why pre-fix v4 generated varied text). The fix is still correct (reps are healthy),
+  but the proper replacement is **on-policy/GKD training**, not the accidental noise.
+  See the 06-16/17 section above + `docs/training_runs.md`.
 - ✅ **P0.2** router telemetry = last loop only → checkpoint-safe per-loop
   accumulation via `_loop_body` return. (commit 50cffa1) +2 tests.
 - ✅ **P0.3** eval emitted never-trained `h_out` → return `h_K`. (commit 557affd)

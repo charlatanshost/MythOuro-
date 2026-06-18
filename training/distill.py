@@ -157,6 +157,17 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                    help="Distillation weight: 0=pure CE, 1=pure soft loss.")
     p.add_argument("--temperature", type=float, default=2.0,
                    help="Softmax temperature for the distillation term.")
+    p.add_argument("--divergence", choices=["fwd_kl", "rev_kl", "jsd"],
+                   default="fwd_kl",
+                   help="Distillation divergence. fwd_kl = Hinton mode-covering "
+                        "(default, = current behaviour). rev_kl = MiniLLM "
+                        "mode-seeking (less mass on the teacher's void regions; "
+                        "anti-degeneration for a small student / big teacher). "
+                        "jsd = interpolation (see --jsd-beta). Tier-1 of the "
+                        "on-policy mode-seeking lever (docs/ideas.md).")
+    p.add_argument("--jsd-beta", type=float, default=0.5,
+                   help="JSD interpolation weight when --divergence jsd "
+                        "(β→0 ≈ fwd_kl, β→1 ≈ rev_kl). Try 0.5 or 0.9.")
     p.add_argument("--lb-coeff", type=float, default=1e-2)
     p.add_argument("--unc-coeff", type=float, default=5e-2)
     p.add_argument("--sparse-coeff", type=float, default=1e-3)
@@ -166,9 +177,29 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "Default 0.3 = v1's proven final recipe (its model-"
                         "card command), not the 1e-1 the earlier help text "
                         "suggested. Pass 0.0 to disable.")
+    p.add_argument("--recurrent-state-noise", type=float, default=0.0,
+                   help="Training-time Gaussian noise on the recurrent hidden "
+                        "state each loop, scaled to σ·RMS(h). Anti-collapse "
+                        "regulariser that replaces the accidental P0.1 noise "
+                        "which kept free generation from collapsing to a "
+                        "fixed point. 0.0 = off. Try 0.02–0.1.")
+    p.add_argument("--use-sandwich-norm", action="store_true",
+                   help="Huginn sandwich norm (extra post-sublayer RMSNorm in "
+                        "every TransformerBlock) — recurrent hidden-state-collapse "
+                        "stabiliser, 'required at scale'. Changes architecture → "
+                        "FRESH runs only (carried in cfg_dict).")
+    p.add_argument("--use-depth-aware-init", action="store_true",
+                   help="Huginn/Takase depth-aware init: residual-output projs get "
+                        "std^2=1/(5*h*l). FRESH runs only (no effect on resumed "
+                        "weights).")
     p.add_argument("--ckpt-dir", default="checkpoints_distill")
     p.add_argument("--ckpt-every", type=int, default=500)
     p.add_argument("--log-every", type=int, default=10)
+    p.add_argument("--num-workers", type=int, default=2,
+                   help="DataLoader worker subprocesses. **Use 0 for distill** — it's "
+                        "teacher-bound (workers buy ~nothing) and 0 makes Ctrl+C a clean "
+                        "KeyboardInterrupt (graceful save fires) AND removes worker-death "
+                        "crashes. >0 on Windows + streaming data is crash-prone.")
     p.add_argument("--trust-remote-code", action="store_true",
                    help="REQUIRED for the default Ouro teacher (it ships a "
                         "custom modeling_ouro.py). Set whenever the teacher "
@@ -258,6 +289,9 @@ def main():
     cfg = _VARIANT_FUNCS[args.student_variant]()
     cfg.vocab_size = vocab_size
     cfg.max_seq_len = args.seq_len
+    cfg.recurrent_state_noise = args.recurrent_state_noise
+    cfg.use_sandwich_norm = args.use_sandwich_norm
+    cfg.use_depth_aware_init = args.use_depth_aware_init
 
     student = MythOuro(cfg).to(device)
     n_params = sum(p.numel() for p in student.parameters())
@@ -319,7 +353,7 @@ def main():
     # ------------------------------------------------------------------
     dataset = MixedDataset(encoding, args.seq_len, rank=0, world_size=1)
     loader = DataLoader(
-        dataset, batch_size=args.micro_batch, num_workers=2, pin_memory=True,
+        dataset, batch_size=args.micro_batch, num_workers=args.num_workers, pin_memory=True,
     )
 
     curriculum = LoopCurriculum(
@@ -392,6 +426,8 @@ def main():
                     s_logits, t_logits, targets=y,
                     temperature=args.temperature,
                     alpha=args.alpha,
+                    divergence=args.divergence,
+                    jsd_beta=args.jsd_beta,
                 )
 
                 # ── Auxiliary losses (keep MoE / uncertainty / sparsity healthy) ──

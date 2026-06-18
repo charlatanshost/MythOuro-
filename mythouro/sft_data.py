@@ -107,6 +107,23 @@ _CLEAN_MIX_RATIOS = {
     "clean_chem":     0.08,
 }
 
+# CHAT-HEAVY clean variant (mix="clean_chat", 2026-06-14). Same clean sources,
+# but weighted toward DIVERSE conversation (Tulu) and away from low-diversity
+# STRUCTURED data (math, yes/no medical QA, SMILES). Tests the hypothesis that
+# the standard clean mix's ~50% structured content drives generation
+# mode-collapse (worse with more SFT — observed at 6k steps), whereas diverse
+# chat keeps generation varied (as v4's OpenHermes did, but with zero OpenAI
+# provenance). If this avoids the collapse, it's both the diagnosis AND the fix.
+_CLEAN_CHAT_MIX_RATIOS = {
+    "clean_general":  0.60,   # Tulu-3: diverse chat / FLAN / converted OASST
+    "clean_code":     0.20,   # moderately diverse
+    "clean_math":     0.05,
+    "clean_numina":   0.05,
+    "clean_miriad":   0.04,
+    "clean_pubmedqa": 0.02,
+    "clean_chem":     0.04,
+}
+
 _CLEAN_DATASET_SPECS = [
     ("clean_general",  "allenai/tulu-3-sft-mixture", None,             "train", 300_000),
     ("clean_math",     "nvidia/OpenMathInstruct-2",  None,             "train", 250_000),
@@ -507,19 +524,25 @@ class MixedSFTDataset(IterableDataset):
                (OpenMathInstruct-2 is augmented FROM GSM8K-style problems),
                OFF for legacy (preserves v2/v4 reproduction byte-for-byte).
         """
-        if mix not in ("clean", "legacy"):
-            raise ValueError(f"mix must be 'clean' or 'legacy'; got {mix!r}")
+        if mix not in ("clean", "clean_chat", "legacy"):
+            raise ValueError(
+                f"mix must be 'clean', 'clean_chat', or 'legacy'; got {mix!r}"
+            )
         self.tokenizer = tokenizer
         self.seq_len = seq_len
         self.rank = rank
         self.world_size = world_size
         self.mix = mix
-        self.specs = _CLEAN_DATASET_SPECS if mix == "clean" else _SFT_DATASET_SPECS
-        default_ratios = _CLEAN_MIX_RATIOS if mix == "clean" else _SFT_MIX_RATIOS
+        is_clean = mix in ("clean", "clean_chat")  # both use the clean sources
+        self.specs = _CLEAN_DATASET_SPECS if is_clean else _SFT_DATASET_SPECS
+        default_ratios = {
+            "clean":      _CLEAN_MIX_RATIOS,
+            "clean_chat": _CLEAN_CHAT_MIX_RATIOS,
+            "legacy":     _SFT_MIX_RATIOS,
+        }[mix]
         self.ratios = mix_ratios or default_ratios
         self.contamination_filter = (
-            (mix == "clean") if contamination_filter is None
-            else contamination_filter
+            is_clean if contamination_filter is None else contamination_filter
         )
         self.seed = seed
 

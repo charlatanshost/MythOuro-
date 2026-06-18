@@ -1,0 +1,2 @@
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+[32m2026-06-14 04:15:29.281[0m | [33m[1mWARNING [0m | [36mmythouro.main[0m:[36mwarn_once[0m:[36m77[0m - [33m[1mGQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=None).[0m

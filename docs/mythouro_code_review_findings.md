@@ -31,6 +31,15 @@ marked.
 - **Fix:** Have `_init_weights` skip modules that self-initialize (marker
   attribute on the Linear).
 - **Verify (test):** post-construction, assert the zero-inits survived.
+- **⚠ Discovered consequence (fork follow-up, 2026-06-16 — not part of the original
+  review):** the "random noise into `h`" this fix removed was **load-bearing for
+  free generation.** It kept the output distribution diffuse and prevented an
+  exposure-bias repetition spiral — which is why pre-fix v4 generated *varied* text
+  while post-fix checkpoints collapse into repetition under greedy decoding. The fix
+  is still correct (representations are healthy; verified via
+  `tools/collapse_metrics.py`); the diffuse-distribution benefit must be recovered
+  the principled way — **on-policy/GKD training**, not accidental noise. Full
+  diagnosis: `docs/training_runs.md` (06-16) + `docs/review_action_plan.md`.
 
 ### P0.2 MoE router telemetry only captures the LAST loop iteration
 - **Where:** `MoEFFN.forward` stashes `_last_router_logits` /

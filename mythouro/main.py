@@ -204,6 +204,35 @@ class MythOuroConfig:
     # when enabling: 1e-3 to 1e-2.
     depth_reg_coeff: float = 0.0
 
+    # Recurrent-state noise (training-time regulariser against fixed-point /
+    # mode collapse). Per loop, during training only, the committed hidden
+    # state is perturbed by Gaussian noise scaled to `this · RMS(h)`. This
+    # re-introduces — in a tunable, principled form — the per-loop hidden-state
+    # perturbation that the P0.1 init bug supplied by ACCIDENT (random
+    # CrossLoopAttention.o_proj injected noise every loop in v1–v5). That noise
+    # turned out to be load-bearing: removing it (the P0.1 fix) lowered
+    # teacher-forced PPL but let the contractive recurrence (ρ(A)<1) converge to
+    # a degenerate fixed point in free generation → single-token repetition
+    # (verified 2026-06-15; see docs/training_runs.md). A small σ breaks that
+    # symmetry each loop without the uncontrolled magnitude of the old bug.
+    # 0.0 = off (current behaviour). Suggested starting range: 0.02–0.1.
+    recurrent_state_noise: float = 0.0
+
+    # --- Huginn recurrent-stability options (arXiv 2502.05171), default OFF ---
+    # Huginn's "Bad Run 1" (hidden-state collapse, token-correlation→1) is our
+    # exact failure mode; these are the interventions that fixed their run.
+    # Sandwich norm: an extra RMSNorm AFTER each sublayer residual (on top of the
+    # pre-norm), which they found "required to train the recurrence at scale".
+    # Adds 2 norms per TransformerBlock; changes the architecture, so a checkpoint
+    # trained with it must be loaded with it (carried in cfg_dict).
+    use_sandwich_norm: bool = False
+    # Depth-aware init (Takase et al. 2024 / Huginn): residual-output projections
+    # (attn `wo`, FFN `down`) init with std² = 1/(5·h·l), l = effective recurrent
+    # depth (len(prelude) + max_loops + len(coda)); all other params std² = 2/(5h).
+    # Replaces the blanket N(0,0.02). Tames residual-stream variance growth across
+    # the unrolled recurrence. Only affects FRESH training (not resumed weights).
+    use_depth_aware_init: bool = False
+
     # Ablation: replace the recurrent block's MoE FFN with a single dense
     # SwiGLU FFN, to test whether sparsity earns its keep at matched compute.
     # When True, the recurrent FFN is `Expert(dim, recurrent_dense_ffn_dim)`
@@ -369,6 +398,7 @@ class GQAttention(nn.Module):
         self.wk = nn.Linear(cfg.dim, cfg.n_kv_heads * self.head_dim, bias=False)
         self.wv = nn.Linear(cfg.dim, cfg.n_kv_heads * self.head_dim, bias=False)
         self.wo = nn.Linear(cfg.n_heads * self.head_dim, cfg.dim, bias=False)
+        self.wo._residual_output = True   # depth-aware init target (Huginn)
         self.dropout_p = cfg.dropout
 
     def forward(
@@ -552,6 +582,7 @@ class MLAttention(nn.Module):
         )
 
         self.wo = nn.Linear(cfg.n_heads * cfg.v_head_dim, cfg.dim, bias=False)
+        self.wo._residual_output = True   # depth-aware init target (Huginn)
         self.attn_drop = nn.Dropout(cfg.dropout)
 
     def forward(
@@ -670,6 +701,7 @@ class Expert(nn.Module):
         self.gate = nn.Linear(dim, expert_dim, bias=False)
         self.up = nn.Linear(dim, expert_dim, bias=False)
         self.down = nn.Linear(expert_dim, dim, bias=False)
+        self.down._residual_output = True   # depth-aware init target (Huginn)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -981,6 +1013,11 @@ class TransformerBlock(nn.Module):
         super().__init__()
         self.attn_norm = RMSNorm(cfg.dim)
         self.ffn_norm = RMSNorm(cfg.dim)
+        # Huginn sandwich norm: extra post-sublayer RMSNorms (off by default).
+        self.use_sandwich = getattr(cfg, "use_sandwich_norm", False)
+        if self.use_sandwich:
+            self.post_attn_norm = RMSNorm(cfg.dim)
+            self.post_ffn_norm = RMSNorm(cfg.dim)
         self.attn = MLAttention(cfg) if cfg.attn_type == "mla" else GQAttention(cfg)
         if use_moe:
             self.ffn = MoEFFN(cfg)
@@ -1010,7 +1047,11 @@ class TransformerBlock(nn.Module):
         x = x + self.resid_drop(
             self.attn(self.attn_norm(x), freqs_cis, mask, kv_cache, cache_key)
         )
+        if self.use_sandwich:                          # Huginn: normalise the
+            x = self.post_attn_norm(x)                 # residual sum before next
         x = x + self.resid_drop(self.ffn(self.ffn_norm(x)))
+        if self.use_sandwich:
+            x = self.post_ffn_norm(x)
         return x
 
 
@@ -1491,6 +1532,12 @@ class RecurrentBlock(nn.Module):
         )  # fraction of channels receiving loop-index embedding
         self.use_ckpt = getattr(cfg, "gradient_checkpointing", False)
         self.conv_eps = getattr(cfg, "convergence_eps", 1e-4)
+        # Training-time anti-collapse regulariser (see cfg.recurrent_state_noise).
+        self.state_noise_sigma = float(getattr(cfg, "recurrent_state_noise", 0.0))
+        # Diagnostic: also apply the state noise at EVAL (off by default). Lets us
+        # test whether inference-time representation noise escapes the exposure-bias
+        # spiral the way v4's accidental P0.1 noise did. Set by tools/collapse_metrics.
+        self.inference_noise = False
 
         # Best-of-trajectory support (inference experiment, off by default).
         # When a generator sets `collect_trajectory`, each loop's committed
@@ -1688,6 +1735,16 @@ class RecurrentBlock(nn.Module):
             # functions must be free of side effects.
             if self.use_cross:
                 h_new = self.cross_loop_attn(h_new, t, loop_state_buf)
+
+            # Anti-collapse recurrent-state noise (training only). Perturbs the
+            # committed state each loop by σ·RMS(h)·N(0,1), the tunable
+            # replacement for the P0.1 accidental noise that prevented the
+            # contractive recurrence from collapsing to a fixed point in free
+            # generation. RMS-relative so the scale tracks activation magnitude
+            # regardless of loop/layer. Off when σ==0 (byte-identical to now).
+            if (self.training or self.inference_noise) and self.state_noise_sigma > 0.0:
+                rms = h_new.detach().pow(2).mean(dim=-1, keepdim=True).add(1e-8).sqrt()
+                h_new = h_new + self.state_noise_sigma * rms * torch.randn_like(h_new)
 
             # Convergence-detection early exit (inference only; training needs
             # deterministic depth for checkpoint replay, and kv_cache decode
@@ -2012,13 +2069,29 @@ class MythOuro(nn.Module):
         the bug that made cross-loop attention inject noise from step 0 and the
         uncertainty head start off-neutral in all v1–v5 checkpoints (P0.1).
         """
+        # Huginn / Takase depth-aware init (off by default → blanket N(0,0.02)).
+        # Residual-output projections (attn `wo`, FFN `down`, tagged
+        # `_residual_output`) get std²=1/(5·h·l); everything else std²=2/(5h),
+        # where l = effective recurrent depth. Tames residual-stream variance
+        # growth across the unrolled loop. Fresh-training only.
+        depth_aware = getattr(self.cfg, "use_depth_aware_init", False)
+        if depth_aware:
+            h = self.cfg.dim
+            l_eff = max(1, len(self.prelude) + self.cfg.max_loop_iters + len(self.coda))
+            std_default = (2.0 / (5.0 * h)) ** 0.5
+            std_out = (1.0 / (5.0 * h * l_eff)) ** 0.5
+
         for m in self.modules():
             if getattr(m, "_skip_global_init", False):
                 continue
             if isinstance(m, nn.Linear):
-                nn.init.normal_(m.weight, std=0.02)
+                if depth_aware:
+                    std = std_out if getattr(m, "_residual_output", False) else std_default
+                else:
+                    std = 0.02
+                nn.init.normal_(m.weight, std=std)
             elif isinstance(m, nn.Embedding):
-                nn.init.normal_(m.weight, std=0.02)
+                nn.init.normal_(m.weight, std=(std_default if depth_aware else 0.02))
 
     @staticmethod
     def _causal_mask(

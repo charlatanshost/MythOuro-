@@ -1,0 +1,35 @@
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+2026-06-18 10:31:23.730 | WARNING  | mythouro.main:warn_once:77 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).
+loading: checkpoints_freshrevkl/step_0001500.pt
+device:  cuda:0
+step=1500  n_loops=4  sandwich_norm=False  state_noise=0.0
+
+[generation-time mode] greedy decode; locating the degeneration
+
+prompt: 'The recurrent depth transformer is'
+  generated (greedy, 32 tok): ' correct the the the lower the the the the the the is is the is the is the is is is is is is the is the is the is is is'
+  output dist:  mean_entropy=2.371 nats  final_entropy=2.384  mean_top_prob=0.639  final_top_prob=0.434
+  first steps (top_prob, entropy): (0.03,8.04), (0.48,4.07), (0.07,6.69), (0.14,6.18), (0.13,6.73), (0.80,1.76), (0.91,0.83), (0.83,1.39)
+  rep @final loop:  PROMPT corr=0.851 rank=3.45  |  GENERATED corr=0.903 rank=7.18
+  -> FREE-RUNNING rep degradation ù generated-token reps collapse
+
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): 'def import import import import TypeError import import import import import import import import import import import import import import import import import import import import import import import import import import'
+  output dist:  mean_entropy=0.842 nats  final_entropy=0.369  mean_top_prob=0.903  final_top_prob=0.966
+  first steps (top_prob, entropy): (0.51,3.29), (0.41,4.47), (0.94,0.63), (0.99,0.12), (0.99,0.08), (0.03,8.74), (0.88,1.06), (0.96,0.36)
+  rep @final loop:  PROMPT corr=0.500 rank=11.05  |  GENERATED corr=0.973 rank=5.39
+  -> FREE-RUNNING rep degradation ù generated-token reps collapse
+
+prompt: 'def fibonacci(n):'
+  generated (greedy, 32 tok): ' ): # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #'
+  output dist:  mean_entropy=0.671 nats  final_entropy=0.190  mean_top_prob=0.921  final_top_prob=0.984
+  first steps (top_prob, entropy): (0.12,6.66), (0.15,7.02), (0.95,0.55), (0.98,0.19), (0.98,0.25), (0.81,1.80), (0.82,1.68), (0.99,0.14)
+  rep @final loop:  PROMPT corr=0.702 rank=4.20  |  GENERATED corr=0.984 rank=4.38
+  -> FREE-RUNNING rep degradation ù generated-token reps collapse
+
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+  generated (greedy, 32 tok): ' The A A A A A next next next next next next next next next next next next next next next next next next next next next next next theA write'
+  output dist:  mean_entropy=3.622 nats  final_entropy=7.375  mean_top_prob=0.561  final_top_prob=0.082
+  first steps (top_prob, entropy): (0.07,6.67), (0.10,7.09), (0.27,6.04), (0.24,6.13), (0.63,3.29), (0.73,2.43), (0.29,6.55), (0.52,4.34)
+  rep @final loop:  PROMPT corr=0.509 rank=11.02  |  GENERATED corr=0.796 rank=7.92
+  -> FREE-RUNNING rep degradation ù generated-token reps collapse
