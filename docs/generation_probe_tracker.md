@@ -1,0 +1,112 @@
+# Generation-probe tracker (cross-comparison)
+
+**Purpose.** A longitudinal cross-comparison of the generation-time collapse
+diagnostics (`tools/collapse_metrics.py --probe-set all`) across checkpoints and
+prompt categories, cross-referenced against the roadmap's hypotheses. This is the
+"*is it learning, where, and how fast*" scoreboard.
+
+Distinct from the neighbouring docs:
+- `docs/training_runs.md` — per-run **eval stats** (PPL / ECE / loop_eff) + recipe, chronological.
+- `docs/roadmap.md` — **strategy / plan** and the standing hypotheses.
+- **This file** — the **generation-quality** picture per category over checkpoints, and whether it confirms or contradicts the roadmap claims.
+
+Update after each probe run on a new checkpoint.
+
+---
+
+## Protocol
+
+- Tool: `python tools/collapse_metrics.py -c <ckpt> --device cuda:0 --generate --probe-set all` (greedy), then again with `--temperature 0.8 --top-k 40` (sampled).
+- **Categories and what each tests** (the distill mix is FineWeb-Edu 40% / open-web-math 40% / codeparrot 20%, `_MIX_RATIOS`):
+  - `prose` / `code` / `math` — **in-format** for the distill corpus (fair test of "is it learning the data it sees").
+  - `chat` (ChatML) / `qa` (`Q:/A:`) — **OOD formats** until SFT introduces them; expected to lag.
+- **Greedy read** = argmax / attractor depth + whether the locked token is *domain-appropriate*.
+- **T=0.8 read** = the **escape test**: does sampling break the spiral? The tool flags each prompt `inconclusive / not clearly degenerate` (= **escaped**) or `FREE-RUNNING rep degradation` (= **locked**). Escape-under-sampling is the **Tier-1 (reverse-KL) success signal** — forward-KL collapses so hard there is nothing left to sample.
+
+---
+
+## Cross-comparison — escape rate under T=0.8 sampling (escaped / total)
+
+| checkpoint | ~tokens | prose | code | math | chat | qa | overall | raw report |
+|---|---|---|---|---|---|---|---|---|
+| step_1500 | ~25M | — | — | — | — | 1/4\* | 1/4 (orig 4-set) | `reports/collapse_freshrevkl_1500*.txt` |
+| step_3000 | ~50M | 3/4 | 3/4 | 1/4 | 3/3 | 2/4 | **~12/19** | `reports/collapse_freshrevkl_3000_full*.txt` |
+
+\* step_1500 used the original 4-prompt set (recurrent-depth / 2+2 / fibonacci / Roman), not the categorised set, so only partially comparable. At 1500 only Roman escaped; 2+2 and fibonacci were hard-locked. By 3000 those two freed up and Roman regressed — see noise note below.
+
+---
+
+## Roadmap-hypothesis cross-reference
+
+| Roadmap / ideas claim | Probe evidence @ step_3000 | Verdict |
+|---|---|---|
+| Degeneration is **exposure bias, not architecture** (roadmap "Current status") | A pure *objective* swap (fwd-KL → rev-KL), zero architecture change, moved escape 1/4 → ~12/19 | ✓ confirmed |
+| **Reverse-KL (Tier-1)** is the cure (ideas.md "main thread") | ~12/19 prompts escape under sampling vs forward-KL's 0 | ✓ working — keep tokens, don't build Tier-2 yet |
+| **Binding constraint is tokens** (roadmap "Stage two") | No correct fact/computation anywhere (no Jupiter / Paris / 4 / 55); facts surface only as weak argmax ("7"), gone under sampling | ✓ knowledge gap = token volume |
+| **In-format > OOD until SFT** | Greedy: in-format diffuse + domain-appropriate; OOD chat → markdown, qa → WH-word echo | ◑ true for *distribution health & greedy*, but under sampling OOD **chat escapes 3/3** (shallow lock) |
+| Recurrence is healthy / not collapsing (training_runs 06-16) | Generated-token rep-corr drops to 0.31–0.60 on escapers; ranks stay high | ✓ consistent |
+
+---
+
+## Per-checkpoint detail
+
+### step_3000 — ~50M tokens, 2026-06-19 (fresh reverse-KL run)
+
+**Domain-aware repetition (greedy) — the key qualitative gain.** What it repeats is now *context-correct*:
+- code → `def`, `def module`, `self`, `init`, `(self):`, indentation
+- math → `x`, `r`, `3`, digits
+- prose → prose words; chat → markdown `#`/`###`; qa → the question word ("what"/"where")
+
+vs. the old forward-KL failure where *everything* collapsed to `is is is` regardless of context. So the model has learned the **per-context conditional token distributions** — it knows *which* tokens belong in code vs math vs prose. What it hasn't learned: long-range coherence and **stopping**.
+
+**Escape under T=0.8:** chat 3/3, prose 3/4, code 3/4, qa 2/4, math 1/4 (~12/19).
+- **Surprise 1 — chat escapes despite OOD.** The ChatML markdown lock is shallow; sampling breaks it (incoherent, not stuck).
+- **Surprise 2 — math is the *worst* (1/4) despite in-format.** Counting/listing prompts form *deep* attractors ("first first first", digit loops) because the model loops on plausible numbers/list-words when it can't actually compute. In-format helps the *distribution* but not the deep counting loops.
+- Best single result: prose `recurrent-depth` (generated rep-corr **0.315**, most-decorrelated of all).
+- Deepest residual locks: Roman-qa (0.93), France-qa (0.82), sum-math (0.88) — the fact-recall + computation gaps.
+
+**Knowledge probe (qa set).** Under sampling none of the facts surface (no Paris/blue; "7" smears to digit-soup), confirming the specific world-facts are genuinely *not learned yet* — a coverage/token-volume gap, not "present but hidden". When it lacks a fact it falls back to echoing the prompt's question word.
+
+**Noise caveat.** Per-prompt escape is high-variance at this token budget: Roman was the *best* prompt at 1500 and the *worst* at 3000. Treat single-prompt swings as noise; trust the category-level aggregate and its trend across checkpoints.
+
+---
+
+## Version history (pre-freshrevkl lineage) — what changed and what it did to generation
+
+The arc that motivated the fresh reverse-KL run. Three behaviour classes recur:
+**varied salad** (diverse but incoherent — no lock), **hard collapse** (single-token
+attractor), **diffuse/escaping** (wide distributions sampling can break out of).
+
+> **Decode caveat:** pre-fix rows are from `inspect_checkpoint.py` (T=0.7 greedy +
+> best-of-trajectory); freshrevkl rows are from `collapse_metrics.py` (T=0 greedy /
+> T=0.8). Not perfectly apples-to-apples on *decode settings*, but the behaviour
+> *class* is robust to that. Raw reports cited per row.
+
+| version | params | key change | `recurrent-depth` greedy | Roman greedy | class | raw |
+|---|---|---|---|---|---|---|
+| **v4** (`grown_v4`) | 397M | OpenHermes SFT — **P0.1 noise still active** | `188\cdot$ package (using std` | `double list was the city.get[::-[]` | **varied salad** (noise-driven) | `inspect_v4.txt` |
+| **moe_s0** | 279M | **P0.1 fixed (noise removed)** + clean recipe, fwd-KL distill | `not quite "DDDDDDDD&&` | `R R R R II IIionsions` | **hard collapse** | `inspect_moe_s0.txt` |
+| **noise_distill_11k** | 279M | + `recurrent_state_noise` σ (replace the lost P0.1 noise) | `is is is ( ( (` | `The The The … Two Two` | collapse — **marginal** (1→2-word) | `inspect_noise_distill_11k.txt` |
+| **revkl_10k** | 278M | reverse-KL distill **continued** from the collapsed 24-expert base | `is is is …` | `R:\n\nThe The The` | collapse persists (can't un-teach) | `collapse_revkl_10k.txt` |
+| **freshrevkl @1500** | 278M | reverse-KL from **random init** ("teach it right from the start") | `correct the the the` (diffuse) | diffuse (esc. @T=0.8) | **diffuse, 1/4 escape** | `collapse_freshrevkl_1500*.txt` |
+| **freshrevkl @3000** | 278M | + ~25M tokens | domain-aware repeats, diffuse | locked (regressed) | **diffuse, ~12/19 escape** | `collapse_freshrevkl_3000_full*.txt` |
+
+**The narrative these rows tell (cross-ref: training_runs.md 06-15/06-16, roadmap "Current status"):**
+1. **v4's "variety" was an artifact, not capability.** It looked best because **P0.1's
+   accidental noise** (a clobbered zero-init injecting noise into the hidden state) kept
+   it out of the repetition attractor at inference. Real, but accidental.
+2. **The P0.1 fix removed that noise → exposed the underlying exposure-bias collapse**
+   (moe_s0: hard `DDDD` / `R R R R`). The fix didn't *cause* a regression; it revealed
+   the true free-running behaviour the noise had been masking.
+3. **Decode/inference band-aids failed.** The `recurrent_state_noise` σ knob (the
+   principled replacement for P0.1's noise) only nudged it from 1-word to 2-word repeats.
+4. **Reverse-KL *continued* on an already-collapsed base failed too** (revkl_10k) — the
+   attractor was entrenched; you can't un-teach it.
+5. **Reverse-KL *fresh* (from random init) works** — never enters the attractor, stays
+   diffuse, escape spreads with tokens. Hence "teach it right from the start".
+
+## Standing conclusions / what to watch
+
+1. **Tier-1 (reverse-KL) is validated** — escape spread broadly with token doubling. Keep pouring tokens; defer Tier-2 (on-policy + teacher-mixed sampling).
+2. **Prescription unchanged:** more tokens → facts + coherence + escaping the remaining deep attractors; **SFT** → the OOD formats (chat/qa) + stopping behaviour.
+3. **Watch:** (a) does **math** escape rate climb with tokens, or do the counting attractors persist (would argue for a math-specific lever)? (b) does **Roman / fact-recall qa** come along, or stay the deepest holdout (the Tier-2 trigger if it persists while others deepen)? (c) do any **correct answers** start appearing (first sign of real knowledge, not just diffuse distributions)?

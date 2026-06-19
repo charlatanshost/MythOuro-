@@ -143,6 +143,7 @@ authoritative documents and where to find what:
 | [docs/training_commands.md](training_commands.md) | Copy-paste-ready training/eval command reference + flag table. |
 | [docs/hardware_options.md](hardware_options.md) | Scale-up hardware decision — rent vs buy, Intel PVC/A100/MI210/3090 options, the teacher-on-XPU de-risk gate. |
 | [docs/training_runs.md](training_runs.md) | Comparison table of every training session's eval stats (PPL/loop_eff/ECE trajectories, recipes, raw-data paths). Update after each run. |
+| [docs/generation_probe_tracker.md](generation_probe_tracker.md) | Cross-comparison of the generation-time collapse probes (`collapse_metrics --probe-set all`) across checkpoints × categories, cross-referenced to the roadmap hypotheses. The "is it learning, where, how fast" scoreboard. Update after each probe run. |
 | `archived_models/<name>/MODEL_CARD.md` | Per-checkpoint provenance: training config, eval results, behavioural validation, limitations. One per shipped reference checkpoint. |
 | `CHANGES.md` | Changelog at the codebase root — features added per session. |
 

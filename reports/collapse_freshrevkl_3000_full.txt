@@ -1,0 +1,150 @@
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+2026-06-19 10:25:50.129 | WARNING  | mythouro.main:warn_once:77 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).
+loading: checkpoints_freshrevkl/step_0003000.pt
+device:  cuda:0
+step=3000  n_loops=4  sandwich_norm=False  state_noise=0.0
+
+[generation-time mode] greedy decode; locating the degeneration
+
+=== category: chat ===
+
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): '\n2\n2\n\n# \n# \n#######\n#\n####2222\n#'
+  output dist:  mean_entropy=3.427 nats  final_entropy=2.249  mean_top_prob=0.458  final_top_prob=0.593
+  first steps (top_prob, entropy): (0.22,6.24), (0.04,6.29), (0.16,4.83), (0.62,1.97), (0.41,3.61), (0.32,5.05), (0.06,6.57), (0.10,6.94)
+  rep @final loop:  PROMPT corr=0.377 rank=12.39  |  GENERATED corr=0.679 rank=13.45
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: '<|im_start|>user\nExplain gravity in one sentence.<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): '\n#########\n\n### H H H H H H H H H H H H H H H H H H H H H H H H H'
+  output dist:  mean_entropy=4.271 nats  final_entropy=3.705  mean_top_prob=0.475  final_top_prob=0.548
+  first steps (top_prob, entropy): (0.67,2.89), (0.03,7.20), (0.09,7.20), (0.20,6.05), (0.13,6.96), (0.83,1.52), (0.12,6.44), (0.02,7.67)
+  rep @final loop:  PROMPT corr=0.369 rank=11.78  |  GENERATED corr=0.647 rank=9.41
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: '<|im_start|>user\nName three primary colors.<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): '\n###\n\n###\n\n###\n\n###\n\n###\n\n###\n\n###\n\n###\n\n###\n\n###\n\n###'
+  output dist:  mean_entropy=3.887 nats  final_entropy=6.284  mean_top_prob=0.510  final_top_prob=0.124
+  first steps (top_prob, entropy): (0.90,1.02), (0.03,6.70), (0.08,7.56), (0.93,0.72), (0.25,5.31), (0.39,5.39), (0.96,0.44), (0.47,4.08)
+  rep @final loop:  PROMPT corr=0.588 rank=10.14  |  GENERATED corr=0.827 rank=10.39
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+=== category: code ===
+
+prompt: 'def fibonacci(n):'
+  generated (greedy, 32 tok): 'nnnnnnnnnnnnnnnnnnnnnnn)nnnnnnnn'
+  output dist:  mean_entropy=4.191 nats  final_entropy=4.194  mean_top_prob=0.506  final_top_prob=0.491
+  first steps (top_prob, entropy): (0.49,4.53), (0.48,4.58), (0.51,4.30), (0.55,4.00), (0.62,3.35), (0.68,2.92), (0.59,3.64), (0.73,2.57)
+  rep @final loop:  PROMPT corr=0.583 rank=4.32  |  GENERATED corr=0.942 rank=6.44
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'def is_prime(n):'
+  generated (greedy, 32 tok): 'nnnnnnnn(nnnnnnnnnnnnn(nnnnnnnnn'
+  output dist:  mean_entropy=3.046 nats  final_entropy=3.299  mean_top_prob=0.620  final_top_prob=0.580
+  first steps (top_prob, entropy): (0.55,3.86), (0.48,4.50), (0.60,3.51), (0.71,2.57), (0.70,2.59), (0.64,3.07), (0.75,2.34), (0.72,2.50)
+  rep @final loop:  PROMPT corr=0.362 rank=5.65  |  GENERATED corr=0.935 rank=7.78
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'import numpy as np\n'
+  generated (greedy, 32 tok): '\ndef error\n\ndef error\n\ndef arguments\n\ndef module\n\ndef\n\ndef module\n\ndef module\n\ndef module\n\n'
+  output dist:  mean_entropy=5.058 nats  final_entropy=1.006  mean_top_prob=0.344  final_top_prob=0.882
+  first steps (top_prob, entropy): (0.14,6.88), (0.08,6.52), (0.14,6.67), (0.15,6.61), (0.46,3.67), (0.45,4.41), (0.06,7.30), (0.73,2.16)
+  rep @final loop:  PROMPT corr=0.416 rank=4.47  |  GENERATED corr=0.811 rank=11.70
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'class Stack:\n    def __init__(self):'
+  generated (greedy, 32 tok): 'self((selfhttpinitinitinitinitinit(self):\n\t\thttp://initinitinitinitinit(http(http://initrrrr'
+  output dist:  mean_entropy=4.592 nats  final_entropy=6.790  mean_top_prob=0.368  final_top_prob=0.113
+  first steps (top_prob, entropy): (0.07,6.92), (0.38,5.40), (0.68,2.15), (0.37,4.77), (0.40,5.21), (0.06,7.25), (0.52,3.40), (0.44,3.97)
+  rep @final loop:  PROMPT corr=0.486 rank=8.04  |  GENERATED corr=0.659 rank=14.29
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+=== category: math ===
+
+prompt: 'The derivative of x^2 with respect to x is'
+  generated (greedy, 32 tok): ' is x is is is is is is is is not be a  is is is is a a a 3.3. The is is is is is'
+  output dist:  mean_entropy=4.452 nats  final_entropy=4.688  mean_top_prob=0.344  final_top_prob=0.240
+  first steps (top_prob, entropy): (0.15,5.63), (0.14,5.25), (0.20,6.19), (0.25,5.32), (0.22,5.40), (0.40,4.75), (0.56,3.41), (0.68,2.34)
+  rep @final loop:  PROMPT corr=0.441 rank=8.61  |  GENERATED corr=0.663 rank=15.40
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'The sum of the first 10 positive integers is'
+  generated (greedy, 32 tok): ' the first first first first first first first first first first first first first first first first first first first first first first first first first first first first first first first'
+  output dist:  mean_entropy=3.841 nats  final_entropy=2.806  mean_top_prob=0.527  final_top_prob=0.630
+  first steps (top_prob, entropy): (0.23,4.87), (0.20,6.47), (0.60,3.78), (0.40,5.37), (0.55,4.03), (0.64,3.14), (0.66,2.90), (0.63,2.85)
+  rep @final loop:  PROMPT corr=0.527 rank=8.08  |  GENERATED corr=0.939 rank=7.20
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'To solve 2x + 3 = 7, subtract 3 from both sides to get'
+  generated (greedy, 32 tok): ' Get33333333 3 3333333 333333333333'
+  output dist:  mean_entropy=2.480 nats  final_entropy=1.436  mean_top_prob=0.578  final_top_prob=0.688
+  first steps (top_prob, entropy): (0.04,7.31), (0.08,7.90), (0.56,3.20), (0.52,3.15), (0.29,5.53), (0.55,3.04), (0.64,2.34), (0.63,2.30)
+  rep @final loop:  PROMPT corr=0.381 rank=15.17  |  GENERATED corr=0.957 rank=6.34
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'The area of a circle with radius r is'
+  generated (greedy, 32 tok): ' r-)-----------------isisisisisis--is---'
+  output dist:  mean_entropy=3.619 nats  final_entropy=0.980  mean_top_prob=0.560  final_top_prob=0.905
+  first steps (top_prob, entropy): (0.12,6.60), (0.18,5.55), (0.19,6.63), (0.65,2.99), (0.49,4.62), (0.82,1.95), (0.85,1.58), (0.89,1.12)
+  rep @final loop:  PROMPT corr=0.385 rank=7.31  |  GENERATED corr=0.671 rank=12.75
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+=== category: prose ===
+
+prompt: 'The recurrent depth transformer is'
+  generated (greedy, 32 tok): ' shown)( temperature, is, the, the the the the the the the the same same, the same same the the same same same same same same same same'
+  output dist:  mean_entropy=5.309 nats  final_entropy=4.760  mean_top_prob=0.362  final_top_prob=0.439
+  first steps (top_prob, entropy): (0.07,7.84), (0.03,8.69), (0.01,9.10), (0.06,8.01), (0.05,7.04), (0.18,6.29), (0.04,7.01), (0.03,8.53)
+  rep @final loop:  PROMPT corr=0.550 rank=4.15  |  GENERATED corr=0.664 rank=12.29
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'The history of the Roman Empire began'
+  generated (greedy, 32 tok): ' the rest- - proof structure the side side the same same same case  The case is the case the same same same same same same same same same same'
+  output dist:  mean_entropy=6.482 nats  final_entropy=4.897  mean_top_prob=0.211  final_top_prob=0.407
+  first steps (top_prob, entropy): (0.23,6.23), (0.02,8.48), (0.03,8.69), (0.01,9.28), (0.11,7.49), (0.02,8.66), (0.02,8.05), (0.16,5.45)
+  rep @final loop:  PROMPT corr=0.512 rank=5.42  |  GENERATED corr=0.637 rank=15.43
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'Photosynthesis is the process by which'
+  generated (greedy, 32 tok): ' process which process which process in the the the the the the the the same same same same same same same same same the same same same same same same same same'
+  output dist:  mean_entropy=6.324 nats  final_entropy=6.996  mean_top_prob=0.208  final_top_prob=0.101
+  first steps (top_prob, entropy): (0.25,6.08), (0.23,6.53), (0.09,7.08), (0.23,5.74), (0.12,6.89), (0.02,7.60), (0.10,6.47), (0.05,7.87)
+  rep @final loop:  PROMPT corr=0.475 rank=5.85  |  GENERATED corr=0.642 rank=10.71
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'The largest planet in our solar system is'
+  generated (greedy, 32 tok): ' the main main main main main main the the world the main main main main main main main main main the the world the first the first the first the first first'
+  output dist:  mean_entropy=7.155 nats  final_entropy=5.288  mean_top_prob=0.157  final_top_prob=0.429
+  first steps (top_prob, entropy): (0.03,7.28), (0.04,7.82), (0.21,6.97), (0.10,7.86), (0.08,7.86), (0.10,7.84), (0.04,8.39), (0.04,7.92)
+  rep @final loop:  PROMPT corr=0.568 rank=6.31  |  GENERATED corr=0.687 rank=11.93
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+=== category: qa ===
+
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+  generated (greedy, 32 tok): ' what what what what what what what what what what what what what what what what what what what what what what what what what what what what what what what what'
+  output dist:  mean_entropy=2.137 nats  final_entropy=1.760  mean_top_prob=0.730  final_top_prob=0.782
+  first steps (top_prob, entropy): (0.38,5.25), (0.64,2.86), (0.63,2.84), (0.78,1.83), (0.84,1.42), (0.76,1.97), (0.73,2.22), (0.70,2.45)
+  rep @final loop:  PROMPT corr=0.388 rank=11.46  |  GENERATED corr=0.966 rank=5.88
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'Q: What is the capital of France?\nA:'
+  generated (greedy, 32 tok): ' where where where where where where where where where where where where where where where where where where where where where where where where where the where where where where where where'
+  output dist:  mean_entropy=3.353 nats  final_entropy=2.595  mean_top_prob=0.503  final_top_prob=0.614
+  first steps (top_prob, entropy): (0.07,6.51), (0.60,2.89), (0.39,4.31), (0.74,2.06), (0.70,2.25), (0.71,2.11), (0.64,2.53), (0.58,2.84)
+  rep @final loop:  PROMPT corr=0.364 rank=9.93  |  GENERATED corr=0.977 rank=5.09
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'Q: How many days are in a week?\nA:'
+  generated (greedy, 32 tok): ' 77777771117777777777777  1 1   '
+  output dist:  mean_entropy=2.018 nats  final_entropy=0.341  mean_top_prob=0.492  final_top_prob=0.947
+  first steps (top_prob, entropy): (0.05,7.53), (0.24,2.98), (0.21,2.78), (0.40,2.31), (0.39,2.26), (0.37,2.26), (0.43,2.12), (0.61,1.57)
+  rep @final loop:  PROMPT corr=0.374 rank=10.61  |  GENERATED corr=0.691 rank=11.99
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'Q: What color is the sky on a clear day?\nA:'
+  generated (greedy, 32 tok): '\n\nThe\n\nA:\n\nThe:\n\nThe:\n\nA:\n\nThe:\n\nA:\n\nThe:\n'
+  output dist:  mean_entropy=3.716 nats  final_entropy=2.851  mean_top_prob=0.515  final_top_prob=0.642
+  first steps (top_prob, entropy): (0.07,7.68), (0.88,1.19), (0.03,6.69), (0.34,6.02), (0.87,0.92), (0.23,4.62), (0.04,8.17), (0.42,5.02)
+  rep @final loop:  PROMPT corr=0.308 rank=12.16  |  GENERATED corr=0.455 rank=15.06
+  -> inconclusive / not clearly degenerate at this length

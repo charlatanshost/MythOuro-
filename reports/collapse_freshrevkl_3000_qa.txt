@@ -1,0 +1,35 @@
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+2026-06-19 10:14:20.539 | WARNING  | mythouro.main:warn_once:77 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).
+loading: checkpoints_freshrevkl/step_0003000.pt
+device:  cuda:0
+step=3000  n_loops=4  sandwich_norm=False  state_noise=0.0
+
+[generation-time mode] greedy decode; locating the degeneration
+
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+  generated (greedy, 32 tok): ' what what what what what what what what what what what what what what what what what what what what what what what what what what what what what what what what'
+  output dist:  mean_entropy=2.137 nats  final_entropy=1.760  mean_top_prob=0.730  final_top_prob=0.782
+  first steps (top_prob, entropy): (0.38,5.25), (0.64,2.86), (0.63,2.84), (0.78,1.83), (0.84,1.42), (0.76,1.97), (0.73,2.22), (0.70,2.45)
+  rep @final loop:  PROMPT corr=0.388 rank=11.46  |  GENERATED corr=0.966 rank=5.88
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'Q: What is the capital of France?\nA:'
+  generated (greedy, 32 tok): ' where where where where where where where where where where where where where where where where where where where where where where where where where the where where where where where where'
+  output dist:  mean_entropy=3.353 nats  final_entropy=2.595  mean_top_prob=0.503  final_top_prob=0.614
+  first steps (top_prob, entropy): (0.07,6.51), (0.60,2.89), (0.39,4.31), (0.74,2.06), (0.70,2.25), (0.71,2.11), (0.64,2.53), (0.58,2.84)
+  rep @final loop:  PROMPT corr=0.364 rank=9.93  |  GENERATED corr=0.977 rank=5.09
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'Q: How many days are in a week?\nA:'
+  generated (greedy, 32 tok): ' 77777771117777777777777  1 1   '
+  output dist:  mean_entropy=2.018 nats  final_entropy=0.341  mean_top_prob=0.492  final_top_prob=0.947
+  first steps (top_prob, entropy): (0.05,7.53), (0.24,2.98), (0.21,2.78), (0.40,2.31), (0.39,2.26), (0.37,2.26), (0.43,2.12), (0.61,1.57)
+  rep @final loop:  PROMPT corr=0.374 rank=10.61  |  GENERATED corr=0.691 rank=11.99
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'Q: What color is the sky on a clear day?\nA:'
+  generated (greedy, 32 tok): '\n\nThe\n\nA:\n\nThe:\n\nThe:\n\nA:\n\nThe:\n\nA:\n\nThe:\n'
+  output dist:  mean_entropy=3.716 nats  final_entropy=2.851  mean_top_prob=0.515  final_top_prob=0.642
+  first steps (top_prob, entropy): (0.07,7.68), (0.88,1.19), (0.03,6.69), (0.34,6.02), (0.87,0.92), (0.23,4.62), (0.04,8.17), (0.42,5.02)
+  rep @final loop:  PROMPT corr=0.308 rank=12.16  |  GENERATED corr=0.455 rank=15.06
+  -> inconclusive / not clearly degenerate at this length

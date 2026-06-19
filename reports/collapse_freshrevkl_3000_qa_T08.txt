@@ -1,0 +1,35 @@
+[transformers] You are using a model of type `ouro` to instantiate a model of type ``. This may be expected if you are loading a checkpoint that shares a subset of the architecture (e.g., loading a `sam2_video` checkpoint into `Sam2Model`), but is otherwise not supported and can yield errors. Please verify that the checkpoint is compatible with the model you are instantiating.
+2026-06-19 10:21:27.389 | WARNING  | mythouro.main:warn_once:77 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).
+loading: checkpoints_freshrevkl/step_0003000.pt
+device:  cuda:0
+step=3000  n_loops=4  sandwich_norm=False  state_noise=0.0
+
+[generation-time mode] T=0.8 decode; locating the degeneration
+
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+  generated (T=0.8 top_k=40, 32 tok): ' when I I I I I don\'t\'t\'t\'t\'t seem\'t\'t\'t\'t\'t\'t\'t\'t\'t\'t\'t\n"""\'t\'t\'t\'t\'t\'t'
+  output dist:  mean_entropy=4.541 nats  final_entropy=5.568  mean_top_prob=0.404  final_top_prob=0.323
+  first steps (top_prob, entropy): (0.38,5.25), (0.09,5.90), (0.65,2.78), (0.74,2.29), (0.62,3.19), (0.64,3.00), (0.05,5.23), (0.64,1.25)
+  rep @final loop:  PROMPT corr=0.378 rank=12.10  |  GENERATED corr=0.729 rank=9.30
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'Q: What is the capital of France?\nA:'
+  generated (T=0.8 top_k=40, 32 tok): ' where where where where where, where where the where where the general where we will where what what where but when when when when we should also also will then then'
+  output dist:  mean_entropy=3.782 nats  final_entropy=4.058  mean_top_prob=0.397  final_top_prob=0.219
+  first steps (top_prob, entropy): (0.07,6.51), (0.60,2.89), (0.39,4.31), (0.74,2.06), (0.70,2.25), (0.71,2.11), (0.74,1.90), (0.67,2.24)
+  rep @final loop:  PROMPT corr=0.371 rank=9.69  |  GENERATED corr=0.690 rank=13.91
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'Q: How many days are in a week?\nA:'
+  generated (T=0.8 top_k=40, 32 tok): ' P3111111 5755555 110011121110110'
+  output dist:  mean_entropy=1.877 nats  final_entropy=0.824  mean_top_prob=0.598  final_top_prob=0.825
+  first steps (top_prob, entropy): (0.05,7.53), (0.03,7.96), (0.38,2.48), (0.69,1.39), (0.69,1.39), (0.70,1.33), (0.74,1.19), (0.74,1.15)
+  rep @final loop:  PROMPT corr=0.423 rank=10.34  |  GENERATED corr=0.604 rank=13.56
+  -> FREE-RUNNING rep degradation ΓÇö generated-token reps collapse
+
+prompt: 'Q: What color is the sky on a clear day?\nA:'
+  generated (T=0.8 top_k=40, 32 tok): '-2,11155555552,2915,525\n\n"2520\n\n'
+  output dist:  mean_entropy=3.259 nats  final_entropy=2.086  mean_top_prob=0.392  final_top_prob=0.711
+  first steps (top_prob, entropy): (0.07,7.68), (0.09,5.60), (0.45,3.48), (0.53,3.06), (0.59,1.71), (0.46,2.07), (0.22,2.88), (0.65,2.15)
+  rep @final loop:  PROMPT corr=0.346 rank=11.51  |  GENERATED corr=0.529 rank=15.90
+  -> inconclusive / not clearly degenerate at this length

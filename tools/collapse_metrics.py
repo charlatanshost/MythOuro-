@@ -38,6 +38,46 @@ if _REPO_ROOT not in sys.path:
 from inspect_checkpoint import _DEFAULT_PROMPTS, _load_model  # noqa: E402
 from mythouro.tokenizer import MythOuroTokenizer  # noqa: E402
 
+# Categorised probe sets — several prompts per domain so we can watch how each
+# capability learns, instead of inferring from a single prompt (n=1). The original
+# 4 default prompts are kept (one per format) so older reports stay comparable; the
+# rest extend each category. Format matters as much as subject on a distill-only
+# model: prose / code / math are *in-format* for the distill corpus (FineWeb-Edu /
+# codeparrot / open-web-math, the 40/20/40 mix); chat (ChatML) and qa (Q:/A:) are
+# OOD formats until SFT introduces them. Newlines are embedded so the format matches
+# exactly regardless of shell quoting.
+_PROBE_SETS = {
+    "prose": [
+        "The recurrent depth transformer is",
+        "The history of the Roman Empire began",
+        "Photosynthesis is the process by which",
+        "The largest planet in our solar system is",
+    ],
+    "code": [
+        "def fibonacci(n):",
+        "def is_prime(n):",
+        "import numpy as np\n",
+        "class Stack:\n    def __init__(self):",
+    ],
+    "math": [
+        "The derivative of x^2 with respect to x is",
+        "The sum of the first 10 positive integers is",
+        "To solve 2x + 3 = 7, subtract 3 from both sides to get",
+        "The area of a circle with radius r is",
+    ],
+    "chat": [
+        "<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n",
+        "<|im_start|>user\nExplain gravity in one sentence.<|im_end|>\n<|im_start|>assistant\n",
+        "<|im_start|>user\nName three primary colors.<|im_end|>\n<|im_start|>assistant\n",
+    ],
+    "qa": [
+        "Q: Roughly what year was the Roman Empire founded?\nA:",
+        "Q: What is the capital of France?\nA:",
+        "Q: How many days are in a week?\nA:",
+        "Q: What color is the sky on a clear day?\nA:",
+    ],
+}
+
 
 # ---------------------------------------------------------------------------
 # Metrics
@@ -216,8 +256,19 @@ def main() -> None:
     p.add_argument("--checkpoint", "-c", required=True, help="step_*.pt to analyse")
     p.add_argument("--device", default="cuda:0" if torch.cuda.is_available() else "cpu")
     p.add_argument("--tokenizer", default="ByteDance/Ouro-2.6B-Thinking")
-    p.add_argument("--prompt", "-p", default=None,
-                   help="Single prompt; default = the inspector's 4-prompt set.")
+    p.add_argument("--prompt", "-p", action="append", default=None,
+                   help="Prompt to test; repeat -p for several. Default = the "
+                        "inspector's 4-prompt set. Note: shells turn '\\n' literal, "
+                        "so use --probe-set for prompts that need real newlines.")
+    p.add_argument("--probe-set", choices=sorted(_PROBE_SETS) + ["all"],
+                   default=None,
+                   help="Run a built-in categorised probe set (several prompts per "
+                        "domain, real newlines). One of: "
+                        f"{', '.join(sorted(_PROBE_SETS))}, all. 'all' runs every "
+                        "category with a per-category header so you can watch each "
+                        "capability learn separately.")
+    p.add_argument("--qa-probe", action="store_true",
+                   help="Back-compat alias for --probe-set qa.")
     p.add_argument("--n-loops", type=int, default=None,
                    help="Recurrent depth. Default: cfg.max_loop_iters.")
     p.add_argument("--generate", action="store_true",
@@ -237,6 +288,16 @@ def main() -> None:
                         "it escapes the spiral. 0 = off. Try 0.05-0.1.")
     args = p.parse_args()
 
+    # Windows consoles default to cp1252, which can't encode the U+FFFD
+    # replacement char that byte-level BPE can emit when sampling splits a
+    # multi-byte token — that raised UnicodeEncodeError mid-print and aborted
+    # the T>0 read. Force UTF-8 with a safe fallback so the diagnostic always
+    # completes regardless of the host locale.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
+    except (AttributeError, ValueError):
+        pass
+
     print(f"loading: {args.checkpoint}\ndevice:  {args.device}")
     model, cfg, step = _load_model(args.checkpoint, args.device)
     tokenizer = MythOuroTokenizer(args.tokenizer)
@@ -245,7 +306,18 @@ def main() -> None:
           f"sandwich_norm={getattr(cfg, 'use_sandwich_norm', False)}  "
           f"state_noise={getattr(cfg, 'recurrent_state_noise', 0.0)}")
 
-    prompts = [args.prompt] if args.prompt else _DEFAULT_PROMPTS
+    # Build (category, prompt) pairs so the generate path can print per-category
+    # headers; `prompts` stays a flat list for the rep/rank path below.
+    probe_set = "qa" if args.qa_probe else args.probe_set
+    if probe_set == "all":
+        selected = [(cat, pr) for cat in sorted(_PROBE_SETS) for pr in _PROBE_SETS[cat]]
+    elif probe_set:
+        selected = [(probe_set, pr) for pr in _PROBE_SETS[probe_set]]
+    elif args.prompt:
+        selected = [("custom", pr) for pr in args.prompt]
+    else:
+        selected = [("default", pr) for pr in _DEFAULT_PROMPTS]
+    prompts = [pr for _, pr in selected]
 
     if args.generate:
         mode = "greedy" if args.temperature <= 0 else f"T={args.temperature}"
@@ -254,7 +326,11 @@ def main() -> None:
             model.recurrent.state_noise_sigma = args.inference_noise
             mode += f" +infnoise_sigma={args.inference_noise}"
         print(f"\n[generation-time mode] {mode} decode; locating the degeneration")
-        for prompt in prompts:
+        cur_cat = None
+        for cat, prompt in selected:
+            if cat != cur_cat:
+                print(f"\n=== category: {cat} ===")
+                cur_cat = cat
             generation_diagnostic(model, tokenizer, prompt, args.device,
                                   n_loops, args.max_new, args.temperature, args.top_k)
         return
