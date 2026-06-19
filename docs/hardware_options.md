@@ -24,6 +24,32 @@ This **settles the floor-vs-ceiling question favorably:**
 realization) is resolved at ~4×. Still confirm on *our* workload at buy-time, but the risk
 collapsed from "is it an upgrade" to "is it 3× or 4× on our specific ops."
 
+## 📄 Datasheet-verified specs (Intel doc 817799, Max 1100 Datasheet Rev 1.0)
+
+Pulled from the owner's copy of the official datasheet — primary source, supersedes earlier
+web-relayed/assumed numbers.
+
+- **Memory:** 48 GB = **three active 16 GB HBM2e stacks** (3.2 GT/s/stack). A *fourth* stack is
+  physically present but **fused off** → sensor readings for the dead stack are normal, not a
+  fault. (Datasheet lists ~1.6 TB/s aggregate theoretical; device-benchmark realized 781 GB/s.)
+- **Power:** TDP **300 W**, idle ~50 W. **Programmable peak power 1.2–2.0× TDP, default 1.52×**
+  → **~456 W default-peak**, up to **600 W at 2.0×**. PWRBRK# emergency floor 95 W.
+  Connector: **CEM 5.1 `12V-2x6 H++`** (12VHPWR-style).
+  - **Build implication:** it is NOT a 300 W card under load — size the PSU for ~456 W (default)
+    from the GPU, not 300. With the 9462 (~350 W) that's ~800 W peak → **1000 W ATX 3.0/3.1 PSU
+    with a 12V-2x6 cable** (1200 W if ever run at 2.0×). Don't buy a plain 8-pin-only unit.
+- **Xe Link (interconnect — my earlier "OAM-only" claim was WRONG):** edge connector has **six
+  53 Gbps** lanes; *"high-speed coherent unified fabric connecting multi-GPU."*
+  - **X2 bridge:** 2 cards, **six** Xe Link connections.
+  - **X4 bridge:** 4 cards, **two** Xe Link connections (thinner per-pair than X2, but a real
+    4-card fabric).
+  - Bridges are a **separate accessory** (Intel Xe Link Bridge Card Datasheet doc# 788941; part
+    numbers in datasheet Table 7-1) — "supports it" ≠ "have it"; source the bridge separately and
+    it doesn't count against the $3000 single-card build.
+  - **vs A30:** A30 NVLink caps at a **2-card pair**; the Max 1100 does **2- and 4-card** fabric.
+    Another point to the Max 1100 — though our workload (compute-bound, no FSDP, role-separated
+    cards) doesn't need it today; it's future optionality (sharding a bigger model later).
+
 **XMX optimization toolkit (Intel oneAPI GPU Opt Guide, 2026-06-18) — resources milestone 2.**
 The 140 BF16 = XMX/DPAS (448 engines on the 1100) via **oneDNN/oneMKL** — the path PyTorch/xpu
 already uses (so 140 is out-of-box, no custom code). Full documented self-optimize stack:
