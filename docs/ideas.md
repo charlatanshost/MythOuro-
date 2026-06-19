@@ -45,6 +45,7 @@ token-starved. The noise knob passed all three.)
 | **Unlikelihood training** (Welleck et al. 2019) — loss term penalising high prob on repeated tokens | Collapse | Low (aux loss term) | Yes | Backlog — strong cheap lever | Surgical anti-repetition; could layer onto the current run. |
 | **Teacher-generated synthetic data** — use Ouro to generate clean training tokens | **Token supply** (#1 bottleneck) | Medium (gen + curate) | Yes | Backlog — strong | Attacks token *supply*, not just efficiency; fully OpenAI-free. Pairs with phi-style quality. |
 | **Sequence-level KD** (Kim & Rush 2016) — teacher generates sequences offline, student trains on them | Both (cheap exposure-bias help) | Low–Med (offline gen, no per-step sampling) | Yes | Backlog — Tier-2 stepping-stone | Cheaper precursor to full on-policy; no RL loop. |
+| **Tokenizer graduation** (transplant vocab → re-match to a bigger teacher family) | **Capability ceiling** (unlocks bigger teachers) | High (transplant + heal) | Partially (new run, but gated) | **Future milestone** — gated on (a) Ouro saturated + (b) base structurally settled | The *bridge between two matched-KD regimes*: migrate the matched-vocab anchor from SmolLM2/Ouro (small teachers) to e.g. Qwen (big teachers). NOT cross-tokenizer KD (lossy, keeps vocab) — this re-matches so clean logit KD resumes. See deep-dive below + roadmap "Tokenizer graduation". |
 
 ## Parked (failed triage — recorded so we don't re-litigate)
 
@@ -74,7 +75,8 @@ is sound; useful for the "is it worth it" case.
 | **linear_cross_entropy_loss** (Geiping, github.com/JonasGeiping/linear_cross_entropy_loss) | Throughput/VRAM phase | Fused head+CE, avoids materialising logits → bigger batch. **Caveat:** distill KL needs full logits → useful for hard-CE/SFT terms, not the distill soft-loss. |
 | **flash-attention** (Dao-AILab) | **Blocked now** | FA2 unsupported on cuda_cc (12,0) = Blackwell 5070; we're on SDPA fallback. Watch for FA3/Blackwell support. |
 | **ml-engineering** (Stas Bekman) | Scale-up phase | Practical training-at-scale reference (throughput, multi-GPU, debugging). |
-| **bpeasy** (gautierdag) — fast BPE training | **Future Rust port only** | Can't swap tokenizers while distilling from Ouro (vocab must match — same constraint as T-FREE). Post-distill / from-scratch tool. |
+| **bpeasy** (gautierdag) — fast BPE training | **Future Rust port only** | Can't swap tokenizers while distilling from Ouro (vocab must match — same constraint as T-FREE). Post-distill / from-scratch tool. **See "Tokenizer graduation" deep-dive — the controlled time to swap.** |
+| **Zett / FOCUS / WECHSEL** (zero-shot/heuristic tokenizer transfer) | **Tokenizer-graduation milestone** | Embedding+head re-init from sub-token pieces so the new vocab starts warm, not random; heal with short continued training. The mechanism for the graduation deep-dive below. |
 | DistiLLM-2 (Ko et al. 2024–25) — skew-KL + adaptive scheduling | When building Tier-2 on-policy | A refinement *of* the on-policy mode-seeking lever (divergence/scheduling). |
 | Neural text degeneration (Holtzman 2019) + contrastive decoding | Deployment / decode-time | Decode-side anti-repetition; we already have confidence/cycle stops. |
 | Deep Equilibrium Models stability (Bai et al. 2019) | Background | Theory for why our contractive recurrence (ρ(A)<1) converges to a fixed point — informs the noise/ρ levers. |
@@ -244,3 +246,55 @@ per-loop contribution. Compute on EXISTING collapsed checkpoints (read-only infe
 to *quantify* the collapse (rank decay loop-by-loop; later-loop contribution) — the
 analog of Huginn's "token correlation → 1". Gives a tracked metric for whether the
 Huginn recipe / MeSH actually fix it. BUILT: tools/collapse_metrics.py (verified 2026-06-16).
+
+---
+
+## Deep dive: Tokenizer graduation (future milestone, assessed 2026-06-18)
+
+**The question that surfaced it:** can we distill from *regular* (non-recurrent)
+transformers, given how few recurrent/looped teachers exist? **Answer: yes** — logit
+KD only touches the teacher's output distribution over the vocab, never its internals,
+so a feedforward teacher is fine; the student learns the *function* and implements it
+with its own recurrence. Architecture mismatch only breaks *feature/hidden-state* KD,
+which we don't do. **The real gate is the tokenizer, not the architecture.**
+
+### The constraint (why we can't just grab a bigger teacher today)
+Our vocab is the **SmolLM2 tokenizer** (GPT-2-style BPE, **49152**; see
+`mythouro/tokenizer.py`, default `ByteDance/Ouro-2.6B-Thinking`). Logit KD computes KL
+token-for-token over a *shared* support, so the teacher must use this exact vocab.
+- **Drop-in same-vocab teachers = the SmolLM2 family** (SmolLM2-1.7B-Instruct, etc.).
+  But that's *lateral* scale to our 2.6B Ouro teacher — diversity, not a ceiling lift.
+- **Qwen / Llama / Mistral / Gemma have different vocabs** → not drop-in. A bigger,
+  smarter teacher therefore requires changing our vocab.
+
+### The graduation move (the bridge between two matched-KD regimes)
+Not "abandon matched KD" — **migrate the matched-vocab anchor** from the SmolLM2/Ouro
+family (small teachers) to a bigger family (e.g. Qwen):
+1. Squeeze Ouro dry on the current matched tokenizer (extract all it can teach).
+2. **Transplant** the tokenizer (Zett / FOCUS / WECHSEL): swap embedding + LM head for
+   the new vocab, init new tokens from the *old* embeddings of their sub-token pieces
+   (warm start, not random), heal with short continued training. The transformer body
+   and **the recurrent-depth reasoning machinery are vocab-agnostic and survive** —
+   we're re-skinning I/O, not relearning to think. That's what makes it cheap vs.
+   from-scratch.
+3. Resume **clean matched-vocab logit KD**, now from Qwen2.5-7B/14B/32B.
+
+Contrast with **cross-tokenizer KD** (ULD / MinED): keeps our vocab, aligns across
+tokenizers — lossy *every* step. Graduation re-matches once, then KD is exact again.
+
+### Bonus + cost
+- **Bonus:** a bigger vocab (Qwen ~151k) compresses text better → fewer tokens/doc,
+  more effective context, cheaper generation. Dual payoff beyond teacher access.
+- **Cost:** bigger vocab = larger embedding/head + heavier softmax; on a *small* model
+  the head is a large param fraction → the *target* vocab is itself a decision (49k↔151k),
+  not "go biggest". Also watch **capacity gap** (small student / huge teacher distills
+  *worse*; reverse-KL helps) → moderate teacher (7B–14B), not a giant.
+
+### Timing / triage
+Gated on: (a) Ouro saturated (student ≈ teacher, gains flatlined) AND (b) base
+structurally settled. Do it earlier and you heal embeddings you'll disrupt again.
+Relationship to the scale-up plan: the roadmap's "from-scratch distilled 3B with a
+bigger teacher" path would just *start* on the new vocab; **graduation is the alternative
+that preserves the trained base** instead of restarting — pick based on whether the
+current base is worth carrying forward when compute arrives. Provenance rule still
+applies (Apache-2.0 teachers; screen instruct-tunes for OpenAI-derived synthetic data).

@@ -676,6 +676,37 @@ provenance flag — fine for research, a constraint if distributing.)
 Resolve the exact teacher **closer to the run** — the open-model landscape moves
 fast; there may be a clearly-best option by the time you rent compute.
 
+### Tokenizer graduation — how to reach a bigger teacher *without* restarting (2026-06-18)
+
+The "Teacher = student vocab" coupling above has a corollary: our current vocab is the
+**SmolLM2 tokenizer** (49152; `mythouro/tokenizer.py`, default Ouro-2.6B-Thinking), and
+logit KD forces the teacher to share it. The only *same-vocab* teachers are the SmolLM2
+family — all lateral-or-smaller scale. So a bigger teacher means changing the vocab.
+Two ways to do that, and they're genuinely different paths:
+
+- **From-scratch at scale (the plan above):** start the big run *directly* on the new
+  teacher's vocab (Llama/Qwen/Gemma). Clean, but throws away the trained base.
+- **Tokenizer graduation (the preserve-the-base alternative):** keep the current
+  MythOuro base, *transplant* its tokenizer to the bigger teacher's vocab, then resume
+  clean matched-vocab logit KD from that teacher. It's a **bridge between two matched-KD
+  regimes** — migrate the anchor from SmolLM2/Ouro (small) to e.g. Qwen (big) — not
+  cross-tokenizer KD (which keeps the vocab and is lossy every step).
+
+**Mechanism** (Zett / FOCUS / WECHSEL): swap embedding + LM head for the new vocab, init
+new tokens from the *old* embeddings of their sub-token pieces (warm start), heal with
+short continued training. The transformer body and **the recurrent-depth reasoning
+machinery are vocab-agnostic and survive** — re-skinning I/O, not relearning to think,
+which is why it's cheap vs. from-scratch.
+
+**Gated on:** (a) Ouro saturated (gains flatlined) AND (b) base structurally settled —
+do it earlier and you heal embeddings you'll disrupt again. **Decision at run time:**
+graduate (carry the base forward) vs. from-scratch (restart on the new vocab) depending
+on whether the current base is worth preserving when compute arrives. Bonus: a bigger
+vocab (Qwen ~151k) also compresses text better (fewer tokens/doc). Cost: bigger
+embedding/head + heavier softmax (large param fraction at small scale → the *target*
+vocab is its own choice), and capacity gap (favour a 7B–14B teacher, not a giant;
+reverse-KL helps). Full deep-dive + technique refs: `docs/ideas.md` "Tokenizer graduation".
+
 ### Hardware is the upstream gate — and it keeps *both* objectives open
 
 Both distillation and pure-datasets need better/rented compute, so the hardware
