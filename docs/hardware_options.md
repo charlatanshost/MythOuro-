@@ -39,6 +39,52 @@ some impls (llama.cpp SYCL) report full-XMX-util is hard → expect ~140 standar
 MythOuro on card #1, monitor XMX util via intel_gpu_top, joint_matrix-optimize custom ops if
 underutilized.
 
+**What the "140" actually is — a clean-GEMM ceiling, NOT a full-model rate (2026-06-18,
+source identified + Gemini writeup vetted).** The 140 comes from **chsasank/device-benchmarks**
+(github.com/chsasank/device-benchmarks) — a **pure matmul microbenchmark**: `torch.matmul` on
+square matrices (sizes 256–6888) per dtype, plus a tensor-copy for bandwidth. Author: *"I use
+matrix multiplication to measure FLOPs... copy a large tensor to measure bandwidth — the two
+most important metrics for LLM inference."* So three numbers, in descending order, that we must
+NOT conflate:
+- **419 TFLOPS** — theoretical XMX peak (ideal/marketing; never sustained on real work).
+- **140 TFLOPS** — *realized clean-GEMM* (this benchmark). Methodology (`benchmark.py`):
+  `tflops = 2·n³ / time` on a square `a@a`, swept **per-size** (n = 256…~8192), **eager
+  `torch.matmul`, no warmup**, `synchronize()` around timing, **fp32 default** (bf16 needs
+  `--dtype bfloat16`). So 140 is the *best-size* clean GEMM. = **33% of peak on an ideal
+  matmul**, a *bit low* for a tuned GEMM (a good oneMKL GEMM should clear ~70% of peak). The
+  gap is plausibly the eager path + **no-warmup first-call overhead** + no `torch.compile` —
+  i.e. the GEMM number itself *might* tune upward (where Gemini's torch.compile/sizes advice
+  legitimately applies). 419 is not the target; ~140 is the honest realized matmul figure today.
+- **Real MythOuro training throughput** — an **MFU fraction *below* 140** (training is
+  MFU × the matmul ceiling, and MFU < 100% — *lower* for our recurrent-loop + MoE + ACT
+  architecture with its many small awkward matmuls). **We do not have this number yet** — only
+  a card-#1 run of a real MythOuro step gives it. Expect noticeably under 140.
+
+**Correction to the prior draft of this note:** an earlier version called 140 "~33% MFU,
+normal for LLM training." That was wrong — 140 is a *matmul* microbench, not an MFU. 33% is
+realized-GEMM-vs-peak, not model-FLOPs-utilization. The MFU is the separate, lower, unmeasured
+training number.
+
+**Does this dent the buy-case? No.** The **~4× vs the 5070 (140 ÷ 33.7) is matmul-to-matmul**
+— both are GEMM/peak-class figures, so the *ratio* is fair even though neither is the actual
+training rate. Our training throughput on the 1100 will be some MFU below 140, but the 5070's
+is likewise below its 33.7, and the relative ~4× compute advantage (plus 4× VRAM) is what the
+decision rests on.
+
+**Vetted optimization list (3 valid, 1 misfire) — for the card-#1 *real-model* MFU bench:**
+- ✅ **`torch.compile` (Triton-XPU fusion)** — real win on launch overhead. *Caveat:* Triton-XPU
+  may refuse to compile our **custom recurrent block / Ouro teacher forward** (same risk as
+  compiling the teacher) → verify it compiles, don't assume.
+- ✅ **Tile alignment** — XMX wants matrix dims as multiples of 64/128 (odd dims waste the
+  systolic array). Our **vocab 49152 = 768×64 is already aligned**; confirm hidden/head/FFN dims
+  too.
+- ✅ **BF16 AMP** — `autocast(device_type="xpu", dtype=torch.bfloat16)`, NOT manual `.to(fp16)`
+  (which can hit slow fallback). Use **bf16 not fp16** (our native dtype; same XMX speed, no loss
+  scaling).
+- ❌ **Channels-last (NHWC)** — IGNORE. That's a **CNN/conv** optimization for 4D image tensors
+  (N,C,H,W); transformers have no channels/spatial dims. Inapplicable to MythOuro (the classic
+  AI-suggestion-out-of-context error — vet against our actual workload).
+
 ## ✅ DECISION (2026-06-17): Intel Max 1100, scaled incrementally toward 4 cards
 
 Owner chose the **Max 1100** over the B70 front-runner — deciding factor: **4-card
