@@ -137,6 +137,8 @@ authoritative documents and where to find what:
 | [docs/roadmap.md](roadmap.md) | This file. Forward plan, milestones, decision rules, failure-mode memory. **Start here when resuming.** |
 | [docs/mythouro.md](mythouro.md) | Architecture overview — what's in `MythOuro` and why each piece exists. |
 | [docs/datasets.md](datasets.md) | Dataset reference — what corpora we use and how. |
+| [docs/dataset_selection.md](dataset_selection.md) | Dataset **vetting rubric + decision log** — hard constraints (no OpenAI/Claude provenance, redistributable license), green/red flags, the vetting procedure, and the accept/reject/pending record. "How we decide" on data. |
+| [docs/clean_sft_datasets.md](clean_sft_datasets.md) | Registry of specific candidate SFT datasets + their verified provenance status (2026-06-20 check). |
 | [docs/growth_design.md](growth_design.md) | MoE expansion / model growth design notes. Read before promoting a checkpoint. |
 | [docs/fork_vs_openmythos.md](fork_vs_openmythos.md) | Verified code-level diff of this fork against upstream `kyegomez/OpenMythos`. |
 | [docs/mythouro_code_review_findings.md](mythouro_code_review_findings.md) | The external code review itself (Fable 5, 2026-06-09) — the source document for the action plan. |
