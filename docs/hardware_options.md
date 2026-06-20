@@ -111,6 +111,34 @@ decision rests on.
   (N,C,H,W); transformers have no channels/spatial dims. Inapplicable to MythOuro (the classic
   AI-suggestion-out-of-context error — vet against our actual workload).
 
+## 🔬 Standard-vs-custom kernel XMX realization (CFD paper, SC-W 2023)
+
+Concrete published evidence for the realization-risk split (Zubair et al., ODU/NASA/
+Intel, "Optimization of Ported CFD Kernels on Intel Max 1550 using oneAPI ESIMD" —
+see references.md). Mapped to MythOuro:
+
+- **Custom hand-written kernels are where the pain is.** Their CFD kernels needed
+  Intel-specific **ESIMD** (+ prefetch intrinsics, large-GRF mode, *unreleased*
+  engineering compilers/drivers) to reach **~67% of peak bandwidth**; plain SYCL got
+  **31%** and was up to **43× slower** (van Leer Jacobian: 162 ms → 3.76 ms). NVIDIA
+  hit 71–81% with standard CUDA. → Custom Intel kernels take far more effort to reach
+  *lower* utilization than CUDA delivers out-of-box.
+- **But the standard matmul path gets it for free.** Our BF16 GEMMs go through
+  **oneDNN/oneMKL** — the mature library that does that ESIMD-level work *for* you.
+  That's exactly why device-benchmarks already measured **140 BF16 out-of-box**. The
+  library is the expert the CFD authors had to be by hand.
+- **Maps to us:** standard attention/FFN matmuls = good for free; our **custom
+  recurrent / MoE / LTI / ACT ops** = the analog of their CFD kernels → may need
+  `joint_matrix` hand-tuning to hit peak. The card-#1 validation risk, now with a
+  concrete preview of what that work looks like.
+- **Silicon ceiling is real.** A **single 1550 tile ≈ the 1100** (same Xe-HPC block,
+  64 vs 56 Xe-cores, ~300W) **matched the A100** on all three kernels after ESIMD → a
+  1100 ≈ **~85–90% of an A100** on optimized FP64/FP32 HPC. Caveat: FP64/FP32 CFD, not
+  BF16 — speaks to the ceiling + custom-kernel cost, not the matmul path directly.
+- **Correction logged:** the 1550 did NOT run "within 10% of stated bandwidth" (a
+  secondhand claim) — it hit ~67% hand-optimized. The transferable headline is "single
+  tile ≈ A100 on these kernels, *after* expert ESIMD work."
+
 ## ✅ DECISION (2026-06-17): Intel Max 1100, scaled incrementally toward 4 cards
 
 Owner chose the **Max 1100** over the B70 front-runner — deciding factor: **4-card

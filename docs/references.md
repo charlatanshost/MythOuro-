@@ -113,6 +113,31 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
 
 ---
 
+## Hardware — Intel GPU realization & benchmarks
+
+- **Optimization of Ported CFD Kernels on Intel Data Center GPU Max 1550 using
+  oneAPI ESIMD** — Zubair, Walden, Nastac, Nielsen, Bauinger, Zhu (ODU + NASA
+  Langley + Intel), SC-W 2023. doi.org/10.1145/3624062.3624251. *Concrete evidence
+  for the standard-vs-custom-kernel XMX-realization split: hand-written CFD kernels
+  needed Intel-specific ESIMD (+ prefetch intrinsics, large-GRF, unreleased
+  compilers) to reach ~67% of peak bandwidth / A100-class wall-clock; plain SYCL got
+  31% and was up to 43× slower. A SINGLE TILE of the 1550 (≈ the 1100: same Xe-HPC
+  block, 64 vs 56 Xe-cores, ~300W) matched the A100 on all 3 kernels after ESIMD.
+  Caveat: FP64/FP32 CFD, not BF16 — informs the silicon ceiling + the custom-kernel
+  effort, not the matmul path directly. Corrects a secondhand "within 10% of stated
+  bandwidth" claim (actual: ~67%, hand-optimized).*
+- **device-benchmarks** — chsasank. github.com/chsasank/device-benchmarks. *Pure
+  matmul (2·n³/time, square a@a) + tensor-copy bandwidth microbenchmark. Source of
+  the Max 1100 figures: 140 BF16 / 781 GB/s realized. Standard matmul via PyTorch/xpu
+  (oneMKL/oneDNN) hits XMX out-of-box — the library does the ESIMD-level work the CFD
+  paper had to do by hand.*
+- **Intel Data Center GPU Max 1100 Datasheet** — Intel doc **817799**, Rev 1.0.
+  *Primary source: 48GB (3 active 16GB HBM2e stacks), 300W TDP / programmable peak
+  1.2–2.0× (default 1.52× ≈ 456W, max 600W), 12V-2x6 H++ connector, Xe Link X2/X4
+  bridges (53 Gbps lanes).*
+
+---
+
 ## Engineering tools & frameworks
 
 - **PyTorch**; **HuggingFace Transformers / Datasets / Hub** (teacher + data).
