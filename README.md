@@ -641,11 +641,14 @@ checkpoints, the Ouro teacher:
 
 ## License
 
-MIT License — Copyright (c) 2026 Kye Gomez. See [`LICENSE`](LICENSE) for the full text.
+MIT License — Copyright (c) 2026 Kye Gomez (original OpenMythos architecture) and
+Daniel Hardy (MythOuro fork and subsequent work). See [`LICENSE`](LICENSE) for the
+full text.
 
 The MythOuro **code** is MIT. That license covers the source only — it does
 **not** automatically extend to model weights trained with it, which inherit
-constraints from the teacher and training data (see below).
+constraints from the teacher and training data, and which may be released under a
+**separate weights license** (see below).
 
 ## Licensing & data provenance
 
