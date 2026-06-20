@@ -47,8 +47,17 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
 - **Adaptive Computation Time (ACT)** — Graves 2016. arXiv **1603.08983**.
 - **PonderNet** — Banino et al. 2021. arXiv **2107.05407**. *Halting / depth
   regularisation lineage.*
-- **Reasoning with Latent Thoughts: Power of Looped Transformers** — Saunshi et al.
-  2025 (ICLR 2025). *(verify ID)* *Looped depth-extrapolation theory.*
+- **Reasoning with Latent Thoughts: On the Power of Looped Transformers** — Saunshi,
+  Dikkala, Li, Kumar, Reddi 2025 (ICLR 2025). arXiv **2502.17416** (verified 2026-06-20).
+  *Looped depth-extrapolation theory.*
+- **Loop, Think, & Generalize: Implicit Reasoning in Recurrent-Depth Transformers** —
+  Kohli, Parthasarathy, Sun, Yao 2026. arXiv **2604.07822** (verified 2026-06-20). *Implicit
+  multi-hop reasoning + compositional generalization in RDTs — the architecture-family
+  citation in mythouro.md.*
+- **Parcae: Scaling Laws for Stable Looped Language Models** — Prairie, Novack,
+  Berg-Kirkpatrick, Fu 2026. arXiv **2604.12946** (verified 2026-06-20). *Stability of
+  looped LMs at scale; theoretical backing cited for MythOuro's LTI-injection (ρ(A)<1)
+  stable update (complements Deep Equilibrium Models for the contractive-recurrence theory).*
 - **Mixture-of-Recursions (MoR)** — 2025. *(verify ID)* *Recursion + routing for
   adaptive depth — closest to our ACT+MoE combination.*
 - **CoTFormer** — Mohtashami et al. 2024. arXiv **2310.10845** *(verify ID)*.

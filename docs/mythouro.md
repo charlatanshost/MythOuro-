@@ -26,7 +26,40 @@ Input token IDs  (B, T)
 Output logits  (B, T, vocab_size)
 ```
 
+```mermaid
+flowchart TD
+    IN["Input token IDs (B, T)"] --> EMB["Embedding (weight-tied to LM head)"]
+    EMB --> PRE["Prelude: prelude_layers x TransformerBlock (dense SwiGLU)"]
+    PRE --> E["e = frozen encoded input"]
+    PRE --> REC
+
+    subgraph REC["Recurrent Block: one TransformerBlock looped T times"]
+        direction TB
+        LI["loop-index embed (h_t)"] --> ADD["RMSNorm(h_t + e)"]
+        ADD --> TB["TransformerBlock: MLA/GQA attention + MoE FFN"]
+        TB --> LORA["+ per-loop LoRA delta"]
+        LORA --> LTI["LTI injection: h_t+1 = A·h_t + B·e + out (stable, rho(A) below 1)"]
+        LTI --> ACT{"ACT halting: cumulative p over threshold?"}
+        ACT -->|no| LI
+        ACT -->|"yes / all halted"| OUT["ACT-weighted sum of h"]
+    end
+
+    E -. injected every iteration .-> ADD
+    REC --> CODA["Coda: coda_layers x TransformerBlock (dense SwiGLU)"]
+    CODA --> NORM["RMSNorm"]
+    NORM --> HEAD["LM head"] --> LOGITS["logits (B, T, vocab)"]
+    NORM --> UNC["Uncertainty head"] --> UOUT["uncertainty (B, T)"]
+```
+
 Every architectural choice in `MythOuro` can be configured through a single [`MythOuroConfig`](#mythosconfig) dataclass passed at construction.
+
+> **Config note (2026-06-20):** the default values shown throughout this doc
+> (`vocab_size=32000`, `dim=2048`, `n_experts=64`, …) are the **production
+> template** — illustrative of the architecture, *not* the on-disk model. The
+> **currently-trained checkpoints are `distill_tiny`**: ~278M params, **`vocab_size=49152`**
+> (the SmolLM2/Ouro tokenizer — logit-KD requires the teacher's vocab), with a
+> smaller `dim`. See `mythouro/variants.py` for the real variant configs and
+> `docs/training_runs.md` for what's actually been trained.
 
 ---
 
@@ -482,7 +515,7 @@ model = MythOuro(prod_cfg)
 
 | Component | Paper |
 |---|---|
-| Recurrent-Depth Transformer | [Loop, Think, & Generalize (2025)](https://arxiv.org/pdf/2604.07822) |
+| Recurrent-Depth Transformer | [Loop, Think, & Generalize (Kohli et al., 2026)](https://arxiv.org/abs/2604.07822) |
 | LTI-stable injection (Parcae) | [Scaling Laws for Stable Looped Language Models (Prairie et al., 2026)](https://arxiv.org/abs/2604.12946) |
 | Looped transformer reasoning | [Reasoning with Latent Thoughts (Saunshi et al., 2025)](https://arxiv.org/abs/2502.17416) |
 | Multi-Latent Attention | [DeepSeek-V2 (2024)](https://arxiv.org/abs/2405.04434) |
