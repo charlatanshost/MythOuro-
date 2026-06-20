@@ -3,15 +3,16 @@
 Living document tracking what's been built, what's queued, and what's
 deliberately out of scope. Updated as we make decisions.
 
-**What this project is:** a custom recurrent-depth MoE language model — a hybrid
-that takes its architecture from the OpenMythos (`kyegomez/OpenMythos`) RDT
-reconstruction, distills from ByteDance Ouro-2.6B-Thinking as a teacher, and is
-independently scaled via a function-preserving model-growth pipeline. It is
-*not* OpenMythos (we extended it into a trained pipeline), *not* Ouro (that's the
-teacher), and *not* Claude Mythos (speculative inspiration only). Trained
-checkpoints are 278M–420M proof-of-concept models — they validate the
-architecture and recipe, not deployable quality. Full lineage writeup is in the
-README's "Project identity & lineage" section.
+**What this project is:** a **research project on recurrent-depth transformers
+(RDTs)** — training dynamics, distillation efficiency, and calibrated honesty —
+with the applied goal of a small, private, **local-first medical-information
+model**. The architecture is forked from **OpenMythos** (`kyegomez/OpenMythos`,
+credited) and the model is distilled from **ByteDance Ouro-2.6B-Thinking** (the
+teacher). It is *not* OpenMythos (extended into a trained pipeline + research
+program), *not* Ouro (that's the teacher), and *not* Claude Mythos (speculative
+inspiration only — **credited lineage, not the focus**). Trained checkpoints are
+278M–632M proof-of-concept models — they validate the architecture and recipe,
+not deployable quality. Full lineage writeup: README "Project identity & lineage".
 
 **Attribution:** the upstream architecture is Kye Gomez's work
 (`kyegomez/OpenMythos`, MIT) and is credited with thanks. He has no involvement

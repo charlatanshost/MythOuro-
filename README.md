@@ -15,7 +15,7 @@
   </a>
 </p>
 
-> **Disclaimer:** MythOuro is an independent, community-driven theoretical reconstruction based solely on publicly available research and speculation. It is not affiliated with, endorsed by, or connected to Anthropic or any of their proprietary systems.
+> **Disclaimer:** MythOuro is an independent research project on recurrent-depth transformers, built on publicly available research and open-source components. It is not affiliated with, endorsed by, or connected to Anthropic or any of their proprietary systems.
 
 MythOuro implements a Recurrent-Depth Transformer (RDT) with three stages: **Prelude** (transformer blocks), a looped **Recurrent Block** (up to `max_loop_iters`), and a final **Coda**. Attention is switchable between MLA and GQA, and the feed-forward uses a sparse MoE with routed and shared experts ideal for exploring compute-adaptive, depth-variable reasoning.
 
@@ -23,13 +23,16 @@ MythOuro implements a Recurrent-Depth Transformer (RDT) with three stages: **Pre
 
 ## Project identity & lineage
 
-> **MythOuro is a project by Daniel Hardy.** It began as a fork of Kye Gomez's
-> OpenMythos but has diverged substantially — from a "theoretical
-> reconstruction" into a working, trained, custom model with its own training
-> and scaling recipe. It was renamed **MythOuro** (Myth + Ouro) to reflect that
-> divergence from both OpenMythos and the Ouro teacher. This section documents
-> what it actually is, because the rest of this README (below) still carries
-> over content from the original reconstruction writeup.
+> **MythOuro is a research project by Daniel Hardy on recurrent-depth
+> transformers (RDTs)** — their training dynamics, distillation efficiency, and
+> calibrated honesty — with the applied goal of a small, private, **local-first
+> model for medical information** (to help lower the cost of and improve access
+> to medical information for people underserved by the current system). It began
+> as a fork of Kye Gomez's **OpenMythos** (credited below) and is distilled from
+> **ByteDance Ouro-2.6B** (the teacher), but has diverged into its own trained
+> pipeline and research program. The name is **Myth + Ouro** — the *Ouro* (the
+> recurrent loop / the Ouro teacher) is the half that carries the identity;
+> OpenMythos and the "Mythos" origin are **credited lineage, not the focus.**
 
 It is a **custom recurrent-depth Mixture-of-Experts language model** — a
 hybrid that draws on three distinct lineages but is identical to none of them:
@@ -47,15 +50,19 @@ hybrid that draws on three distinct lineages but is identical to none of them:
 - A single-card consumer-hardware training recipe (8-bit Adam, staged seq-len, growth-based scaling)
 - A pre-registered **MoE-vs-dense ablation** at matched active compute, and the measured depth/calibration findings feeding the MoDr direction — [`docs/roadmap.md`](docs/roadmap.md)
 
-**Current state (2026-06-11):** an external code review found 5 correctness
-bugs — notably that **v1–v5 all trained with a clobbered zero-init silently
-injecting noise into the hidden state every loop**. All fixed (with the
-invariant tests that were missing); full record in
-[`docs/review_action_plan.md`](docs/review_action_plan.md). The first
-from-scratch run on the fixed code finished **6.5× better perplexity than v1
-at the same size in fewer steps**, and the MoE-vs-dense ablation (3 of 4 arms
-complete) shows the sparse capacity earning its keep at matched compute.
-Cross-run results: [`docs/training_runs.md`](docs/training_runs.md).
+**Current state (2026-06-20):** the active research is **fixing free-running
+generation degeneration** at small scale, *before* spending on tokens/compute.
+It's been diagnosed as **exposure bias** (a learned repetition attractor) —
+*not* a recurrent/hidden-state collapse; the recurrent representations stay
+healthy (verified with [`tools/collapse_metrics.py`](tools/collapse_metrics.py)).
+The live thread is the **distillation objective**: forward-KL collapses;
+reverse-KL escaped the attractor early but mode-collapsed with more tokens; **JSD
+is the current test**. (An earlier external code review also found and fixed 5
+correctness bugs — notably a clobbered zero-init that was silently injecting
+noise into the hidden state each loop.) Full record:
+[`docs/training_runs.md`](docs/training_runs.md) ·
+[`docs/generation_probe_tracker.md`](docs/generation_probe_tracker.md) ·
+[`docs/review_action_plan.md`](docs/review_action_plan.md).
 
 **Honest scale note:** the trained checkpoints are **278M–632M proof-of-concept
 models.** They validate that the architecture + recipe work end-to-end (stable
@@ -64,9 +71,10 @@ mechanisms firing) — but they do **not** produce coherent text. That's a
 parameter-count ceiling, not a design flaw. This is a research / architecture
 project, not a deployable model.
 
-**One-line description:** *a custom recurrent-depth MoE model, architecturally
-inspired by the Mythos reconstruction, distilled from Ouro-2.6B-Thinking, and
-independently scaled via function-preserving model growth.*
+**One-line description:** *a research project on recurrent-depth MoE
+transformers — distillation efficiency, training dynamics, and calibrated
+uncertainty — distilled from Ouro-2.6B-Thinking and forked from OpenMythos,
+aimed at a small, private, local medical-information model.*
 
 See [`docs/roadmap.md`](docs/roadmap.md) for the full checkpoint lineage,
 eval results, and forward plan.
