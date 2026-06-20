@@ -31,8 +31,15 @@ Update after each probe run on a new checkpoint.
 |---|---|---|---|---|---|---|---|---|
 | step_1500 | ~25M | — | — | — | — | 1/4\* | 1/4 (orig 4-set) | `reports/collapse_freshrevkl_1500*.txt` |
 | step_3000 | ~50M | 3/4 | 3/4 | 1/4 | 3/3 | 2/4 | **~12/19** | `reports/collapse_freshrevkl_3000_full*.txt` |
+| step_5500 | ~90M | 0/4 | 0/4 | 0/4 | 0/3 | 0/4 | **0/19** ⬇ | `reports/collapse_freshrevkl_5500_full*.txt` |
 
-\* step_1500 used the original 4-prompt set (recurrent-depth / 2+2 / fibonacci / Roman), not the categorised set, so only partially comparable. At 1500 only Roman escaped; 2+2 and fibonacci were hard-locked. By 3000 those two freed up and Roman regressed — see noise note below.
+\* step_1500 used the original 4-prompt set (recurrent-depth / 2+2 / fibonacci / Roman), not the categorised set, so only partially comparable. At 1500 only Roman escaped; 2+2 and fibonacci were hard-locked. By 3000 those two freed up and Roman regressed.
+
+**⬇ REGRESSION (2026-06-20): the curve went DOWN, not up.** 3000→5500 (50M→90M): domain-aware
+repeats → **newline/digit collapse** across all categories; escape ~12/19 → **0/19**. Diagnosis:
+**pure reverse-KL mode-collapses** (mode-seeking → over-concentrates onto the dominant token,
+newline/digits) as training continues. The 3000 "Tier-1 working" read was a **transient diffuse
+phase**, not a trend. See training_runs.md 06-20. → pure `rev_kl` insufficient; **next test JSD**.
 
 ---
 
@@ -90,6 +97,7 @@ attractor), **diffuse/escaping** (wide distributions sampling can break out of).
 | **revkl_10k** | 278M | reverse-KL distill **continued** from the collapsed 24-expert base | `is is is …` | `R:\n\nThe The The` | collapse persists (can't un-teach) | `collapse_revkl_10k.txt` |
 | **freshrevkl @1500** | 278M | reverse-KL from **random init** ("teach it right from the start") | `correct the the the` (diffuse) | diffuse (esc. @T=0.8) | **diffuse, 1/4 escape** | `collapse_freshrevkl_1500*.txt` |
 | **freshrevkl @3000** | 278M | + ~25M tokens | domain-aware repeats, diffuse | locked (regressed) | **diffuse, ~12/19 escape** | `collapse_freshrevkl_3000_full*.txt` |
+| **freshrevkl @5500** | 278M | + ~40M more tokens | `\n\n\n…12…` newline/digit collapse | `\n\n\n…12…` | **REGRESSED — mode collapse, 0/19** | `collapse_freshrevkl_5500_full*.txt` |
 
 **The narrative these rows tell (cross-ref: training_runs.md 06-15/06-16, roadmap "Current status"):**
 1. **v4's "variety" was an artifact, not capability.** It looked best because **P0.1's
@@ -102,11 +110,25 @@ attractor), **diffuse/escaping** (wide distributions sampling can break out of).
    principled replacement for P0.1's noise) only nudged it from 1-word to 2-word repeats.
 4. **Reverse-KL *continued* on an already-collapsed base failed too** (revkl_10k) — the
    attractor was entrenched; you can't un-teach it.
-5. **Reverse-KL *fresh* (from random init) works** — never enters the attractor, stays
-   diffuse, escape spreads with tokens. Hence "teach it right from the start".
+5. **Reverse-KL *fresh* escaped the attractor early (1500→3000) but then COLLAPSED**
+   (5500). Pure reverse-KL is mode-seeking → over-concentrates onto the dominant token
+   (newline/digits) with continued training. So "teach it right from the start" got *past*
+   the exposure-bias attractor, only to fall into a *different* one (mode collapse). Pure
+   rev-KL is not the answer on its own.
 
-## Standing conclusions / what to watch
+## Standing conclusions / what to watch — UPDATED 2026-06-20 (verdict flipped)
 
-1. **Tier-1 (reverse-KL) is validated** — escape spread broadly with token doubling. Keep pouring tokens; defer Tier-2 (on-policy + teacher-mixed sampling).
-2. **Prescription unchanged:** more tokens → facts + coherence + escaping the remaining deep attractors; **SFT** → the OOD formats (chat/qa) + stopping behaviour.
-3. **Watch:** (a) does **math** escape rate climb with tokens, or do the counting attractors persist (would argue for a math-specific lever)? (b) does **Roman / fact-recall qa** come along, or stay the deepest holdout (the Tier-2 trigger if it persists while others deepen)? (c) do any **correct answers** start appearing (first sign of real knowledge, not just diffuse distributions)?
+1. **Pure `--divergence rev_kl` is NOT sufficient — it mode-collapses by ~90M tokens.** The
+   earlier "Tier-1 validated, keep pouring tokens" call (based on 1500→3000) was premature: two
+   improving points were a *transient diffuse phase*, not a trend. 5500 regressed to 0/19. Cheap,
+   valuable negative result (found for ~$0, pre-rented-compute).
+2. **Next test: JSD** — `--divergence jsd --jsd-beta 0.5`, **fresh from random init** (attractor
+   entrenches; can't un-teach a collapsed ckpt — cf. revkl_10k). JSD interpolates mode-covering
+   (fwd) + mode-seeking (rev) → should avoid the pure-mode-seeking collapse. If insufficient →
+   full **Tier-2** (teacher-mixed sampling α≈0.2 + on-policy; the MiniLLM/GKD recipe for exactly
+   this).
+3. **Lesson for reading the curve:** don't call a trend from two points. Require a *third*
+   checkpoint before declaring direction — the 1500→3000→5500 arc (up, then down) is the case study.
+4. **Still open (carry to the JSD run):** (a) does any divergence setting reach *correct answers*
+   (real knowledge) rather than just diffuse-vs-collapsed? (b) does the in-format vs OOD-format gap
+   (prose/code/math vs chat/qa) hold under a non-collapsing objective?

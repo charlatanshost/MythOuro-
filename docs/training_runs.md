@@ -716,3 +716,40 @@ So reverse-KL keeps the distribution **diffuse** (shallow attractor) on the diff
 - **Verdict pending the ~3k read:** does diffuse/recoverable **spread to all 4 prompts + deepen**
   (longer varied span, less repetition) as tokens grow? That calls Tier-1-sufficient vs need-Tier-2.
 - Leaning **on-track** (right direction, mechanism confirmed) — NOT yet a "Tier-1 wins" call.
+
+---
+
+# 2026-06-20 — fresh reverse-KL run: REGRESSION at 5500 → pure rev-KL mode-collapses
+
+**Negative result that overturns the 3k optimism.** Tracked the run across three checkpoints
+with the categorised probe (`collapse_metrics --probe-set all`, greedy + T=0.8). Full reports:
+`reports/collapse_freshrevkl_{3000,5500}_full*.txt`.
+
+## The trajectory (escape rate under T=0.8 sampling, "not clearly degenerate")
+| step | ~tokens | greedy character | T=0.8 escape | call |
+|---|---|---|---|---|
+| 1500 | ~25M | diffuse on 2/4 | 1/4 | transient diffuse |
+| 3000 | ~50M | **domain-aware** repeats (code→`def`/`self`, math→`x`/`r`, prose words) | **~12/19** | looked encouraging |
+| 5500 | ~90M | **newline/digit collapse** (`\n\n\n…`, `12`, `222`) across ALL categories | **0/19** | **regressed** |
+
+3000→5500: domain-aware structure → degenerate newline/digit attractor; generated rep-corr
+back up to 0.7–0.99 (escapers were 0.31–0.60 at 3000). More tokens made it **worse**.
+
+## Diagnosis: pure reverse-KL mode collapse
+Reverse-KL is **mode-seeking** → with continued training it over-concentrates onto the
+unconditionally-dominant mode (newline/digits, ubiquitous in code/math/web). The 3000 diffuse
+phase was the model passing *through*; continued training drove it into the dominant-mode
+attractor. **This is the documented failure of *pure* reverse-KL** — exactly why GKD uses **JSD**
+(interpolated fwd/rev) and MiniLLM adds **teacher-mixed sampling** (see ideas.md deep-dives).
+The 3000 "Tier-1 working, keep tokens" call was **premature** — two improving points (1500→3000)
+were a transient, not a trend.
+
+## Consequence / next
+- **Pure `--divergence rev_kl` is NOT sufficient — it mode-collapses by ~90M tokens.** Cheap,
+  valuable negative result (found for ~$0, before any rented compute).
+- **Next test: JSD** — `--divergence jsd --jsd-beta 0.5`, fresh from random init (attractor
+  entrenches; can't un-teach a collapsed ckpt — cf. revkl-continue @10k). Balances mode-covering
+  + mode-seeking to avoid the pure-mode-seeking collapse.
+- If JSD insufficient → full **Tier-2** (teacher-mixed sampling α≈0.2 + on-policy), the MiniLLM/GKD
+  recipe built for exactly this.
+- The 8000 checkpoint from this run is not worth reading (collapse will deepen, not recover).
