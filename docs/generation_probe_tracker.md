@@ -32,6 +32,7 @@ Update after each probe run on a new checkpoint.
 | step_1500 | ~25M | — | — | — | — | 1/4\* | 1/4 (orig 4-set) | `reports/collapse_freshrevkl_1500*.txt` |
 | step_3000 | ~50M | 3/4 | 3/4 | 1/4 | 3/3 | 2/4 | **~12/19** | `reports/collapse_freshrevkl_3000_full*.txt` |
 | step_5500 | ~90M | 0/4 | 0/4 | 0/4 | 0/3 | 0/4 | **0/19** ⬇ | `reports/collapse_freshrevkl_5500_full*.txt` |
+| **JSD** step_4000 | ~65M | 0/4 | 0/4 | 0/4 | 0/3 | 0/4 | **0/19 + rank→1** ❌❌ | `reports/collapse_freshjsd_4000_full*.txt` |
 
 \* step_1500 used the original 4-prompt set (recurrent-depth / 2+2 / fibonacci / Roman), not the categorised set, so only partially comparable. At 1500 only Roman escaped; 2+2 and fibonacci were hard-locked. By 3000 those two freed up and Roman regressed.
 
@@ -40,6 +41,16 @@ repeats → **newline/digit collapse** across all categories; escape ~12/19 → 
 **pure reverse-KL mode-collapses** (mode-seeking → over-concentrates onto the dominant token,
 newline/digits) as training continues. The 3000 "Tier-1 working" read was a **transient diffuse
 phase**, not a trend. See training_runs.md 06-20. → pure `rev_kl` insufficient; **next test JSD**.
+
+**JSD result (2026-06-21): WORSE — representation collapse.** JSD @4000 (~65M) → all 19
+prompts output `...` (greedy) / punctuation soup (T=0.8), with **token-corr ≈ 1.0,
+effective rank ≈ 1.0–1.6** = genuine **hidden-state collapse** (the rank→1 mode fwd/rev-KL
+never hit — their reps stayed rank 5–19). So: forward-KL → output collapse; reverse-KL →
+output collapse (least-bad, escaped to 12/19 @50M first); **JSD → representation collapse,
+earlier and worse.** No divergence alone is the fix. **Next lever is NOT another divergence —
+it's the architectural stability recipe** (`--use-sandwich-norm --use-depth-aware-init`, ±
+lower LR) paired with rev-KL, now justified because JSD finally surfaced the rank-collapse
+those fixes target. See training_runs.md 06-21.
 
 ---
 

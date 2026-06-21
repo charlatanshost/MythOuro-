@@ -753,3 +753,45 @@ were a transient, not a trend.
 - If JSD insufficient → full **Tier-2** (teacher-mixed sampling α≈0.2 + on-policy), the MiniLLM/GKD
   recipe built for exactly this.
 - The 8000 checkpoint from this run is not worth reading (collapse will deepen, not recover).
+
+---
+
+# 2026-06-21 — fresh JSD run: REPRESENTATION COLLAPSE (rank→1) at 4000
+
+JSD (`--divergence jsd --jsd-beta 0.5`, fresh from random init, `checkpoints_freshjsd`)
+to test whether balancing fwd+rev divergence avoids pure rev-KL's mode collapse. Read
+@ step 4000 (~65M tokens), `--probe-set all`, on the free 4060. Reports:
+`reports/collapse_freshjsd_4000_full*.txt`.
+
+## Result: worse than rev-KL — and a NEW failure mode
+- **Greedy:** all 19 prompts → `..............` (just periods).
+- **T=0.8:** random punctuation/digit soup (flat dist; entropy ~7–8, top_prob ~0.05–0.12).
+- **Decisive:** token-corr ≈ **0.99–1.00**, effective rank ≈ **1.0–1.6** on ALL prompts
+  (prompt *and* generated) → genuine **hidden-state / representation collapse** (every
+  token → ~one vector). Earlier (65M) than rev-KL's collapse (90M), and at the
+  *representation* level, not just the output.
+
+## Why it matters: recurrent collapse FINALLY appeared
+fwd-KL and rev-KL produced *output* collapse with **healthy reps** (rank 5–19) — hence
+the 06-16 diagnosis "exposure bias, NOT hidden-state collapse," and the demotion of the
+Huginn/MeSH stability fixes. **That held for fwd/rev-KL — but JSD breaks it:** it induced
+the rank→1 recurrent collapse those fixes target. Refined diagnosis: *both output-collapse
+(fwd/rev-KL) and representation-collapse (JSD) are reachable; the divergence selects which.*
+
+## Divergence sweep
+| objective | failure | reps |
+|---|---|---|
+| forward-KL | output collapse (hard repetition) | healthy (rank 5–19) |
+| reverse-KL | output collapse (escaped to 12/19 @50M, collapsed @90M) | healthy |
+| JSD | **representation collapse (rank→1) @65M** | **collapsed** |
+
+→ No divergence alone is the fix; rev-KL is least-bad; **JSD is worst.**
+
+## Pivot (next experiment)
+Not another divergence — the **architectural stability recipe**, now justified by
+evidence (we finally have the rank-collapse it targets): **rev-KL +
+`--use-sandwich-norm --use-depth-aware-init`** (± lower LR), fresh from random init.
+Optionally read an earlier JSD ckpt (1000/2000) to localize when collapse set in.
+Caveat: one data point, but unambiguous/uniform across all 19 prompts + both decode
+modes (not a noisy two-point trend); started healthy (~step 20 hard-CE dropping) →
+training-dynamics collapse, not a step-1 bug (JSD-impl interaction not fully ruled out).
