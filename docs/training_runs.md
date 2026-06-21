@@ -787,11 +787,29 @@ the rank→1 recurrent collapse those fixes target. Refined diagnosis: *both out
 
 → No divergence alone is the fix; rev-KL is least-bad; **JSD is worst.**
 
-## Pivot (next experiment)
-Not another divergence — the **architectural stability recipe**, now justified by
-evidence (we finally have the rank-collapse it targets): **rev-KL +
-`--use-sandwich-norm --use-depth-aware-init`** (± lower LR), fresh from random init.
-Optionally read an earlier JSD ckpt (1000/2000) to localize when collapse set in.
-Caveat: one data point, but unambiguous/uniform across all 19 prompts + both decode
-modes (not a noisy two-point trend); started healthy (~step 20 hard-CE dropping) →
-training-dynamics collapse, not a step-1 bug (JSD-impl interaction not fully ruled out).
+## Mechanism (from the training log) — optimization instability, NOT the objective per se
+The loss log reveals *how* it collapsed:
+- **Healthy early** (~step 10–700): loss 6.17→2.6, hard CE 10.9→4.3, **gnorm calm ~0.8–8**.
+- **Fast fit** (~700–800): loss ~1.4, hard CE ~2.
+- **Destabilizes from ~step 1100**: loss bounces (1.3↔2.7) and **gnorm explodes** — 15.9
+  (1280), 26.6 (1380), 29.8 (1510), 30.1 (1620) vs ~1–8 early. MoE balance degrades in
+  step (cv 0.37→0.89; router bias‖·‖₂ 0.15→1.06).
+- **ρ(A) stays healthy** (0.35→0.32, ≪1 throughout) → the **recurrence is NOT exploding**;
+  the instability is in the **gradients/optimization**, not the LTI fixed point.
+- **soft (JSD) term plateaus** (~0.85–0.95) while hard CE plummets → model fit the data,
+  the optimization tore itself up doing it, reps collapsed (rank→1) by 4000.
+
+→ The rank→1 collapse is the **endpoint of an optimization that went unstable (gnorm
+explosion)**, not a mysterious objective failure. **LR 3e-4 is too hot for this config.**
+
+## Pivot (next experiment) — evidence-backed recipe
+Target the observed instability directly: **rev-KL, fresh from random init, plus**
+- **Lower LR** 3e-4 → **1e-4–1.5e-4** (the gnorm-30 spikes demand it).
+- **Tight gradient clipping** (~1.0) — cap the spikes so they can't wreck the reps.
+- **`--use-sandwich-norm --use-depth-aware-init`** — architectural conditioning (Huginn).
+
+Likely helps **both** failure modes (rev-KL output collapse + JSD rep collapse) if both
+were driven by the same hot-LR instability. Optionally read an earlier JSD ckpt (1000/1500)
+to localize collapse onset. Caveat: one *probe* data point, but the **training log
+corroborates** (gnorm explosion) → high confidence this is optimization instability, not a
+step-1 bug (JSD-impl interaction still not fully ruled out).
