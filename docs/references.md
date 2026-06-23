@@ -119,6 +119,23 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
 - **Microsoft MDASH** (2026 announcement) & **OpenRouter Fusion** — multi-model
   orchestration examples ("disagreement is information"); informed the parallel-loops
   arbitration discussion.
+- **Xiaomi ~1000 tok/s MoE — mega-kernel / persistent-kernel serving** — YouTube
+  `mdPIjy-1Q6g`. *Kernel-launch-overhead diagnosis (transfers to looped RDT decode) +
+  the mega-kernel solution (rejected for our scale). Vetted writeup:
+  `docs/decode_kernel_optimization.md` — proportionate fix is `torch.compile` + graph
+  capture, not bespoke kernels.*
+- **VibeThinker-3B** — WeiboAI 2026. arXiv **2606.16140**; github `WeiboAI/VibeThinker`;
+  hf `WeiboAI/VibeThinker-3B`. *Dense 3B (Qwen2.5-Coder-3B) at frontier reasoning via
+  "Spectrum-to-Signal" (curriculum SFT → MaxEnt RL/MGPO → offline self-distillation).
+  **Validates the Compression-Coverage = reasoning-vs-knowledge split** that our
+  RDT-reasoning + retrieval-knowledge bet depends on. Borrow/caveat analysis (RL needs
+  verifiable rewards medical lacks; dense not RDT) in `docs/ideas.md` reference shelf.*
+- **Nemotron-3-Ultra** — NVIDIA 2026. research.nvidia.com/labs/nemotron/Nemotron-3-Ultra.
+  *Frontier 550B/55B-active MoE **Hybrid Mamba-Attention**; notable for open datasets
+  (173B code + synthetic) + recipe. Relevant pieces: clean-licensed **data to vet**,
+  **MOPD** (multi-teacher on-policy distillation) for the future on-policy stage,
+  **Mamba-hybrid** long-context validation. NOT recurrent-depth (silent on our core);
+  NVFP4 quant is Blackwell-only, not our Intel path. Borrow/caveat in `docs/ideas.md`.*
 
 ---
 

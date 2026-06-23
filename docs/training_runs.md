@@ -813,3 +813,86 @@ were driven by the same hot-LR instability. Optionally read an earlier JSD ckpt 
 to localize collapse onset. Caveat: one *probe* data point, but the **training log
 corroborates** (gnorm explosion) → high confidence this is optimization instability, not a
 step-1 bug (JSD-impl interaction still not fully ruled out).
+
+---
+
+# 2026-06-21 — JSD COMPLETE POST-MORTEM (full log to step 4056): n_loops 2→3 was the knockout
+
+The 4000-probe entry above was written before the full training log was reviewed. The log to
+the stop point (step 4056, clean SIGINT) completes the failure story and **refines the
+mechanism**. Raw: freshjsd console log (lr 3e-4, **no** stability flags, `checkpoints_freshjsd`,
+278,871,411 params).
+
+## Full gnorm trajectory — four phases
+
+| phase | steps | gnorm | n_loops | state |
+|---|---|---|---|---|
+| calm | ≤1000 | 0.8–8 | 2 | healthy, fitting fast (loss→1.4 by step 750) |
+| chronic instability | 1000–3000 | 15–55 (routinely) | 2 | never settles; loss bounces 1.3↔2.7; cv/bias climbing |
+| **true explosion** | 3100–3400 | **214 (3160), 336 (3380), 1593 (3390)** | 2 | runaway; loss *rising* (→4.1 by 3500) |
+| **catastrophe** | 3510 (`n_loops 2→3`) | **4271 → 1,000,446 (3750)** | 3 | knockout; `unc` breaks to 4.28; `lb`→5+; cv→2.18 |
+| wreckage | 3510–4056 | clip-bounces 1–8000 | 3 | loss stuck **4.5–4.9** (was 1.5); never recovers |
+
+## The decisive refinement: instability is at n_loops=2; loop-3 is the amplifier, NOT the cause
+- The runaway gnorm (214→1593) at steps 3100–3400 happened **entirely at n_loops 2**, *before* the
+  curriculum added the 3rd loop at 3510. → **loop-depth is not the root cause** (rules out the
+  "3rd-loop-triggered" hypothesis; the loop curriculum here lands at ~3500, not ~1500).
+- BUT the `n_loops 2→3` transition at 3510 was the **catastrophic finishing blow** on an
+  already-diverging model: gnorm 173 (3500, n=2) → **4271** (3510, n=3) → **1,000,446** (3750).
+  Adding loop-depth to an already-unstable optimization = detonation.
+- Net: **hot-LR optimization instability is the disease; the loop-depth increase is what turned a
+  bad run into an unrecoverable one.** (User caught this from the loop-timing — confirmed by the log.)
+
+## End state (completes the 4000 probe's rank→1 finding)
+- **Permanent loss regression:** ~1.5 (step 2000) → **~4.5–4.9** (3500+), hard CE 2→7–11. Destroyed,
+  not merely degraded — consistent with the probe's rank→1 representation collapse.
+- **Expert collapse:** cv→**2.18** (step 3600), router bias‖·‖₂ 0.15→3.0+ — routing concentrated onto
+  ~one expert (the MoE face of the rank→1 collapse).
+- **ρ(A) stayed healthy** (0.30–0.34) to the very end → the recurrence never exploded; the LTI fixed
+  point was fine throughout. The blowup was **100% gradients/optimization.**
+
+## Confirmed conclusion
+**LR 3e-4 is too hot for this config**, full stop. Textbook optimization divergence (chronic high
+gnorm → runaway → detonation at the depth-curriculum step), not an objective-specific or
+recurrence-specific pathology. Direct motivation for the stability run below.
+
+---
+
+# 2026-06-21 — rev-KL STABILITY run, IN PROGRESS (the evidence-backed fix)
+
+Fresh from random init, the recipe the post-mortem points to: **rev-KL + lr 1e-4 +
+`--use-sandwich-norm --use-depth-aware-init`**, grad-clip 1.0, `checkpoints_revkl_stable`,
+**278,884,211 params** (sandwich-norm adds ~13k vs JSD's 278,871,411). Paused at step 585 (clean
+SIGINT save → `step_0000585.pt`); resuming overnight from the same command (auto-resume).
+
+## Early read (to step 585) — calm, but NOT yet past the danger zone
+- **gnorm:** high at init (18–20, steps 10–50 — the depth-aware-init signature under near-zero-LR
+  warmup; harmless big-grad-tiny-step), **settles to ~1–2.3 by step 60 and holds there through 585**
+  at peak LR (1e-4 reached ~step 510).
+- **Honest caveat: at matched steps, JSD was *also* calm here** (JSD gnorm ~1.5 at step 580). Step 585
+  is *before* the zone that discriminates → **no verdict yet.**
+- **Distillation progressing:** rev-KL soft term **decreasing 6.5→3.7** (student converging toward
+  teacher) — contrast JSD's soft *plateau* (~0.9). MoE cv healthier than JSD at matched steps
+  (0.32–0.78 vs JSD's later 0.89+). ρ(A) 0.36.
+- **Slower-but-stable tradeoff (expected):** loss higher than JSD at matched steps (lower LR learns
+  slower); the 12k-step budget absorbs it. Stable-and-slower > fast-and-collapses.
+
+## The verdict zones (watch the gnorm column on resume)
+| zone | JSD did (lr 3e-4) | "passing" |
+|---|---|---|
+| 1000–1500 | crept to 15–40 | stays ~1–3 → first real evidence |
+| 3100–3400 | **exploded 100–1600** (still n_loops 2) | stays calm → strong |
+| **~3510 (`n_loops 2→3`)** | **4271 → 1,000,000, model destroyed** | single/double-digit gnorm → **the win** |
+
+If gnorm clears the `n_loops 2→3` transition without detonating, the hot-LR diagnosis is confirmed
+and the fix holds. Then `--probe-set all` read at the next checkpoint past ~3600 to confirm the model
+is **diffuse/healthy**, not stable-but-degenerate.
+
+## Teacher note (settled 2026-06-21)
+Ouro-2.6B-Thinking is **the only trained RDT with open weights** (others found are untrained
+architecture releases / Ouro forks). The student tokenizer was *built to match* it for clean
+logit distillation. So the teacher is a **fixed constant**, not a variable — and it's not the
+instability (distillation consumes only the teacher's output logits; the blowup is student-side, ρ(A)
+healthy). Ceiling leverage lives on the **student side** (tokens, on-policy/GKD, feature distillation
+— the RDT→RDT match enables the latter). A teacher swap, if ever needed, goes via a **tokenizer
+converter** (cross-tokenizer/ULD alignment), not a re-foundation.

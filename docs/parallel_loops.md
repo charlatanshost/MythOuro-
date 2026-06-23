@@ -168,3 +168,13 @@ Use the **idle compute that sequential recurrent-depth decode leaves stranded** 
 **structurally-diverse parallel trajectories**, arbitrated per-token by the existing
 uncertainty head — a quality-for-otherwise-wasted-compute feature for *inference* on a
 coherent base, not a training speedup.
+
+---
+
+## See also
+
+- [decode_kernel_optimization.md](decode_kernel_optimization.md) — the **orthogonal**
+  decode lever from the *same* latency/dispatch-bound diagnosis: kernel-launch overhead
+  in the looped block, fixed proportionately with `torch.compile` + graph capture (not
+  mega-kernels). Parallel paths fill stranded *compute*; graph capture removes per-loop
+  *launch overhead* — combinable, both stage-gated on a coherent base.

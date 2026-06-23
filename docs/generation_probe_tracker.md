@@ -52,6 +52,16 @@ it's the architectural stability recipe** (`--use-sandwich-norm --use-depth-awar
 lower LR) paired with rev-KL, now justified because JSD finally surfaced the rank-collapse
 those fixes target. See training_runs.md 06-21.
 
+**JSD full-log post-mortem (2026-06-21): the rank→1 collapse was the endpoint of a gnorm
+explosion, and the trigger is LR.** Reviewing the complete training log to step 4056: gnorm was
+chronically unstable from ~step 1000 (15–55 at n_loops 2), truly exploded at 3100–3400 (**214→1593,
+still n_loops 2**), then detonated when the loop curriculum added the 3rd loop at step 3510
+(**4271 → 1,000,446**), permanently wrecking the model (loss 1.5→4.5, cv→2.18 expert collapse).
+**ρ(A) stayed healthy (0.30–0.34) throughout** → not the recurrence. Two conclusions: (1) **LR 3e-4
+is too hot** (the disease); (2) the **`n_loops 2→3` transition is an amplifier, not the cause** —
+instability ran away *before* it, ruling out the loop-depth-trigger hypothesis. This is the direct
+basis for the rev-KL stability run below.
+
 ---
 
 ## Roadmap-hypothesis cross-reference
@@ -143,3 +153,20 @@ attractor), **diffuse/escaping** (wide distributions sampling can break out of).
 4. **Still open (carry to the JSD run):** (a) does any divergence setting reach *correct answers*
    (real knowledge) rather than just diffuse-vs-collapsed? (b) does the in-format vs OOD-format gap
    (prose/code/math vs chat/qa) hold under a non-collapsing objective?
+
+## IN PROGRESS — rev-KL stability run (2026-06-21): the LR fix on trial
+
+Fresh from random init: **rev-KL + lr 1e-4 + `--use-sandwich-norm --use-depth-aware-init`**
+(`checkpoints_revkl_stable`). The first run aimed squarely at the gnorm-explosion diagnosis, not
+the divergence. Paused at step 585 (resuming overnight). **No probe read yet** — too early; the
+discriminating zones are deeper.
+
+- **Training-metric read so far (to 585):** gnorm settles ~1–2.3 at peak LR (vs JSD heading to 15+);
+  rev-KL soft term *decreasing* 6.5→3.7 (converging, not plateauing); cv healthier than JSD at
+  matched steps. **But JSD looked equally calm at 585** — verdict requires clearing the danger zone.
+- **The gnorm verdict zones (the whole test):** 1000–1500 (JSD crept to 15–40), 3100–3400 (JSD
+  exploded 100–1600 at n_loops 2), and especially **~3510, `n_loops 2→3`** (JSD went 4271→1,000,000
+  and died). Staying single/double-digit through that transition = the fix confirmed.
+- **First probe read** = `--probe-set all` at the first checkpoint past ~3600, IF gnorm clears the
+  zone — to confirm the model is *diffuse/healthy*, not stable-but-degenerate. Add its escape-rate
+  row to the cross-comparison table then.
