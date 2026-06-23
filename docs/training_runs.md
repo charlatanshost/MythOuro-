@@ -896,3 +896,50 @@ instability (distillation consumes only the teacher's output logits; the blowup 
 healthy). Ceiling leverage lives on the **student side** (tokens, on-policy/GKD, feature distillation
 — the RDT→RDT match enables the latter). A teacher swap, if ever needed, goes via a **tokenizer
 converter** (cross-tokenizer/ULD alignment), not a re-foundation.
+
+---
+
+# 2026-06-23 — rev-KL stability EVAL @3216: stability won, but formal stats favor fwd-KL (the calibration tax)
+
+First eval-harness run on the stability checkpoint (`step_0003216.pt`, ~53M tokens, **pre**-`n_loops
+2→3` transition; `eval/harness.py`, n=500):
+
+| metric | rev-KL-stable @3216 | moe_s0 (fwd-KL) | continuation | read |
+|---|---|---|---|---|
+| **PPL** | **8.21** | 5.72 | 3.06 | mid-pack |
+| **loop_eff** | 0.483 (depth 1.93/4) | 0.500 | 0.500 | healthy |
+| **ECE** | **0.1997** | 0.015 | 0.0052 | **~10–40× worse** |
+| **ARC** | 0.234 | — | — | ≈ random (0.25) |
+| GSM8K | (pending; ~0 expected) | — | — | no math at this scale |
+
+## Two findings
+1. **PPL 8.21 mid-pack — but NOT comparable to the fwd-KL runs.** rev-KL is mode-*seeking* → trades
+   mode-covering PPL for concentration on teacher modes; 8.21 vs moe_s0's 5.72 is the **expected
+   objective tradeoff, not a regression.** (Also confirms the earlier caution: eval 8.21 ≫ the
+   training-stream ~2 — low training loss never meant "best version.")
+2. **ECE 0.1997 is the real flag — a calibration regression.** Every prior run was 0.005–0.04; this
+   is badly **overconfident**, consistent with rev-KL mode-seeking (sharpens onto modes → poor
+   calibration). **Genuine tension with the honest-specialist / medical thesis**, which depends on a
+   *well-calibrated* uncertainty head: the recipe that trains stably + escapes repetition (rev-KL) is
+   at odds with the recipe that calibrates well (fwd-KL). Caveat: mid-training, pre-transition,
+   n_loops=4-on-n_loops=2 eval → watch whether it improves; but 0.20 is a flag, not noise.
+
+## Honest verdict
+**Stability = solved; formal stats = fwd-KL still wins (PPL *and* ECE).** rev-KL-stable's edge is
+**stability + generation trajectory + diffuse-not-collapsed**, NOT the formal metrics — the eval
+crowns moe_s0/continuation on the numbers. Different axes; PPL/ECE measure what fwd-KL is good at.
+
+## Next lever — the "cover all areas" (hybrid) question
+The fwd/rev hybrid **already exists**: `--divergence jsd --jsd-beta` (Jensen-Shannon interpolates
+fwd+rev). We tried JSD once and it rank→1 collapsed — **but that was LR-instability (gnorm explosion
+at 3e-4), NOT JSD** (see 06-21 post-mortem). So **stable-JSD is the untested, well-motivated
+experiment:** `--divergence jsd --jsd-beta 0.5 --lr 1e-4 --use-sandwich-norm --use-depth-aware-init`
+fresh — JSD on the same stable footing that just tamed rev-KL. Could give fwd calibration/PPL + rev
+diffuseness; `jsd-beta` dials the balance. **Honest caveat:** interpolations can *compromise*
+(mediocre-at-both) rather than *combine* (great-at-both) — no guarantee.
+
+**Calibration specifically may be better fixed by targeted levers than the divergence:** (a) bump
+**`--unc-coeff`** (the existing `uncertainty_calibration_loss` directly pressures ECE); (b) post-hoc
+**temperature scaling** at inference (cheap, standard ECE fix); (c) **on-policy** (helps exposure-bias
+*and* calibration). So "cover all areas" is likely a **stack of per-axis tools** (stable-JSD or rev-KL
+for stability/diffuseness + unc-coeff / temp-scaling for calibration), not one magic divergence.

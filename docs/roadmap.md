@@ -23,13 +23,26 @@ the README "Acknowledgements" and "Licensing & data provenance" sections.
 **Full research credits:** every paper, dataset, and tool that informed the design
 is catalogued in `docs/references.md` (with how each was used).
 
-**Current status (2026-06-17):** the generation-degeneration investigation is
+**Current status (2026-06-17, updated 2026-06-23):** the generation-degeneration investigation is
 complete — it is **exposure bias** (a learned repetition attractor), **not**
 recurrent/hidden-state collapse (reps are healthy; verified with
 `tools/collapse_metrics.py`). v4's old "edge" was train-time noise co-adaptation,
 not capability. Cure = **on-policy/GKD + tokens**; decode/inference-noise band-aids
 ruled out. Full chain in `docs/training_runs.md` (06-16 entries); prioritised
 backlog in `docs/ideas.md`.
+
+**UPDATE 2026-06-23 — training instability SOLVED (a separate axis from the exposure bias above).**
+The divergence-collapse fight (rev-KL output collapse @90M, JSD rank→1 @65M) was root-caused to
+**LR — a gnorm explosion at 3e-4**, not the objective or the recurrence (ρ(A) stayed healthy
+throughout). The **stability recipe** (`rev_kl + lr 1e-4 + --use-sandwich-norm --use-depth-aware-init`)
+fixes it: gnorm flat <1.0, MoE cv 0.18 — the healthiest run yet, and **still *improving* at 53M where
+the old rev-KL was already dead.** The base now **trains stably**, which is what unlocks "pour tokens +
+on-policy" without it tearing itself apart. **New tension (06-23 eval):** rev-KL trades **calibration**
+— eval ECE **0.20** (overconfident) vs fwd-KL's 0.015 (mode-seeking sharpens onto modes) → at odds with
+differentiator #1 below. **Next:** finish the current run through the `n_loops 2→3` transition (the
+stability verdict), then **stable-JSD** (the fwd/rev hybrid, untested on the stable footing) + targeted
+calibration levers (`--unc-coeff` / temp-scaling / on-policy). Full chains: `docs/training_runs.md`
+(06-21/06-23), `docs/generation_probe_tracker.md`.
 
 ---
 
@@ -55,7 +68,12 @@ off.*
 small-model consolation:**
 1. **Calibrated honesty.** Most small local models hallucinate with total
    confidence — their worst, most-complained-about flaw. MythOuro has a
-   working calibrated uncertainty head (ECE 0.01–0.04, demonstrated). A model
+   working calibrated uncertainty head (ECE 0.01–0.04, demonstrated **on forward-KL
+   runs**). **⚠️ Tension (2026-06-23):** the current stability-winning *reverse-KL*
+   recipe regresses this to **ECE ~0.20** (mode-seeking → overconfident) — so this
+   differentiator is in *active tension* with the anti-repetition/stability recipe;
+   resolving it (stable-JSD / `--unc-coeff` / temp-scaling / on-policy) is an open
+   question, **not** a settled property. A model
    that reliably says "I don't know" is *more useful* than a same-size model
    that doesn't — and a 3B that knows its limits beats a 3B that doesn't.
 2. **Adaptive compute.** Recurrent-depth + ACT spends more on hard tokens,

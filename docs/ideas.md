@@ -186,6 +186,24 @@ failing to stop it. New suspect, and a reason to switch divergence.
    gaming the teacher via repeated phrases). High value.
 3. **Length normalization** — removes short-sequence bias.
 
+### ⚠️ Empirical update (2026-06-23) — offline rev-KL REGRESSED ECE; calibration ≠ divergence-alone
+The eval on the stable rev-KL run (`step_0003216`, ~53M tok) measured **ECE 0.20** — *worse* than
+fwd-KL's 0.015, which **contradicts takeaway #1's "ECE improves" if read as offline-rev-KL.**
+Reconciliation: the paper's ECE-improvement is for the **full on-policy MiniLLM** recipe, *not* the
+reverse-KL divergence alone. So **offline rev-KL is overconfident** (mode-seeking sharpens onto modes
+→ poor ECE); **the calibration benefit comes from the *on-policy* component**, not the divergence swap.
+Implication: don't expect rev-KL — *or* stable-JSD — to fix calibration on its own.
+
+**Calibration as its own axis — backlog levers (cheap, no on-policy needed):**
+- **Bump `--unc-coeff`** — the `uncertainty_calibration_loss` is *already in the loss*; weight it up
+  to pressure ECE directly, independent of the divergence. Cheapest test.
+- **Post-hoc temperature scaling** at inference — the standard, near-free ECE fix (fit one scalar T on
+  a held-out set; doesn't touch training).
+- **On-policy** (above) — the paper's *actual* ECE lever; helps exposure-bias *and* calibration, but
+  RLHF-cost. The deferred deep fix.
+
+Cross-ref: roadmap "Current status" + differentiator-#1 tension; training_runs.md 06-23 eval.
+
 ### Results / scale / cost
 - 1–6% ROUGE-L over SeqKD across **GPT-2 120M–760M, OPT 1.3–6.7B, LLaMA 7B** (our
   size range covered); larger gains OOD and on longer responses (≥6 tokens).

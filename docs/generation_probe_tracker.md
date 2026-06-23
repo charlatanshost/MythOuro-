@@ -33,6 +33,15 @@ Update after each probe run on a new checkpoint.
 | step_3000 | ~50M | 3/4 | 3/4 | 1/4 | 3/3 | 2/4 | **~12/19** | `reports/collapse_freshrevkl_3000_full*.txt` |
 | step_5500 | ~90M | 0/4 | 0/4 | 0/4 | 0/3 | 0/4 | **0/19** ⬇ | `reports/collapse_freshrevkl_5500_full*.txt` |
 | **JSD** step_4000 | ~65M | 0/4 | 0/4 | 0/4 | 0/3 | 0/4 | **0/19 + rank→1** ❌❌ | `reports/collapse_freshjsd_4000_full*.txt` |
+| **rev-KL-STABLE** step_3216 | ~53M | 0/4 | 0/4 | 0/4 | 0/3 | 0/4 | **0/19 strict — but ✅ healthy reps + domain lock-ons + improving (NOT collapse)** | console 2026-06-23 (save to `reports/`) |
+
+> **⚠️ The three "0/19" rows mean OPPOSITE things — do not read them as equivalent:**
+> `freshrevkl@5500` = 0/19 because it **regressed into mode-collapse** (got worse). `JSD@4000` =
+> 0/19 because of **rank→1 representation collapse** (catastrophic). `rev-KL-stable@3216` = 0/19
+> only by the strict escape flag, but reps are **healthy (rank 2–13)**, it shows **domain-appropriate
+> lock-ons + sentence-like fragments**, and it is **still *improving* with tokens, not collapsing** —
+> the *recoverable* exposure-bias regime, the best 0/19 we've had. Escape-rate alone is misleading
+> here; see the result note below.
 
 \* step_1500 used the original 4-prompt set (recurrent-depth / 2+2 / fibonacci / Roman), not the categorised set, so only partially comparable. At 1500 only Roman escaped; 2+2 and fibonacci were hard-locked. By 3000 those two freed up and Roman regressed.
 
@@ -61,6 +70,39 @@ still n_loops 2**), then detonated when the loop curriculum added the 3rd loop a
 is too hot** (the disease); (2) the **`n_loops 2→3` transition is an amplifier, not the cause** —
 instability ran away *before* it, ruling out the loop-depth-trigger hypothesis. This is the direct
 basis for the rev-KL stability run below.
+
+**rev-KL STABILITY result @3216 (2026-06-23, ~53M tokens): the "0/19" that means the OPPOSITE of
+the collapse rows — and the first run on a healthy trajectory.** Probed the stability run
+(lr 1e-4 + sandwich-norm + depth-aware-init) at step 3216 (*pre-`n_loops 2→3` transition* — paused
+when home). Training metrics rock-solid: gnorm flat <1.0 *through the 3100–3200 zone where JSD hit
+214* (3160: 0.91 vs JSD 214), hard CE **0.7**, MoE **cv 0.18**. Generation:
+- **Greedy:** lateral vs the 1655 probe — still degenerate (the standing "teacher-forced loss ≠
+  free-gen coherence" gap; hard CE 0.7 did *not* buy coherence).
+- **T=0.8 (the meaningful read — rev-KL's edge is under sampling):** **0/19 strict escape**, BUT
+  qualitatively the best yet — **domain-appropriate lock-ons** (`primary`→"primary colors",
+  `np`→numpy) and **sentence-like fragments** (`the first: but because a`, `If the second… The
+  entire second:`, `They were in`) before collapse. More contextual relevance + grammatical
+  structure than the **1655** probe (same run, earlier — a fair within-run comparison).
+- **Reps healthy** (generated rank 2–13, *not* JSD's rank→1) → **exposure-bias output degeneration**
+  (recoverable), **not** representation collapse.
+
+**Honest comparison caveat vs freshrevkl@3000 — do NOT oversell this as a clean win.** On the *binary
+escape metric*, this run @3216 (**0/19**) reads *below* the old pure-rev-KL @3000 (**12/19**) at a
+similar ~50M tokens. That gap is confounded three ways: (a) this probe is `n_loops=4` inference on
+`n_loops=2` training (pessimistic, untrained depth) whereas the shorter freshrevkl run was likely
+depth-matched at 3000; (b) escape is binary and misses the *character* gains (lock-ons/fragments);
+(c) **critically, the old 12/19 was a transient that collapsed to 0/19 by 90M**, while this run's
+reps are healthy and *still improving*. Net: "better" here is about **trajectory + rep-health**, NOT
+the escape number — the headline metric actually favors the old (doomed) run. The honest,
+depth-matched verdict needs a **post-transition probe** (n_loops 3–4 trained *and* inferenced).
+
+**The decisive contrast:** pure freshrevkl was **dead (mode-collapsed) by 90M**; this stable-recipe
+run is **still *improving* at 53M, not collapsing.** That is the stability fix paying off — it can
+now keep learning productively *past* where the old run tore itself apart. **Stability = solved
+(pending the loop-transition confirmation); coherence = still token-gated/exposure-bias (expected,
+unchanged) — but for the first time the trajectory is *accumulating, not dying*.**
+**Caveat:** probe ran at `n_loops=4` on an `n_loops=2`-trained checkpoint (pre-transition) → inferenced
+deeper than trained → **pessimistic read**; should improve once the loop curriculum trains depth 3–4.
 
 ---
 
@@ -167,6 +209,9 @@ discriminating zones are deeper.
 - **The gnorm verdict zones (the whole test):** 1000–1500 (JSD crept to 15–40), 3100–3400 (JSD
   exploded 100–1600 at n_loops 2), and especially **~3510, `n_loops 2→3`** (JSD went 4271→1,000,000
   and died). Staying single/double-digit through that transition = the fix confirmed.
-- **First probe read** = `--probe-set all` at the first checkpoint past ~3600, IF gnorm clears the
-  zone — to confirm the model is *diffuse/healthy*, not stable-but-degenerate. Add its escape-rate
-  row to the cross-comparison table then.
+- **First probe read DONE @3216** (~53M, *pre*-`n_loops 2→3` transition — paused when home): 0/19
+  strict escape but **healthy reps + domain lock-ons + sentence fragments + improving-not-collapsing**
+  — the recoverable exposure-bias regime, best 0/19 yet. See the rev-KL stability result note above
+  and the cross-comparison row. **Still pending:** (a) the `n_loops 2→3` transition (~3510) gnorm
+  verdict; (b) a *post-transition* probe at `n_loops=4`-matched depth (this read was `n_loops=4`
+  inference on `n_loops=2` training → pessimistic).
