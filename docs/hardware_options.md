@@ -365,6 +365,25 @@ MythOuro's ops (recurrent loop, ACT, MoE routing) actually run acceptably on HPU
 dynamic-control-flow risk is exactly what bites *after* you've committed. (Supersedes the one-line
 "Gaudi (Habana/OAM) — non-XPU" mention earlier in this doc.)
 
+**UPDATE (2026-06-24) — deeper assessment → DEPRIORITIZED ("probably no, maybe later to mess with"):**
+- **Sunsetting architecture (the decider).** Intel is converging its AI accelerators toward a unified
+  *GPU* approach (Falcon Shores → GPU-based future); Gaudi 3 looks like the end of the Gaudi line
+  (*verify current roadmap*). So the **SynapseAI/HPU software port would likely be throwaway** — it
+  does NOT carry forward to future Intel hardware, unlike the Max GPU's **XPU/oneAPI** stack (which
+  continues into future Intel GPUs). Betting a months-long port on a dead-end stack is the strongest
+  argument against Gaudi.
+- **Port risk, refined.** Gaudi 2 now has eager mode + `torch.compile` (hpu), so MythOuro's dynamic
+  recurrence + ACT probably *runs* — but likely **not at peak Gaudi perf** (the graph-compile speedup
+  needs static shapes; our variable loop count / ACT = dynamic → recompilation friction). Both the
+  custom student *and* the `trust_remote_code` Ouro teacher must run on HPU.
+- **Value-prop mismatch.** Gaudi 2's strengths (scale-out *standard*-transformer training, on-die
+  100GbE) aren't our needs (small custom model). Only the 96 GB memory is a pro we'd actually use.
+- **Out of scope for the design goal.** Owner's goal = **"MythOuro runs on any GPU."** Gaudi is **not
+  a GPU** (HPU / graph-compiled accelerator), so it's outside that goal by definition — and pursuing
+  GPU-portability (CUDA / XPU / ROCm) keeps us vendor-flexible *without* the dead-end-accelerator risk.
+- **Decision:** deprioritized, *not* a primary path. Revisit only as a cheap "mess with it" experiment
+  if spare budget appears (buy one used ~$1.2–1.5k, validate the HPU port, resell if it doesn't fit).
+
 ## Intel Max / Ponte Vecchio (the card under consideration)
 
 **Attractive:** 48 GB HBM2e for a fraction of an A100/MI210; the XPU port
