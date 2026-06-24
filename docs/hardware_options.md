@@ -365,24 +365,31 @@ MythOuro's ops (recurrent loop, ACT, MoE routing) actually run acceptably on HPU
 dynamic-control-flow risk is exactly what bites *after* you've committed. (Supersedes the one-line
 "Gaudi (Habana/OAM) — non-XPU" mention earlier in this doc.)
 
-**UPDATE (2026-06-24) — deeper assessment → DEPRIORITIZED ("probably no, maybe later to mess with"):**
-- **Sunsetting architecture (the decider).** Intel is converging its AI accelerators toward a unified
-  *GPU* approach (Falcon Shores → GPU-based future); Gaudi 3 looks like the end of the Gaudi line
-  (*verify current roadmap*). So the **SynapseAI/HPU software port would likely be throwaway** — it
-  does NOT carry forward to future Intel hardware, unlike the Max GPU's **XPU/oneAPI** stack (which
-  continues into future Intel GPUs). Betting a months-long port on a dead-end stack is the strongest
-  argument against Gaudi.
-- **Port risk, refined.** Gaudi 2 now has eager mode + `torch.compile` (hpu), so MythOuro's dynamic
-  recurrence + ACT probably *runs* — but likely **not at peak Gaudi perf** (the graph-compile speedup
-  needs static shapes; our variable loop count / ACT = dynamic → recompilation friction). Both the
-  custom student *and* the `trust_remote_code` Ouro teacher must run on HPU.
-- **Value-prop mismatch.** Gaudi 2's strengths (scale-out *standard*-transformer training, on-die
-  100GbE) aren't our needs (small custom model). Only the 96 GB memory is a pro we'd actually use.
-- **Out of scope for the design goal.** Owner's goal = **"MythOuro runs on any GPU."** Gaudi is **not
-  a GPU** (HPU / graph-compiled accelerator), so it's outside that goal by definition — and pursuing
-  GPU-portability (CUDA / XPU / ROCm) keeps us vendor-flexible *without* the dead-end-accelerator risk.
-- **Decision:** deprioritized, *not* a primary path. Revisit only as a cheap "mess with it" experiment
-  if spare budget appears (buy one used ~$1.2–1.5k, validate the HPU port, resell if it doesn't fit).
+**UPDATE (2026-06-24) — REASSESSED (capability feasible + cost/access reframe → moved OFF "probably no"):**
+Vetted Intel docs + three Grok analyses + owner pushback. Net: **more viable than the first pass implied.**
+- **Capability = feasible.** Gaudi 2 is a *training* accelerator (not inference-only). **BF16** is native
+  + recommended; memory is favorable — 3B trains on one 96 GB card, 8B with DeepSpeed ZeRO, and the RDT's
+  **shared weights** mean *less* optimizer memory than a stacked 8B. The dynamic recurrence + ACT **runs**
+  with **dynamic-shape tuning** (fixed-iteration unrolling). Grok + our analysis agree: runs, maybe not
+  peak fusion, **perf TBD until benched**.
+- **BUT the port is *custom-loop*, not turnkey.** All the easy advice (`GaudiTrainer` / Optimum-Habana)
+  assumes **HF Trainer**; MythOuro has a **bespoke `training/distill.py` loop**, so you hand-adapt to HPU:
+  `model.to("hpu")`, **`htcore.mark_step()`** (lazy-mode graph boundaries — `GaudiTrainer` hides these),
+  Habana's DeepSpeed fork wired into your loop, + the dynamic-shape work. **Real-but-tractable**, more than
+  "minimal changes."
+- **Sunsetting cuts BOTH ways (owner's correction — the key reframe).** The SynapseAI/HPU *software* may not
+  carry forward (one-time-port risk). BUT phase-out = **price drops** → cheap, high-memory compute reaches
+  **small research teams / home users / under-resourced regions** — which is *exactly* MythOuro's
+  democratization mission. Cheap depreciated enterprise AI hardware is *how* the underserved get real
+  compute. For an accessibility-first project, that's a **feature**.
+- **Throwaway-port risk is mitigated by the multi-backend goal.** "Run on any accelerator" → HPU is **one
+  backend of several** (CUDA/XPU/ROCm carry forward regardless). Supporting cheap phased-out Gaudi is
+  *additive* — cheap 96 GB compute as an option, no project-level bet on the stack surviving.
+- **Decision (revised):** **not "avoid"** — a legitimately attractive **cheap / high-memory backend,
+  mission-aligned**, worth supporting as one of several. Longevity caveat is real but *bounded* (one-time
+  port) and *mitigated* (multi-backend). Timing still "later, when the architecture's frozen" (port a
+  stable model, on cheaper-by-then hardware). **Validate the custom-loop HPU port on one cheap used card
+  before scaling.**
 
 ## Intel Max / Ponte Vecchio (the card under consideration)
 
