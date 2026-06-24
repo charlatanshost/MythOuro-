@@ -186,13 +186,14 @@ failing to stop it. New suspect, and a reason to switch divergence.
    gaming the teacher via repeated phrases). High value.
 3. **Length normalization** — removes short-sequence bias.
 
-### ⚠️ Empirical update (2026-06-23) — offline rev-KL REGRESSED ECE; calibration ≠ divergence-alone
-The eval on the stable rev-KL run (`step_0003216`, ~53M tok) measured **ECE 0.20** — *worse* than
-fwd-KL's 0.015, which **contradicts takeaway #1's "ECE improves" if read as offline-rev-KL.**
-Reconciliation: the paper's ECE-improvement is for the **full on-policy MiniLLM** recipe, *not* the
-reverse-KL divergence alone. So **offline rev-KL is overconfident** (mode-seeking sharpens onto modes
-→ poor ECE); **the calibration benefit comes from the *on-policy* component**, not the divergence swap.
-Implication: don't expect rev-KL — *or* stable-JSD — to fix calibration on its own.
+### ✅ Empirical update (2026-06-24) — the rev-KL "ECE regression" was a DEPTH-MISMATCH ARTIFACT (RETRACTED)
+A 06-23 read on `step_0003216` (~53M tok, *pre*-transition) measured ECE 0.20 and was logged as "offline
+rev-KL regresses ECE." **The depth-matched verdict refutes it:** `step_0006675` (n_loops=4 trained +
+inferenced, ~109M tok) → **ECE 0.0152**, right in the well-calibrated band. The 0.20 was the
+n_loops=4-on-n_loops=2/3 mismatch, **not** a rev-KL cost. So **rev-KL does NOT hurt calibration**;
+takeaway #1's "ECE improves" is *not* contradicted. **BUT generation still mode-collapses at 109M** —
+calibration good, free-gen collapsed: *exposure bias is decoupled from calibration.* The on-policy point
+below stands as the **generation** cure, not a calibration one.
 
 **Calibration as its own axis — backlog levers (cheap, no on-policy needed):**
 - **Bump `--unc-coeff`** — the `uncertainty_calibration_loss` is *already in the loss*; weight it up

@@ -34,6 +34,17 @@ Update after each probe run on a new checkpoint.
 | step_5500 | ~90M | 0/4 | 0/4 | 0/4 | 0/3 | 0/4 | **0/19** ⬇ | `reports/collapse_freshrevkl_5500_full*.txt` |
 | **JSD** step_4000 | ~65M | 0/4 | 0/4 | 0/4 | 0/3 | 0/4 | **0/19 + rank→1** ❌❌ | `reports/collapse_freshjsd_4000_full*.txt` |
 | **rev-KL-STABLE** step_3216 | ~53M | 0/4 | 0/4 | 0/4 | 0/3 | 0/4 | **0/19 strict — but ✅ healthy reps + domain lock-ons + improving (NOT collapse)** | console 2026-06-23 (save to `reports/`) |
+| **rev-KL-STABLE** step_6675 **(DEPTH-MATCHED)** | ~109M | 0/4 | 1/4 | 0/4 | 0/3 | 1/4 | **~2/19 — MODE-COLLAPSED** (`is is is`, sharp; sampling can't escape) ❌ | `reports/collapse_revkl_stable_6675_full*.txt` |
+
+> **DEPTH-MATCHED VERDICT (2026-06-24): pure rev-KL MODE-COLLAPSES; the step_4000 "varied salad" was an
+> ARTIFACT.** At full n_loops=4 training (109M tok), greedy ~3/19 and T=0.8 ~2/19 — hard `is is is` with
+> sharp distributions. The step_4000 11–15/19 was **untrained-4th-loop noise**, not capability (confirmed
+> by training the 4th loop → generation got *worse*). This is the **same collapse the hot-LR rev-KL hit
+> @90M** → the stability recipe fixed *optimization*, not the rev-KL *divergence* problem. Reps stayed
+> healthy (rank 4.6–21, NOT rank→1) = exposure-bias *output* collapse. Eval @6675: **PPL 1.759 (best ever),
+> loop_eff 0.500, ECE 0.0152** (the 3216 ECE 0.20 was a depth artifact — calibration is FINE). **Best-ever
+> formal metrics + collapsed generation = exposure bias decoupled from all metrics → cure is on-policy.**
+> Next: stable-JSD (cheap), then on-policy/GKD (the real fix). See training_runs.md 06-24.
 
 > **⚠️ The three "0/19" rows mean OPPOSITE things — do not read them as equivalent:**
 > `freshrevkl@5500` = 0/19 because it **regressed into mode-collapse** (got worse). `JSD@4000` =

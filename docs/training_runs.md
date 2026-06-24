@@ -943,3 +943,54 @@ diffuseness; `jsd-beta` dials the balance. **Honest caveat:** interpolations can
 **temperature scaling** at inference (cheap, standard ECE fix); (c) **on-policy** (helps exposure-bias
 *and* calibration). So "cover all areas" is likely a **stack of per-axis tools** (stable-JSD or rev-KL
 for stability/diffuseness + unc-coeff / temp-scaling for calibration), not one magic divergence.
+
+---
+
+# 2026-06-24 — rev-KL stability DEPTH-MATCHED VERDICT @6675 (~109M tokens): stability won, pure rev-KL collapses, calibration-tension was an artifact
+
+Ran the full curriculum to **step 6675 (fully n_loops=4-trained)** — survived **both** loop transitions
+(2→3 *and* 3→4), gnorm calm throughout (the healthiest trace in the project; transient 5-6 spikes that
+recovered, ρ(A) stayed 0.30–0.33). Then the **depth-matched** probe + eval (n_loops=4 trained *and*
+inferenced — no more pessimism caveat). Reports: `reports/collapse_revkl_stable_6675_full*.txt`,
+`checkpoints_revkl_stable/eval_step_6675.json`.
+
+## Eval — every formal metric excellent
+| metric | @6675 (depth-matched) | @3216 (mismatched) | lineage best |
+|---|---|---|---|
+| **PPL** | **1.759** (best ever) | 8.21 | continuation 3.06 |
+| **loop_eff** | 0.500 (avg_depth 2.0/4) | 0.483 | 0.500 (all) |
+| **ECE** | **0.0152** | 0.1997 | 0.0052–0.04 |
+
+## Two findings — one a CORRECTION
+1. **CALIBRATION-TENSION RETRACTED — the ECE 0.20 was a depth-mismatch ARTIFACT.** Depth-matched ECE is
+   **0.0152**, right in the well-calibrated band. The 06-21/06-23 "rev-KL trades calibration / tension
+   with the honest-specialist thesis" framing was **largely spurious** (driven by the n_loops=4-on-
+   n_loops=2/3 read). **The honest-specialist thesis is intact**; rev-KL does NOT ruin calibration.
+   (The 06-23 entry's caveat — "watch whether it improves; depth-mismatch could distort it" — is now
+   confirmed: it was the artifact.) Roadmap differentiator-#1 + ideas.md ECE note corrected accordingly.
+2. **Generation: HARD MODE-COLLAPSE.** Greedy ~3/19, T=0.8 ~2/19 "not degenerate" — dominated by sharp
+   `is is is` / `# # #` / `A A A A` (top_prob 0.9–0.99, sampling can't escape). **The step_4000 "varied
+   salad" (11–15/19) was untrained-4th-loop NOISE, confirmed** — once the 4th loop is *trained*, the
+   model converges to a sharp repetition attractor. More training at the right depth made generation
+   *worse*. Reps stayed healthy (rank 4.6–21, **not** rank→1) → exposure-bias *output* collapse, not
+   representation collapse.
+
+## The key result (bigger than this checkpoint)
+**Stable rev-KL @109M reached the SAME mode-collapse the hot-LR rev-KL hit @90M** (06-20). The
+stability recipe fixed the **optimization** (gnorm/rank→1); it did **not** fix the rev-KL **divergence**
+problem. **Pure rev-KL is insufficient — stable or not — it mode-collapses with tokens.**
+
+And the cleanest statement of the project's core finding: **best-ever PPL (1.759) + good calibration
+(0.0152) + loop_eff 0.500 + stability solved + reps healthy → and free generation still hard-collapses.**
+Exposure bias is **decoupled from every formal metric** (loss, calibration, stability, representation
+health). Low PPL and the collapse are two faces of one thing (tight teacher-forced fit → sharp →
+free-run collapse). **The cure is on-policy — not any formal-metric or divergence lever.**
+
+## Verdict + next
+- ✅ **Stability recipe = keeper** (lr 1e-4 + sandwich-norm + depth-aware-init): use it for every future run.
+- ✅ **Calibration fine** (tension was spurious).
+- ❌ **Pure rev-KL = insufficient** (collapses with tokens).
+- **Next:** (a) **stable-JSD** — cheap test on the proven stable footing; the hybrid *might* resist the
+  pure-rev-KL collapse, but (b) the *deep* cure is **on-policy/GKD** — rev-KL collapsing here is strong
+  evidence no offline divergence alone reaches coherence; the student must train on its own rollouts
+  under teacher correction. Stable-JSD informs; on-policy is the destination.

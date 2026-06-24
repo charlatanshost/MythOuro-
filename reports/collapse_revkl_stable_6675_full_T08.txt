@@ -1,0 +1,32 @@
+# rev-KL-stable run — T=0.8 top-k=40 probe @ step_0006675 (~109M tokens), 2026-06-24
+# DEPTH-MATCHED (n_loops=4 trained + inferenced). The clean verdict under sampling.
+# VERDICT: hard mode-collapse, ~2/19 not-degenerate. Sharp distributions -> sampling can't escape.
+# Same mode-collapse the prior HOT-LR rev-KL hit at ~90M -> pure rev-KL insufficient, stable or not.
+loading: checkpoints_revkl_stable/step_0006675.pt
+step=6675  n_loops=4  sandwich_norm=True  state_noise=0.0
+
+[generation-time mode] T=0.8 top_k=40 decode
+
+chat / 2+2:        '**** + + ~ ~ ~ ~ ...'                                rank 7.75   -> degradation
+chat / gravity:    ' The the one one one one ...'                       rank 6.50   -> degradation
+chat / colors:     ' three primary numbers numbers numbers ...'         rank 11.57  -> degradation
+code / fibonacci:  ' # # # # ...'                                       rank 5.82   -> degradation
+code / is_prime:   '`.."..".."... """""...'                             rank 9.03   -> degradation
+code / numpy:      '\n### ## TODO B  M = True True ... # # # #'         rank 17.00  -> inconclusive
+code / Stack:      '):):): # # # ... def __init__(self):):): # # #'     rank 12.34  -> degradation
+math / derivative: ' is is is is ...'                                   rank 4.82   -> degradation
+math / sum:        ' is is is is ...'                                   rank 5.07   -> degradation
+math / 2x+3:       ' from from from ... the the the ... from from'      rank 8.55   -> degradation
+math / area:       ' is is is is ...'                                   rank 4.95   -> degradation
+prose / rdt:       ' is is is ... and its is is is ...'                 rank 7.60   -> degradation
+prose / Roman:     ' us us us ... do do do ... So I did'               rank 12.01  -> degradation
+prose / photo:     ' which which ... is is is ...'                      rank 9.17   -> degradation
+prose / planet:    ' is is ... planet planet s s s ... planet planet'   rank 10.90  -> degradation
+qa / Roman-year:   ' R. JJJJ-YKKKK... It can be M M M M M'              rank 15.47  -> inconclusive
+qa / France:       ' A A A A ...' (top_prob 0.99)                       rank 5.48   -> degradation
+qa / days:         newlines ... 'What AAAA A A A A A'                   rank 12.68  -> degradation
+qa / sky:          ' What is is is ... What is is is ...'               rank 10.80  -> degradation
+
+# ~2/19 inconclusive (numpy, Roman-year). vs step_4000 T=0.8 ~15/19 -> the 4000 read was DEPTH-NOISE.
+# Depth-matched eval @6675: PPL 1.759, loop_eff 0.500, ECE 0.0152 (the 3216 ECE 0.20 was a depth artifact).
+# BEST formal metrics ever + hard generation collapse = exposure bias decoupled from all metrics.

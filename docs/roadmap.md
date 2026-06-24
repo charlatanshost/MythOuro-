@@ -38,11 +38,15 @@ throughout). The **stability recipe** (`rev_kl + lr 1e-4 + --use-sandwich-norm -
 fixes it: gnorm flat <1.0, MoE cv 0.18 — the healthiest run yet, and **still *improving* at 53M where
 the old rev-KL was already dead.** The base now **trains stably**, which is what unlocks "pour tokens +
 on-policy" without it tearing itself apart. **New tension (06-23 eval):** rev-KL trades **calibration**
-— eval ECE **0.20** (overconfident) vs fwd-KL's 0.015 (mode-seeking sharpens onto modes) → at odds with
-differentiator #1 below. **Next:** finish the current run through the `n_loops 2→3` transition (the
-stability verdict), then **stable-JSD** (the fwd/rev hybrid, untested on the stable footing) + targeted
-calibration levers (`--unc-coeff` / temp-scaling / on-policy). Full chains: `docs/training_runs.md`
-(06-21/06-23), `docs/generation_probe_tracker.md`.
+— a 06-23 read suggested ECE 0.20, **but the depth-matched verdict (step 6675, 06-24) is ECE 0.0152 —
+that 0.20 was a depth-mismatch artifact; calibration is FINE.** The *real* result: **pure rev-KL
+mode-COLLAPSES generation by ~109M tokens** — best-ever PPL (1.759) + good ECE (0.0152) + loop_eff 0.500
++ stability solved + healthy reps, and free-gen *still* collapses to `is is is`. **Exposure bias is
+decoupled from every formal metric**; the stability recipe fixed *optimization*, not the rev-KL divergence
+problem (it hit the same collapse the hot-LR rev-KL did @90M). **Next:** **stable-JSD** (cheap hybrid test
+on the proven stable footing) → then the deep cure, **on-policy/GKD** (the student must train on its own
+rollouts; no offline divergence alone reaches coherence). Full chains: `docs/training_runs.md`
+(06-21/06-23/**06-24**), `docs/generation_probe_tracker.md`.
 
 ---
 
@@ -68,12 +72,11 @@ off.*
 small-model consolation:**
 1. **Calibrated honesty.** Most small local models hallucinate with total
    confidence — their worst, most-complained-about flaw. MythOuro has a
-   working calibrated uncertainty head (ECE 0.01–0.04, demonstrated **on forward-KL
-   runs**). **⚠️ Tension (2026-06-23):** the current stability-winning *reverse-KL*
-   recipe regresses this to **ECE ~0.20** (mode-seeking → overconfident) — so this
-   differentiator is in *active tension* with the anti-repetition/stability recipe;
-   resolving it (stable-JSD / `--unc-coeff` / temp-scaling / on-policy) is an open
-   question, **not** a settled property. A model
+   working calibrated uncertainty head (ECE 0.01–0.04, demonstrated). **✅ Tension
+   RETRACTED (2026-06-24):** a 06-23 read suggested reverse-KL regressed ECE to ~0.20, but
+   the **depth-matched** eval (step 6675, n_loops=4 trained + inferenced) puts it at **ECE
+   0.0152** — the 0.20 was a *depth-mismatch artifact*, not a real cost. rev-KL does NOT
+   hurt calibration; this differentiator holds. A model
    that reliably says "I don't know" is *more useful* than a same-size model
    that doesn't — and a 3B that knows its limits beats a 3B that doesn't.
 2. **Adaptive compute.** Recurrent-depth + ACT spends more on hard tokens,

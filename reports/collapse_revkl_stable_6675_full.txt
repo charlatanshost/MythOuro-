@@ -1,0 +1,31 @@
+# rev-KL-stable run — GREEDY probe @ step_0006675 (~109M tokens), 2026-06-24
+# DEPTH-MATCHED: fully n_loops=4-trained, inferenced n_loops=4. The clean verdict.
+# Survived both loop transitions (2->3, 3->4). Reps healthy (rank 4.6-21, NOT rank->1).
+# VERDICT: hard mode-collapse. ~3/19 not-degenerate. The 4000 "varied salad" was depth-noise.
+loading: checkpoints_revkl_stable/step_0006675.pt
+step=6675  n_loops=4  sandwich_norm=True  state_noise=0.0
+
+[generation-time mode] greedy decode
+
+chat / 2+2:        '****++++ Determine the the What is is is is is ... What is is is is is is??'  rank 18.13  -> inconclusive
+chat / gravity:    newlines + 'Show'                                                              rank 9.77   -> degradation
+chat / colors:     'Some few different different ... discrete discrete ----'                       rank 11.59  -> degradation
+code / fibonacci:  ' # # # # # # ...'                                                              rank 5.82   -> degradation
+code / is_prime:   ' # # #yset. If # # # ...'                                                      rank 10.37  -> degradation
+code / numpy:      '\n#####...'                                                                    rank 6.23   -> degradation
+code / Stack:      '):):):):...'  (hard, top_prob 0.97)                                            rank 5.46   -> degradation
+math / derivative: ' is is is is ...'                                                              rank 4.82   -> degradation
+math / sum:        ' is is is is ...'                                                              rank 5.07   -> degradation
+math / 2x+3:       ' the the the ...3333 = 3333...'                                                rank 9.97   -> degradation
+math / area:       ' is is is is ...'                                                              rank 4.95   -> degradation
+prose / rdt:       ' is is is is ...'                                                              rank 5.06   -> degradation
+prose / Roman:     ' the the the the ...'                                                          rank 7.72   -> degradation
+prose / photo:     ' which which which ...'                                                        rank 6.66   -> degradation
+prose / planet:    ' is is is ... planet planet planet ...' (domain word)                          rank 7.51   -> degradation
+qa / Roman-year:   ' R what is is is ... The year the Roman Empire founded? : R I I I think'       rank 21.08  -> inconclusive
+qa / France:       ' The The The ...'                                                              rank 5.48   -> degradation
+qa / days:         ' How How How many days are in in in ... week? : How How How many days are are' rank 15.14  -> inconclusive
+qa / sky:          ' What is is is ... What is is is ...'                                           rank 10.80  -> degradation
+
+# ~3/19 inconclusive (2+2, Roman-year, days). Sharp distributions; the rest hard-repeat.
+# vs step_4000 greedy ~11/19 -> CONFIRMS the 4000 variety was untrained-4th-loop NOISE, not capability.
