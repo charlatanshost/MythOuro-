@@ -332,8 +332,38 @@ big-VRAM card wins — **if** the ecosystem friction is cleared first.
 | **AMD MI210** (CDNA2) | 64 GB HBM2e | ROCm | mid | ROCm > XPU maturity but < CUDA; HF custom-modeling hit/miss |
 | **NVIDIA A100** | 40/80 GB | CUDA | priciest | **none** — gold standard, everything works |
 | Used **3090 / 4090** | 24 GB | CUDA | low–mid | **none** — drop-in; 24 GB < the others but zero friction |
+| **Intel Gaudi 2** (Habana, OAM) | 96 GB HBM2e | **SynapseAI / HPU** (not XPU/CUDA) | **$1200–1500** used (depreciating) | 3rd software target; **graph-compiled** → weak on our dynamic recurrent arch; less open; OAM (adapter-confirmed) |
 
 ---
+
+## Intel Gaudi 2 (Habana) — assessed 2026-06-23
+
+**The OAM-to-PCIe adapter maker confirmed Gaudi 2 OAM cards work with it (user-confirmed)** — so it's
+a live PCIe-slot option alongside the Max 1550 OAM. Price: **~$1200–1500 used** (depreciating fast now
+that Gaudi 3 is out).
+
+**The value case is genuinely strong on memory/$:** **96 GB HBM2e on a single card** for ~$1200–1500.
+- ~$13–16/GB — comparable to the Max 1100 (~$12–20/GB) — **but it's 96 GB *unified on one card*.** A
+  single Gaudi 2 holds an **8B model + optimizer on ONE device** (8B ≈ 80–128 GB; fits with 8-bit
+  Adam), where the same memory needs **2–3× Max 1100 with model-parallel sharding.** For the 8B target,
+  one Gaudi 2 ≈ what a small 1100 fleet does, single-card, no sharding. Real advantage.
+
+**The three gating caveats — all about *our* custom architecture, not the spec:**
+1. **Third software target.** Gaudi is **SynapseAI + `habana_frameworks.torch` (device `hpu`)** — *not*
+   the Max's oneAPI/IPEX (`xpu`), *not* CUDA. A separate port; no Max-GPU or CUDA code carries over.
+2. **Graph-compiled (TPU-like) → weak on dynamic control flow, which is exactly MythOuro.** The
+   recurrent loop + ACT halting + per-token arbitration are dynamic; Gaudi wants static graphs. A stock
+   transformer trains great; a custom dynamic-depth recurrent MoE is a real "does it map cleanly" risk —
+   **higher port risk than a Max GPU** (eager flexibility). Same concern as the OpenVINO note, now for
+   *training*.
+3. **Less open** than oneAPI (core graph compiler more closed) — a regression on the sovereignty axis.
+
+**Verdict:** strong memory/$ value, great to have as an option — but for a *custom recurrent model* the
+Max GPU is probably still the better fit (eager flexibility, open stack, easier port), **unless** the
+96 GB-single-card win justifies the harder graph-compile port. **Hard rule before buying: validate that
+MythOuro's ops (recurrent loop, ACT, MoE routing) actually run acceptably on HPU** — the
+dynamic-control-flow risk is exactly what bites *after* you've committed. (Supersedes the one-line
+"Gaudi (Habana/OAM) — non-XPU" mention earlier in this doc.)
 
 ## Intel Max / Ponte Vecchio (the card under consideration)
 
