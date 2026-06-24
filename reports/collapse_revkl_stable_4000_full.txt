@@ -1,0 +1,136 @@
+# rev-KL-stable run — GREEDY probe @ step_0004000 (~65M tokens), 2026-06-24
+# Post n_loops 2->3 transition; trained n_loops=3, inferenced n_loops=4 (1-loop mismatch).
+# Survived the transition that killed JSD (reps healthy rank 4-25, NOT rank->1).
+loading: checkpoints_revkl_stable/step_0004000.pt
+device:  cuda:0
+step=4000  n_loops=4  sandwich_norm=True  state_noise=0.0
+
+[generation-time mode] greedy decode; locating the degeneration
+
+=== category: chat ===
+
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): 'What is the the the LY LK and the LK and and the LK and the LKL and the LKKKKC and'
+  output dist:  mean_entropy=4.212 nats  final_entropy=6.894  mean_top_prob=0.432  final_top_prob=0.049
+  rep @final loop:  PROMPT corr=0.207 rank=12.97  |  GENERATED corr=0.463 rank=17.30
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: '<|im_start|>user\nExplain gravity in one sentence.<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): 'from oslib.f.framework.framework. import A sentence.get.get.get.get.path.path.path.path.dirname\n'
+  output dist:  mean_entropy=4.025 nats  final_entropy=5.557  mean_top_prob=0.483  final_top_prob=0.098
+  rep @final loop:  PROMPT corr=0.182 rank=12.55  |  GENERATED corr=0.368 rank=17.15
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: '<|im_start|>user\nName three primary colors.<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): '\n### Setasseline\n\nThe Loo L Loo Set Lasseline\n\nTo Setasseline\n\nName.html.null\nTo'
+  output dist:  mean_entropy=5.792 nats  final_entropy=3.858  mean_top_prob=0.246  final_top_prob=0.513
+  rep @final loop:  PROMPT corr=0.125 rank=12.05  |  GENERATED corr=0.220 rank=18.73
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: code ===
+
+prompt: 'def fibonacci(n):'
+  generated (greedy, 32 tok): '\n\nThe k and the k and the k and the k and the the k the k the k the the k the k the k the k the the'
+  output dist:  mean_entropy=4.860 nats  final_entropy=7.210  mean_top_prob=0.357  final_top_prob=0.076
+  rep @final loop:  PROMPT corr=0.219 rank=5.43  |  GENERATED corr=0.520 rank=14.22
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'def is_prime(n):'
+  generated (greedy, 32 tok): 'n):n):n, is, is, is, is, is, is, is, is, is, is, is, is, is,'
+  output dist:  mean_entropy=1.800 nats  final_entropy=0.061  mean_top_prob=0.739  final_top_prob=0.995
+  rep @final loop:  PROMPT corr=0.198 rank=6.24  |  GENERATED corr=0.579 rank=9.60
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'import numpy as np\n'
+  generated (greedy, 32 tok): '\n##\n\n##\n\n## The the Apache Aff Aff Aff Aff Aff Aff Aff and and\n\n# GNU GNU GNU GNU GNU GNU GNU GNU GNU'
+  output dist:  mean_entropy=3.123 nats  final_entropy=2.033  mean_top_prob=0.466  final_top_prob=0.301
+  rep @final loop:  PROMPT corr=0.387 rank=4.65  |  GENERATED corr=0.539 rank=14.17
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'class Stack:\n    def __init__(self):'
+  generated (greedy, 32 tok): '\n    def __init__(self):\n    """init__(self):\n    """\n    """\n    """\n    """\n    """\n    """\n    """Return "A "class'
+  output dist:  mean_entropy=2.394 nats  final_entropy=6.796  mean_top_prob=0.645  final_top_prob=0.129
+  rep @final loop:  PROMPT corr=0.229 rank=9.00  |  GENERATED corr=0.376 rank=16.59
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: math ===
+
+prompt: 'The derivative of x^2 with respect to x is'
+  generated (greedy, 32 tok): ' x is x is x is x is x is x is x is x is x is x is x is x is x is x is x is x is'
+  output dist:  mean_entropy=1.081 nats  final_entropy=0.752  mean_top_prob=0.850  final_top_prob=0.906
+  rep @final loop:  PROMPT corr=0.329 rank=9.21  |  GENERATED corr=0.587 rank=7.97
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'The sum of the first 10 positive integers is'
+  generated (greedy, 32 tok): ' is true true true true true true true ... (true x32)'
+  output dist:  mean_entropy=4.937 nats  final_entropy=5.117  mean_top_prob=0.321  final_top_prob=0.366
+  rep @final loop:  PROMPT corr=0.229 rank=9.82  |  GENERATED corr=0.972 rank=5.07
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'To solve 2x + 3 = 7, subtract 3 from both sides to get'
+  generated (greedy, 32 tok): ' the 3 3 3 3. The number of the 3 1 1 1 1 1 1 1 1'
+  output dist:  mean_entropy=2.664 nats  final_entropy=0.852  mean_top_prob=0.535  final_top_prob=0.805
+  rep @final loop:  PROMPT corr=0.241 rank=16.60  |  GENERATED corr=0.511 rank=14.98
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The area of a circle with radius r is'
+  generated (greedy, 32 tok): ' an image is an image is an image is ... output is output is ... possible is possible is'
+  output dist:  mean_entropy=1.959 nats  final_entropy=0.559  mean_top_prob=0.711  final_top_prob=0.935
+  rep @final loop:  PROMPT corr=0.201 rank=8.33  |  GENERATED corr=0.506 rank=10.87
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+=== category: prose ===
+
+prompt: 'The recurrent depth transformer is'
+  generated (greedy, 32 tok): ' the is the the the the the the (the x~18) \n#    the    the    the\n#   '
+  output dist:  mean_entropy=5.187 nats  final_entropy=0.047  mean_top_prob=0.324  final_top_prob=0.995
+  rep @final loop:  PROMPT corr=0.340 rank=4.56  |  GENERATED corr=0.763 rank=12.27
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'The history of the Roman Empire began'
+  generated (greedy, 32 tok): ' the time the the time the\n\nThe\n\nThe\n\nThe\n\nThe time the time the time the time ...'
+  output dist:  mean_entropy=3.239 nats  final_entropy=0.605  mean_top_prob=0.601  final_top_prob=0.930
+  rep @final loop:  PROMPT corr=0.232 rank=6.50  |  GENERATED corr=0.456 rank=14.80
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Photosynthesis is the process by which'
+  generated (greedy, 32 tok): ' the process is is process is is an example example. The process is an example an example ...'
+  output dist:  mean_entropy=3.747 nats  final_entropy=3.698  mean_top_prob=0.430  final_top_prob=0.507
+  rep @final loop:  PROMPT corr=0.194 rank=6.56  |  GENERATED corr=0.592 rank=13.70
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The largest planet in our solar system is'
+  generated (greedy, 32 tok): ' in the planet in solar system. It. It. It.. . L . L. T. It is the system. The T. . The system'
+  output dist:  mean_entropy=4.971 nats  final_entropy=6.391  mean_top_prob=0.305  final_top_prob=0.204
+  rep @final loop:  PROMPT corr=0.215 rank=7.28  |  GENERATED corr=0.332 rank=21.50
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: qa ===
+
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+  generated (greedy, 32 tok): '\n\nAAAAA:A:AAAA,A,A,A,A,A,A,A,A., A'
+  output dist:  mean_entropy=2.075 nats  final_entropy=6.828  mean_top_prob=0.725  final_top_prob=0.090
+  rep @final loop:  PROMPT corr=0.234 rank=13.27  |  GENERATED corr=0.791 rank=10.55
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'Q: What is the capital of France?\nA:'
+  generated (greedy, 32 tok): ' A A A A A A A ... (A x32)'
+  output dist:  mean_entropy=1.014 nats  final_entropy=0.335  mean_top_prob=0.878  final_top_prob=0.961
+  rep @final loop:  PROMPT corr=0.250 rank=10.91  |  GENERATED corr=0.984 rank=4.32
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'Q: How many days are in a week?\nA:'
+  generated (greedy, 32 tok): ' How many points How many How many that the points that the surface is that the surface surface surface ...'
+  output dist:  mean_entropy=3.809 nats  final_entropy=4.066  mean_top_prob=0.441  final_top_prob=0.372
+  rep @final loop:  PROMPT corr=0.219 rank=11.54  |  GENERATED corr=0.402 rank=15.62
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Q: What color is the sky on a clear day?\nA:'
+  generated (greedy, 32 tok): 'A:AAAAA A A A ... (A x27)'
+  output dist:  mean_entropy=1.228 nats  final_entropy=0.535  mean_top_prob=0.828  final_top_prob=0.940
+  rep @final loop:  PROMPT corr=0.168 rank=13.55  |  GENERATED corr=0.903 rank=7.62
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+# SUMMARY: ~11/19 "not clearly degenerate" on GREEDY (vs 0/19 at step_3216).
+# Character shifted from hard single-token repetition -> varied salad (v4-like).
+# Caveat: n_loops=4 inference on n_loops=3 training inflates entropy/variety.

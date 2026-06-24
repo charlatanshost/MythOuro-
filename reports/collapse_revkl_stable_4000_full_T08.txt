@@ -1,0 +1,139 @@
+# rev-KL-stable run — T=0.8 top-k=40 probe @ step_0004000 (~65M tokens), 2026-06-24
+# Post n_loops 2->3 transition; trained n_loops=3, inferenced n_loops=4.
+# ~15/19 "not clearly degenerate" (exceeds old freshrevkl@3000 peak of 12/19), with
+# genuine grammatical/code fragments. Caveat: variety partly inflated by untrained 4th loop.
+loading: checkpoints_revkl_stable/step_0004000.pt
+device:  cuda:0
+step=4000  n_loops=4  sandwich_norm=True  state_noise=0.0
+
+[generation-time mode] T=0.8 decode; locating the degeneration
+
+=== category: chat ===
+
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+  generated (T=0.8 top_k=40, 32 tok): 'What is the first 10 ft_density is needed (LFH2B = 2). + . ?   1^~ \\L'
+  output dist:  mean_entropy=4.852 nats  final_entropy=4.184  mean_top_prob=0.255  final_top_prob=0.326
+  rep @final loop:  PROMPT corr=0.208 rank=12.97  |  GENERATED corr=0.213 rank=25.83
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: '<|im_start|>user\nExplain gravity in one sentence.<|im_end|>\n<|im_start|>assistant\n'
+  generated (T=0.8 top_k=40, 32 tok): 'Fod.SAC.();\n    """Returns OP = 1\n  def """Returns\n  def check(self, a, a, a, OPK'
+  output dist:  mean_entropy=4.737 nats  final_entropy=7.729  mean_top_prob=0.349  final_top_prob=0.031
+  rep @final loop:  PROMPT corr=0.206 rank=12.53  |  GENERATED corr=0.130 rank=22.94
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: '<|im_start|>user\nName three primary colors.<|im_end|>\n<|im_start|>assistant\n'
+  generated (T=0.8 top_k=40, 32 tok): '\n### Relote\n\nExample of the R A A A A A A W S A L A A A A A A A A A A A A'
+  output dist:  mean_entropy=3.319 nats  final_entropy=0.812  mean_top_prob=0.569  final_top_prob=0.911
+  rep @final loop:  PROMPT corr=0.150 rank=11.79  |  GENERATED corr=0.512 rank=13.99
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: code ===
+
+prompt: 'def fibonacci(n):'
+  generated (T=0.8 top_k=40, 32 tok): '\n2p = 4, y, x, y, y, m, f, y, y,\n\nI was on the right of the'
+  output dist:  mean_entropy=3.662 nats  final_entropy=5.397  mean_top_prob=0.429  final_top_prob=0.240
+  rep @final loop:  PROMPT corr=0.288 rank=5.46  |  GENERATED corr=0.389 rank=20.48
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'def is_prime(n):'
+  generated (T=0.8 top_k=40, 32 tok): ' i2): r_n) +  #  #  #   #   #   #   #  #  #       #   # These L'
+  output dist:  mean_entropy=2.726 nats  final_entropy=7.193  mean_top_prob=0.570  final_top_prob=0.085
+  rep @final loop:  PROMPT corr=0.183 rank=6.46  |  GENERATED corr=0.446 rank=18.05
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'import numpy as np\n'
+  generated (T=0.8 top_k=40, 32 tok): "\n[]:\n\n\nTo = 'x' ): _   # ... + - + - - - - . . . . . . . . ."
+  output dist:  mean_entropy=4.305 nats  final_entropy=0.347  mean_top_prob=0.381  final_top_prob=0.963
+  rep @final loop:  PROMPT corr=0.299 rank=4.63  |  GENERATED corr=0.490 rank=17.48
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'class Stack:\n    def __init__(self):'
+  generated (T=0.8 top_k=40, 32 tok): '\n    def __repr__(self):\n    """Add self self: self # self self\n        self.assertEqual(self.append(self):\n    # Set them'
+  output dist:  mean_entropy=2.534 nats  final_entropy=5.766  mean_top_prob=0.590  final_top_prob=0.049
+  rep @final loop:  PROMPT corr=0.224 rank=9.02  |  GENERATED corr=0.309 rank=22.71
+  -> inconclusive / not clearly degenerate at this length   [BEST FRAGMENT: real Python structure]
+
+=== category: math ===
+
+prompt: 'The derivative of x^2 with respect to x is'
+  generated (T=0.8 top_k=40, 32 tok): ' x is n is n is n is n is n is n is n is n is n is n is n is n is n is n is'
+  output dist:  mean_entropy=1.011 nats  final_entropy=0.711  mean_top_prob=0.863  final_top_prob=0.915
+  rep @final loop:  PROMPT corr=0.318 rank=9.34  |  GENERATED corr=0.738 rank=7.13
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'The sum of the first 10 positive integers is'
+  generated (T=0.8 top_k=40, 32 tok): ' an average average average average and positive to positive to to a to a in a in a . . Some two points points a points points of points of the two'
+  output dist:  mean_entropy=4.620 nats  final_entropy=6.914  mean_top_prob=0.312  final_top_prob=0.051
+  rep @final loop:  PROMPT corr=0.228 rank=9.98  |  GENERATED corr=0.378 rank=20.13
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'To solve 2x + 3 = 7, subtract 3 from both sides to get'
+  generated (T=0.8 top_k=40, 32 tok): ' 3 3 8 to 84 (4)]38 7 and then then then then then then then then then how then then then then'
+  output dist:  mean_entropy=3.419 nats  final_entropy=3.260  mean_top_prob=0.463  final_top_prob=0.566
+  rep @final loop:  PROMPT corr=0.246 rank=16.44  |  GENERATED corr=0.451 rank=16.56
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The area of a circle with radius r is'
+  generated (T=0.8 top_k=40, 32 tok): ' given, a, a, a, a, a, what the what the part the part the one n the n the part the part the part the part'
+  output dist:  mean_entropy=2.755 nats  final_entropy=2.631  mean_top_prob=0.601  final_top_prob=0.631
+  rep @final loop:  PROMPT corr=0.219 rank=8.22  |  GENERATED corr=0.415 rank=15.77
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: prose ===
+
+prompt: 'The recurrent depth transformer is'
+  generated (T=0.8 top_k=40, 32 tok): ' not, not, the same, the the w and and the and the w = r = c. These can the entire or the inner-the^ob'
+  output dist:  mean_entropy=5.065 nats  final_entropy=4.249  mean_top_prob=0.284  final_top_prob=0.206
+  rep @final loop:  PROMPT corr=0.333 rank=4.52  |  GENERATED corr=0.317 rank=23.17
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The history of the Roman Empire began'
+  generated (T=0.8 top_k=40, 32 tok): ' a family family someone who who who don\\not\\ \\ \\ \\ ... (\\ repeats)'
+  output dist:  mean_entropy=2.752 nats  final_entropy=0.617  mean_top_prob=0.643  final_top_prob=0.934
+  rep @final loop:  PROMPT corr=0.231 rank=6.52  |  GENERATED corr=0.609 rank=10.95
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'Photosynthesis is the process by which'
+  generated (T=0.8 top_k=40, 32 tok): ' the process the process the process is still an idea between equipment between equipment\n\nIf the outcome of allocation to domain is the list for each iteration of control or'
+  output dist:  mean_entropy=4.849 nats  final_entropy=4.734  mean_top_prob=0.279  final_top_prob=0.115
+  rep @final loop:  PROMPT corr=0.236 rank=6.55  |  GENERATED corr=0.308 rank=22.79
+  -> inconclusive / not clearly degenerate at this length   [BEST FRAGMENT: real English syntax]
+
+prompt: 'The largest planet in our solar system is'
+  generated (T=0.8 top_k=40, 32 tok): ' in the house in some some . . L L L L L T is the T is part to end to end to end to end to and and and the'
+  output dist:  mean_entropy=3.630 nats  final_entropy=3.915  mean_top_prob=0.466  final_top_prob=0.446
+  rep @final loop:  PROMPT corr=0.233 rank=7.28  |  GENERATED corr=0.308 rank=19.28
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: qa ===
+
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+  generated (T=0.8 top_k=40, 32 tok): ' The R A C A C, b, b, b, b) is the right on a full b, b, b, b, b is an'
+  output dist:  mean_entropy=3.683 nats  final_entropy=4.986  mean_top_prob=0.477  final_top_prob=0.205
+  rep @final loop:  PROMPT corr=0.229 rank=13.25  |  GENERATED corr=0.442 rank=18.13
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Q: What is the capital of France?\nA:'
+  generated (T=0.8 top_k=40, 32 tok): ' A A A A A A A ... (A x32)'
+  output dist:  mean_entropy=1.014 nats  final_entropy=0.335  mean_top_prob=0.878  final_top_prob=0.961
+  rep @final loop:  PROMPT corr=0.250 rank=10.91  |  GENERATED corr=0.984 rank=4.32
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'Q: How many days are in a week?\nA:'
+  generated (T=0.8 top_k=40, 32 tok): '  How the  If y in A 3, y, A, a b y, A An A : A : : :'
+  output dist:  mean_entropy=3.919 nats  final_entropy=2.182  mean_top_prob=0.399  final_top_prob=0.650
+  rep @final loop:  PROMPT corr=0.203 rank=11.80  |  GENERATED corr=0.417 rank=22.37
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Q: What color is the sky on a clear day?\nA:'
+  generated (T=0.8 top_k=40, 32 tok): 'A:AAA A A A ... (A x29)'
+  output dist:  mean_entropy=0.857 nats  final_entropy=0.530  mean_top_prob=0.897  final_top_prob=0.941
+  rep @final loop:  PROMPT corr=0.169 rank=13.54  |  GENERATED corr=0.910 rank=7.27
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+# SUMMARY: ~15/19 "not clearly degenerate" under T=0.8 (>= old freshrevkl@3000 peak 12/19),
+# with real grammatical/code fragments (class Stack -> plausible Python; photosynthesis ->
+# real English syntax). Still ~4/19 hard-collapse (France/sky 'A A A', derivative 'n is n is').
+# Varied-salad (v4-class), NOT coherence. Variety partly inflated by untrained 4th loop ->
+# needs depth-matched probe (train to n_loops=4) for the clean verdict.

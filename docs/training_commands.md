@@ -10,7 +10,56 @@ GPU map on this rig (not intuitive — verify with `torch.cuda.get_device_name`)
 
 ---
 
-## Current: v6 Clean SFT (on moe_s0 base)
+## ⚠️ Python environment — USE THE CUDA BUILD (env gotcha, 2026-06-24)
+
+Automated/fresh shells resolve `python` to a **CPU-only `.venv`** (`d:\MythOuro-main\.venv`) →
+`AssertionError: Torch not compiled with CUDA enabled`. The working **CUDA build**
+(torch 2.13.0+cu132) is:
+```
+C:\Users\danie\AppData\Local\Python\pythoncore-3.14-64\python.exe
+```
+Your interactive PowerShell already uses it; this only bites fresh/automated shells. Call it
+explicitly when needed:
+```powershell
+& "C:\Users\danie\AppData\Local\Python\pythoncore-3.14-64\python.exe" tools/collapse_metrics.py -c <path.pt> --device cuda:0 --generate --probe-set all
+```
+
+---
+
+## ⭐ CURRENT (2026-06): rev-KL STABILITY run — the divergence-collapse FIX
+
+The gnorm-explosion collapse at lr 3e-4 (which killed JSD at the `n_loops 2→3` transition) is
+fixed by **lr 1e-4 + `--use-sandwich-norm --use-depth-aware-init`**. Healthiest run yet
+(gnorm flat ~1.0, cv 0.18); **survived the `n_loops 2→3` transition** that detonated JSD. Resume /
+continue (auto-resumes from the latest checkpoint in `--ckpt-dir`):
+```powershell
+python -m training.distill --student-variant mythouro_distill_tiny --student-device cuda:0 --teacher-device cuda:2 --seq-len 1024 --micro-batch 1 --grad-accum 16 --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 --divergence rev_kl --use-sandwich-norm --use-depth-aware-init --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_revkl_stable
+```
+**Goal:** run to ~6000 (full `n_loops=4` curriculum) → then a **depth-matched** probe + eval
+(current reads are `n_loops=4`-on-`n_loops=3` = pessimistic). **Status (2026-06-24):** stable to
+step 4000; generation shifted hard-collapse → varied-salad (~15/19 escape @ T=0.8, real grammatical
+fragments); **ECE regressed to 0.20** (rev-KL mode-seeking tax — the calibration tension).
+
+## NEXT: stable-JSD (fwd/rev hybrid — addresses the calibration tension)
+
+JSD on the stable footing (its prior rank→1 collapse was LR-instability, **not** the objective).
+Fresh from random init:
+```powershell
+python -m training.distill --student-variant mythouro_distill_tiny --student-device cuda:0 --teacher-device cuda:2 --seq-len 1024 --micro-batch 1 --grad-accum 16 --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 --divergence jsd --jsd-beta 0.5 --use-sandwich-norm --use-depth-aware-init --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_jsd_stable
+```
+Calibration levers (separate axis from divergence — see ideas.md / training_runs.md 06-23): bump
+**`--unc-coeff`** (the `uncertainty_calibration_loss`); post-hoc **temperature scaling** at inference.
+
+## Probe / eval the stability checkpoints (use the CUDA python above)
+```powershell
+& "C:\Users\danie\AppData\Local\Python\pythoncore-3.14-64\python.exe" tools/collapse_metrics.py -c checkpoints_revkl_stable/step_0004000.pt --device cuda:0 --generate --probe-set all
+& "C:\Users\danie\AppData\Local\Python\pythoncore-3.14-64\python.exe" tools/collapse_metrics.py -c checkpoints_revkl_stable/step_0004000.pt --device cuda:0 --generate --probe-set all --temperature 0.8 --top-k 40
+& "C:\Users\danie\AppData\Local\Python\pythoncore-3.14-64\python.exe" -m eval.harness --checkpoint checkpoints_revkl_stable/step_0004000.pt --device cuda:0 --max-samples 500 --output checkpoints_revkl_stable/eval_step_4000.json
+```
+
+---
+
+## Earlier: v6 Clean SFT (on moe_s0 base)
 
 > **Pre-flight:** clear or rename `checkpoints_v6_clean_sft/` if restarting
 > from scratch (old checkpoints from the code-data-starved attempt live there).
@@ -146,8 +195,11 @@ attractor), NOT recurrent collapse. Full chain in `training_runs.md`.
 | `--divergence {fwd_kl,rev_kl,jsd}` | Distill divergence; rev_kl/jsd = mode-seeking (anti-degeneration). Default fwd_kl = prior behaviour |
 | `--jsd-beta 0.5` | JSD interpolation weight when `--divergence jsd` (β→0≈fwd, β→1≈rev) |
 | `--recurrent-state-noise 0.05` | Training-time hidden-state noise regulariser (default 0 = off) |
-| `--use-sandwich-norm` | Huginn sandwich norm — fresh runs only (DEMOTED; see review_action_plan) |
-| `--use-depth-aware-init` | Huginn/Takase depth-aware init — fresh runs only |
+| `--use-sandwich-norm` | Huginn sandwich norm — **PROMOTED** (2026-06): part of the stability recipe (lr 1e-4 + this + depth-aware-init) that fixed the gnorm-explosion collapse. Fresh runs only |
+| `--use-depth-aware-init` | Huginn/Takase depth-aware init — **PROMOTED** (same stability recipe). Fresh runs only |
+| `--num-workers 0` | Dataloader workers; **0 = clean `Ctrl+C` graceful checkpoint** (used in the stability runs) |
+| `--unc-coeff` | Weight on `uncertainty_calibration_loss` — **calibration lever**; bump to fight the ECE regression (training_runs.md 06-23) |
+| `--lr 1e-4` | **Stability-recipe peak LR** (3e-4 caused the gnorm-explosion collapse) |
 | `--use-8bit-adam` | Quantize optimizer state to 8-bit (bitsandbytes) — see VRAM playbook |
 | `--ckpt-dir <dir>` | Where to save checkpoints |
 
