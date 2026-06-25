@@ -220,6 +220,17 @@ base. Updated impl sketch for `distill.py`: `--divergence {fwd_kl,rev_kl,jsd}`,
 `--jsd-beta`, `--onpolicy-lambda`, `--teacher-mix-alpha 0.2`, `--length-norm`,
 `--onpolicy-temp`; reuse teacher-forward path; gate sampling behind λ.
 
+**⚠️ Pipeline gotcha — teacher-generation stop tokens (2026-06-24).** The moment on-policy *generates*
+from the teacher (demonstrations, or scoring student rollouts), the teacher generation MUST use the stop
+set **`[<|endoftext|>=0, <|im_end|>=2]`**. Ouro's tokenizer `eos` is `<|endoftext|>` (id 0), but its chat
+template ends turns with `<|im_end|>` (id 2) — a *different* token. Stopping only on `eos` → the teacher
+never halts between turns and **self-conversations into `user/assistant/user/assistant` cascades**
+(observed in the Ouro chat launcher, 2026-06-24; fix = collect both ids and pass as `eos_token_id` to
+`generate`). Harvesting that = cascade-garbage teacher data ("unnecessary tokens that confuse the student,
+but worse"). **Offline distillation is UNAFFECTED** (forward-only on fixed data, never calls `.generate()`
+on the teacher). The same stop-set applies to **MythOuro's own serving** later (shared SmolLM2 49152 vocab
+→ id 2 = `<|im_end|>` for the student too). **Bake `[0, 2]` into any teacher-gen / student-serve path.**
+
 ---
 
 ## Deep dive: MeSH (Memory-as-State-Highways) — collapse-relevant (assessed 2026-06-16)
