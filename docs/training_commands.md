@@ -50,6 +50,21 @@ python -m training.distill --student-variant mythouro_distill_tiny --student-dev
 Calibration levers (separate axis from divergence — see ideas.md / training_runs.md 06-23): bump
 **`--unc-coeff`** (the `uncertainty_calibration_loss`); post-hoc **temperature scaling** at inference.
 
+## NEXT (B): base-teacher A/B (concise vs thinking-heavy target)
+
+**Teacher-style hypothesis (2026-06-24):** Ouro-2.6B-**Thinking** emits verbose CoT monologues
+("Okay, let me figure out… but wait… let me check…"); a tiny 278M student may learn a **concise**
+target (base `Ouro-2.6B` → `return fibonacci(n-1) + fibonacci(n-2)`) more coherently, *and* the
+thinking-heavy distribution plausibly amplifies the high-frequency collapse (`is`/`the`/`Let me`/`So`).
+**No code change — `--teacher-id` already exists.** Clean single-variable A/B vs the rev-KL-stable run
+(everything identical *except* the teacher → isolates teacher-style):
+```powershell
+python -m training.distill --student-variant mythouro_distill_tiny --student-device cuda:0 --teacher-device cuda:2 --teacher-id ByteDance/Ouro-2.6B --seq-len 1024 --micro-batch 1 --grad-accum 16 --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 --divergence rev_kl --use-sandwich-norm --use-depth-aware-init --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_revkl_base_teacher
+```
+Tokenizer stays default (both Ouro variants share the SmolLM2 49152 vocab). **Expectation:** easier
+offline target → maybe less/different collapse, *but* exposure bias is offline-inherent → likely still
+collapses; **on-policy remains the deep cure**. Informative single-variable test, not a guaranteed fix.
+
 ## Probe / eval the stability checkpoints (use the CUDA python above)
 ```powershell
 & "C:\Users\danie\AppData\Local\Python\pythoncore-3.14-64\python.exe" tools/collapse_metrics.py -c checkpoints_revkl_stable/step_0004000.pt --device cuda:0 --generate --probe-set all
