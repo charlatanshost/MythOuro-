@@ -97,29 +97,31 @@ the pure-rev-KL lineage is preserved), then launch with the α the probe picked:
 mkdir checkpoints_onpolicy
 cp checkpoints_revkl_stable/step_0006675.pt checkpoints_onpolicy/
 python -m training.distill --student-variant mythouro_distill_tiny \
-    --student-device cuda:0 --teacher-device cuda:0 \
+    --student-device cuda:0 --teacher-device cuda:2 \
     --teacher-id ByteDance/Ouro-2.6B-Thinking \
-    --seq-len 512 --micro-batch 1 --grad-accum 16 \
+    --seq-len 1024 --micro-batch 1 --grad-accum 16 \
     --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 \
     --divergence rev_kl --use-sandwich-norm --use-depth-aware-init \
     --onpolicy-lambda 0.5 --teacher-mix-alpha 0.6 --rollout-len 64 \
     --ckpt-every-mins 15 --num-workers 0 --trust-remote-code \
     --ckpt-dir checkpoints_onpolicy
 ```
-**Single-card on purpose** (teacher + student both `cuda:0`). On-policy runs the teacher
-forward *per generated token* (the α-mix), so a cross-GPU (`cuda:0`↔`cuda:2`) setup means
-~64 PCIe round-trips + ping-pong idle **per rollout** — that's the ~0.3k tok/s seen before,
-made far worse. Same-card = no transfer, no cross-GPU stall. The cost is memory: the
-*offline* steps (λ=0.5) at the resident 5.2 GB teacher + activations are the peak, so
-**`--seq-len 512`** (1024 is ~11.7 GB — borderline OOM on a 12 GB 5070). Resuming at 512
-from the 1024-trained 6675 is fine — `load_checkpoint` rebuilds the RoPE buffers.
+**Cross-GPU (teacher on `cuda:2`) — single-card doesn't fit.** Tried it (best for PCIe
+avoidance) but the 5.2 GB teacher + the student's training peak **OOMs a 12 GB 5070** even
+at `--seq-len 512` with `expandable_segments` — the teacher just doesn't cohabit. So
+teacher on `cuda:2`: the proven layout 6675 trained under. **The PCIe worry doesn't carry
+over to on-policy:** the 0.3k tok/s was *offline*, where each transfer was a full
+`(B,1024,V)` ≈ 100 MB tensor with only one forward of compute. On-policy slices to the
+**last-token logits (~100 KB) before transfer**, with **128 forwards** of compute per
+rollout — transfer is dwarfed by compute, so the cross-GPU penalty should be ~negligible.
+**Measure `tok/s`**; only if genuinely slow do we need Phase-5 (teacher kv-cache) or a
+quantized/smaller-footprint teacher to enable single-card.
 
 **Throughput reality:** still slow — sequential recurrent decode + per-token teacher
-forward (no kv-cache yet) is the floor; single-card only removes the cross-GPU penalty.
-Expect *tens* of slow steps overnight, not thousands — fine for a first signal.
-**`--ckpt-every-mins 15`** saves every 15 min of wall-clock (step-based `--ckpt-every`
-won't fire at this speed → power-cut net; keep_last prunes to 3). Watch `op N/16` (firing)
-+ the morning α=0.0 re-probe (un-collapse). Tune for speed: lower `λ`/`--rollout-len`.
+forward (no kv-cache yet) is the floor. Expect *tens* of slow steps overnight, not
+thousands — fine for a first signal. **`--ckpt-every-mins 15`** saves every 15 min of
+wall-clock (step-based `--ckpt-every` won't fire at this speed → power-cut net; keep_last
+prunes to 3). Watch `op N/16` (firing) + the morning α=0.0 re-probe (un-collapse).
 
 ## Success signal
 The `is is is` collapse breaks: free-generation probes at matched depth produce varied,
