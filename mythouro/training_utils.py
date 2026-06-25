@@ -1698,3 +1698,68 @@ def teacher_logits(
         if hasattr(out, "logits"):
             return out.logits.detach()
         return out.detach()
+
+
+@torch.no_grad()
+def generate_rollout(
+    student: nn.Module,
+    teacher: "nn.Module | None",
+    prompt_ids: torch.Tensor,
+    *,
+    n_loops: int,
+    max_new_tokens: int,
+    teacher_mix_alpha: float = 0.25,
+    temperature: float = 1.0,
+    top_k: int = 50,
+) -> torch.Tensor:
+    """
+    Generate an on-policy rollout by autoregressive sampling from the STUDENT,
+    with optional MiniLLM teacher-mixed sampling to keep a collapse-prone
+    student's rollouts sensible.
+
+    Per-step sampling distribution:
+        α·softmax(teacher/T) + (1-α)·softmax(student/T)   (α = teacher_mix_alpha)
+    α=0 (or teacher=None) → pure student sampling. The α term drags a collapsed
+    student's rollouts back toward the teacher's support — the un-collapse lever
+    that makes on-policy distillation viable from a degenerate checkpoint
+    (docs/onpolicy_plan.md).
+
+    Returns the full sequence (prompt + generated), shape
+    (B, prompt_len + max_new_tokens), on the student's device. Runs under
+    ``no_grad`` in eval() (recurrent-state noise / dropout off) — this is the
+    SAMPLING pass only; the on-policy loss re-runs the student WITH grad on the
+    returned sequence.
+
+    Perf: deliberately-simple correct version — full forward each step for both
+    student and teacher (O(L²)). Keep ``max_new_tokens`` short (recurrent decode
+    is slow); optimise with a kv-cache later (docs/onpolicy_plan.md phase 5).
+    """
+    was_training = student.training
+    student.eval()
+    device = prompt_ids.device
+    seq = prompt_ids
+    use_teacher = teacher is not None and teacher_mix_alpha > 0.0
+    inv_t = 1.0 / max(temperature, 1e-5)
+    try:
+        for _ in range(max_new_tokens):
+            s_logits, _ = student(seq, n_loops=n_loops)
+            probs = torch.softmax(s_logits[:, -1, :].float() * inv_t, dim=-1)
+            if use_teacher:
+                t_logits = teacher_logits(teacher, seq)
+                t_last = t_logits[:, -1, :].to(device).float()
+                t_probs = torch.softmax(t_last * inv_t, dim=-1)
+                probs = (
+                    teacher_mix_alpha * t_probs
+                    + (1.0 - teacher_mix_alpha) * probs
+                )
+            if top_k and top_k > 0:
+                k = min(top_k, probs.shape[-1])
+                v, _ = probs.topk(k, dim=-1)
+                probs = probs.masked_fill(probs < v[:, -1:], 0.0)
+                probs = probs / probs.sum(dim=-1, keepdim=True).clamp_min(1e-12)
+            next_tok = torch.multinomial(probs, num_samples=1)
+            seq = torch.cat([seq, next_tok], dim=1)
+    finally:
+        if was_training:
+            student.train()
+    return seq

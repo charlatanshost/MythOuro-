@@ -75,6 +75,7 @@ from mythouro.training_utils import (
     collect_router_logits,
     depth_regularization_loss,
     distillation_loss,
+    generate_rollout,
     get_optimizer_groups,
     load_balance_loss,
     load_distillation_teacher,
@@ -202,6 +203,9 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "--onpolicy-lambda > 0.")
     p.add_argument("--onpolicy-temp", type=float, default=1.0,
                    help="Sampling temperature for on-policy rollouts.")
+    p.add_argument("--onpolicy-top-k", type=int, default=50,
+                   help="Top-k filter for on-policy rollout sampling (0=off). "
+                        "Used only when --onpolicy-lambda > 0.")
     p.add_argument("--use-sandwich-norm", action="store_true",
                    help="Huginn sandwich norm (extra post-sublayer RMSNorm in "
                         "every TransformerBlock) — recurrent hidden-state-collapse "
@@ -387,6 +391,9 @@ def main():
     # (random uniform in [start, get(step)]). Seeded for reproducibility.
     import random as _random
     depth_rng = _random.Random(args.seed)
+    # Independent stream for the per-micro-step on-policy coin flip, so toggling
+    # --random-depth never shifts which steps go on-policy (and vice-versa).
+    onpolicy_rng = _random.Random(args.seed + 9973)
 
     amp_ctx = (
         torch.amp.autocast(device_type=dev.autocast_type(device), dtype=amp_dtype)
@@ -421,6 +428,7 @@ def main():
         optimizer.zero_grad()
         loss_accum = soft_accum = hard_accum = 0.0
         lb_accum = unc_accum = sparse_accum = depth_accum = 0.0
+        op_accum = 0
         accum_expert_counts: dict = {}
 
         for micro_step in range(args.grad_accum):
@@ -433,16 +441,45 @@ def main():
             x = x.to(device, non_blocking=True)
             y = y.to(device, non_blocking=True)
 
+            # ── On-policy / GKD: with prob λ, train on a STUDENT-generated
+            #    rollout instead of the corpus batch. The student continues a
+            #    short real-text seed under teacher-mixed sampling, then we
+            #    distil (soft divergence, no hard CE) on its OWN sequence — the
+            #    exposure-bias cure (docs/onpolicy_plan.md). λ=0 → never fires.
+            is_onpolicy = (
+                args.onpolicy_lambda > 0.0
+                and onpolicy_rng.random() < args.onpolicy_lambda
+            )
+            if is_onpolicy:
+                seed_len = max(8, args.rollout_len // 4)
+                with amp_ctx:
+                    rollout = generate_rollout(
+                        student, teacher, x[:, :seed_len],
+                        n_loops=n_loops,
+                        max_new_tokens=args.rollout_len,
+                        teacher_mix_alpha=args.teacher_mix_alpha,
+                        temperature=args.onpolicy_temp,
+                        top_k=args.onpolicy_top_k,
+                    )
+                x_in, y_in = rollout[:, :-1], rollout[:, 1:]
+                # Sampled tokens aren't gold → pure soft divergence (targets=None
+                # makes distillation_loss drop the hard-CE term).
+                distill_targets = None
+                op_accum += 1
+            else:
+                x_in, y_in = x, y
+                distill_targets = y
+
             with amp_ctx:
                 # ── Teacher forward (no grad, no autograd graph) ──
-                t_logits = teacher_logits(teacher, x).to(device)
+                t_logits = teacher_logits(teacher, x_in).to(device)
 
                 # ── Student forward ──
-                s_logits, unc = student(x, n_loops=n_loops)
+                s_logits, unc = student(x_in, n_loops=n_loops)
 
-                # ── Distillation + CE blend ──
+                # ── Distillation (+ CE blend on the offline path) ──
                 distill_total, distill_metrics = distillation_loss(
-                    s_logits, t_logits, targets=y,
+                    s_logits, t_logits, targets=distill_targets,
                     temperature=args.temperature,
                     alpha=args.alpha,
                     divergence=args.divergence,
@@ -452,7 +489,7 @@ def main():
                 # ── Auxiliary losses (keep MoE / uncertainty / sparsity healthy) ──
                 router_buf = collect_router_logits(student)
                 lb     = load_balance_loss(router_buf, topk=cfg.n_experts_per_tok)
-                unc_l  = uncertainty_calibration_loss(s_logits.detach(), unc, y)
+                unc_l  = uncertainty_calibration_loss(s_logits.detach(), unc, y_in)
                 sparse = sparse_activation_loss(router_buf)
 
                 # Depth regulariser — PonderNet × Ouro KL-to-uniform on the
@@ -509,7 +546,7 @@ def main():
                 f"| soft {soft_accum:.4f} | hard {hard_accum:.4f} "
                 f"| lb {lb_accum:.4f} | unc {unc_accum:.4f} "
                 f"| sparse {sparse_accum:.5f} | depth {depth_accum:.4f} "
-                f"| n_loops {n_loops} "
+                f"| n_loops {n_loops} | op {op_accum}/{args.grad_accum} "
                 f"| gnorm {float(grad_norm):.2f} | lr {cur_lr:.2e} "
                 f"| wfac {warmup_factor:.2f} | {tps/1e3:.1f}k tok/s"
             )

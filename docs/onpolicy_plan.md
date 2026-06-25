@@ -1,7 +1,8 @@
 # On-policy distillation (GKD / MiniLLM) — implementation plan
 
-**Status:** in progress (started 2026-06-24). Flags landed in `training/distill.py`;
-rollout engine + on-policy step next.
+**Status:** in progress (started 2026-06-24). Flags + rollout engine (`generate_rollout`)
++ on-policy step + the α-probe tool all landed, **default-off** (λ=0 → no behaviour change).
+Next: run the α-probe to pick α, then the first overnight on-policy run from 6675.
 
 ## Why
 Every offline divergence we swept (fwd-KL, rev-KL, JSD — all on a *stable*, well-
@@ -58,15 +59,46 @@ on-policy (new): x ← generate_rollout(); t = teacher_logits(x);  s = student(x
 
 ## Build phases (incremental, test each)
 1. **✅ Flags** — landed, default-off, no behaviour change.
-2. **Rollout engine** — `generate_rollout(student, teacher, prompt, α, temp, n_loops, L)`:
-   step-wise, sample from the α-mix, `@torch.no_grad`, return token ids. Student uses its
-   kv-cache path; teacher recompute (short L). **Unit-test it in isolation** (does it
-   produce non-degenerate ids from 6675 at α≈0.5?) before wiring into training.
-3. **On-policy step** — with prob `λ`, swap the corpus batch for a rollout, then the
-   existing forward + `distillation_loss`. Backprop unchanged. Log a `rollout/rep` metric
-   (n-gram repetition of the rollouts) so we *see* the un-collapse happen.
-4. **Schedule + polish** — λ-ramp (start small), length-norm, α-anneal.
-5. **Optimize** — teacher kv-cache, larger batch/rollouts, throughput.
+2. **✅ Rollout engine** — `generate_rollout(...)` in `mythouro/training_utils.py`:
+   step-wise, sample from the α-mix, `@torch.no_grad`, eval(), returns token ids.
+   (Simple O(L²) version — full forward each step; optimise in phase 5.)
+3. **✅ On-policy step** — `training/distill.py`: with prob `λ`, the student continues a
+   short real-text seed (`generate_rollout`), then the *existing* `teacher_logits` +
+   `distillation_loss(targets=None)` (pure soft rev-KL — no hard CE on sampled tokens).
+   Backprop unchanged. Log shows `op N/grad_accum` (on-policy micro-steps that step) so
+   you *see* it firing.
+4. **⏭ Schedule + polish** — λ-ramp (start small), length-norm, α-anneal.
+5. **⏭ Optimize** — teacher kv-cache, larger batch/rollouts, throughput.
+
+## How to run
+**Step 1 — α-probe (no training; pick α).** Generates rollouts from 6675 at each α and
+prints repetition stats. Look for `top_share` falling / `distinct` rising as α rises:
+```
+python -m tools.onpolicy_rollout_probe --ckpt-dir checkpoints_revkl_stable \
+    --student-device cuda:0 --teacher-device cuda:2 \
+    --teacher-id ByteDance/Ouro-2.6B-Thinking --trust-remote-code
+```
+
+**Step 2 — warm-start the on-policy run from 6675** (one-time copy into a fresh dir so
+the pure-rev-KL lineage is preserved), then launch with the α the probe picked:
+```
+mkdir checkpoints_onpolicy
+cp checkpoints_revkl_stable/step_0006675.pt checkpoints_onpolicy/
+python -m training.distill --student-variant mythouro_distill_tiny \
+    --student-device cuda:0 --teacher-device cuda:2 \
+    --teacher-id ByteDance/Ouro-2.6B-Thinking \
+    --seq-len 1024 --micro-batch 1 --grad-accum 16 \
+    --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 \
+    --divergence rev_kl --use-sandwich-norm --use-depth-aware-init \
+    --onpolicy-lambda 0.5 --teacher-mix-alpha 0.5 --rollout-len 64 \
+    --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_onpolicy
+```
+**Throughput reality:** on-policy micro-steps are ~100× an offline one (96/64 sequential
+recurrent forwards × student+teacher). λ=0.5 ⇒ ~half the 16 micro-steps generate ⇒ steps
+~50× slower than offline. For the first overnight run that's fine — even a few hundred
+on-policy steps should *visibly* move `rollout` repetition. Tune for speed: lower `λ`,
+shorter `--rollout-len`, or smaller `--grad-accum`. Watch the `op N/16` field to confirm
+on-policy steps are firing and `loss`/rollouts to confirm un-collapse.
 
 ## Success signal
 The `is is is` collapse breaks: free-generation probes at matched depth produce varied,
