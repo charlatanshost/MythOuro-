@@ -59,12 +59,15 @@ thinking-heavy distribution plausibly amplifies the high-frequency collapse (`is
 **No code change — `--teacher-id` already exists.** Clean single-variable A/B vs the rev-KL-stable run
 (everything identical *except* the teacher → isolates teacher-style):
 ```powershell
-python -m training.distill --student-variant mythouro_distill_tiny --student-device cuda:0 --teacher-device cuda:2 --teacher-id "D:\LLMs\Ouro-2.6B" --seq-len 1024 --micro-batch 1 --grad-accum 16 --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 --divergence rev_kl --use-sandwich-norm --use-depth-aware-init --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_revkl_base_teacher
+python -m training.distill --student-variant mythouro_distill_tiny --student-device cuda:0 --teacher-device cuda:2 --teacher-id ByteDance/Ouro-2.6B --seq-len 1024 --micro-batch 1 --grad-accum 16 --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 --divergence rev_kl --use-sandwich-norm --use-depth-aware-init --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_revkl_base_teacher
 ```
-`--teacher-id` = **local copy** `D:\LLMs\Ouro-2.6B` (or HF id `ByteDance/Ouro-2.6B`). Local dir must hold
-the *full* repo (config.json + `modeling_ouro.py` + tokenizer files), since `--trust-remote-code` loads
-the modeling code from there. Tokenizer stays default (both Ouro variants share the SmolLM2 49152 vocab;
-add `--tokenizer "D:\LLMs\Ouro-2.6B"` for fully-offline). **Expectation:** easier
+**Use the HF id `ByteDance/Ouro-2.6B`, NOT the local `D:\LLMs\Ouro-2.6B`** — verified 2026-06-24: MythOuro
+runs **transformers 5.8.1**, but the local copy's `modeling_ouro.py` is patched for **4.54.x** (a *major*
+version behind) → likely crashes on 5.8.1. The HF id uses the hub modeling code MythOuro *already* loads
+fine for `-Thinking`. **Do NOT pin the teacher depth / set `early_exit_threshold`:** verified from
+`modeling_ouro.py` (line 818) the default **`threshold=1.0` already = never-early-exit = full 4 steps**
+(stable targets); the "set 0.0" advice is **backwards** (0.0 → exit at step 1 = shallow/degraded targets).
+`load_distillation_teacher` uses the default config — already correct. **Expectation:** easier
 offline target → maybe less/different collapse, *but* exposure bias is offline-inherent → likely still
 collapses; **on-policy remains the deep cure**. Informative single-variable test, not a guaranteed fix.
 
