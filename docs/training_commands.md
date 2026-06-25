@@ -50,7 +50,23 @@ python -m training.distill --student-variant mythouro_distill_tiny --student-dev
 Calibration levers (separate axis from divergence — see ideas.md / training_runs.md 06-23): bump
 **`--unc-coeff`** (the `uncertainty_calibration_loss`); post-hoc **temperature scaling** at inference.
 
-## NEXT (B): base-teacher A/B (concise vs thinking-heavy target)
+## NEXT (B): base-teacher A/B (concise vs thinking-heavy target) — ⛔ DEFERRED
+
+> **⛔ DEFERRED (2026-06-24) — blocked by env *and* likely ~a no-op anyway:**
+> 1. **Env blocker.** The base `Ouro-2.6B` repo ships *pre-5.x* `modeling_ouro.py` (uses
+>    `ROPE_INIT_FUNCTIONS['default']`, which transformers **5.8.1 removed** — only scaling variants
+>    remain: linear/dynamic/yarn/longrope/llama3/proportional; the standalone default-rope fn is gone too).
+>    No clean fix: hand-writing the rope risks *silently-wrong* targets (worse than a crash); downgrading
+>    transformers risks breaking MythOuro (built on 5.8.1); cache-swapping `-Thinking`'s newer code works
+>    but is fragile (re-download reverts it). `-Thinking` loads because its repo has the newer code.
+> 2. **Likely ~no-op for OFFLINE CORPUS distillation.** The teacher computes next-token logits on *plain*
+>    FineWeb/math/code text — it does NOT *generate* the verbose thinking monologue (that only appears in
+>    chat). So base vs `-Thinking` give **nearly-identical corpus targets** (a modest fine-tune shift, not
+>    a thinking-vs-concise chasm). The student's `is is is` collapse is **plain-text exposure bias**,
+>    teacher-agnostic → cure is **on-policy**, not teacher choice.
+> **Teacher-style matters only when the teacher GENERATES** (sequence-level KD, on-policy) or on chat/CoT
+> data — i.e. the post-coherence/on-policy stage, on a controlled env (Linux/Max rig, pinned transformers).
+> Revisit there. (The `pad_token_id` backfill in `load_distillation_teacher` stays — harmless robustness.)
 
 **Teacher-style hypothesis (2026-06-24):** Ouro-2.6B-**Thinking** emits verbose CoT monologues
 ("Okay, let me figure out… but wait… let me check…"); a tiny 278M student may learn a **concise**

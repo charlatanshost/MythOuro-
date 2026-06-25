@@ -1498,8 +1498,25 @@ def load_distillation_teacher(
         return None
 
     try:
+        from transformers import AutoConfig
+
+        # Load the config first and backfill `pad_token_id` if the teacher omits
+        # it. Some Ouro configs (notably the *base* Ouro-2.6B's `OuroConfig`) do
+        # not set it, which trips loading with "'OuroConfig' object has no
+        # attribute 'pad_token_id'". Forward-only distillation never pads or
+        # generates, so any valid id is fine — default to eos (or 0).
+        cfg = AutoConfig.from_pretrained(
+            model_id, trust_remote_code=trust_remote_code
+        )
+        if getattr(cfg, "pad_token_id", None) is None:
+            eos = getattr(cfg, "eos_token_id", None)
+            if isinstance(eos, (list, tuple)):
+                eos = eos[0] if eos else None
+            cfg.pad_token_id = eos if eos is not None else 0
+
         teacher = AutoModelForCausalLM.from_pretrained(
             model_id,
+            config=cfg,
             torch_dtype=dtype,
             trust_remote_code=trust_remote_code,
         )
