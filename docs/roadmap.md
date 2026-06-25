@@ -698,6 +698,33 @@ reasoning/code data from a stronger model you can't self-host (DeepSeek V3 API)
 for capability injection. (Synthetic API data carries the OpenAI-style ToS
 provenance flag — fine for research, a constraint if distributing.)
 
+### Re-introducing explicit reasoning (post-coherence) — the base→Thinking sequence (2026-06-24)
+
+If we distill from **base Ouro-2.6B** (concise targets, easier for the tiny student — see the
+base-teacher A/B) to reach coherence, how do we get the "thinking" back? It's a **deferred, well-defined
+step, not a hard problem** — with one key nuance:
+
+- **Latent reasoning is free.** MythOuro is recurrent-depth — *the loops ARE reasoning* (iterative latent
+  refinement), present regardless of teacher. What `Ouro-2.6B-Thinking` adds is **explicit, token-level CoT**
+  (`"let me figure out… but wait…"`). So "thinking" = **latent (always there) + explicit (addable)**. For
+  **medical**, explicit reasoning is worth it (a clinician wants to *see* the chain — interpretability/trust),
+  but you're adding a *visible* layer on top of latent reasoning you already have.
+- **Staged curriculum (easy→hard):** Stage 1 = base → coherence; Stage 2 = re-add explicit reasoning, via
+  any of (all vocab-compatible, same Ouro family): (a) **continue-distill from `-Thinking`** (a coherent
+  student learns the harder thinking distribution far better than from-scratch — swap teacher-id, continue
+  from the coherent ckpt); (b) **CoT SFT** (reasoning traces — clean datasets, or harvest `-Thinking` outputs
+  *with the `[0,2]` stop set* or you re-poison with cascade garbage); (c) **on-policy with the `-Thinking`
+  teacher**.
+- **The gate (honest):** this assumes Stage 1 *reaches coherence* — and the 06-24 verdict says offline
+  distillation of *any* teacher likely collapses (exposure bias); **on-policy is the real coherence cure**.
+  So "get thinking back" folds into the **on-policy roadmap**: reach coherence via on-policy, *then* dial in
+  reasoning by teacher choice (`-Thinking`) + CoT data. Elegant version = the **Nemotron MOPD pattern**
+  (multi-teacher on-policy): use **both** Ouro variants (base = grounding, `-Thinking` = reasoning) →
+  coherence + explicit reasoning in one stage.
+- **Practically:** don't over-plan now — post-coherence with known easy levers. *Now* = base-teacher A/B +
+  scope on-policy. *Post-coherence* = add explicit reasoning (continue-distill / CoT SFT / on-policy, ideally
+  multi-teacher). Latent reasoning via the loops is yours throughout.
+
 Resolve the exact teacher **closer to the run** — the open-model landscape moves
 fast; there may be a clearly-best option by the time you rent compute.
 
