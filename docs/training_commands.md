@@ -59,9 +59,12 @@ thinking-heavy distribution plausibly amplifies the high-frequency collapse (`is
 **No code change — `--teacher-id` already exists.** Clean single-variable A/B vs the rev-KL-stable run
 (everything identical *except* the teacher → isolates teacher-style):
 ```powershell
-python -m training.distill --student-variant mythouro_distill_tiny --student-device cuda:0 --teacher-device cuda:2 --teacher-id ByteDance/Ouro-2.6B --seq-len 1024 --micro-batch 1 --grad-accum 16 --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 --divergence rev_kl --use-sandwich-norm --use-depth-aware-init --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_revkl_base_teacher
+python -m training.distill --student-variant mythouro_distill_tiny --student-device cuda:0 --teacher-device cuda:2 --teacher-id "D:\LLMs\Ouro-2.6B" --seq-len 1024 --micro-batch 1 --grad-accum 16 --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 --divergence rev_kl --use-sandwich-norm --use-depth-aware-init --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_revkl_base_teacher
 ```
-Tokenizer stays default (both Ouro variants share the SmolLM2 49152 vocab). **Expectation:** easier
+`--teacher-id` = **local copy** `D:\LLMs\Ouro-2.6B` (or HF id `ByteDance/Ouro-2.6B`). Local dir must hold
+the *full* repo (config.json + `modeling_ouro.py` + tokenizer files), since `--trust-remote-code` loads
+the modeling code from there. Tokenizer stays default (both Ouro variants share the SmolLM2 49152 vocab;
+add `--tokenizer "D:\LLMs\Ouro-2.6B"` for fully-offline). **Expectation:** easier
 offline target → maybe less/different collapse, *but* exposure bias is offline-inherent → likely still
 collapses; **on-policy remains the deep cure**. Informative single-variable test, not a guaranteed fix.
 
