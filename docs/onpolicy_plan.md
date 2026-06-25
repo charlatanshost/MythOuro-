@@ -2,7 +2,11 @@
 
 **Status:** in progress (started 2026-06-24). Flags + rollout engine (`generate_rollout`)
 + on-policy step + the α-probe tool all landed, **default-off** (λ=0 → no behaviour change).
-Next: run the α-probe to pick α, then the first overnight on-policy run from 6675.
+**α-probe done (2026-06-25):** teacher-mix un-collapses 6675 cleanly — α=0.25 already
+coherent, 0.5/0.7 strong; α=0 (seeded+sampled) is shallow-but-OK, *not* the greedy
+`is is is` (so the hard collapse was a greedy/eval-decode artifact). **Picked α=0.25** —
+the lowest coherent α = the most *on-policy* (rollouts stay mostly the student's own
+distribution, which is the actual exposure-bias cure). Next: first overnight run from 6675.
 
 ## Why
 Every offline divergence we swept (fwd-KL, rev-KL, JSD — all on a *stable*, well-
@@ -90,7 +94,7 @@ python -m training.distill --student-variant mythouro_distill_tiny \
     --seq-len 1024 --micro-batch 1 --grad-accum 16 \
     --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 \
     --divergence rev_kl --use-sandwich-norm --use-depth-aware-init \
-    --onpolicy-lambda 0.5 --teacher-mix-alpha 0.5 --rollout-len 64 \
+    --onpolicy-lambda 0.5 --teacher-mix-alpha 0.25 --rollout-len 64 \
     --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_onpolicy
 ```
 **Throughput reality:** on-policy micro-steps are ~100× an offline one (96/64 sequential
@@ -105,3 +109,14 @@ The `is is is` collapse breaks: free-generation probes at matched depth produce 
 on-topic continuations (not the sharp attractor), while PPL/ECE stay healthy. That is the
 *generation-coherence* metric the whole project has been blocked on — and the first time
 any lever has touched it, because it's the first that attacks exposure bias directly.
+
+**Concrete morning check (clean A/B):** re-run the probe pointed at the on-policy
+checkpoint and read the **α=0.0** rows (pure student, *no* teacher-mix). At the pre-train
+6675 baseline those are "shallow but OK". If on-policy worked, α=0.0 should improve toward
+coherent/deeper — i.e. the *student's own unaided* distribution got better, which is the
+whole point. (α>0 rows are teacher-assisted, so they don't isolate the student's gain.)
+```
+python -m tools.onpolicy_rollout_probe --ckpt-dir checkpoints_onpolicy \
+    --student-device cuda:0 --teacher-device cuda:2 \
+    --teacher-id ByteDance/Ouro-2.6B-Thinking --trust-remote-code
+```

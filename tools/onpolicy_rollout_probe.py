@@ -27,7 +27,7 @@ from collections import Counter
 import torch
 
 from mythouro import MythOuro
-from mythouro.checkpointing import list_ckpts, load_checkpoint
+from mythouro.checkpointing import list_ckpts
 from mythouro.tokenizer import MythOuroTokenizer
 from mythouro.training_utils import generate_rollout, load_distillation_teacher
 from mythouro.variants import (
@@ -105,9 +105,16 @@ def main() -> None:
     ckpts = list_ckpts(args.ckpt_dir)
     if not ckpts:
         raise SystemExit(f"no checkpoints found in {args.ckpt_dir!r}")
-    step, _ = load_checkpoint(
-        student, None, ckpts[-1], ddp=False, current_cfg=cfg, restore_rng=False,
-    )
+    # Load model weights directly — a probe doesn't need the optimizer (and the
+    # saved optimizer has grouped param-groups a plain one can't accept). Mirror
+    # load_checkpoint: drop the RoPE freqs buffers (sized for the saved seq_len;
+    # the fresh model already has correct ones) and load strict=False.
+    ckpt = torch.load(ckpts[-1], map_location=sdev, weights_only=False)
+    model_state = dict(ckpt["model"])
+    for key in ("freqs_cis", "freqs_cis_mla"):
+        model_state.pop(key, None)
+    student.load_state_dict(model_state, strict=False)
+    step = ckpt.get("step", "?")
     student.eval()
     print(f"[probe] loaded {ckpts[-1]} (step {step}) on {sdev}")
 
