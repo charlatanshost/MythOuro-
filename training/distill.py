@@ -183,6 +183,25 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "regulariser that replaces the accidental P0.1 noise "
                         "which kept free generation from collapsing to a "
                         "fixed point. 0.0 = off. Try 0.02–0.1.")
+    # ── On-policy / GKD (the exposure-bias cure; OFF by default) ──
+    # See docs/onpolicy_plan.md. λ=0 keeps the current pure-offline behaviour.
+    p.add_argument("--onpolicy-lambda", type=float, default=0.0,
+                   help="Fraction of steps trained on STUDENT-GENERATED rollouts "
+                        "instead of the corpus (GKD/MiniLLM). 0=pure offline "
+                        "(current), 1=pure on-policy. The exposure-bias cure: the "
+                        "student learns to recover from its OWN trajectories.")
+    p.add_argument("--teacher-mix-alpha", type=float, default=0.25,
+                   help="Teacher-mixed rollout sampling: draw from "
+                        "α·teacher + (1-α)·student. Drags a collapse-prone "
+                        "student's rollouts back toward sense (the un-collapse "
+                        "lever). 0=pure student sampling. Used only when "
+                        "--onpolicy-lambda > 0.")
+    p.add_argument("--rollout-len", type=int, default=96,
+                   help="Tokens generated per on-policy rollout. Keep SHORT — "
+                        "recurrent decode is slow. Used only when "
+                        "--onpolicy-lambda > 0.")
+    p.add_argument("--onpolicy-temp", type=float, default=1.0,
+                   help="Sampling temperature for on-policy rollouts.")
     p.add_argument("--use-sandwich-norm", action="store_true",
                    help="Huginn sandwich norm (extra post-sublayer RMSNorm in "
                         "every TransformerBlock) — recurrent hidden-state-collapse "
