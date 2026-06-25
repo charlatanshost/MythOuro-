@@ -97,20 +97,29 @@ the pure-rev-KL lineage is preserved), then launch with the α the probe picked:
 mkdir checkpoints_onpolicy
 cp checkpoints_revkl_stable/step_0006675.pt checkpoints_onpolicy/
 python -m training.distill --student-variant mythouro_distill_tiny \
-    --student-device cuda:0 --teacher-device cuda:2 \
+    --student-device cuda:0 --teacher-device cuda:0 \
     --teacher-id ByteDance/Ouro-2.6B-Thinking \
-    --seq-len 1024 --micro-batch 1 --grad-accum 16 \
+    --seq-len 512 --micro-batch 1 --grad-accum 16 \
     --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 \
     --divergence rev_kl --use-sandwich-norm --use-depth-aware-init \
     --onpolicy-lambda 0.5 --teacher-mix-alpha 0.6 --rollout-len 64 \
-    --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_onpolicy
+    --ckpt-every-mins 15 --num-workers 0 --trust-remote-code \
+    --ckpt-dir checkpoints_onpolicy
 ```
-**Throughput reality:** on-policy micro-steps are ~100× an offline one (96/64 sequential
-recurrent forwards × student+teacher). λ=0.5 ⇒ ~half the 16 micro-steps generate ⇒ steps
-~50× slower than offline. For the first overnight run that's fine — even a few hundred
-on-policy steps should *visibly* move `rollout` repetition. Tune for speed: lower `λ`,
-shorter `--rollout-len`, or smaller `--grad-accum`. Watch the `op N/16` field to confirm
-on-policy steps are firing and `loss`/rollouts to confirm un-collapse.
+**Single-card on purpose** (teacher + student both `cuda:0`). On-policy runs the teacher
+forward *per generated token* (the α-mix), so a cross-GPU (`cuda:0`↔`cuda:2`) setup means
+~64 PCIe round-trips + ping-pong idle **per rollout** — that's the ~0.3k tok/s seen before,
+made far worse. Same-card = no transfer, no cross-GPU stall. The cost is memory: the
+*offline* steps (λ=0.5) at the resident 5.2 GB teacher + activations are the peak, so
+**`--seq-len 512`** (1024 is ~11.7 GB — borderline OOM on a 12 GB 5070). Resuming at 512
+from the 1024-trained 6675 is fine — `load_checkpoint` rebuilds the RoPE buffers.
+
+**Throughput reality:** still slow — sequential recurrent decode + per-token teacher
+forward (no kv-cache yet) is the floor; single-card only removes the cross-GPU penalty.
+Expect *tens* of slow steps overnight, not thousands — fine for a first signal.
+**`--ckpt-every-mins 15`** saves every 15 min of wall-clock (step-based `--ckpt-every`
+won't fire at this speed → power-cut net; keep_last prunes to 3). Watch `op N/16` (firing)
++ the morning α=0.0 re-probe (un-collapse). Tune for speed: lower `λ`/`--rollout-len`.
 
 ## Success signal
 The `is is is` collapse breaks: free-generation probes at matched depth produce varied,

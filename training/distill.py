@@ -217,6 +217,13 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "weights).")
     p.add_argument("--ckpt-dir", default="checkpoints_distill")
     p.add_argument("--ckpt-every", type=int, default=500)
+    p.add_argument("--ckpt-every-mins", type=float, default=0.0,
+                   help="Also checkpoint every N minutes of wall-clock, "
+                        "regardless of step count (0=off). Robustness net for "
+                        "SLOW runs (on-policy: a single step can take minutes, "
+                        "so step-based --ckpt-every may never fire before a "
+                        "power cut). Composes with keep_last pruning + the "
+                        "Ctrl-C shutdown flush.")
     p.add_argument("--log-every", type=int, default=10)
     p.add_argument("--num-workers", type=int, default=2,
                    help="DataLoader worker subprocesses. **Use 0 for distill** — it's "
@@ -411,6 +418,7 @@ def main():
     data_iter = iter(loader)
     step = start_step
     t0 = time.perf_counter()
+    last_ckpt_time = time.perf_counter()
     log_every = args.log_every
 
     while step < args.total_steps:
@@ -557,11 +565,16 @@ def main():
         if step % 500 == 0 and step > 0:
             log_spectral_radius(student, step)
 
-        if step % args.ckpt_every == 0:
+        should_ckpt = (step % args.ckpt_every == 0) or (
+            args.ckpt_every_mins > 0
+            and (time.perf_counter() - last_ckpt_time) >= args.ckpt_every_mins * 60.0
+        )
+        if should_ckpt:
             save_checkpoint(
                 student, optimizer, step, cfg, vocab_size,
                 args.ckpt_dir, ddp=False, master=True,
             )
+            last_ckpt_time = time.perf_counter()
 
         # In-loop eval — mirrors the pretraining script. Runs on master only
         # (single-GPU here), writes JSON to eval_results/, restores train mode.
