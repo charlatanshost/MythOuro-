@@ -18,6 +18,9 @@ in WSL is unreliable). One Max 1100 in the current rig now; dedicated second rig
 - **Cooling:** the Max is *passive* (no onboard fan, server-airflow design) → owner will
   make/buy a blower shroud (~$25 eBay). The correct fix, planned before the card arrives.
 - **Connector:** 12V-2x6 (H++) — owner has adapters on hand.
+- **Display:** the Max is compute-only (no video out). An existing **NVIDIA card drives the
+  monitor** — on Linux, NVIDIA driver for display + Intel Xe for Max compute, coexisting. So
+  **no separate display GPU needed** (supersedes the earlier "buy an Arc A380 (~$120)" note).
 
 **Port = environment + validation, NOT a rewrite.** Re-confirmed `mythouro/device.py`: the
 cuda/xpu/cpu abstraction is already complete (built last session for the "Intel B70 / XPU
