@@ -1,5 +1,37 @@
 # Hardware Options — the scale-up decision
 
+## 🔧 DEPLOYMENT PLAN (2026-06-26): dual-boot current rig + Max 1100 #1 now
+
+**The trigger flipped from "future scale" to "active blocker."** Tonight's on-policy run
+**OOM'd a 12 GB 5070** — the 5.2 GB Ouro teacher won't cohabit with the student's training
+peak, forcing teacher→`cuda:2` + the cross-GPU PCIe ping-pong (the ~0.3k tok/s problem). A
+single **48 GB Max 1100 dissolves it**: teacher + student + optimizer + a real batch on ONE
+device, zero cross-GPU transfer. The card now solves something in the way *today*.
+
+**Plan:** dual-boot the current rig — keep **Windows** for the working CUDA/5070 setup, add
+**native Linux** for the Max's oneAPI/`torch.xpu` (native, *not* WSL — Intel-XPU passthrough
+in WSL is unreliable). One Max 1100 in the current rig now; dedicated second rig later.
+
+**Hardware gotchas — all resolved (owner, 2026-06-26):**
+- **PSU:** 1300 W already installed — ample (supersedes the earlier 1000 W sizing; covers the
+  ~456 W boosted Max + 5070 + Xeon, especially as runs use one backend at a time).
+- **Cooling:** the Max is *passive* (no onboard fan, server-airflow design) → owner will
+  make/buy a blower shroud (~$25 eBay). The correct fix, planned before the card arrives.
+- **Connector:** 12V-2x6 (H++) — owner has adapters on hand.
+
+**Port = environment + validation, NOT a rewrite.** Re-confirmed `mythouro/device.py`: the
+cuda/xpu/cpu abstraction is already complete (built last session for the "Intel B70 / XPU
+port" — the *code* survived the lost session because it was committed; only the chat died).
+Remaining: (1) Linux + Intel GPU runtime + the XPU torch build; (2) validation ladder —
+student fwd → train step → teacher inference → full distill loop on `xpu:0`, catching any
+missing op before it costs a run. Correctness *before* efficiency.
+
+**Efficiency = run-baseline-tune, unknowable until real silicon.** Matmul bulk hits XMX
+out-of-box (oneDNN → 140 BF16, already benched). The thing to *squeeze* is the **recurrent
+decode** — same kernel-launch overhead as `decode_kernel_optimization.md`, fixed by
+`torch.compile` (XPU Inductor) — which is exactly the on-policy *generation* bottleneck. So
+the highest-value tuning lever maps straight onto the slowness we hit tonight.
+
 ## ✅✅ REAL BENCHMARKS RESOLVE THE COMPUTE QUESTION (2026-06-18)
 
 Measured Max 1100 via **PyTorch/xpu** (github.com/chsasank/device-benchmarks):
