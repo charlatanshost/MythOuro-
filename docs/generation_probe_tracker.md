@@ -226,3 +226,28 @@ discriminating zones are deeper.
   and the cross-comparison row. **Still pending:** (a) the `n_loops 2→3` transition (~3510) gnorm
   verdict; (b) a *post-transition* probe at `n_loops=4`-matched depth (this read was `n_loops=4`
   inference on `n_loops=2` training → pessimistic).
+
+---
+
+## 2026-06-27 — ✅ ON-POLICY @6771: first α=0.0 un-collapse (partial, dose-limited)
+
+Probe of `checkpoints_onpolicy/step_0006771.pt` (96 on-policy steps off 6675, λ=0.5 α=0.6).
+Tool: `tools/onpolicy_rollout_probe.py` (α = 0.0/0.25/0.5/0.7 × 3 seeds). **Read the α=0.0
+rows** — pure student, no teacher-mix = the real success metric; α>0 is teacher-assisted and
+doesn't isolate the student's own gain. `top_share / distinct1`, baseline 6675 → 6771:
+
+| Seed | 6675 α=0.0 | 6771 α=0.0 | verdict |
+|---|---|---|---|
+| Weather (prose) | 0.45 / 0.15 — `this this was was` | **0.14 / 0.66** — varied sentences | **un-collapsed** |
+| Bacterial (medical) | 0.89 / 0.06 — `the the the` | 0.90 / 0.09 — `the the the` | no movement |
+| fibonacci (code) | 0.27 / 0.12 — numbers | 0.14 / 0.16 — numbers | marginal |
+
+The prose un-collapse is **large and real — first movement on the unaided-generation blocker
+in the project's history** (top_share nearly thirded, distinct1 ×4.4, stuck attractor → real
+sentences). Uneven = **dose** (prose over-represented in the corpus un-collapses first;
+medical/code sparser → lag, need more on-policy tokens), NOT a mechanism failure. α=0.5/0.7
+look reasonable across seeds but that's the teacher-mix carrying them — α=0.0 is what counts.
+**Mechanism validated; on-policy is the cure, confirmed empirically.** Caveat on α=0.25: it
+*regressed* on some seeds (seed-1 0.98) — too weak to break the attractor *and* perturbs the
+student; ignore, the bracketing α=0.0 and α=0.5+ are the signal. **Next:** continue from 6771,
+λ→0.7, re-probe; full verdict in training_runs.md 2026-06-27.

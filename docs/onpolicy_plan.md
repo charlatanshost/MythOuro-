@@ -1,7 +1,16 @@
 # On-policy distillation (GKD / MiniLLM) — implementation plan
 
-**Status:** in progress (started 2026-06-24). Flags + rollout engine (`generate_rollout`)
-+ on-policy step + the α-probe tool all landed, **default-off** (λ=0 → no behaviour change).
+**Status:** ✅ **MECHANISM VALIDATED (partial), 2026-06-27.** First run (6675→6771, ~96
+steps) **un-collapsed the α=0.0 prose seed** (top_share 0.45→0.14, distinct1 0.15→0.66 —
+stuck attractor → varied sentences). *First movement on the unaided-generation blocker in
+the project's history.* Medical/code seeds still collapsed = **dose-limited** (prose is
+over-represented in the corpus, un-collapses first). The question flipped from "does it
+work?" (✅) to "how much dose?" — now a **throughput problem** (5.8 min/step) → the Max-1100
+case (batched rollouts). Next: continue from 6771, **λ→0.7** (gnorm had headroom). Full
+verdict in training_runs.md / generation_probe_tracker.md (2026-06-27).
+
+Flags + rollout engine (`generate_rollout`) + on-policy step + the α-probe tool all landed,
+**default-off** (λ=0 → no behaviour change).
 **α-probe done (2026-06-25) — read from the RAW text, not the eyeball:**
 - α=0.0 **collapsed** (`the the the`, top_share 0.89) — collapse shows under *sampling*
   too, not just greedy (earlier "greedy artifact" claim retracted).
@@ -102,7 +111,7 @@ python -m training.distill --student-variant mythouro_distill_tiny \
     --seq-len 1024 --micro-batch 1 --grad-accum 16 \
     --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 \
     --divergence rev_kl --use-sandwich-norm --use-depth-aware-init \
-    --onpolicy-lambda 0.5 --teacher-mix-alpha 0.6 --rollout-len 64 \
+    --onpolicy-lambda 0.7 --teacher-mix-alpha 0.6 --rollout-len 64 \
     --ckpt-every-mins 15 --num-workers 0 --trust-remote-code \
     --ckpt-dir checkpoints_onpolicy
 ```

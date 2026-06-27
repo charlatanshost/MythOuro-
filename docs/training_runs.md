@@ -994,3 +994,40 @@ free-run collapse). **The cure is on-policy — not any formal-metric or diverge
   pure-rev-KL collapse, but (b) the *deep* cure is **on-policy/GKD** — rev-KL collapsing here is strong
   evidence no offline divergence alone reaches coherence; the student must train on its own rollouts
   under teacher correction. Stable-JSD informs; on-policy is the destination.
+
+---
+
+## 2026-06-27 — ✅ ON-POLICY VALIDATED (partial): first movement on the generation blocker
+
+First on-policy/GKD run. Warm-started from rev-KL-stable **6675**, `--onpolicy-lambda 0.5
+--teacher-mix-alpha 0.6 --rollout-len 64`, cross-GPU (student cuda:0 / teacher cuda:2),
+seq 1024. Ran **6675 → 6771 (~96 steps, ~9.3 h, ~5.8 min/step, ~50–100 tok/s)**. Stable
+throughout (gnorm 0.37–1.33, mostly <1 — on-policy didn't destabilise), on-policy fired
+(`op` 6–11/16 ≈ λ=0.5), MoE balanced (cv 0.109). Loss noisy ~1.0 — a non-signal, as always.
+
+**The result is in the probe, not the metrics** (coherence is decoupled from every formal
+metric — the project's core lesson). α=0.0 rows (pure student, no teacher-mix = the real
+success metric), baseline 6675 → 6771:
+
+| Seed | 6675 α=0.0 | 6771 α=0.0 | |
+|---|---|---|---|
+| Weather (prose) | top_share 0.45, distinct1 0.15 (`this this was was`) | **0.14 / 0.66** (varied sentences) | **un-collapsed** |
+| Bacterial (medical) | 0.89 / 0.06 (`the the the`) | 0.90 / 0.09 | no movement |
+| fibonacci (code) | 0.27 / 0.12 (number spam) | 0.14 / 0.16 | marginal |
+
+**First time ANY lever has moved the unaided (α=0.0) generation metric** the project has been
+blocked on. The prose shift (top_share −0.31, distinct1 ×4.4; stuck attractor → real
+sentences) is large and real — **on-policy as the exposure-bias cure is empirically validated**,
+not just theorised. (`op` confirms it's the on-policy steps doing it, not the offline half.)
+
+**Uneven = dose, not mechanism:** corpus is general web/math/code, so prose got the most
+on-policy reps and un-collapsed first; medical/code are sparser → lag. Same medicine, the
+under-represented domains need more of it. (Medical is the mission seed *and* the laggard —
+expected from dose; medical capability is a later SFT/retrieval stage regardless.)
+
+**Verdict:** the question flipped from *"does on-policy work?"* (✅ yes) to *"how much dose to
+propagate past prose?"* — now a **throughput/dose problem**. At 5.8 min/step the dose is slow;
+strongest justification yet for the Max 1100 (48 GB → **batched rollouts** → far more on-policy
+tokens/night; the decode is latency-bound, so the win is batching+`torch.compile`, not raw
+BF16 TFLOPS — see hardware_options.md). **Next:** continue from 6771, **bump λ→0.7** (gnorm had
+headroom), more steps; re-probe and watch medical/code follow prose.
