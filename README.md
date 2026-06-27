@@ -50,26 +50,37 @@ hybrid that draws on three distinct lineages but is identical to none of them:
 - A single-card consumer-hardware training recipe (8-bit Adam, staged seq-len, growth-based scaling)
 - A pre-registered **MoE-vs-dense ablation** at matched active compute, and the measured depth/calibration findings feeding the MoDr direction — [`docs/roadmap.md`](docs/roadmap.md)
 
-**Current state (2026-06-20):** the active research is **fixing free-running
-generation degeneration** at small scale, *before* spending on tokens/compute.
-It's been diagnosed as **exposure bias** (a learned repetition attractor) —
-*not* a recurrent/hidden-state collapse; the recurrent representations stay
-healthy (verified with [`tools/collapse_metrics.py`](tools/collapse_metrics.py)).
-The live thread is the **distillation objective**: forward-KL collapses;
-reverse-KL escaped the attractor early but mode-collapsed with more tokens; **JSD
-is the current test**. (An earlier external code review also found and fixed 5
-correctness bugs — notably a clobbered zero-init that was silently injecting
-noise into the hidden state each loop.) Full record:
+**Current state (2026-06-27):** the long-standing blocker — **free-running
+generation degeneration** at small scale — has had its **first real break.** It
+was diagnosed as **exposure bias** (a learned repetition attractor; *not* a
+recurrent/hidden-state collapse — the recurrent representations stay healthy,
+verified with [`tools/collapse_metrics.py`](tools/collapse_metrics.py)) and shown
+to be **decoupled from every formal metric** (best-ever PPL, good calibration,
+and solved training stability all coexisted with hard mode-collapse). The offline
+**distillation-objective** avenue was swept and closed: forward-KL, reverse-KL,
+*and* JSD all mode-collapse with tokens, stable or not. The cure is **on-policy
+distillation (GKD / MiniLLM)** — the student trains on *its own* rollouts under
+teacher correction, attacking exposure bias directly.
+
+**On-policy is now implemented and partially validated (2026-06-27):** the first
+on-policy run produced the **first movement on the unaided-generation metric in
+the project's history** — a collapsed prose seed went from a stuck `the the the`
+attractor to varied sentences (top-token share 0.45 → 0.14, distinct-1
+0.15 → 0.66). It's *partial* — under-represented domains (medical, code) still
+need more on-policy dose — so reaching coherence is now a **throughput / scaling
+problem**, not an open research question. Full record:
 [`docs/training_runs.md`](docs/training_runs.md) ·
 [`docs/generation_probe_tracker.md`](docs/generation_probe_tracker.md) ·
-[`docs/review_action_plan.md`](docs/review_action_plan.md).
+[`docs/onpolicy_plan.md`](docs/onpolicy_plan.md).
 
 **Honest scale note:** the trained checkpoints are **278M–632M proof-of-concept
 models.** They validate that the architecture + recipe work end-to-end (stable
 training, balanced MoE routing, calibrated uncertainty, all three halt
-mechanisms firing) — but they do **not** produce coherent text. That's a
-parameter-count ceiling, not a design flaw. This is a research / architecture
-project, not a deployable model.
+mechanisms firing). Their free-running generation was mode-collapsed (exposure
+bias) — **on-policy distillation is now un-collapsing it** (partial; see current
+state above) — but full **content fluency** still needs the real scale-up (more
+parameters **and** ~1000× more tokens than can be ground out locally). This
+remains a research / architecture project, not a deployable model.
 
 **One-line description:** *a research project on recurrent-depth MoE
 transformers — distillation efficiency, training dynamics, and calibrated

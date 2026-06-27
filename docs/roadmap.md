@@ -23,7 +23,7 @@ the README "Acknowledgements" and "Licensing & data provenance" sections.
 **Full research credits:** every paper, dataset, and tool that informed the design
 is catalogued in `docs/references.md` (with how each was used).
 
-**Current status (2026-06-17, updated 2026-06-23):** the generation-degeneration investigation is
+**Current status (2026-06-17, updated 2026-06-27):** the generation-degeneration investigation is
 complete — it is **exposure bias** (a learned repetition attractor), **not**
 recurrent/hidden-state collapse (reps are healthy; verified with
 `tools/collapse_metrics.py`). v4's old "edge" was train-time noise co-adaptation,
@@ -47,6 +47,21 @@ problem (it hit the same collapse the hot-LR rev-KL did @90M). **Next:** **stabl
 on the proven stable footing) → then the deep cure, **on-policy/GKD** (the student must train on its own
 rollouts; no offline divergence alone reaches coherence). Full chains: `docs/training_runs.md`
 (06-21/06-23/**06-24**), `docs/generation_probe_tracker.md`.
+
+**UPDATE 2026-06-27 — on-policy IMPLEMENTED + PARTIALLY VALIDATED (the blocker's first break).**
+The offline-divergence avenue is *closed* (fwd/rev-KL + JSD all collapse — **stable-JSD deprioritized**;
+no offline objective reaches coherence). On-policy/GKD is now built (`generate_rollout` + the on-policy
+step in `training/distill.py`, MiniLLM teacher-mixed sampling α; design + run cmds in
+`docs/onpolicy_plan.md`), and the first run (warm-start **6675 → 6771**, ~96 steps, λ=0.5 α=0.6) produced
+**the first movement on the unaided (α=0.0) generation metric in the project's history:** the prose probe
+seed un-collapsed (top_share 0.45→0.14, distinct1 0.15→0.66; `the the the` → varied sentences). **Partial**
+— medical/code seeds still collapsed = **dose-limited** (prose is over-represented in the corpus, un-collapses
+first), *not* a mechanism failure. The question flipped from "does on-policy work?" (✅ **yes**) to "how much
+dose?" — a **throughput problem** (5.8 min/step cross-GPU on the 12 GB 5070, micro-batch 1). That makes the
+**Max 1100 the concrete unlock** (48 GB → *batched rollouts* → far more on-policy tokens/night; the decode is
+latency-bound so the win is batching+`torch.compile`, not raw BF16 TFLOPS — `docs/hardware_options.md`).
+**Next:** continue from 6771 at **λ=0.7**, more dose, re-probe, watch medical/code follow prose. Full record:
+`docs/training_runs.md` + `docs/generation_probe_tracker.md` (06-27).
 
 ---
 
