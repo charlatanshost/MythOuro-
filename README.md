@@ -1,12 +1,7 @@
 # MythOuro
 
 <p align="left">
-  <a href="https://pypi.org/project/mythouro/" target="_blank">
-    <picture>
-      <source srcset="https://img.shields.io/pypi/v/mythouro?style=for-the-badge&color=3670A0" media="(prefers-color-scheme: dark)">
-      <img alt="Version" src="https://img.shields.io/pypi/v/mythouro?style=for-the-badge&color=3670A0">
-    </picture>
-  </a>
+  <img alt="Status" src="https://img.shields.io/badge/status-research%20%C2%B7%20not%20released-orange?style=for-the-badge">
   <a href="https://pytorch.org" target="_blank">
     <picture>
       <source srcset="https://img.shields.io/badge/PyTorch-Implemented-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" media="(prefers-color-scheme: dark)">
@@ -94,41 +89,35 @@ eval results, and forward plan.
 
 ## Installation
 
-```bash
-pip install mythouro
+> **Not released.** MythOuro is a private research project — there is **no PyPI
+> package and no HuggingFace release**. Use it from source:
 
-# uv pip install mythouro
+```bash
+git clone <repo-url> mythouro && cd mythouro
+pip install -e .
 ```
 
-MythOuro defines four installation extras, each pulling in the optional
-dependencies for one workflow:
+Optional dependency groups (in `pyproject.toml`), install as needed:
 
-| Extra | Adds | Use case |
+| Group | Adds | Use case |
 |---|---|---|
-| `flash` | `flash-attn ≥ 2.8.3` | Faster `GQAttention` on Ampere+ (CC ≥ 8.0). Falls back to torch SDPA when absent. |
+| `flash` | `flash-attn ≥ 2.8.3` | Faster `GQAttention` on Ampere+ (CC ≥ 8.0). Transparent fallback to torch SDPA when absent — including on Blackwell, where FA2 is currently unavailable. |
 | `data`  | `datasketch`         | MinHash LSH dedup in `python -m data dedup`. |
-| `train` | `wandb`              | Experiment tracking slot for the training scripts. |
-| `all`   | every optional dep   | Everything above. |
+| `train` | `wandb`              | Experiment-tracking slot for the training scripts. |
 
 ```bash
-pip install "mythouro[flash]"        # inference on Ampere/Blackwell
-pip install "mythouro[data,train]"   # pretraining prep + tracking
-pip install "mythouro[all]"          # everything
+pip install -e ".[flash]"        # + flash-attn (Ampere; no-op on Blackwell)
+pip install -e ".[data,train]"   # data prep + tracking
 ```
 
-### Hardware tiers (what actually runs today)
+### Hardware — what's actually been run
 
-This table reflects what's *shipped and tested*, not aspirational backends.
-GGUF / GPTQ / AWQ exports and the vLLM / llama.cpp inference backends are
-deliberately out of scope until there's working integration code for them.
-
-| Tier            | VRAM     | Inference                                    | Training                                                  |
-|-----------------|----------|----------------------------------------------|-----------------------------------------------------------|
-| Consumer GPU    | 8 GB     | Tiny variants in bf16                        | `train_tiny_mythos.py` sanity check; CPU offload for 1B   |
-| Mid-range GPU   | 12–16 GB | 1B variant in bf16                           | Tiny custom configs; aggressive grad-accum on 1B          |
-| Prosumer GPU    | 24 GB+   | 3B variant in bf16; INT8 via dynamic quant   | 1B training with grad checkpointing                       |
-| Server multi-GPU| 80 GB+   | 3B variant in bf16 across GPUs               | 1B–10B via FSDP HYBRID_SHARD (NVLink-paired clusters)     |
-| CPU only        | n/a      | Tiny variants for testing / smoke runs       | Eval + data pipeline only (`data/` and `eval/` packages)  |
+The trained checkpoints (278M–632M) were produced on a **single consumer GPU**
+(RTX 5070, 12 GB) with the frozen teacher hosted on a second card. That is the only
+configuration **validated end-to-end**. Larger-model, multi-GPU, and FSDP tiers are
+**design targets, not tested configs**, and export backends (GGUF/GPTQ/AWQ, vLLM,
+llama.cpp) are out of scope until there's integration code. The real scale-up plan —
+a single 48 GB Intel Max 1100 — is in [`docs/hardware_options.md`](docs/hardware_options.md).
 
 ### Console scripts
 
@@ -331,11 +320,11 @@ lineage, hardware notes, failure-mode recovery patterns, and forward plan in
 
 ---
 
-## The Central Hypothesis
+## How MythOuro works — and the research behind it
 
-Claude Mythos is suspected to be a **Recurrent-Depth Transformer (RDT)** — also called a Looped Transformer (LT). Rather than stacking hundreds of unique layers, a subset of layers is recycled and run through multiple times per forward pass. Same weights. More loops. Deeper thinking.
+The sections below document **MythOuro's architecture and why each piece is there.** The design originated from a research question — what makes looped models reason — that also motivated the upstream OpenMythos project (credited lineage); MythOuro builds and *trains* it as its own system. Nothing here is a claim about any proprietary model (see the disclaimer up top).
 
-This is not chain-of-thought. There is no intermediate token output. All of this reasoning happens **silently, inside a single forward pass**, in continuous latent space.
+MythOuro is a **Recurrent-Depth Transformer (RDT)** — a Looped Transformer. Rather than stacking hundreds of unique layers, a subset of layers is recycled and run through multiple times per forward pass. Same weights, more loops, deeper computation. This is **not** chain-of-thought: there is no intermediate token output — the iteration happens silently inside a single forward pass, in continuous latent space.
 
 ---
 
@@ -385,7 +374,7 @@ RoPE is applied to Q and K before caching, so cached values do not need to be re
 
 ---
 
-## Why This Explains Mythos
+## Why recurrent-depth + MoE — the design rationale
 
 ### 1. Systematic Generalization
 
@@ -395,11 +384,11 @@ Vanilla transformers fail to combine knowledge in ways they have never seen duri
 2. In-distribution generalization — model handles known compositions
 3. Systematic generalization — model handles novel compositions OOD, abruptly and suddenly
 
-This is why Mythos feels qualitatively different from other models on novel questions — the capability phase-transitions in, rather than emerging gradually.
+This phase-transition behaviour — capability appearing abruptly rather than emerging gradually — is a documented property of looped models and a core reason the architecture is worth pursuing at small scale.
 
 ### 2. Depth Extrapolation
 
-Train on 5-hop reasoning chains. Test on 10-hop. Vanilla transformer fails. Looped transformer succeeds — by running more inference-time loops. This maps directly to the observation that Mythos handles deeply compositional problems (multi-step math, long-horizon planning, layered arguments) without explicit chain-of-thought.
+Train on 5-hop reasoning chains. Test on 10-hop. Vanilla transformer fails. Looped transformer succeeds — by running more inference-time loops. This is the bet for compositional problems (multi-step math, long-horizon planning, layered arguments): handle them by running more inference-time loops, without an explicit chain-of-thought token stream.
 
 More loops at inference = deeper reasoning chains = harder problems solved.
 
@@ -411,7 +400,7 @@ Furthermore, continuous latent thoughts — unlike discrete token outputs — ca
 
 ### 4. No Parameter Explosion
 
-A looped model with k layers run L times achieves the quality of a kL-layer non-looped model, with only k layers worth of parameters. For Mythos-scale deployments, this matters enormously:
+A looped model with k layers run L times achieves the quality of a kL-layer non-looped model, with only k layers worth of parameters. For a small, local-first model like MythOuro, this matters enormously:
 
 - Memory footprint does not grow with reasoning depth
 - Inference-time compute scales with loop count, not model size
@@ -419,7 +408,7 @@ A looped model with k layers run L times achieves the quality of a kL-layer non-
 
 ---
 
-## The Stability Problem (and How It Was Likely Solved)
+## The stability problem (and how MythOuro solves it)
 
 Training looped models is notoriously unstable. Two failure modes dominate:
 
@@ -449,7 +438,7 @@ Constrain the injection parameters so that stability is guaranteed **by construc
 3. Enforce negativity via `A := Diag(-exp(log_A))` with a learned scalar `Δt`
 4. This ensures `ρ(A) < 1` always holds, regardless of learning rate or batch noise
 
-The result: the looped model becomes significantly more robust to hyperparameter selection and trains cleanly even at high learning rates. This is the Parcae architecture (Prairie et al., 2026), and it represents the most likely class of solution Anthropic used to make Mythos trainable.
+The result: the looped model becomes significantly more robust to hyperparameter selection and trains cleanly even at high learning rates. This is the Parcae approach (Prairie et al., 2026), and it is exactly what MythOuro uses — the LTI-constrained injection in [`mythouro/main.py`](mythouro/main.py) keeps ρ(A) < 1 *by construction* (verified each run via the spectral-radius check).
 
 ---
 
@@ -462,7 +451,7 @@ Parcae establishes the first predictable scaling laws for looped training:
 
 At 770M parameters, a looped model achieves the downstream quality of a 1.3B fixed-depth Transformer trained on the same data — roughly **half the parameters for the same quality**.
 
-Applied to Mythos: if trained under these scaling laws, Mythos could be dramatically more parameter-efficient than it appears, with a large fraction of its apparent "capability" coming from loop depth rather than raw parameter count.
+Applied to MythOuro: under these laws, a large fraction of capability is meant to come from **loop depth rather than raw parameter count** — which is the core efficiency bet of a small, local-first model trained on a consumer budget.
 
 ---
 
@@ -472,7 +461,7 @@ A key open question is whether the looped block behaves **identically** on every
 
 Without any positional signal across loops, the same weights must handle both early-stage pattern matching and late-stage refinement — a tight constraint. A **RoPE-like embedding of the loop index** injected alongside the input at each step would allow the same parameters to implement functionally distinct operations across iterations, much like how RoPE allows the same attention heads to behave differently at different sequence positions.
 
-If Mythos uses this technique, each loop is not a repetition — it is a distinct computational phase, all sharing weights but operating in different representational regimes. This would substantially increase the expressiveness of the recurrent block without increasing parameter count.
+MythOuro uses this: a loop-index embedding makes each loop a **distinct computational phase** rather than a repetition — all sharing weights but operating in different representational regimes — increasing the expressiveness of the recurrent block without adding parameters.
 
 ---
 
@@ -482,15 +471,15 @@ More loops is not always better. Beyond a certain depth, excessive recurrence **
 
 The original Universal Transformer (Dehghani et al., 2018) addressed this with an **Adaptive Computation Time (ACT)** halting mechanism: a learned scalar per position that dynamically decides when to stop looping. Positions that are harder to process receive more computation; simple tokens halt early.
 
-Mythos almost certainly has some version of this. The model cannot naively run the maximum number of loops on every input — it needs a learned signal for when the answer has converged. The ACT mechanism also makes the model **Turing-complete** under certain assumptions, which has theoretical implications for the class of problems it can solve.
+MythOuro implements this as **ACT halting** (`ACTHalting`): a learned per-position signal decides when the answer has converged, so easy tokens halt early and hard ones get more compute. ACT also makes the model **Turing-complete** under certain assumptions, with theoretical implications for the class of problems it can solve.
 
 ---
 
-## Mixture of Experts — Suspected for Large Parameter Counts
+## Mixture of Experts — breadth across domains
 
-The looped transformer explains the depth of Mythos's reasoning, but not the breadth. Handling wildly different domains — code, math, literature, science, law — with the same weights requires **Mixture of Experts (MoE)**. The suspected design replaces every FFN in the Recurrent Block with a fine-grained MoE layer: each FFN is split into many small experts (1/m the normal size), a router selects the top-mK of them per token via learned affinity scores, and a small number of **shared experts** are always activated regardless of routing to absorb common cross-domain knowledge — syntax, basic reasoning, general context — that would otherwise be redundantly learned by every routed expert. Routing collapse is prevented through a bias term on the router logits adjusted dynamically during training, keeping load balanced across experts without distorting the loss signal. 
+Looping explains reasoning *depth*, but not *breadth*. Handling wildly different domains — code, math, literature, science, medicine — with the same weights is what **Mixture of Experts (MoE)** buys. MythOuro replaces every FFN in the Recurrent Block with a fine-grained MoE layer: each FFN is split into many small experts (1/m the normal size), a router selects the top-mK of them per token via learned affinity scores, and a small number of **shared experts** are always activated regardless of routing to absorb common cross-domain knowledge — syntax, basic reasoning, general context — that would otherwise be redundantly learned by every routed expert. Routing collapse is prevented through a bias term on the router logits adjusted dynamically during training, keeping load balanced across experts without distorting the loss signal. 
 
-As the hidden state `h_t` evolves across loop iterations, the router may select different expert subsets at each depth, making every loop computationally distinct despite shared weights. MoE provides breadth; looping provides depth. If the activation ratio is ~5%, Mythos could hold hundreds of billions of total parameters while activating only a small fraction per token — the true parameter count, if ever disclosed, would be a storage number, not a compute number.
+As the hidden state `h_t` evolves across loop iterations, the router may select different expert subsets at each depth, making every loop computationally distinct despite shared weights. MoE provides breadth; looping provides depth. At a ~5% activation ratio this lets the larger MythOuro configs hold a big *total* parameter count while activating only a small fraction per token — a storage number, not a compute number.
 
 ---
 
@@ -498,7 +487,7 @@ As the hidden state `h_t` evolves across loop iterations, the router may select 
 
 Looped models exhibit an interesting dichotomy: looping improves reasoning but can hurt memorization. The recurrent structure is optimized for iterative composition — running a reasoning chain forward — but does not inherently improve the storage of rote facts.
 
-This maps to an observable characteristic of Mythos: it reasons exceptionally well about novel problems it has never seen, but its factual recall can be inconsistent. The architecture is structurally biased toward composition over memorization.
+The architecture is structurally biased toward **composition over memorization** — it favours reasoning about novel problems over rote factual recall. For MythOuro's medical-information goal this is a feature, not a bug: factual recall is handled by **retrieval** (RAG) rather than asked of the weights, so the model reasons over retrieved sources instead of memorising them.
 
 Looping-based regularization (Saunshi et al., 2025) can be used to balance this tradeoff during training — applying stronger looping constraints for reasoning tasks while relaxing them for retrieval tasks.
 
@@ -513,7 +502,7 @@ The result:
 - A small rank-r adaptation matrix shifts behavior per iteration depth
 - The total parameter overhead is minimal
 
-This bridges the gap between pure weight-tying (maximally parameter-efficient, less expressive) and fully distinct layers (maximally expressive, no parameter savings). Mythos likely sits somewhere on this spectrum.
+This bridges the gap between pure weight-tying (maximally parameter-efficient, less expressive) and fully distinct layers (maximally expressive, no parameter savings). MythOuro uses **per-loop LoRA**, sitting deliberately on this spectrum.
 
 ---
 
@@ -521,11 +510,11 @@ This bridges the gap between pure weight-tying (maximally parameter-efficient, l
 
 A downstream consequence of the recursive architecture: **Continuous Depth-wise Batching**. Because all tokens share the same recurrent block, the model can exit the loop at different depths for different tokens or sequences — processing easy inputs quickly and hard inputs with more iterations, all within the same batch.
 
-Theoretical analysis suggests 2-3x improvements in inference throughput. For a deployed model like Mythos serving many users simultaneously, this would be a substantial efficiency gain.
+Theoretical analysis suggests 2–3× inference-throughput improvements. For MythOuro serving many requests at once, that's a real efficiency gain on the deployment side.
 
 ---
 
-## Summary: What Mythos Probably Is
+## Architecture summary
 
 | Property | Description |
 |---|---|
