@@ -15,6 +15,11 @@
 
 ## 🔧 DEPLOYMENT PLAN (2026-06-26): dual-boot current rig + Max 1100 #1 now
 
+> **✅ PURCHASED 2026-06-27 — $1961 all-in** (48 GB Max 1100, taxes + free shipping). Bought and
+> incoming; the XPU port is now the *active near-term track*, not speculative. Good value vs
+> bubble-priced NVIDIA (A100 40 GB is $2.5–5k+). When it lands: cooling → dual-boot Linux → XPU
+> validation ladder → go wide (rest of this section + the operating-principle callout above).
+
 **The trigger flipped from "future scale" to "active blocker."** Tonight's on-policy run
 **OOM'd a 12 GB 5070** — the 5.2 GB Ouro teacher won't cohabit with the student's training
 peak, forcing teacher→`cuda:2` + the cross-GPU PCIe ping-pong (the ~0.3k tok/s problem). A
