@@ -527,3 +527,101 @@ model = MythOuro(prod_cfg)
 | RoPE | [Su et al., 2021](https://arxiv.org/abs/2104.09864) |
 | Universal Transformer (ACT basis) | [Dehghani et al., 2018](https://arxiv.org/pdf/1807.03819) |
 | Continuous latent reasoning | [COCONUT (2024)](https://arxiv.org/abs/2412.06769) |
+
+
+<!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
+
+## Shipped: best-of-trajectory emission (inference)
+
+An inference-side experiment for getting more out of the existing depth
+machinery *without retraining* — runnable today against v4/v5.
+
+**What it is.** Standard decoding emits the recurrent block's ACT-weighted blend
+over loops. Best-of-trajectory instead scores *every* loop depth with the
+UncertaintyHead and emits the logits from whichever loop the head is most
+confident about — "keep the best step you saw" rather than "loop more, then undo
+a bad one." It avoids the trap where extra loops legitimately *raise* entropy on
+genuinely hard tokens before they resolve.
+
+**Implementation** (all default-off, normal path byte-for-byte unchanged):
+- `RecurrentBlock` gains an opt-in `collect_trajectory` flag that stashes the
+  per-loop hidden states in `last_trajectory`.
+- `MythOuro.forward_trajectory(input_ids, n_loops)` runs each captured loop
+  state through Coda + LM head + UncertaintyHead and returns
+  `(logits_traj (B,T,K,V), unc_traj (B,T,K))`.
+- `inference.BestOfTrajectoryGenerator` / `best_of_trajectory_generate` — B=1
+  greedy/sampled decode that selects the argmin-uncertainty depth per token,
+  with a `min_loops` floor and a `chosen_loops` telemetry trace.
+- 8 tests in `tests/test_inference.py::TestBestOfTrajectory`.
+
+**How to validate.** Run it against v4/v5 in the inspector and compare to the
+default generator: does `chosen_loops` actually diverge from "always deepest"?
+Does inspector behaviour (halt reasons, register) improve? It's a measurement
+tool — keep it if the trace shows the head is discriminating usefully across
+depths; the gibberish ceiling at this scale may mask the effect until the model
+is larger.
+
+**Caveat (the code-level subtlety).** Training returns `h_K`, not the weighted
+sum, to defuse ACT λ-collapse; inference uses the blend. Best-of-trajectory adds
+a *third* emission rule that reads per-loop states — so it's an inference-only
+overlay, deliberately not wired into training.
+
+**First results (2026-06-08, v4 + v5, `reports/inspect_v{4,5}.txt`).**
+- **ACT caps usable depth at ~3, not the configured 4.** At `n_loops=4`, ACT
+  halts *all* positions by loop ~2, so only **3 loops actually run** and loop 3
+  never executes — on every prompt, both checkpoints. (An early "100% diverged
+  from the deepest loop" reading was an artifact of comparing against loop 3,
+  which never runs; the per-loop dump caught it. Real divergence is **35–90%**.)
+- **The uncertainty-by-depth curve is mostly monotonic, with genuine interior
+  dips on some prompts.** v5 trends *deeper = more confident* (min at the
+  deepest-run loop); v4 has prompts where *shallower = more confident* (min at
+  loop 0) — the two checkpoints have differently-shaped depth/confidence
+  profiles. A couple of prompts (v5 fib + Roman-Empire) show a real interior
+  dip at loop 1, where best-of-trajectory does non-trivial selection.
+- **Takeaway:** best-of-trajectory is *not* a no-op, but it's also not a big win
+  at this scale — it's partly "take the most-confident endpoint." The louder
+  signal is the **ACT depth-collapse to ~3**: the deepest configured loop is
+  dead weight. That's a concrete data point for the MoDr / depth-policy work
+  (the depth decision wants tuning) and for revisiting the ACT halt threshold.
+
+**Forced-depth probe (`--force-full-depth`, `reports/inspect_v{4,5}_forced*.txt`).**
+The ACT-respecting run above can only observe loops ACT chose to run, so it
+couldn't tell "loop 3 genuinely hurts" (Hyp. A) from "loop 3 never ran"
+(Hyp. B). The `--force-full-depth` knob suppresses ACT's convergence + halt-all
+early-exit during trajectory capture (pure measurement — no weight change, normal
+path untouched) so the loop runs the full `n_loops` and we can score the skipped
+loops. An `[A/B]` line then compares ACT's learned halt depth (`halt_step_mean`)
+to where uncertainty actually bottoms out. Findings:
+
+- **The answer is prompt-dependent — both hypotheses are true, per input.** On a
+  *subset* of prompts the skipped loops *do* lower uncertainty below ACT's
+  stopping point (Hyp. B — ACT halts too early): v5 "recurrent-depth…" and "2+2"
+  both bottom at **loop 3** (past ACT's ~2.0 cutoff); v4 "fibonacci" likewise. On
+  others uncertainty rises past loop ~2 (Hyp. A — ACT justified). So a *single*
+  global ACT threshold is structurally wrong: the right depth varies by token.
+- **Depth-extrapolation partially works (v5, `n_loops=8`, 2× trained depth).**
+  Curves are non-monotonic ("wavy"), but on "recurrent-depth transformer is"
+  uncertainty reaches its **global minimum at loop 7** (0.50), well past the
+  trained depth of 4 — concrete evidence the model *can* use more depth than it
+  was trained on for some inputs. Other prompts degrade past loop 4 (off-
+  distribution: loop-index embeddings + per-loop LoRA were only trained for
+  loops 0–3). So extrapolation is real but input-specific, not free.
+- **Confirmed noise-free (greedy, `--top-k 1`, 40 tokens,
+  `reports/inspect_v{4,5}_forced_n*_greedy.txt`).** The temperature-0.7 curves
+  carried run-to-run noise, so we reran deterministically. The headline result is
+  *stronger* under greedy, not weaker: for "recurrent depth transformer is" (v5,
+  `n=8`) uncertainty decreases **strictly monotonically** loop 0→7
+  `[0.76, 0.64, 0.60, 0.54, 0.48, 0.41, 0.39, 0.39]` (every step negative,
+  flattening to ≈0 by loop 7 — i.e. converging, not bottoming early). 3 of 4 v5
+  prompts hit their minimum at loop 7. So depth-extrapolation to **2× the trained
+  depth genuinely lowers uncertainty** for continuation-style prompts; it's a real
+  effect, not a sampling artifact. (Short-answer / factual prompts still prefer
+  shallow — the prompt-dependence also survives greedy.) The
+  `--temperature` / `--top-k` inspector knobs were added for exactly this.
+- **Direct implication for MoDr.** "Right depth is prompt-dependent, sometimes
+  shallow, sometimes 3, occasionally 7" is precisely the case a single learned
+  halt threshold can't serve and a **per-token learned depth router can** — this
+  probe is the empirical motivation for the MoDr direction below.
+
+---
+

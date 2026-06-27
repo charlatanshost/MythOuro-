@@ -1031,3 +1031,29 @@ strongest justification yet for the Max 1100 (48 GB → **batched rollouts** →
 tokens/night; the decode is latency-bound, so the win is batching+`torch.compile`, not raw
 BF16 TFLOPS — see hardware_options.md). **Next:** continue from 6771, **bump λ→0.7** (gnorm had
 headroom), more steps; re-probe and watch medical/code follow prose.
+
+
+<!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
+
+## External eval baselines (context for the numbers)
+
+Our metrics in isolation don't say whether they're good. Rough anchors for
+small models at comparable scale (held-out web-text perplexity; exact numbers
+vary by tokenizer/corpus, so treat as order-of-magnitude):
+
+| Model | Params | Train tokens | Ballpark PPL | Note |
+|-------|-------:|-------------:|-------------:|------|
+| **MythOuro v1 (distill)** | 278M | ~20M | **37** | Ours — but distilled, so PPL is teacher-shaped, not from-scratch |
+| GPT-2 small | 124M | ~40B | ~30–35 | ~2000× more tokens than ours |
+| Pythia-410M | 410M | ~300B | ~12–15 | ~15000× more tokens |
+| GPT-2 medium | 355M | ~40B | ~22–26 | — |
+
+**The honest takeaway:** our PPL ~37 is *reasonable for the token budget* (we
+trained on ~20M tokens vs. tens of billions for the others — distillation is why
+it's even comparable). But coherent generation empirically needs both more
+params (~1B+) and more tokens (~10B+) than the workstation can reach. The gap to
+"usable" is **scale**, and these baselines quantify roughly how far: ~3× the
+params and ~500× the tokens to reach Pythia-410M territory.
+
+---
+

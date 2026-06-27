@@ -251,3 +251,52 @@ look reasonable across seeds but that's the teacher-mix carrying them — α=0.0
 *regressed* on some seeds (seed-1 0.98) — too weak to break the attractor *and* perturbs the
 student; ignore, the bracketing α=0.0 and α=0.5+ are the signal. **Next:** continue from 6771,
 λ→0.7, re-probe; full verdict in training_runs.md 2026-06-27.
+
+
+<!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
+
+## Test Prompts
+
+Use these prompts with `inspect_checkpoint.py` to test the model's capabilities across the different domains in the clean SFT mix. 
+
+> **Note on PowerShell:** Using angle brackets like `<ckpt_path>` in PowerShell will cause a `ParserError`. The examples below use a real path (`checkpoints_v6_clean_sft/step_0003000.pt`). If your checkpoint is named differently, just replace the path.
+
+### Code Generation (`clean_code`)
+```bash
+python inspect_checkpoint.py --ckpt checkpoints_v6_clean_sft/step_0003000.pt --device cuda:0 --prompt "Write a Python function to find the longest common subsequence of two strings. Include type hints and comments explaining the dynamic programming matrix."
+```
+
+### Math & Reasoning (`clean_math`, `clean_numina`)
+```bash
+python inspect_checkpoint.py --ckpt checkpoints_v6_clean_sft/step_0003000.pt --device cuda:0 --prompt "A train leaves Chicago at 2 PM traveling at 60 mph. Another train leaves at 3 PM traveling in the same direction at 80 mph. What time will the second train catch up to the first?"
+```
+
+### Medical/Science QA (`clean_pubmedqa`, `clean_chem`)
+```bash
+python inspect_checkpoint.py --ckpt checkpoints_v6_clean_sft/step_0003000.pt --device cuda:0 --prompt "What are the common symptoms and recommended treatments for acute bronchitis? Please provide a structured answer."
+```
+
+### General Instruction Following (`clean_general`, `clean_miriad`)
+```bash
+python inspect_checkpoint.py --ckpt checkpoints_v6_clean_sft/step_0003000.pt --device cuda:0 --prompt "Explain the concept of 'entropy' in thermodynamics to a high school student, using an everyday analogy."
+```ds; `K=1` reduces to current behaviour; best-exit
+   target matches `forward_trajectory` argmin; depth regulariser still fires;
+   no-NaN train step.
+
+**ANSWERED (2026-06-09, P0.5 audit): supervise MoDr with per-loop CE, NOT
+uncertainty-argmin.** `tools/per_loop_calibration.py` measured per-loop ECE on
+v2 and v4 (`reports/per_loop_calibration_p05.md`): the head is well-calibrated
+at loops 1–3 (ECE 0.01–0.04) but **badly miscalibrated at loop 0** (ECE
+0.17–0.22, error *understated* by ~0.2 — the loop curriculum starts at 2, so
+loop 0 was never an emission loop and the head never saw it). An
+uncertainty-argmin teacher would systematically over-select loop 0.
+Consequences: per-loop CE is the mandated best-exit target;
+`BestOfTrajectoryGenerator` now defaults `min_loops=2` (loop 0 excluded from
+the argmin); the earlier "v4 prefers loop 0 on some prompts" reads were partly
+a calibration artifact. To unlock all-loop uncertainty selection later: add a
+per-loop calibration term in training (BCE against per-loop argmax error at
+every loop), or start the curriculum at 1.
+
+**Relation to prior art.** This is the project's own framing of Mixture-of-Depths
+(Raposo et al.) adapted to a *recurrent* (weight-shared, looped) block rather
+than a stack of distinct layers — depth here means loop count, not layer index.

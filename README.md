@@ -318,7 +318,9 @@ lineage, hardware notes, failure-mode recovery patterns, and forward plan in
 
 | Page | Description |
 |---|---|
-| [`docs/roadmap.md`](docs/roadmap.md) | **Start here when resuming.** Checkpoint lineage, capability milestones, memory-reduction options, hardware-scaling analysis, failure-mode recovery patterns, and the forward plan. |
+| [`docs/roadmap.md`](docs/roadmap.md) | **Start here when resuming.** Forward plan, checkpoint lineage, capability milestones, decision rules — and the **complete documentation index** (master router to every doc). |
+| [`docs/onpolicy_plan.md`](docs/onpolicy_plan.md) | The **on-policy / GKD** work — the live cure for generation collapse (design, run commands, status). |
+| [`docs/failure_modes.md`](docs/failure_modes.md) | Failure modes encountered + recovery patterns — the debugging / lessons-learned reference. |
 | [`docs/mythouro.md`](docs/mythouro.md) | Full API reference for the `MythOuro` class — constructor, `forward`, `generate`, all sub-modules, configuration reference, and usage examples |
 | [`docs/growth_design.md`](docs/growth_design.md) | MoE-expansion / model-growth design notes — the function-preserving promotion algorithm and its training contract |
 | [`docs/datasets.md`](docs/datasets.md) | Recommended training datasets with token budget guidance per model size |

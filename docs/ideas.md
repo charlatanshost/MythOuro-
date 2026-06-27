@@ -333,3 +333,191 @@ bigger teacher" path would just *start* on the new vocab; **graduation is the al
 that preserves the trained base** instead of restarting — pick based on whether the
 current base is worth carrying forward when compute arrives. Provenance rule still
 applies (Apache-2.0 teachers; screen instruct-tunes for OpenAI-derived synthetic data).
+
+
+<!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
+
+## Open research questions specific to MythOuro
+
+These are MythOuro-specific questions where existing literature doesn't fully answer. Worth tracking as we learn more.
+
+1. **Does MoE expansion compound across rounds?** **ANSWERED (2026-06-06), but SOFTENED (2026-06-09): No — it stops compounding by the second round at this scale, though the cv evidence is now suspect.** First round (24→48, v3) clearly compounded: recovered all 3 halt mechanisms, tightened cv to 0.19. Second round (48→96, v5) hit the **expert-count ceiling** — cv wouldn't tighten below ~0.5, min% stayed ~0.1–0.4, and a 7-prompt inspector read came out **net-comparable to v4**. **Caveat (P0.2):** every cv/min%/max% number here was measured through the last-loop-only telemetry bug, so the *cv* evidence isn't trustworthy — treat it as indicative. The **inspector read independently supports the ceiling**, so the conclusion likely holds, but it should be **re-confirmed after the P0.2 fix** (re-run a short expansion with all-loop routing balance). Conclusion (provisional): **don't do a third expansion; the next lever is width (Net2Wider) or scale, not more experts** — but verify the cv post-fix before treating it as settled.
+2. **What's the right depth-reg coefficient post-promotion?** Currently kept at 0.1 across all runs. Empirically the halt distribution stays uniform; is there a coefficient that allows *more* adaptive depth at inference without re-triggering loop collapse?
+3. **Does the ConfidenceAwareGenerator stop-threshold need per-checkpoint retuning?** v2 hit `stop='confidence'` on trivia; v3 didn't. Suggests the calibration shifted with the larger pool.
+4. **Can we promote AND maintain a custom teacher in distillation?** I.e., distill the promoted v3 from Ouro-2.6B again, or do the new experts disrupt logit-matching?
+5. **How does loop count interact with MoE specialization?** Different loops might want different expert mixes; we've never measured this.
+6. **Would Ouro's per-step weighted loss beat our final-loop loss?** See the experiment below — Ouro trains the exit gates *via the task loss* (per-step LM loss weighted by exit probability); we use final-loop (`h_K`) loss + a decoupled depth regulariser. Ours works but theirs is arguably more principled.
+7. **Should expert routing and recurrence-depth routing be one learned head (MoDr)?** Currently `MoEFFN.router` (which experts) and `ACTHalting` (how deep) are separate. Unifying them into one router that emits expert-choice + per-token depth could let depth and expert specialisation co-adapt — but it couples two collapse-prone parts. Gated behind the MoE-vs-dense ablation. See [MoDr — Mixture-of-Depth routing](#candidate-direction-modr--mixture-of-depth-routing-learned).
+
+These are research-paper-sized questions individually; flagged here so we don't lose them.
+
+---
+
+## Candidate experiment: train at depth 6 (does the extrapolation headroom survive per-loop CE?)
+
+**Question (user, 2026-06-11):** the forced-depth probe showed uncertainty still
+falling at loops 4–7 on some prompts — should we train those depths?
+
+**Why the probe doesn't settle it:** loops 4–7 were never emission loops, and
+P0.5 proved the UncertaintyHead is unreliable exactly there (loop 0's readings
+were off by ~0.2 for the same reason). The extrapolation signal was measured
+with the proxy outside its calibrated range and was never checked against
+per-loop CE. It may be real; it may be the loop-0 artifact's deep-end twin.
+
+**Why the ablation runs were right to stay at 4:** the Ouro teacher computes
+targets at exactly 4 recurrent passes (deeper student loops chase no deeper
+signal during distillation); Ouro's own curve peaks at 3–4 loops; and +50%
+recurrent compute mid-protocol would have been an uncontrolled variable.
+
+**The experiment (queued, post-SFT):** one run at `max_loop_iters=6`
+(curriculum ramp to 6), scored by **per-loop CE** via
+`forward_trajectory(force_full_depth=True)` against the 4-loop arm — single
+variable, ~6–7 h. Decision value: if depth 5–6 carries genuine trainable CE
+gains, MoDr's depth policy has real headroom to allocate (and the depth-6
+config earns a slot); if not, 4 is confirmed as the scale-appropriate depth
+and the extrapolation findings get re-labelled as proxy artifacts.
+
+## Candidate experiment: Ouro-style per-step weighted loop loss
+
+A ready-to-run experiment, documented so it can be picked up in a future
+overnight. Context and the full Ouro-vs-MythOuro comparison are in
+[`docs/growth_design.md`](growth_design.md) ("Related design decision:
+loop-loss supervision").
+
+**Hypothesis.** Replacing the current *final-loop CE* with Ouro's *expected task
+loss across loops* — `L = Σ_t pφ(t|x)·CE^(t)` (per-loop CE weighted by exit
+probability) plus the existing entropy/depth regulariser — trains the ACT exit
+gates directly and may improve loop_efficiency (currently ~0.5) and calibration
+without re-triggering the loop collapse we fixed earlier.
+
+**Why it might work where our first attempt failed.** Our original collapse came
+from an ACT-*weighted-sum hidden state* `Σ wₜhₜ` fed to a single CE — the
+optimiser collapsed `λ₀→1` to shortcut. Ouro keeps the losses *per step* (each
+loop gets its own CE against the gold tokens) and only the *weighting* is the
+exit probability, with entropy reg holding the distribution open. That's a
+different gradient path: every loop is independently supervised to predict the
+target, so no single loop can "absorb" the others.
+
+**Implementation sketch** (~1 session, isolated behind a flag):
+
+1. **Forward** — `RecurrentBlock.forward` already runs all loops during training
+   (the `h_K` fix forces `K = n_loops`). Expose the *per-loop* hidden states
+   `[h_1 … h_K]` (stash a list, like `last_halt_distribution` is stashed), not
+   just `h_K`.
+2. **Per-loop logits** — run the shared LM head on each `h_t` → `logits_t`.
+   (Memory: K× the logit tensor; with `K≤4`, vocab 49152, seq 768, mb 1 — a few
+   GB. May need `micro_batch=1` + 8-bit Adam, which we have.)
+3. **Per-loop CE** — `CE^(t) = cross_entropy(logits_t, targets)` (SFT: masked to
+   response tokens, reusing `masked_ce_loss`).
+4. **Exit probabilities** — `pφ(t|x)` from the ACT halt head's per-loop λ values
+   (already computed; currently only used by the depth-reg). Normalise to a
+   proper distribution over `t ∈ [1..K]`.
+5. **Expected loss** — `L_task = Σ_t pφ(t)·CE^(t)`. Keep the existing depth /
+   entropy regulariser term as-is (Ouro uses both).
+6. **Flag it** — `--loop-loss {final,per_step_weighted}` (default `final` to
+   preserve current behaviour). New path only activates with the flag.
+7. **Tests** — (a) per-loop logits shape; (b) `pφ` sums to 1 over loops;
+   (c) with `K=1` the per-step loss reduces exactly to the final-loop loss;
+   (d) a train-step smoke doesn't NaN.
+
+**Validation plan.** Run a short SFT (~1500 steps) on the v4 checkpoint with
+`--loop-loss per_step_weighted`, compare against the `final` baseline on:
+loop_efficiency, ECE, halt-distribution spread, and inspector behaviour
+(do more prompts hit `stop='eos'`/`stop='confidence'`?). Keep it if it improves
+adaptivity/calibration without collapse; otherwise the flag stays off and the
+finding is documented.
+
+**Risk.** Low — it's flag-gated, default-off, falls back to current behaviour,
+and the `K=1` equivalence test guards correctness. Worst case it doesn't help
+and we keep `final`.
+
+---
+
+
+
+<!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
+
+## Candidate direction: MoDr — Mixture-of-Depth routing (learned)
+
+The learned generalisation of everything above. Best-of-trajectory selects depth
+*post-hoc* with a threshold/argmin on the uncertainty head; MoDr makes the depth
+decision a **learned policy**, and unifies it with expert routing.
+
+**The idea.** MythOuro already has two routing-shaped heads that are trained and
+used separately:
+- `MoEFFN.router` — picks which experts fire per token (DeepSeek-V3
+  aux-loss-free bias balancing).
+- `ACTHalting` — emits a per-position halt/continue probability per loop.
+
+MoDr collapses these into **one router head that emits both** *expert choice*
+**and** *per-token recurrence depth* (halt/continue logit per position per
+iteration), supervised against a best-exit target rather than gated by a fixed
+`act_threshold`. "Extend by 2 or 4 loops" stops being an inference heuristic and
+becomes a trained policy — the model learns how deep each token needs to go,
+jointly with which experts handle it.
+
+**Why the depth probe motivates this (2026-06-08 findings).** The
+`--force-full-depth` experiment established the two premises MoDr needs, both
+under deterministic greedy decode (noise-free):
+- *The right depth is per-token, not global.* Some prompts bottom out at loop 7
+  (2× the trained depth), others at loop 0. A single `act_threshold` cannot serve
+  both; a per-token policy can.
+- *The useful depth exists, but ACT misses it.* ACT collapses to ~2–3 loops, yet
+  uncertainty keeps dropping monotonically to loop 7 on continuation prompts — so
+  the current halting policy leaves real signal on the table. That's a *policy*
+  bug to fix, not a capacity limit.
+
+**Teacher / student — the crucial design point (don't skip this).** "Run full
+depth, then pick the best exit" — what best-of-trajectory does — is the right move
+at *training* time and the **wrong** move at *inference* time. Running every loop
+on every token and choosing afterwards destroys the entire purpose of adaptive
+depth: you've already paid for the deepest loop before deciding you could have
+stopped at loop 2. You can't pick an exit you haven't already run past — picking
+is free, *reaching* the loop is the cost. So the pipeline splits:
+- **Teacher (train time, can afford full depth):** run all `n_loops`, find each
+  token's best exit — the loop minimising uncertainty (today's proxy) or, once the
+  model is coherent, per-loop CE loss. This is exactly the `--force-full-depth`
+  trajectory we already compute in `forward_trajectory`.
+- **Student (inference, must be cheap):** the `DepthRouter` learns to *predict*
+  that best exit per token from the current hidden state and halt there directly —
+  loop 2 for an easy token, loop 7 for a hard one — without running the rest.
+  Best-of-trajectory is the *supervision signal*, never the decode path.
+
+So the one-line design rule: **let it run full depth at *training* time to
+discover the best exit, and train a cheap per-token policy to hit that exit
+directly at inference.** The forced-depth probe is the teacher; MoDr's
+`DepthRouter` is the student.
+
+**Why it's attractive.** The MoE router and the ACT halt head already share the
+same routing primitive (a linear projection of the hidden state to a routing
+logit). Unifying them is conceptually clean and could let depth and expert
+specialisation co-adapt (e.g. some experts for shallow pattern-matching, others
+for deep refinement — currently they can't coordinate).
+
+**Why it's gated (honest caveat).** This is a *coupling* change to two of the
+most stability-sensitive parts of the model (expert routing + ACT halting, both
+of which have already caused collapse failures — see Failure modes). Adding that
+coupling **before** the open **MoE-vs-dense ablation** ([Open research
+questions](#open-research-questions-specific-to-mythouro), Q on whether MoE earns
+its complexity) risks entrenching machinery that the ablation might say to
+remove. **Sequencing rule: run the dense-vs-MoE ablation first.** If MoE stays,
+MoDr is the natural next architecture step; if MoE goes, MoDr is moot.
+
+**Rough build sketch** (when unblocked, flag-gated, default-off):
+1. A `DepthRouter` head emitting `(expert_logits, halt_logit)` from the shared
+   hidden state; `ACTHalting` becomes the `halt_logit` branch.
+2. **Supervise the halt branch against the best-exit target from the forced-depth
+   teacher** — per token, the loop that minimises uncertainty (proxy now) or
+   per-loop CE (once coherent), computed via `forward_trajectory(force_full_depth
+   =True)`. This is strictly better than supervising against the *convergence*
+   depth (`‖h_{t+1}−h_t‖ < convergence_eps`): our probe shows convergence often
+   lands *later* than the uncertainty-minimising exit, so convergence over-spends.
+3. Keep the depth regulariser (KL-to-uniform) as the anti-collapse guard, and the
+   `min_loops` floor so the student can't collapse onto loop 0.
+4. Train the teacher target offline first (cache best-exit labels with
+   `--force**Relation to prior art.** This is the project's own framing of Mixture-of-Depths
+(Raposo et al.) adapted to a *recurrent* (weight-shared, looped) block rather
+than a deep spatial network.
+
+---
+

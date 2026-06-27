@@ -763,3 +763,246 @@ Tiber gone, Max line low-adoption):
 > Caveat: assessment as of early-2026 knowledge. Verify current Intel-cloud
 > (`console.cloud.intel.com`) Max availability, `torch.xpu` op-coverage/perf, and
 > PVC pricing/roadmap before deciding — those move fast.
+
+
+<!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
+
+### Hardware-scaling analysis
+
+#### Current rig — three GPUs, use them by *role*, not FSDP
+
+The workstation has three cards, all **native bf16** (no fp16 conversion needed).
+
+> **Status: PROPOSED role-separation — not yet exercised.** The 3-card setup has
+> only been *discussed*, never run. Actual history: **v1 distillation used 2
+> cards** (5070 student + 5060 teacher); **v2–v5 (SFT + growth) used 1 card**
+> (5070 only). The **4060 has never been used in a training session.** The table
+> below is the *suggested* allocation if/when you run a multi-card workflow, not
+> a description of what's been done.
+
+| Card | VRAM | Gen | Proposed role (not yet used as a trio) |
+|------|------|-----|-----------|
+| RTX 5070 | 12 GB | Blackwell (fastest) | **Primary training** — single-card, native bf16, no sync overhead (this *is* what v2–v5 used) |
+| RTX 5060 | 8 GB | Blackwell | **Teacher host** during distillation — where the v1 teacher ran (Ouro-2.6B ~5.2 GB bf16) |
+| RTX 4060 | 8 GB | Ada | **Parallel eval** (proposed) — run the harness on saved checkpoints while the 5070 trains. *Never used yet.* |
+
+**Parallel training runs on this rig (assessed 2026-06-11):** placement, not
+aggregate VRAM, is the blocker. Four pieces (2 students + 2 teachers) don't fit
+3 cards cleanly — with teachers on the 5060 + 4060 (both proven hosts), the
+second *student* has no slot, and squeezing two students onto the 5070 halves
+each run's compute (parallel ≈ sequential wall-clock, plus OOM risk). **The
+unlock is a shared teacher server:** both runs use the identical frozen
+teacher, so ONE copy on the 5060 serving logits to two training processes
+frees the 4060 for a second student — true 2× run throughput, comfortable
+margins. ~A session of code (IPC + batched serving); worth building before any
+seed sweep or the P2.6 config matrix. (A 24 GB card achieves the same by
+hosting a full student+teacher pair on one device — another concrete entry in
+the more-VRAM ledger.)
+
+**Do NOT FSDP these three together for training.** MythOuro is *compute-bound*
+(the recurrent loops multiply compute per step without multiplying
+communication), so the PCIe-sync penalty (no NVLink) hurts, and the
+heterogeneous cards mean the slowest gates every step. Role-separation
+(teacher on 4060, eval on 5060, train on 5070) sidesteps the sync cost
+entirely — the teacher forward is one transfer/step, not gradient all-reduce.
+
+Ceiling with this rig: **~1B single-card** (8-bit Adam + growth), stretchable to
+**~1.3–1.5B** via FSDP student on 5070+5060 with the teacher on the 4060, if you
+accept the PCIe penalty.
+
+#### The bf16-generation rule for any GPU purchase
+
+The single most important hardware caveat, learned the hard way: **buy Ampere
+generation or newer.** bf16 was introduced with Ampere (A100). Older datacenter
+/ workstation cards lack hardware bf16:
+
+| Card | Gen | Native bf16? | Verdict for this project |
+|------|-----|--------------|--------------------------|
+| V100 (any) | Volta | ❌ | bf16 runs at fp32 speed (no tensor cores); fp16 needs revalidation |
+| Quadro RTX 8000 / 6000 | Turing | ❌ | Same trap — 48 GB is tempting but no bf16 |
+| A100 40/80 GB | Ampere | ✅ | Ideal — native bf16 + tf32, datacenter-grade |
+| RTX A6000 48 GB | Ampere | ✅ | Excellent — most VRAM, ECC, workstation |
+| RTX 6000 Ada 48 GB | Ada | ✅ | Newer, faster, pricier |
+| RTX 5090 32 GB | Blackwell | ✅ | Consumer, fast, fits 3B (tight) |
+
+Running the whole validated pipeline on a non-bf16 card means converting to
+fp16 and re-validating every stability property (ACT collapse, MoE balance,
+LTI spectral radius, depth regulariser). MythOuro's *bounded-activation* design
+(ρ(A) < 1, normalized routing, sigmoid halting) makes fp16 tractable, but it's
+work you avoid entirely by staying on Ampere+.
+
+#### Purchase options for the 3B goal
+
+3B needs **~24 GB minimum, ~28–32 GB comfortable** (8-bit Adam). The current
+20 GB pooled can't fit it — 3B requires new hardware regardless of growth-vs-
+from-scratch. Compared honestly:
+
+| Option | $ | VRAM | bf16 | Reaches 3B? | Caveats |
+|--------|---|------|------|-------------|---------|
+| **2× V100 16 GB SXM2 + baseboard** | ~$500 | 32 GB (NVLink) | ❌ fp16 | Yes (FSDP) | SXM2 = build project (cooling/power); fp16 revalidation; old, slow compute. Viable for a maker with shop skills (AIO + milled bracket); the cheap $/GB path. |
+| **RTX 5090 32 GB** | ~$2k | 32 GB | ✅ | Yes (tight) | Single card, native bf16, newest compute |
+| **Used RTX A6000 48 GB** | ~$3–4k | 48 GB | ✅ | Yes, comfortable | Single card, ECC, native bf16, NVLink-bridge — the "do it properly" pick |
+| **Used A100 40 GB** | ~$3k | 40 GB | ✅ | Yes, comfortable | Datacenter HBM2, native bf16, NVLink-capable |
+| **Intel Xeon Max 9480** (1S, 64 GB HBM2e) | ~$3k/chip (used) + SPR board | 64 GB HBM | ✅ (AMX) | Yes, comfortable | **CPU with AMX matrix units + on-package HBM.** ~95 effective dense-BF16 TFLOPS single-socket (~3× a lone 5070's ~34), passes the native-bf16 gate. Capacity play: 64 GB fits 3B + teacher with no FSDP. See assessment below. |
+
+Because MythOuro is compute-bound, a **single fast native-bf16 card beats a
+fast interconnect between slow cards**: even 2× V100 NVLink in software-bf16 is
+slower per step than the current 5070+5060 over PCIe (the V100's emulated bf16
+runs at ~fp32 speed, and the recurrent loops make compute, not comms, the
+bottleneck). The V100 path only wins on *price* and on *fitting* models that
+don't fit otherwise — not on speed.
+
+##### Intel Xeon Max 9480 (AMX + HBM) — assessed 2026-06-08
+
+Considered as an upgrade from the current consumer rig (a lone 5070 sustains
+~34 dense-BF16 TFLOPS; 5070+5060 pooled ~55). Verdict: **a legitimate
+single-socket upgrade — but verify the real number before buying.**
+
+- **For — vs. the *actual* current baseline** (not vs. an H100): single-socket
+  9480 is ~95 effective dense-BF16 TFLOPS (≈3× the 5070) **and** a 64 GB HBM
+  pool that finally fits a 3B + teacher with no mixed-card FSDP. AMX has native
+  BF16, so it dodges the V100 fp16-revalidation trap. On every axis that matters
+  vs. today's hardware, it's up.
+- **Against — the caveats that shrink the win:**
+  - **The recurrent-loop tax.** Headline tok/s estimates assume a dense
+    single-pass model; MythOuro runs the recurrent block `n_loops`× per token
+    (×4 train), so real sequence throughput is ~/4 of the dense-model figure.
+    A "~46k tok/s on a 650M dense model" estimate is closer to **~11–13k tok/s**
+    for an equivalent MythOuro.
+  - **Small-matmul derating.** ~95 TFLOPS is big-square-GEMM peak; MythOuro's
+    small matmuls (MoE experts, MLA, per-loop LoRA) sustain a fraction of it on
+    *any* engine. Whether AMX holds a higher fraction than a GPU here is an
+    empirical question — could break either way.
+  - **Dual-socket ≠ one big accelerator.** 2S is *two* 64 GB HBM pools over UPI
+    (~hundreds of GB/s cross-socket, not a unified 3 TB/s); NUMA reintroduces
+    sharding penalties — partly the thing you're trying to escape. The clean
+    story is **single-socket**.
+  - **CPU/AMX software maturity.** The pipeline is CUDA-validated; moving to CPU
+    BF16 (oneDNN/IPEX) needs re-validation, and custom ops (recurrent loop, MoE
+    `index_add_` dispatch) may not hit optimal AMX kernels without tuning.
+- **Decision rule: measure, don't extrapolate.** Peak TFLOPS is a spec sheet;
+  the buy hinges on *achieved* tok/s on MythOuro. Rent an AMX instance (Intel
+  Tiber Developer Cloud — already listed below for the B70 port test) for an
+  hour and run [`tools/bench_step.py`](../tools/bench_step.py) on it and on the
+  5070 for a true apples-to-apples (`python -m tools.bench_step --variant
+  mythouro_distill_tiny --device {cpu|cuda:0}`). If single-socket lands ≥2×
+  real-world *and* fitting 3B locally is worth ~$3k+platform to you, it's a
+  defensible buy. If it lands ~1–1.5×, rent GPU hours instead.
+
+**Measured on the on-hand ES 8480 (2026-06-08) — AMX runs, but DDR5 starves it.**
+Benchmarked on a Sapphire Rapids **8480 engineering sample** (56C, 4.7 GHz turbo,
+**2-of-8** DDR5-4800 channels populated, ASUS W790, Windows, stock
+`torch==2.12.0+cpu`).
+
+*Correcting an earlier wrong call in this doc:* AMX **is** engaged.
+`ONEDNN_VERBOSE=1` shows bf16 matmuls dispatching to the
+`brg_matmul:avx10_1_512_amx` kernel — the AMX path, exactly as HWiNFO's
+feature list reports. The bottleneck is **memory bandwidth, not the tiles.**
+
+Steady-state bf16 GEMM throughput vs working-set size (≈100 MB L2+L3):
+
+| Matrix | TFLOPS | Note |
+|--------|-------:|------|
+| 1024³ | 7 | cache-resident |
+| 2048³ | **16** | ~25 MB, fits → AMX shining |
+| 4096³ | 4 | ~100 MB, thrashes → tiles starve |
+| 8192³ | 9 | DRAM-bound |
+
+Cache-resident matrices hit ~16 TFLOPS; once the working set spills to DRAM the
+AMX tiles starve and throughput collapses — the classic signature of a
+**2-of-8-channel** config (~¼ the platform's bandwidth). This is *precisely* why
+an 8480 on DDR5 underperforms a Xeon Max on HBM: identical AMX compute, but HBM
+(>1 TB/s) keeps the tiles fed. `tools.bench_step` `distill_tiny` (b1×s256) ran
+**85 tok/s** here — the small per-op matmuls + MoE scatter + recurrent loop sit
+largely in the memory-bound regime.
+
+- **The bandwidth lever — and why the RAM market tilts it toward HBM.** Filling
+  2→8 DDR5 channels is ~4× bandwidth and would lift the memory-bound throughput.
+  *But* at current ECC DDR5 RDIMM shortage pricing (32 GB ~$600–800 ea, 16 GB
+  ~$300–500), six more DIMMs is **~$3.6–4.8k**, not "a few hundred" — and even
+  full 8-channel DDR5-4800 (~300 GB/s) still partially starves AMX on large
+  problems. A used **Xeon Max 9480 (~$3k)** bundles **64 GB HBM2e (>1 TB/s)** —
+  ~3× the bandwidth of a maxed DDR5 rig, no DIMM tax — aimed exactly at the
+  16→4 TFLOPS collapse measured above. So in *this* RAM market, building around
+  an HBM Max is both faster and cheaper than feeding the 8480 with RDIMMs.
+- **Decision (2026-06-08): dedicated 1S C741 Xeon Max rig.** Build a *separate*
+  box — Gigabyte **MS33-CE0** (single-socket LGA4677 / C741, 8-channel) or
+  similar MS33/MS03 — around a **Xeon Max 9480**, run **HBM-only mode** (64 GB,
+  no DIMMs → dodges the RDIMM shortage entirely; fits a 3B + teacher with
+  *streamed* data). This resolves the earlier platform-compat worry (proper
+  server board, not the W790 workstation board the 8480 ES currently sits in) and
+  frees the work rig. **1S (MS33), not 2S (MS73):** for a single training job one
+  socket avoids the cross-socket NUMA penalty (2S = two 64 GB HBM pools over UPI,
+  *not* a unified 1.6 TB/s); reserve 2S for parallel jobs or a 128 GB need.
+- **Build gotchas:** 9480 is 350 W and needs a narrow-ILM LGA4677 server cooler
+  + real airflow; a Max *ES* carries the same clock/stability caveats as the
+  8480 ES. Expectation: raw bf16 GEMM ~3–5× the starved 8480, but end-to-end
+  MythOuro tok/s gains *less* (small matmuls + recurrent-loop tax persist) — the
+  honest target is "finally trains a 3B at usable speed," not "95 TFLOPS of model
+  throughput." Run `tools/bench_step.py` on it day one for the real number.
+- Still **additive compute + 3B-capacity, not a GPU replacement**: even HBM-fed,
+  the Max's AMX (~95–175 TFLOPS 1S–2S) is below a modern GPU's tensor throughput,
+  and MythOuro's small matmuls + recurrent loop won't saturate it — but it *fits*
+  a 3B the 12 GB card can't, with HBM removing the starvation.
+- **Revised takeaway:** AMX is real and working on this box — it's
+  *bandwidth-limited, not software-limited*. My earlier "AMX not engaged / needs
+  IPEX+Linux" and "just cheaply fill 8 channels" framings were both wrong. Given
+  RAM pricing, an HBM Xeon Max is the rational build target for an AMX path;
+  validate platform compat, and remember it complements (not replaces) the GPU.
+
+*(Side effect of this exercise: it surfaced and fixed a latent autocast bug —
+`MoEFFN.index_add_` dispatch wasn't dtype-consistent under mixed precision. The
+CUDA training path dodged it by dtype coincidence; now fixed for all paths.)*
+
+##### Xeon Max build checklist (decided 2026-06-08)
+
+Committed to a dedicated Max rig — the deciding factor is **RAM-shortage
+arbitrage**: at current ECC DDR5 RDIMM pricing, the 64 GB HBM is effectively
+*free fast memory* bundled into the CPU, sidestepping ~$4k of DIMMs *and* fitting
+a 3B. This holds regardless of the exact tok/s. (Pre-buy benchmarking is off the
+table — Intel Tiber Cloud's Xeon Max signup is dead and the part is too niche to
+rent elsewhere — so the plan is **buy, measure day one**.)
+
+- **CPU:** Xeon Max 9462 / 9460 / 9480 — all share **64 GB HBM2e + ~1.6 TB/s**;
+  the only difference is AMX compute (~68 / 78 / 95 TFLOPS peak ≈ 32 / 40 / 56
+  cores). HBM feeds them equally, so **more cores = strictly faster** for this
+  compute-bound workload — pick by budget. An **ES** is the cheap route (accept
+  the clock/stability variance, as on the current 8480 ES).
+- **Board:** all three 1S Gigabyte C741 boards **support the Xeon CPU Max
+  Series** (verified on Gigabyte's own spec pages — third-party retailer listings
+  understate this):
+  - **MS03-CE0** — ATX, 8 DIMM, 7× PCIe Gen5. **Pick for this build:** ATX fits a
+    standard case + the on-hand LGA4677 AIO, and has the most GPU/expansion slots.
+    *(Note: "MS33-CE0" doesn't exist — CE0 is the MS03 ATX line.)*
+  - **MS33-AR0** — E-ATX, 16 DIMM, 8× SATA. Valid Max board; choose if you want
+    E-ATX with more DIMM/storage headroom (irrelevant on HBM-only).
+  - **MS33-CP0** — E-ATX, 16 DIMM, OCP 3.0 + MCIO. Choose for OCP networking.
+  - **Not the 2S MS73** for single-job training (two HBM pools over UPI = NUMA,
+    not a unified pool).
+  Verify the exact Max SKU is on the board's CPU QVL and the BIOS exposes HBM
+  mode before buying, especially for an ES chip.
+- **Memory mode:** **HBM-only** (64 GB, no DIMMs) — the whole point. Fits a 3B +
+  activations with *streamed* data. Add DDR (HBM-caching mode) only if a slower
+  capacity tier is later needed; for training it isn't.
+- **Cooler:** LGA4677 **AIO** (already running one on the 8480 — carries over;
+  handles the 350 W).
+- **Software:** AMX works **out of the box on stock Windows `torch+cpu`** —
+  confirmed: `ONEDNN_VERBOSE` shows `avx10_1_512_amx`. No IPEX/Linux required
+  (that earlier worry was wrong); they're optional later tuning.
+- **Day one:** `python -m tools.bench_step --variant mythouro_distill_tiny
+  --device cpu --batch 8 --seq-len 512`, then rescale the training-time table by
+  `(measured ÷ estimate)`. Confirm AMX is firing with `ONEDNN_VERBOSE=1` on a big
+  bf16 GEMM (want tens of TFLOPS, fed by HBM — no 2-channel starvation this time).
+- **Role / expectations:** dedicated trainer + capacity box for ≤3B that the
+  12 GB 5070 can't hold; frees the work rig. The 5070 stays the **fast** card for
+  ≤1B-that-fits. Training a 3B on the Max is still slow (CPU-AMX class, ~year
+  scale) — for a *fast* 3B run, rented A100/H100. The Max = **fit + iterate +
+  hold**, not raw speed.
+
+#### Other accelerants
+
+| If you get… | Then unlock |
+|-------------|-------------|
+| **Cloud A100/H100 hour budget** | 5–10× faster training; 20K-step runs become single overnights |
+| **DeepSeek V3 / Llama 3.3 70B API access** | Stronger teacher → break past the Ouro-2.6B quality ceiling regardless of student size |
+

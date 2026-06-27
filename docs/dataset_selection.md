@@ -118,3 +118,47 @@ Since MIRIAD is out and medical is the core domain, the most defensible source i
 
 *Update this file whenever a dataset is evaluated — the registry holds the specifics,
 this holds the rules and the verdicts.*
+
+
+<!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
+
+## Data roadmap
+
+What data feeds which stage. The SFT stage is built; the rest are planned and
+listed here so the data decision is made before the engineering, not during.
+
+| Stage | Status | Datasets | Format / notes |
+|-------|--------|----------|----------------|
+| **Distillation** | ✓ done | FineWeb-Edu (40%) · open-web-math (40%) · codeparrot-clean (20%) | Raw text + teacher logits. Math-heavy to transfer Ouro-Thinking's reasoning. |
+| **SFT** | ✓ done (v2–v4) | OpenHermes-2.5 (30%) · MetaMathQA (40%) · Magicoder-Evol-Instruct (30%) | ChatML, loss masked to response tokens. Use `seq_len≥1024` for OpenHermes (multi-turn) — at 512 it's ~95% rejected. |
+| **Preference tuning (DPO/ORPO)** | 📋 planned | `HuggingFaceH4/ultrafeedback_binarized`, `Anthropic/hh-rlhf` | Needs `(prompt, chosen, rejected)` triples. ORPO folds it into one stage (no separate reward model) — simplest for a solo overnight setup. Start small (~10k pairs at this scale). |
+| **Reasoning RL (GRPO)** | 📋 planned | GSM8K + MATH (train splits) with a **programmatic verifier** as the reward | The reward is a correctness checker (parse final answer, compare), not a learned reward model. This is where the recurrent-depth architecture should shine — more loops on harder problems. Memory-heavy (multiple rollouts/step); needs the 8-bit-Adam + small-batch budget. |
+| **Tool use / function calling** | 📋 later | `glaiveai/glaive-function-calling-v2`, ToolBench subsets | SFT-style, but responses contain structured tool-call tokens. Define the call schema first. |
+| **Long-context** | 📋 later | Curated long documents (books, repos) | Only meaningful once a model is coherent; the Ouro tokenizer supports 131k but nothing's been trained past 1k. |
+
+### Planned domain expansion: science + medical (user goal, 2026-06-10)
+
+**Clean-provenance candidates now live in [docs/clean_sft_datasets.md](clean_sft_datasets.md)** (MIRIAD, PubMedQA, ChemData, OpenWebMath-SFT — all OpenAI-free, superseding the GPT-provenance-flagged sets below where they overlap). Add science/medical as a data *kind* across the stages — per the variety
+principle below, a new domain is exactly the kind of addition that has moved
+behaviour at this scale. Candidates by stage (verify licenses at use time):
+
+| Stage | Candidate datasets | Notes |
+|-------|--------------------|-------|
+| **Distillation / pretrain mix** | `allenai/peS2o` (open academic papers, clean license) · RedPajama **arXiv** subset · **PMC Open Access** (biomedical full text) · PubMed abstracts | Slot into `MixedDataset` as new sources with their own mix ratios — config work, no new code. For the 3B from-scratch run, include from day one rather than retrofitting. |
+| **SFT** | `SciQ` (science QA) · `MedMCQA`, `PubMedQA`, `MedQA-USMLE` (medical QA → instruction format) · CAMEL science dialogues | Same ChatML / loss-mask pipeline as OpenHermes. **Provenance check per set** — several popular medical-chat sets (ChatDoctor, Medical Meadow variants) are GPT-derived → same OpenAI-ToS flag as OpenHermes (fine for research, a constraint if distributing). |
+| **Eval** | MedQA / PubMedQA / SciQ accuracy | Add to `eval/metrics.py` alongside ARC — same cloze/log-likelihood pattern, small lift. |
+
+**Safety note (medical specifically):** at proof-of-concept scale this is a
+*domain-data experiment*, not a medical model — outputs are research artifacts,
+never advice. If the domain survives to a coherent-scale model, revisit the
+parked "safety alignment" roadmap item *before* anything medical-flavoured is
+distributed or served.
+
+**General principle observed so far:** at this scale, *data variety* moved
+behaviour more than *data volume* or *parameter count*. Adding OpenHermes (v4)
+unlocked the social-prompt register and recovered the confidence-halt that MoE
+growth had blurred — a data change, not a scale change. Prefer adding a new
+*kind* of data over more of the same.
+
+---
+
