@@ -26,7 +26,27 @@ explicitly when needed:
 
 ---
 
-## ⭐ CURRENT (2026-06): rev-KL STABILITY run — the divergence-collapse FIX
+## ⭐ CURRENT (2026-06-27): on-policy / GKD — the VALIDATED cure (continue from 6771)
+
+On-policy distillation **un-collapsed the α=0.0 prose seed** — first movement on the generation
+blocker ever (training_runs.md / generation_probe_tracker.md 06-27). Partial (medical/code still
+dose-limited) → now a throughput/dose problem. **Continue from 6771 at λ=0.7** (gnorm had headroom):
+```powershell
+python -m training.distill --student-variant mythouro_distill_tiny --student-device cuda:0 --teacher-device cuda:2 --teacher-id ByteDance/Ouro-2.6B-Thinking --seq-len 1024 --micro-batch 1 --grad-accum 16 --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 --divergence rev_kl --use-sandwich-norm --use-depth-aware-init --onpolicy-lambda 0.7 --teacher-mix-alpha 0.6 --rollout-len 64 --ckpt-every-mins 15 --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_onpolicy
+```
+Cross-GPU (teacher `cuda:2`) — single-card OOMs a 12 GB 5070 (5.2 GB teacher won't cohabit; the Max
+1100's 48 GB is the fix → batched rollouts, see hardware_options.md). **Probe the result** (read the
+**α=0.0** rows vs the collapsed baseline — top_share down / distinct up = working):
+```powershell
+python -m tools.onpolicy_rollout_probe --ckpt-dir checkpoints_onpolicy --student-device cuda:0 --teacher-device cuda:2 --teacher-id ByteDance/Ouro-2.6B-Thinking --trust-remote-code
+```
+Warm-start a fresh on-policy dir from a checkpoint first: `Remove-Item <dir>\*.pt; copy <src>.pt <dir>\; dir <dir>`
+then confirm the launch log says `resuming from …<step>.pt` (not step 1). Full design + perf notes:
+`docs/onpolicy_plan.md`.
+
+---
+
+## ✅ DONE (2026-06): rev-KL STABILITY run — stability solved; but pure rev-KL collapses
 
 The gnorm-explosion collapse at lr 3e-4 (which killed JSD at the `n_loops 2→3` transition) is
 fixed by **lr 1e-4 + `--use-sandwich-norm --use-depth-aware-init`**. Healthiest run yet
@@ -35,14 +55,16 @@ continue (auto-resumes from the latest checkpoint in `--ckpt-dir`):
 ```powershell
 python -m training.distill --student-variant mythouro_distill_tiny --student-device cuda:0 --teacher-device cuda:2 --seq-len 1024 --micro-batch 1 --grad-accum 16 --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 --divergence rev_kl --use-sandwich-norm --use-depth-aware-init --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_revkl_stable
 ```
-**Goal:** run to ~6000 (full `n_loops=4` curriculum) → then a **depth-matched** probe + eval
-(current reads are `n_loops=4`-on-`n_loops=3` = pessimistic). **Status (2026-06-24):** stable to
-step 4000; generation shifted hard-collapse → varied-salad (~15/19 escape @ T=0.8, real grammatical
-fragments); **ECE regressed to 0.20** (rev-KL mode-seeking tax — the calibration tension).
+**Outcome (depth-matched, step 6675):** stability held to 6675, **but pure rev-KL mode-COLLAPSES**
+(`is is is`) — best-ever PPL (1.759) + good ECE (**0.0152**; the earlier "0.20" was a depth-mismatch
+artifact, **retracted**) + healthy reps, and free-gen still collapses. Exposure bias is decoupled from
+every formal metric → no offline divergence reaches coherence → **on-policy** (the CURRENT run above).
+This checkpoint (`checkpoints_revkl_stable/step_0006675.pt`) is the **warm-start base** for on-policy.
 
-## NEXT: stable-JSD (fwd/rev hybrid — addresses the calibration tension)
+## ⛔ DEPRIORITIZED: stable-JSD (offline-divergence avenue closed)
 
-JSD on the stable footing (its prior rank→1 collapse was LR-instability, **not** the objective).
+JSD on the stable footing. **Deprioritized 2026-06-27:** fwd/rev-KL *and* JSD all mode-collapse — no
+offline divergence alone reaches coherence (on-policy is validated). Kept for the record; not the path.
 Fresh from random init:
 ```powershell
 python -m training.distill --student-variant mythouro_distill_tiny --student-device cuda:0 --teacher-device cuda:2 --seq-len 1024 --micro-batch 1 --grad-accum 16 --total-steps 12000 --warmup-steps 500 --lr 1e-4 --depth-reg-coeff 0.3 --divergence jsd --jsd-beta 0.5 --use-sandwich-norm --use-depth-aware-init --num-workers 0 --trust-remote-code --ckpt-dir checkpoints_jsd_stable
