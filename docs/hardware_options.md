@@ -1,5 +1,18 @@
 # Hardware Options — the scale-up decision
 
+> **⚙ MAX 1100 OPERATING PRINCIPLE — EVERYTHING WIDE.** Ponte Vecchio is **latency-bound**
+> (~600 ns VRAM, ~286 ns L2). To saturate the XMX engines you need enough parallel work *in
+> flight* to hide that latency (Little's law: concurrency ≳ latency × bandwidth); below that
+> threshold the cores stall on memory and you fall toward the vector floor. **So batch/occupancy
+> is mandatory, not optional** — and the 48 GB exists largely to *buy that width* (on this card
+> memory and compute are coupled in a way they aren't on low-latency NVIDIA, where small batches
+> still get decent utilization). Design every workload wide: big `--micro-batch` training,
+> **batched rollouts** (the on-policy throughput fix), batched serving/eval. The one axis you
+> *can't* widen is the recurrent **depth** (loops are sequential by definition) → widen the
+> **batch** dimension instead, to keep the cores fed *across* the loops. **Corollary:** the Max
+> can be *slower* than the 5070 on narrow, batch-1, single-stream decode — going wide is the
+> *precondition* for it winning at all, not a later optimization.
+
 ## 🔧 DEPLOYMENT PLAN (2026-06-26): dual-boot current rig + Max 1100 #1 now
 
 **The trigger flipped from "future scale" to "active blocker."** Tonight's on-policy run
