@@ -23,7 +23,7 @@ the README "Acknowledgements" and "Licensing & data provenance" sections.
 **Full research credits:** every paper, dataset, and tool that informed the design
 is catalogued in `docs/references.md` (with how each was used).
 
-**Current status (2026-06-17, updated 2026-06-27):** the generation-degeneration investigation is
+**Current status (2026-06-17, updated 2026-06-28):** the generation-degeneration investigation is
 complete — it is **exposure bias** (a learned repetition attractor), **not**
 recurrent/hidden-state collapse (reps are healthy; verified with
 `tools/collapse_metrics.py`). v4's old "edge" was train-time noise co-adaptation,
@@ -62,6 +62,17 @@ dose?" — a **throughput problem** (5.8 min/step cross-GPU on the 12 GB 5070, m
 latency-bound so the win is batching+`torch.compile`, not raw BF16 TFLOPS — `docs/hardware_options.md`).
 **Next:** continue from 6771 at **λ=0.7**, more dose, re-probe, watch medical/code follow prose. Full record:
 `docs/training_runs.md` + `docs/generation_probe_tracker.md` (06-27).
+
+**UPDATE 2026-06-28 — ✅✅ COLLAPSE BROKEN DOMAIN-WIDE (the thesis flip).** At step **6906**
+(~231 on-policy steps), a 6-seed probe shows α=0.0 `top_share` low on **every** seed (0.06–0.31)
+— no hard repetition attractor anywhere, not just prose. **The exposure-bias blocker is cured.**
+Regime is now "varied but incoherent" = a *normal undertrained small model* → the remaining gap
+is **coherence/capability = tokens + scale** (the lever tokens *actually* move, unlike the
+attractor). Capability shows at α≥0.5 (diabetes → correct symptoms; fibonacci → real code). The
+earlier "medical still collapsed" read was partly **single-sample RNG noise** (same checkpoint,
+different seed-order → bacterial α=0.0 went 0.97→0.18; probe now multi-samples). **Next = pour
+tokens on the un-collapsed base** — exactly what the Max 1100's batched-rollout throughput is for.
+Full: `docs/generation_probe_tracker.md` (06-28).
 
 ---
 

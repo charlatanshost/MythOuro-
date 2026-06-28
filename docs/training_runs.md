@@ -1032,6 +1032,14 @@ tokens/night; the decode is latency-bound, so the win is batching+`torch.compile
 BF16 TFLOPS — see hardware_options.md). **Next:** continue from 6771, **bump λ→0.7** (gnorm had
 headroom), more steps; re-probe and watch medical/code follow prose.
 
+**UPDATE 2026-06-28 (step 6906, ~231 on-policy steps):** ✅✅ **collapse broken DOMAIN-WIDE.**
+6-seed probe → α=0.0 `top_share` low on *every* seed (0.06–0.31); no hard attractor anywhere.
+Regime flipped from exposure-bias collapse → "varied but incoherent" (normal undertrained small
+model) = now **tokens/scale-bound**, not blocker-bound. Capability present at α≥0.5 (diabetes →
+correct symptoms; fibonacci → real code). The earlier "medical still collapsed" read was partly
+single-sample RNG noise (probe now multi-samples). **Next = pour tokens on the un-collapsed base
+→ the Max 1100 throughput.** Full read: generation_probe_tracker.md 2026-06-28.
+
 
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 

@@ -252,6 +252,37 @@ look reasonable across seeds but that's the teacher-mix carrying them — α=0.0
 student; ignore, the bracketing α=0.0 and α=0.5+ are the signal. **Next:** continue from 6771,
 λ→0.7, re-probe; full verdict in training_runs.md 2026-06-27.
 
+---
+
+## 2026-06-28 — ✅✅ ON-POLICY BROKE THE COLLAPSE DOMAIN-WIDE (now tokens-bound)
+
+Probe of **step 6906** (~231 on-policy steps off 6675; +135 at λ=0.7 over the 6771 run),
+6-seed set (prose / 3 medical / code / math). **Headline: the hard repetition attractor is
+GONE on every seed.** α=0.0 `top_share` across all six: **0.11 / 0.18 / 0.11 / 0.23 / 0.31 /
+0.06** — all low; no `is is is` / `the the the` anywhere. The collapse that blocked the
+project for months is broken **domain-wide**, not just prose.
+
+**Methodological correction (important):** the 6906 *3-seed* probe showed bacterial α=0.0 at
+`top_share 0.97` (`the the the`) — but the *6-seed* run, **same checkpoint**, gave bacterial
+α=0.0 at **0.18 (varied)**. Only difference: seed *order* → RNG state. So a **single sampled
+rollout per (seed,α) is high-variance**; that "medical hard-collapsed" read was a noisy draw,
+not a real attractor. → probe now **multi-samples** (`--samples`, default 3, reports
+mean [min-max]) so one unlucky draw can't mislead.
+
+**Regime shift (the whole point):** "sharp repetition attractor" (exposure bias) →
+**"varied but incoherent word-salad"** — the *normal* regime of a small, undertrained model.
+The exposure-bias **blocker is cured**; what remains is coherence/capability = **tokens +
+scale**, the lever tokens *actually* move (unlike the attractor, which they worsened).
+Capability is present at α≥0.5: diabetes α=0.7 gave the **correct symptoms** (thirst /
+frequent urination / fatigue / blurred vision); ibuprofen → pain + long-term side effects;
+fibonacci → real code + test reasoning. Knowledge/structure is there; unaided (α=0.0) fluency
+is what's missing.
+
+**Verdict:** on-policy converted a tokens-*proof* attractor into a tokens-*responsive*
+undertrained model — the thesis flip the project was chasing. **Next = pour tokens on the
+un-collapsed base** (throughput → the Max 1100). Full context: training_runs.md / roadmap.md
+(2026-06-28).
+
 
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 

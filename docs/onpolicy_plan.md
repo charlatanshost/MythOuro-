@@ -1,13 +1,21 @@
 # On-policy distillation (GKD / MiniLLM) — implementation plan
 
-**Status:** ✅ **MECHANISM VALIDATED (partial), 2026-06-27.** First run (6675→6771, ~96
-steps) **un-collapsed the α=0.0 prose seed** (top_share 0.45→0.14, distinct1 0.15→0.66 —
-stuck attractor → varied sentences). *First movement on the unaided-generation blocker in
-the project's history.* Medical/code seeds still collapsed = **dose-limited** (prose is
-over-represented in the corpus, un-collapses first). The question flipped from "does it
-work?" (✅) to "how much dose?" — now a **throughput problem** (5.8 min/step) → the Max-1100
-case (batched rollouts). Next: continue from 6771, **λ→0.7** (gnorm had headroom). Full
-verdict in training_runs.md / generation_probe_tracker.md (2026-06-27).
+**Status:** ✅✅ **COLLAPSE BROKEN DOMAIN-WIDE, 2026-06-28** (step 6906, ~231 on-policy steps).
+A 6-seed probe shows α=0.0 `top_share` low on **every** seed (0.06–0.31) — **no hard attractor
+left anywhere**, not just prose. The exposure-bias blocker that stalled the project for months
+is **cured**. Regime is now "varied but incoherent word-salad" = a *normal undertrained small
+model*, so the remaining gap is **coherence/capability = tokens + scale** (the lever tokens
+actually move). Capability is present at α≥0.5 (diabetes α=0.7 listed the correct symptoms;
+fibonacci wrote real code). **Next = pour tokens on the un-collapsed base** (throughput → the
+Max 1100). Also: single-sample probes are high-variance (a noisy bacterial draw briefly read
+`the the the`); probe now multi-samples (`--samples`). Full verdict: generation_probe_tracker.md
+2026-06-28.
+
+**Prior (2026-06-27, partial):** first run (6675→6771, ~96 steps, λ=0.5) un-collapsed the α=0.0
+prose seed (top_share 0.45→0.14) — first movement on the blocker ever. Read as "dose-limited,
+prose-first"; the 06-28 higher-dose 6-seed probe showed it generalized domain-wide (and that the
+"medical still collapsed" read was partly single-sample noise). Throughput problem (5.8 min/step)
+→ the Max-1100 case (batched rollouts).
 
 Flags + rollout engine (`generate_rollout`) + on-policy step + the α-probe tool all landed,
 **default-off** (λ=0 → no behaviour change).

@@ -59,17 +59,22 @@ _SEEDS = [
 ]
 
 
-def _rep_stats(ids: "list[int]") -> str:
-    """Repetition summary for a generated token list (lower top_share = better)."""
+def _rep_numbers(ids: "list[int]") -> "tuple[float, float, float]":
+    """(distinct1, distinct2, top_share) for a generated token list."""
     if not ids:
-        return "empty"
+        return (0.0, 0.0, 1.0)
     n = len(ids)
     distinct1 = len(set(ids)) / n
     bigrams = list(zip(ids, ids[1:]))
     distinct2 = (len(set(bigrams)) / len(bigrams)) if bigrams else 0.0
-    top_tok, top_cnt = Counter(ids).most_common(1)[0]
-    return (f"distinct1={distinct1:.2f} distinct2={distinct2:.2f} "
-            f"top_share={top_cnt / n:.2f} (tok {top_tok})")
+    _, top_cnt = Counter(ids).most_common(1)[0]
+    return (distinct1, distinct2, top_cnt / n)
+
+
+def _agg(xs: "list[float]") -> str:
+    """mean [min-max] across samples (or just the value for a single sample)."""
+    m = sum(xs) / len(xs)
+    return f"{m:.2f} [{min(xs):.2f}-{max(xs):.2f}]" if len(xs) > 1 else f"{m:.2f}"
 
 
 def main() -> None:
@@ -94,6 +99,9 @@ def main() -> None:
     p.add_argument("--seed-len", type=int, default=16)
     p.add_argument("--temp", type=float, default=1.0)
     p.add_argument("--top-k", type=int, default=50)
+    p.add_argument("--samples", type=int, default=3,
+                   help="Rollouts per (seed, α). >1 reports mean [min-max] so a "
+                        "single unlucky sample can't mislead the read.")
     p.add_argument("--n-loops", type=int, default=4)
     p.add_argument("--seq-len", type=int, default=1024)
     p.add_argument("--no-sandwich-norm", action="store_true",
@@ -145,18 +153,24 @@ def main() -> None:
         print("=" * 78)
         print(f"SEED: {seed_text!r}  ({len(seed_ids)} tok)")
         for alpha in args.alphas:
-            roll = generate_rollout(
-                student, teacher, prompt,
-                n_loops=args.n_loops,
-                max_new_tokens=args.rollout_len,
-                teacher_mix_alpha=alpha,
-                temperature=args.temp,
-                top_k=args.top_k,
-            )
-            gen_ids = roll[0, len(seed_ids):].tolist()
-            text = tok.decode(gen_ids)
-            print(f"\n  α={alpha:<4} | {_rep_stats(gen_ids)}")
-            print(f"    {text!r}")
+            d1s, d2s, tss, example = [], [], [], None
+            for _ in range(args.samples):
+                roll = generate_rollout(
+                    student, teacher, prompt,
+                    n_loops=args.n_loops,
+                    max_new_tokens=args.rollout_len,
+                    teacher_mix_alpha=alpha,
+                    temperature=args.temp,
+                    top_k=args.top_k,
+                )
+                gen_ids = roll[0, len(seed_ids):].tolist()
+                d1, d2, ts = _rep_numbers(gen_ids)
+                d1s.append(d1); d2s.append(d2); tss.append(ts)
+                if example is None:
+                    example = tok.decode(gen_ids)
+            print(f"\n  α={alpha:<4} | top_share {_agg(tss)} | "
+                  f"distinct1 {_agg(d1s)} | distinct2 {_agg(d2s)} | n={args.samples}")
+            print(f"    e.g.: {example!r}")
         print()
 
 
