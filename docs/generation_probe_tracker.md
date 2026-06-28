@@ -269,6 +269,13 @@ rollout per (seed,α) is high-variance**; that "medical hard-collapsed" read was
 not a real attractor. → probe now **multi-samples** (`--samples`, default 3, reports
 mean [min-max]) so one unlucky draw can't mislead.
 
+**Robust re-probe (n=3, step 6906):** α=0.0 mean `top_share` per seed (prose / bacterial /
+diabetes / ibuprofen / code / math): **0.15 / 0.11 / 0.12 / 0.18 / 0.22 / 0.20** — all low,
+tight ranges (bacterial 0.10–0.12; the 0.97 was definitively noise). Gradient: prose + medical
+cleanest; **math weakest** (dash/digit spam). Capability at α≥0.5: fibonacci wrote *real* Python
+(`fib_sequence = [0, 1]; while …`), ibuprofen → "pain, inflammation, fever", diabetes →
+"increased thirst and urination". Conclusion unchanged, now confirmed robust.
+
 **Regime shift (the whole point):** "sharp repetition attractor" (exposure bias) →
 **"varied but incoherent word-salad"** — the *normal* regime of a small, undertrained model.
 The exposure-bias **blocker is cured**; what remains is coherence/capability = **tokens +
