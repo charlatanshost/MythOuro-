@@ -45,9 +45,17 @@ _VARIANTS = {
 }
 
 _SEEDS = [
-    "The treatment for a bacterial infection usually involves",
+    # general prose
     "In the morning the weather was clear, so we decided to",
+    # medical (the mission domain) — multiple registers so one sticky seed
+    # doesn't define the whole domain read (avoid the n=1 trap)
+    "The treatment for a bacterial infection usually involves",
+    "Common symptoms of type 2 diabetes include",
+    "Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat",
+    # code
     "def fibonacci(n):",
+    # math
+    "To solve the quadratic equation x^2 - 5x + 6 = 0, we",
 ]
 
 
@@ -78,6 +86,10 @@ def main() -> None:
     p.add_argument("--trust-remote-code", action="store_true")
     p.add_argument("--alphas", type=float, nargs="+",
                    default=[0.0, 0.25, 0.5, 0.7])
+    p.add_argument("--seeds", nargs="+", default=_SEEDS,
+                   help="Prompt seeds to probe (override the defaults for ad-hoc "
+                        "testing, e.g. --seeds \"A patient with chest pain should\" "
+                        "\"def quicksort(arr):\").")
     p.add_argument("--rollout-len", type=int, default=96)
     p.add_argument("--seed-len", type=int, default=16)
     p.add_argument("--temp", type=float, default=1.0)
@@ -127,7 +139,7 @@ def main() -> None:
         raise SystemExit("teacher failed to load")
     print(f"[probe] teacher {args.teacher_id} on {args.teacher_device}\n")
 
-    for seed_text in _SEEDS:
+    for seed_text in args.seeds:
         seed_ids = tok.encode(seed_text)[: args.seed_len]
         prompt = torch.tensor([seed_ids], device=sdev)
         print("=" * 78)
