@@ -502,6 +502,11 @@ Intel; good HBM bandwidth (unlike the bandwidth-starved 8480).
    > 2026-06-29) points at a graveyard. **Maintained LLM paths: native `torch.xpu` (train) +
    > vLLM-XPU (serve — already our teacher route).** Those Intel guides still *prove the Max
    > 1100 fine-tunes Llama-2 7B/70B* (a capability data point), just not via their dead tooling.
+   > **Keep them as a TUNING reference, though** (owner's point): the Max EOL'd early 2026, so the
+   > archived guides are *contemporaneous with the card* — and IPEX/BigDL share the **oneDNN/oneMKL
+   > substrate** with `torch.xpu`, so the perf *techniques* (bf16 paths, op fusion, memory layout,
+   > XMX/DPAS tile alignment, LLM opts) + the benchmark baselines transfer. Dead API surface, live
+   > tuning knowledge — mine them in the *tune* phase, calling through `torch.xpu`/`torch.compile`.
    > Sources: Intel IPEX EOL notice, pytorch-extension.intel.com, github.com/intel/ipex-llm
    > (archived), Phoronix "Intel Ending BigDL".
 
