@@ -499,7 +499,13 @@ Intel; good HBM bandwidth (unlike the bandwidth-starved 8480).
    > **CONFIRMED 2026-06-29 — IPEX is EOL; native `torch.xpu` is THE path (not "optional").**
    > Intel is discontinuing Intel-Extension-for-PyTorch (last release 2.8, **EOL end of
    > March 2026**, critical fixes only for ~2 quarters) — they **upstreamed CPU *and GPU*
-   > support into native PyTorch** and explicitly recommend using `torch.xpu` directly. So:
+   > support into native PyTorch** and explicitly recommend using `torch.xpu` directly. **(Why
+   > it died: Intel *retired the Max GPU line* + pivoted to Gaudi / the converged AI accelerator,
+   > so the GPU-specific software died with the hardware focus — BUT `torch.xpu` is **upstream in
+   > PyTorch core**, community-maintained, so the Max *survives* Intel's abandonment. Don't read
+   > "IPEX died" as "the card is doomed" — it's the open-EOL hedge the buy relied on, working as
+   > intended. Gaudi's own roadmap is shakier (Falcon Shores canceled), which only reinforces:
+   > bet on upstream PyTorch, not Intel's hardware roadmap.)** So:
    > build the Max-1100 port on **native `torch.xpu` + Intel GPU runtime (oneAPI/Level Zero
    > driver) — do NOT architect on IPEX.** Caveat when triaging IPEX docs/tutorials: most
    > (incl. the HF-Accelerate IPEX guide and the `examples/cpu/` notebooks) are **CPU-only**
