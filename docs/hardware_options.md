@@ -496,8 +496,14 @@ Intel; good HBM bandwidth (unlike the bandwidth-starved 8480).
    > (incl. the HF-Accelerate IPEX guide and the `examples/cpu/` notebooks) are **CPU-only**
    > (`use_cpu: true`, AVX-512/AMX) — not the Max GPU. Salvage only the *concepts* (bf16
    > autocast, op-fusion patterns); the real perf lever is **`torch.compile`** (native XPU
-   > Inductor), per the operating-principle callout. Sources: Intel IPEX EOL notice +
-   > pytorch-extension.intel.com.
+   > Inductor), per the operating-principle callout. **The whole Intel LLM-extension family
+   > is sunset too:** BigDL-LLM → renamed IPEX-LLM → **IPEX-LLM archived Jan 2026** (read-only);
+   > BigDL archives Jun 2026. So AI-relayed "start with BigDL-LLM/IPEX-LLM" advice (vetted
+   > 2026-06-29) points at a graveyard. **Maintained LLM paths: native `torch.xpu` (train) +
+   > vLLM-XPU (serve — already our teacher route).** Those Intel guides still *prove the Max
+   > 1100 fine-tunes Llama-2 7B/70B* (a capability data point), just not via their dead tooling.
+   > Sources: Intel IPEX EOL notice, pytorch-extension.intel.com, github.com/intel/ipex-llm
+   > (archived), Phoronix "Intel Ending BigDL".
 
 Also: Intel's data-center GPU roadmap has been turbulent → some long-term
 software-support uncertainty.
