@@ -47,6 +47,15 @@ Remaining: (1) Linux + Intel GPU runtime + the XPU torch build; (2) validation l
 student fwd → train step → teacher inference → full distill loop on `xpu:0`, catching any
 missing op before it costs a run. Correctness *before* efficiency.
 
+> **Driver install refs (when the card lands, 2026-06-29):** the Max needs the Intel kernel
+> driver + compute runtime / Level-Zero *before* `torch.xpu` sees it. Use the **Ubuntu** guide
+> (matches the native-Linux dual-boot): `dgpu-docs.intel.com/installation-guides/max-and-flex/
+> installation.html#ubuntu`. (The OpenShift driver guide —
+> `intel.github.io/intel-data-center-gpu-driver-for-openshift` — is for *containerized/K8s*
+> deployments, **not** a local rig; skip unless you ever containerize.) Sequence: kernel driver
+> + runtime → verify with `clinfo` / `xpu-smi` / `intel_gpu_top` → *then* the XPU torch wheel →
+> `torch.xpu.is_available()`.
+
 **Efficiency = run-baseline-tune, unknowable until real silicon.** Matmul bulk hits XMX
 out-of-box (oneDNN → 140 BF16, already benched). The thing to *squeeze* is the **recurrent
 decode** — same kernel-launch overhead as `decode_kernel_optimization.md`, fixed by
