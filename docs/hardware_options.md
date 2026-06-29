@@ -487,6 +487,17 @@ Intel; good HBM bandwidth (unlike the bandwidth-starved 8480).
    **PyTorch + Intel GPU drivers (oneAPI runtime / Level Zero)**, not an IPEX build
    project. The **1100 is PCIe dual-slot** (workstation-viable); the **1550 is OAM**
    (needs a baseboard — not a workstation card).
+   > **CONFIRMED 2026-06-29 — IPEX is EOL; native `torch.xpu` is THE path (not "optional").**
+   > Intel is discontinuing Intel-Extension-for-PyTorch (last release 2.8, **EOL end of
+   > March 2026**, critical fixes only for ~2 quarters) — they **upstreamed CPU *and GPU*
+   > support into native PyTorch** and explicitly recommend using `torch.xpu` directly. So:
+   > build the Max-1100 port on **native `torch.xpu` + Intel GPU runtime (oneAPI/Level Zero
+   > driver) — do NOT architect on IPEX.** Caveat when triaging IPEX docs/tutorials: most
+   > (incl. the HF-Accelerate IPEX guide and the `examples/cpu/` notebooks) are **CPU-only**
+   > (`use_cpu: true`, AVX-512/AMX) — not the Max GPU. Salvage only the *concepts* (bf16
+   > autocast, op-fusion patterns); the real perf lever is **`torch.compile`** (native XPU
+   > Inductor), per the operating-principle callout. Sources: Intel IPEX EOL notice +
+   > pytorch-extension.intel.com.
 
 Also: Intel's data-center GPU roadmap has been turbulent → some long-term
 software-support uncertainty.
