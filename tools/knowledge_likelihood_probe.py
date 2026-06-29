@@ -42,15 +42,22 @@ _VARIANTS = {
     "mythouro_distill_xl": mythouro_distill_xl,
 }
 
-# (label, context, correct, [distractors]) — distractors are plausible & real,
-# wrong only for THIS context, so a hit means association not generic fluency.
+# (label, context, correct, [distractors]). Distractors are now FREQUENCY-MATCHED
+# — real, plausible-in-context, and comparably *obscure* — so raw corpus frequency
+# can't win on its own (the v1 flaw: HEK293/p53 are ubiquitous and beat the correct
+# obscure entity by tiny margins). Verify the cell-line/family distractors if unsure.
 _FACTS = [
+    # sanity: probe works + model knows *something* general
     ("sanity:capital", "The capital of France is", " Paris", [" London", " Berlin", " Madrid"]),
-    ("ibuprofen:receptor", "Ibuprofen activates the nuclear receptor PPAR", "gamma", ["alpha", "beta", "delta"]),
-    ("ibuprofen:cell_pc12", "Ibuprofen activates PPARgamma in the neuron-like cell line", " PC12", [" HEK293", " HeLa", " Jurkat"]),
-    ("ibuprofen:cell_b104", "Ibuprofen activates PPARgamma in neuron-like PC12 and", " B104", [" HEK293", " HeLa", " Jurkat"]),
-    ("ibuprofen:rhoa", "Activation of PPARgamma by ibuprofen mimics the inhibition of", " RhoA", [" mTOR", " p53", " EGFR"]),
-    ("control:wrongdrug", "Metformin activates PPARgamma in neuron-like PC12 and", " B104", [" HEK293", " HeLa", " Jurkat"]),
+    # ibuprofen / PPARγ cluster — obscure neuro lines + Rho-family distractors
+    ("ibu:receptor", "Ibuprofen activates the nuclear receptor PPAR", "gamma", ["alpha", "beta", "delta"]),
+    ("ibu:cell_pc12", "Ibuprofen activates PPARgamma in the neuron-like cell line", " PC12", [" B35", " B50", " NG108"]),
+    ("ibu:cell_b104", "Ibuprofen activates PPARgamma in neuron-like PC12 and", " B104", [" B35", " B50", " NG108"]),
+    ("ibu:rhoa", "Activation of PPARgamma by ibuprofen mimics the inhibition of", " RhoA", [" RhoB", " RhoC", " Cdc42"]),
+    # control A: same bio context, WRONG drug — B104 winning here = NOT drug-specific.
+    ("ctl:wrongdrug", "Metformin activates PPARgamma in neuron-like PC12 and", " B104", [" B35", " B50", " NG108"]),
+    # control B: NON-bio context — B104 winning here = generic token pref, not knowledge.
+    ("ctl:nonbio", "In the morning the weather was clear and we saw a", " B104", [" B35", " B50", " NG108"]),
 ]
 
 
@@ -104,7 +111,7 @@ def main() -> None:
         cands.sort(key=lambda x: x[1])                               # lowest NLL first
         rank = [c[0] for c in cands].index(correct) + 1
         win = "✅" if rank == 1 else "  "
-        is_test = not label.startswith(("sanity", "control"))
+        is_test = not label.startswith(("sanity", "ctl"))
         if is_test:
             scored += 1
             hits += (rank == 1)
@@ -113,9 +120,11 @@ def main() -> None:
         print(f"     order: " + "  ".join(f"{c.strip()}={v:.2f}" for c, v in cands))
 
     print(f"\nIbuprofen facts the student ranked correctly: {hits}/{scored}")
-    print("READ: correct entity ranked #1 (lower NLL than real distractors) = the "
-          "association is in the weights. Check `sanity` ranks Paris #1 (probe works) "
-          "and `control` (Metformin) does NOT prefer B104 (not just rewarding the word).")
+    print("READ: ibu:* correct entity ranked #1 (now vs frequency-matched distractors) "
+          "= association is in the weights. `sanity` Paris #1 = probe works. For the "
+          "ctl:* rows, B104 ranking #1 is the BAD outcome: ctl:wrongdrug #1 = not "
+          "drug-specific; ctl:nonbio #1 = generic token pref, not real knowledge. B104 "
+          "winning ibu but NOT the controls = specific, real, contextual.")
 
 
 if __name__ == "__main__":

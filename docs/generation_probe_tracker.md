@@ -276,6 +276,39 @@ cleanest; **math weakest** (dash/digit spam). Capability at α≥0.5: fibonacci 
 (`fib_sequence = [0, 1]; while …`), ibuprofen → "pain, inflammation, fever", diabetes →
 "increased thirst and urination". Conclusion unchanged, now confirmed robust.
 
+---
+
+## 2026-06-29 — 🧠 KNOWLEDGE PROBE: real but COARSE domain-cluster knowledge at 110M tokens
+
+A domain-expert catch — `B104`, a real ibuprofen/PPARγ neuronal cell line, surfaced at α=0.0
+inside incoherent text — prompted a **knowledge-vs-fluency** test (step 7024).
+
+**Generation can't measure knowledge here** (`tools/knowledge_probe.py`): 45 ibuprofen α=0.0
+rollouts surfaced **0** diagnostic entities — but so did common terms (`nsaid`/`agonist`), so
+it's the *fluency floor*, not absent knowledge. Free generation needs a long lucky token chain
+to land a fact; at this fluency it can't.
+
+**Likelihood (cloze) test** (`tools/knowledge_likelihood_probe.py`) — teacher-force the fact,
+read which entity gets the lowest NLL (no generation → fluency-independent). v1 result
+(ubiquitous distractors): **`B104` ranked #1, beating `HEK293`** (a corpus-ubiquitous line) in
+the ibuprofen/PPARγ context; `PC12`/`RhoA` crushed the wrong-context distractors
+(`Jurkat`/`HeLa`, `mTOR`/`EGFR`) by ~3–6 NLL. The strict `1/4` headline was a **frequency
+confound** (obscure-correct vs ubiquitous-distractor), not weak knowledge.
+
+**Verdict: the student carries REAL but COARSE domain-cluster knowledge.** It learned the
+*co-occurrence cluster* (PPARγ neuronal research → PC12 / B104 / RhoA) — context sorts "belongs"
+from "doesn't" decisively — but NOT the fine facts: PPAR-γ vs -α/-β undifferentiated; `B104`
+also wins for *Metformin* (it keys on the local "PC12 and ___" pairing, not the distant drug,
+at this under-training). So: **correct semantic scaffold, no precise causal/drug structure yet.**
+
+**Why it matters:** (1) forming the *right* cluster at 110M tok / 278M params (brutal
+under-training) is the **token-efficiency** the recurrent-depth bet predicts — not generic
+small-model noise. (2) It's exactly the **retrieval-paired medical design** — weights hold the
+domain scaffold, retrieval supplies precision; the B104 catch validates both halves. Probe
+refined 2026-06-29 (frequency-matched obscure distractors + a non-bio control); clean re-run
+pending. Reading lesson stacks: top_share noise → single-sample noise → *generation can't probe
+knowledge; use likelihood, and frequency-match the distractors.*
+
 **Regime shift (the whole point):** "sharp repetition attractor" (exposure bias) →
 **"varied but incoherent word-salad"** — the *normal* regime of a small, undertrained model.
 The exposure-bias **blocker is cured**; what remains is coherence/capability = **tokens +
