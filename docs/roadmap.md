@@ -146,6 +146,19 @@ ceiling** (net-comparable to the 420M v4, `cv` wouldn't tighten below ~0.5), so
 **MoE growth is now considered tapped out** and output is still gibberish at this
 scale (parameter-count ceiling, not a bug).
 
+**UPDATE 2026-06-29 — the v5 "ceiling" RE-DIAGNOSED: token dilution + collapse, NOT an
+expert/parameter ceiling (so "tapped out" is RETRACTED).** Two confounds, neither an
+architecture limit: (1) **token dilution** — 48→96 experts on a *fixed, already-insufficient*
+token budget **halved the tokens each expert saw**, so v5's experts were *more* undertrained
+than v4's (`cv` stuck ~0.5 = undertrained routing, not saturated capacity); the architecture
+outran the *data*. (2) v5 was **pre-on-policy**, so the whole model was exposure-bias
+**collapsed** — the "gibberish at this scale" was the *collapse* (cured 2026-06-27), not a
+parameter ceiling; scaling a collapsed model can't help regardless. **MoE expansion is a valid
+tool; the guardrail is just: expand experts only (a) on the un-collapsed base, and (b) with
+tokens scaling *in step* with experts — never ahead.** v5 violated both. (Credit: owner's
+tokens-per-expert read — and Ouro itself is *dense*, so there was never a teacher expert count
+to match against.)
+
 **The next axis is width/scale, not more experts.** Two real options:
 
 - **Near-term, single-card (Path A):** build **Net2Wider** width growth
@@ -158,9 +171,10 @@ scale (parameter-count ceiling, not a bug).
   to fit a 24 GB card. Growth can't deliver the gibberish→coherent jump; scale +
   real data can. See [Scale-up execution plan](#scale-up-execution-plan-the-destination).
 
-> **Do NOT re-run the 48 → 96 MoE expansion** — that was v5 (2026-06-06) and it
-> hit the ceiling. The previous version of this block told you to run it; that
-> advice is obsolete.
+> **Don't re-run the 48 → 96 MoE expansion *the way v5 did*** (token-starved, on a
+> *collapsed* model) — that hit the apparent ceiling (2026-06-06). Per the 06-29
+> re-diagnosis above, it's **not a banned operation** — it's a valid expansion *when
+> token-justified on the un-collapsed base*. Expand experts only in step with tokens.
 
 **Where to look:** checkpoint lineage + criteria → [Capability success criteria](#capability-success-criteria-per-milestone);
 something broke → [Failure modes](#failure-modes-encountered--recovery-patterns);
