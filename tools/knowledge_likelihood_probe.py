@@ -110,7 +110,9 @@ def main() -> None:
         cands = [(correct, nll(ctx, correct))] + [(d, nll(ctx, d)) for d in distractors]
         cands.sort(key=lambda x: x[1])                               # lowest NLL first
         rank = [c[0] for c in cands].index(correct) + 1
-        win = "✅" if rank == 1 else "  "
+        is_ctl = label.startswith("ctl")
+        # rank-1 is GOOD for ibu/sanity facts, BAD for controls (means frequency artifact).
+        win = ("⚠ " if is_ctl else "✅") if rank == 1 else "  "
         is_test = not label.startswith(("sanity", "ctl"))
         if is_test:
             scored += 1

@@ -309,6 +309,23 @@ refined 2026-06-29 (frequency-matched obscure distractors + a non-bio control); 
 pending. Reading lesson stacks: top_share noise → single-sample noise → *generation can't probe
 knowledge; use likelihood, and frequency-match the distractors.*
 
+**⚠ CORRECTION (2026-06-29, same day) — the refined probe DEFLATED the knowledge claim;
+the above "real domain-cluster knowledge" is RETRACTED.** Added frequency-matched obscure
+distractors (B35/B50/NG108, Rho-family) + a **non-bio control** ("In the morning the weather
+was clear and we saw a ___"). Result: **`B104` ranks #1 in the *weather* context too** (and
+for Metformin) — it beats the distractors *regardless of context*. So B104's lead is **token
+frequency, not an ibuprofen association**; the v1 "B104 beats HEK293" was the same frequency
+effect (HEK293 is merely even more common). The only *real* signal left is **coarse slot/type
+priming** — the bio context lowers *all* cell-line NLLs (B104 1.56 bio vs 2.42 weather; B35
+1.87 vs 2.77), i.e. the model learned "a cell-line-shaped token belongs after 'PC12 and ___'"
+— the *shape of the slot*, NOT the *fact that fills it*. That's distributional learning, not
+medical knowledge. **Unaffected:** (1) the coherence-climb result (separate, still real);
+(2) the retrieval-paired design — specific facts were always retrieval's job, never the 278M
+weights, so "no parametric facts" is the *expected* division of labor, not a loss. **Lesson:
+even a likelihood probe needs a non-bio control to separate knowledge from token frequency —
+and watch for over-reading an exciting single catch (the B104 generation + the confounded v1
+both pointed the wrong way).**
+
 **Regime shift (the whole point):** "sharp repetition attractor" (exposure bias) →
 **"varied but incoherent word-salad"** — the *normal* regime of a small, undertrained model.
 The exposure-bias **blocker is cured**; what remains is coherence/capability = **tokens +
