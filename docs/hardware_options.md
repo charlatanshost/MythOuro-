@@ -507,7 +507,12 @@ Intel; good HBM bandwidth (unlike the bandwidth-starved 8480).
    > intended. Gaudi's own roadmap is shakier (Falcon Shores canceled), which only reinforces:
    > bet on upstream PyTorch, not Intel's hardware roadmap.)** So:
    > build the Max-1100 port on **native `torch.xpu` + Intel GPU runtime (oneAPI/Level Zero
-   > driver) — do NOT architect on IPEX.** Caveat when triaging IPEX docs/tutorials: most
+   > driver) — do NOT architect on IPEX.** **Precise status (GitHub API, 2026-06-29):** the IPEX
+   > repo *is* archived (`archived:true`, last push 2026-03-30; `xpu-main` last commit 2025-12-18),
+   > BUT it's **frozen-not-gone** — the final XPU build **`v2.8.10+xpu` (2025-08-06)** is still
+   > `pip`-installable. So it's a **pinnable frozen fallback** (version-locked to its PyTorch), not
+   > a maintained dep: keep it in the toolbox to *benchmark vs native* if you want the last fusion
+   > drop on the frozen rig — don't build the pipeline on it. Caveat when triaging IPEX docs/tutorials: most
    > (incl. the HF-Accelerate IPEX guide and the `examples/cpu/` notebooks) are **CPU-only**
    > (`use_cpu: true`, AVX-512/AMX) — not the Max GPU. Salvage only the *concepts* (bf16
    > autocast, op-fusion patterns); the real perf lever is **`torch.compile`** (native XPU
