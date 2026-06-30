@@ -43,6 +43,22 @@ arbitrated into one output by the uncertainty head.
 
 This is the owner's insight, and it's correct **for the regime it targets**.
 
+**This stranded-compute insight is the *parent* of a family — two ways to spend the idle budget.**
+Filling the under-saturated decode by widening a parallel dimension has (at least) two distinct
+payoffs, and this doc is only the *first*:
+- **Quality spend — parallel paths (this doc):** widen the **batch** dimension with N *diverse
+  paths* over the same token, arbitrate per-token → a *better token* at ~constant latency.
+  **Lossy** (picks the best opinion across diverse trajectories).
+- **Speed spend — self-speculative depth ([decode_kernel_optimization.md §6](decode_kernel_optimization.md)):**
+  widen the **sequence** dimension — draft N *future* tokens with **few loops**, verify all N in one
+  **deep** parallel pass, rejection-sample → the *same tokens*, fewer sequential deep passes.
+  **Lossless** (DSpark-style; serving speedup).
+
+Both reuse the shallow/deep loop primitive (§4 even lists "one shallow path, one deep path" as a
+diversity axis) and the uncertainty head. Both cost **N× memory** and **compete for the same idle
+SMs**, so you can't have both for free — doing both trades the saturation headroom between quality
+and speed. Same premise, different parallel dimension, different payoff: *siblings, not subset.*
+
 ## 3. Honest scoping (where it helps, where it doesn't)
 
 - **Helps: inference / decode.** `batch=1`, T=1 token generation is where the GPU is

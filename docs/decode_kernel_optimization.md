@@ -124,6 +124,13 @@ snapshot/rollback fix (all in `mythouro/inference.py` + `main.py`). This note is
 A *different* decode-speedup axis from the kernel work above (1–4): **algorithmic**, not
 launch-overhead. Parked as a **deployment-phase** item; revisit when serving a coherent model.
 
+**Sibling of [parallel_loops.md](parallel_loops.md) — both children of its §2 *stranded-compute*
+insight** (sequential recurrent-depth decode under-saturates the card; fill the idle SMs by widening
+a parallel dimension). Parallel-loops spends that idle budget on **quality** (widen *batch* → N
+diverse paths, *lossy*); this spends it on **speed** (widen *sequence* → draft-shallow / verify-deep
+across future tokens, *lossless*). Same premise, different parallel dimension; they **compete for the
+same idle-SM + N×-memory budget**, so they trade off rather than stack for free.
+
 **Ref:** DeepSeek **DSpark** (2026-06-27) — *"Confidence-Scheduled Speculative Decoding with
 Semi-Autoregressive Generation"* (60–85% faster *serving* on V4): a small **draft** proposes N
 tokens, the big **target** verifies all N *in one parallel pass*, rejection-sampled → **lossless**.
