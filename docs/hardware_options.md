@@ -508,8 +508,12 @@ Intel; good HBM bandwidth (unlike the bandwidth-starved 8480).
    > bet on upstream PyTorch, not Intel's hardware roadmap.)** So:
    > build the Max-1100 port on **native `torch.xpu` + Intel GPU runtime (oneAPI/Level Zero
    > driver) — do NOT architect on IPEX.** **Precise status (GitHub API, 2026-06-29):** the IPEX
-   > repo *is* archived (`archived:true`, last push 2026-03-30; `xpu-main` last commit 2025-12-18),
-   > BUT it's **frozen-not-gone** — the final XPU build **`v2.8.10+xpu` (2025-08-06)** is still
+   > repo *is* archived (`archived:true`, last push 2026-03-30; `xpu-main` last commit 2025-12-18).
+   > **Lifecycle (be precise — Intel's announcement):** active *development* ceased after 2.8
+   > (Aug 2025), then **maintenance-only** — *critical fixes/security in `main`+`xpu-main`, not new
+   > features* — through **end of March 2026**, then archived. So "maintained ≠ developed" held for
+   > that window; that window is now *closed* (archived/EOL since ~Mar-30). Net for us: it's
+   > **frozen-not-gone** — the final XPU build **`v2.8.10+xpu` (2025-08-06)** is still
    > `pip`-installable. So it's a **pinnable frozen fallback** (version-locked to its PyTorch), not
    > a maintained dep: keep it in the toolbox to *benchmark vs native* if you want the last fusion
    > drop on the frozen rig — don't build the pipeline on it. Caveat when triaging IPEX docs/tutorials: most
