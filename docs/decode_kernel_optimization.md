@@ -119,7 +119,42 @@ keys), `compress_kv_cache` / `CrossLoopKVCache`, MLA latent caching, and the P1.
 snapshot/rollback fix (all in `mythouro/inference.py` + `main.py`). This note is about the
 *launch-overhead* plumbing, which is **not** yet addressed — and is correctly deferred.
 
-## 6. See also
+## 6. Algorithmic axis — self-speculative decoding via loop depth (DSpark-inspired, 2026-06-30)
+
+A *different* decode-speedup axis from the kernel work above (1–4): **algorithmic**, not
+launch-overhead. Parked as a **deployment-phase** item; revisit when serving a coherent model.
+
+**Ref:** DeepSeek **DSpark** (2026-06-27) — *"Confidence-Scheduled Speculative Decoding with
+Semi-Autoregressive Generation"* (60–85% faster *serving* on V4): a small **draft** proposes N
+tokens, the big **target** verifies all N *in one parallel pass*, rejection-sampled → **lossless**.
+Companion **DeepSpec** (MIT) trains draft models — *Qwen3/Gemma targets only*. Speed claims are
+3rd-party-unverified; gains workload-dependent (structured/code > open chat). [VentureBeat /
+MarkTechPost, 2026-06-27]
+
+**Why parked, not adopted:** it's a *serving* optimization and the model isn't coherent yet
+(training phase); DeepSpec targets standard archs, not our recurrent-MoE, so the *code* won't run
+— mine the ideas, not the tooling (the IPEX pattern).
+
+**The architecture-specific opportunity (why keep it):** recurrent depth makes us *uniquely* suited
+to **self-speculative decoding with ONE model** — no separate draft to train/align:
+- **Draft** N tokens with **few loops** (shallow), **verify** all N in *one parallel* pass at
+  **full loops** (deep), rejection-sample → **lossless** *and* the parallel-multi-token speedup that
+  DSpark's 60–85% actually comes from.
+- DSpark's **confidence-scheduling** ≈ repurpose our **uncertainty / ACT gate** to decide
+  draft-shallow vs verify-deep. "Semi-autoregressive" = draft multiple tokens per step.
+
+**Relation to current code (verify before acting):** `inference.py` already has a loop-depth
+draft/verify generator (`draft_loops` / `verify_loops`), BUT it *appears* to be the **lossy
+early-exit / adaptive-depth** form (per-token "redo deep if uncertain"), NOT the lossless
+parallel-multi-token form. So this is likely an **upgrade path**, not a from-scratch build:
+early-exit → true lossless self-speculative decode. **TODO (deployment phase):** check whether the
+existing generator is lossless or heuristic — decides "refine" vs "new decode path."
+
+**Net:** our depth gives DSpark's win *without* a 2nd model — a differentiator, not a me-too.
+Combines with the kernel work (§1–4) and [parallel_loops.md](parallel_loops.md); all gated behind
+coherence.
+
+## 7. See also
 
 - [parallel_loops.md](parallel_loops.md) — same decode regime, orthogonal
   (quality-for-otherwise-wasted-compute) fix; can be combined with this.
