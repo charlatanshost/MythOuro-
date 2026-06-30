@@ -534,6 +534,18 @@ Intel; good HBM bandwidth (unlike the bandwidth-starved 8480).
    > Sources: Intel IPEX EOL notice, pytorch-extension.intel.com, github.com/intel/ipex-llm
    > (archived), Phoronix "Intel Ending BigDL".
 
+**Does IPEX actually beat native `torch.xpu`? Bounded-small for *our* workload (settled 2026-06-29).**
+Per Intel's IPEX docs, IPEX *"uses ATen operators available in Torch XPU Operators **as much as
+possible** and **overrides very limited operators**"* — i.e. it **is** native `torch.xpu` except for
+a handful of hand-tuned kernels, so any gap is *confined to those few ops*, not across the board.
+And IPEX's headline wins are **`ipex.llm` fused-decode kernels for *standard* architectures during
+*inference*** — neither of which is MythOuro (custom recurrent-MoE *training*), so the biggest
+advantage doesn't apply to us. The GEMM bulk is oneDNN either way (the 140 BF16 figure is *already*
+native). **Net: expect single-to-low-double-digit % on a few ops at most, NOT the published
+LLM-inference speedups** — and `torch.compile` (XPU Inductor) covers most of the general fusion
+natively. Settle it, if ever, by A/B-ing native + `torch.compile` vs pinned `v2.8.10+xpu` on the
+actual MythOuro step; don't expect it decisive — **go native, maintainability wins the tie.**
+
 Also: Intel's data-center GPU roadmap has been turbulent → some long-term
 software-support uncertainty.
 
