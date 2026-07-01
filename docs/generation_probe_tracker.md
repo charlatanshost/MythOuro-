@@ -365,6 +365,40 @@ doesn't close by token-grinding alone. **Decision → start the documented α-an
 fragile-seed re-collapse): **onpolicy_plan.md 2026-06-30**.
 
 
+## 2026-07-01 — 🔽 α-ANNEAL VERDICT (0.6→0.5): SAFE + metric moved, text still salad
+
+Probe of **step 7458** (~216 steps at **α=0.5**, off 7242). Same tool/config (n=3, 6 seeds).
+This is the anneal experiment's read: did dropping α 0.6→0.5 convert tokens to unaided coherence
+faster than the flat-0.6 grind (which left α=0.0 flat)?
+
+**α=0.0 top_share, 7242 → 7458:** weather 0.17→**0.09** · bacterial 0.30(max0.47)→**0.13**(max0.18,
+**de-fragilized**) · diabetes 0.16→**0.11** · ibuprofen 0.12→0.11 · fib 0.19→**0.13** · quad
+0.16→0.16. **Mean 0.18 → 0.12 (~⅓ down), 4/6 seeds improved.**
+
+**Two solid takeaways:** (1) **No re-collapse** — the risk we watched for didn't happen; the
+fragile bacterial/LaTeX seed *de-fragilized* (0.47→0.18). Anneal to 0.5 is **safe**. (2) The
+**distribution moved** — more than the flat-0.6 grind (which was flat) at ~equal step count. So on
+the *metric*, the anneal beat the flat grind.
+
+**BUT — α=0.0 text is still incoherent salad** (weather "get the 1112. But as an interesting task
+for the 10,300…"; ibuprofen "the and a bit. *c) A The number of A(969.56)…"). Lower top_share alone
+is **ambiguous** (less-repetitive-toward-coherence vs just more-random); the text says **no
+coherence jump yet**. Claim only what's clean: **safe + no re-collapse + distribution nudged right.**
+
+**α≥0.5:** capability stable (bacterial α=0.7 antibiotic/antifungal/antiviral taxonomy; diabetes
+α=0.7 "increased thirst and urination"). Factual wobble: ibuprofen α=0.7 called it a "proton pump
+inhibitor" (**wrong** — NSAID/COX inhibitor; knowledge gap = tokens/scale, not a health issue).
+
+**Chinese chars** on fib α=0.25 = **α=0.25-only noise** (α=0.0 fib is English code-salad, no
+Chinese): untrained multilingual Ouro vocab reached in the awkward middle-mix on the weakest seed.
+Not in the read.
+
+**Decision: HOLD α=0.5, grind tokens.** 216 steps is too few to judge conversion, and the bottleneck
+is **token volume, not α** — stepping α every session just adds unattributable noise. Give 0.5 a
+real dose (~1,000+ steps across sessions; the Max makes this cheap), then re-probe for a read that
+can separate "toward coherence" from "toward random." Decision context: onpolicy_plan.md 2026-06-30/07-01.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts

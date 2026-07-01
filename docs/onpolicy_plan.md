@@ -29,6 +29,17 @@ own-rollouts = real exposure-bias training, not regression); (b) the next α=0.0
 α=0.0 sample, math/code drift to number-salad; if those climb back toward the attractor, α dropped
 too fast → back off to 0.55. Full 7242 probe: generation_probe_tracker.md 2026-06-30.
 
+**Result 2026-07-01 (α=0.5 verdict, step 7458, ~216 steps).** Anneal is **SAFE** — no re-collapse,
+the fragile bacterial/LaTeX seed *de-fragilized* (α=0.0 top_share 0.47→0.18). Metric **moved right**
+(mean α=0.0 top_share 0.18→0.12, 4/6 seeds down) — more than the flat-0.6 grind's flat. **But α=0.0
+text is still incoherent salad — no coherence jump**; lower top_share alone is ambiguous
+(less-repetitive vs more-random). Also: my "loss will tick up at α=0.5" call was **wrong** (it
+*fell* — easier student-native rollouts lower the rev-KL by construction, so loss isn't comparable
+across α). Anneal's payoff = *safe + distribution-nudged*, not a breakthrough. **Decision: HOLD
+α=0.5, grind tokens** (~1,000+ across sessions; the Max makes it cheap), re-probe on a bigger dose
+before stepping α further — **bottleneck is token volume, not α.** Full read:
+generation_probe_tracker.md 2026-07-01.
+
 **Prior (2026-06-27, partial):** first run (6675→6771, ~96 steps, λ=0.5) un-collapsed the α=0.0
 prose seed (top_share 0.45→0.14) — first movement on the blocker ever. Read as "dose-limited,
 prose-first"; the 06-28 higher-dose 6-seed probe showed it generalized domain-wide (and that the
