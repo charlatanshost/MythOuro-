@@ -341,6 +341,30 @@ un-collapsed base** (throughput → the Max 1100). Full context: training_runs.m
 (2026-06-28).
 
 
+## 2026-06-30 — ⏸ α=0.0 PLATEAU at fixed α=0.6 → start the α-anneal
+
+Probe of **step 7242** (~218 steps past 7024, all at fixed λ=0.7 / **α=0.6**).
+`onpolicy_rollout_probe`, n=3, 6 seeds, α=0.0/0.25/0.5/0.7.
+
+**α=0.0 (pure student) — FLAT vs 7024, still varied-but-incoherent.** top_share across the six:
+prose 0.17 / bacterial 0.30 / diabetes 0.16 / ibuprofen 0.12 / fib 0.19 / quad 0.16 — no coherence
+jump, no movement on the 7024 read. Matches the **loss plateau** (~1.5 soft / ~0.85 over 190 steps;
+an earlier "loss dropping" read was noise off a lucky 7030 sample). Bacterial α=0.0 spiked to **0.47
+on one sample** (LaTeX-symbol attractor) → un-collapse holds but is **fragile** on the symbol/number
+seeds.
+
+**α≥0.5 — capability clearly PRESENT (teacher-assisted):** bacterial α=0.7 = correct
+antibiotic/antifungal/antiviral/antiparasitic taxonomy ("antibiotics target bacteria, which are
+prokaryotic microorganisms…"); diabetes α=0.7 "increased thirst and urination"; ibuprofen α=0.5
+"pain, fever and inflammation", α=0.7 real brand names (Advil/Motrin).
+
+**Diagnosis:** capability present but **NOT internalized into α=0.0.** Fixed α=0.6 keeps 60% of each
+rollout teacher-driven → the student rarely recovers from its *own* errors → the exposure-bias gap
+doesn't close by token-grinding alone. **Decision → start the documented α-anneal: 0.6 → 0.5**
+(tonight's run, from 7242). Hypothesis + what-to-watch (loss may rise = expected/good; watch
+fragile-seed re-collapse): **onpolicy_plan.md 2026-06-30**.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts

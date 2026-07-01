@@ -11,6 +11,24 @@ Max 1100). Also: single-sample probes are high-variance (a noisy bacterial draw 
 `the the the`); probe now multi-samples (`--samples`). Full verdict: generation_probe_tracker.md
 2026-06-28.
 
+**Update 2026-06-30 — α-anneal begins (step 7242, ~218 steps past the 7024 probe).** Pouring
+tokens at *fixed* α=0.6 (7024→7242) left α=0.0 **flat** — still varied-but-incoherent salad, no
+coherence jump — and the training loss **plateaued** (~1.5 soft / ~0.85 total over 190 steps; an
+earlier "loss dropping" read was noise off a lucky 7030 sample). BUT capability is clearly
+**present** at α≥0.5: bacterial α=0.7 gave a correct antibiotic/antifungal/antiviral/antiparasitic
+taxonomy; diabetes α=0.7 "increased thirst and urination"; ibuprofen "pain, fever and inflammation"
++ real brand names (Advil/Motrin). **Diagnosis:** capability present but **not internalized into the
+student's own (α=0.0) trajectory** — the exposure-bias gap, which fixed α=0.6 isn't closing (60%
+teacher-driven rollouts → the student rarely has to recover from its *own* errors). **Decision:**
+begin the Phase-4 **α-anneal** the design always called for ("anneal α down as the student
+de-collapses") — un-collapse is achieved, so step training α **0.6 → 0.5** (tonight's run, resuming
+from 7242). **Hypothesis:** α=0.5 forces more student-driven rollouts → α=0.0 coherence should rise
+*faster* than the flat fixed-0.6 grind. **Watch:** (a) loss may tick *up* — expected/good (harder
+own-rollouts = real exposure-bias training, not regression); (b) the next α=0.0 probe is the read,
+*not* the loss; (c) **re-collapse on fragile seeds** — bacterial-LaTeX hit top_share 0.47 on one
+α=0.0 sample, math/code drift to number-salad; if those climb back toward the attractor, α dropped
+too fast → back off to 0.55. Full 7242 probe: generation_probe_tracker.md 2026-06-30.
+
 **Prior (2026-06-27, partial):** first run (6675→6771, ~96 steps, λ=0.5) un-collapsed the α=0.0
 prose seed (top_share 0.45→0.14) — first movement on the blocker ever. Read as "dose-limited,
 prose-first"; the 06-28 higher-dose 6-seed probe showed it generalized domain-wide (and that the
@@ -96,7 +114,8 @@ on-policy (new): x ← generate_rollout(); t = teacher_logits(x);  s = student(x
    `distillation_loss(targets=None)` (pure soft rev-KL — no hard CE on sampled tokens).
    Backprop unchanged. Log shows `op N/grad_accum` (on-policy micro-steps that step) so
    you *see* it firing.
-4. **⏭ Schedule + polish** — λ-ramp (start small), length-norm, α-anneal.
+4. **🔄 Schedule + polish** — λ-ramp (start small), length-norm; **α-anneal ACTIVE (2026-06-30):
+   manual step 0.6 → 0.5, probe-gated. Lower further if α=0.0 improves + fragile seeds hold.**
 5. **⏭ Optimize** — teacher kv-cache, larger batch/rollouts, throughput.
 
 ## How to run
