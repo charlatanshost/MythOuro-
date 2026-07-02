@@ -127,9 +127,19 @@ def main() -> None:
         "     atol=1e-4). Worse than 1e-4 in fp32 means the fold is wrong.\n"
         "  2. Ones check: post-fold model's scale.weight is exactly all-ones\n"
         "     (proves the _skip_global_init tag survives fresh construction).\n"
-        "  3. First ~50 resumed steps: gnorm may rise (B's gradient wakes up by\n"
-        "     design) but should stay bounded by clip(max_norm=1.0); watch for\n"
-        "     instability and re-arm component warmup if noisy."
+        "  3. RUN ATTENDED. Watch gnorm the first ~50-100 steps: it may rise\n"
+        "     (B's gradient wakes ~50x by design) but should stay bounded by\n"
+        "     clip(max_norm=1.0). Two dampers if it's noisy — the fold does a\n"
+        "     FULL optimizer reset, so ALL params' Adam moments re-warm here:\n"
+        "       - component warmup: re-arm --new-component-warmup-steps (~500)\n"
+        "         to ramp the LoRA specifically (LoRAAdapter is in the warmup\n"
+        "         name list) — targets the thing that woke up.\n"
+        "       - global LR: optionally ~0.3x LR for the first ~300-500 steps\n"
+        "         then restore, covering the whole-model moment re-warm.\n"
+        "  4. Do this at a boundary SEPARATE from other regime changes (A1/A2\n"
+        "     should already be established from a prior run) so you are not\n"
+        "     compounding transients — the optimizer reset alone is enough to\n"
+        "     absorb at once."
     )
 
 
