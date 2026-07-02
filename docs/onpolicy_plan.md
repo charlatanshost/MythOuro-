@@ -40,6 +40,17 @@ across α). Anneal's payoff = *safe + distribution-nudged*, not a breakthrough. 
 before stepping α further — **bottleneck is token volume, not α.** Full read:
 generation_probe_tracker.md 2026-07-01.
 
+**⚑ LOG MARKER — Batch A fixes landed 2026-07-01 (commit `ca071e8`); weekend run resumes from
+7458 with them ACTIVE.** Loss-surface shift, so the curve *will* jog at 7458 — expected, not
+regression: (a) **A1/P2** — on-policy soft was backpropping 0.5× the intended gradient the whole
+run (`args.alpha=0.5`); now full-strength, so on-policy `distill_total` roughly **doubles** (raw
+`soft` metric is continuous — logged pre-scale); (b) **A2/EOS** — `<|endoftext|>` now separates
+packed docs (model can finally learn to stop), a small input-distribution shift → `soft` may move
+slightly, real signal; (c) A3 (on-policy unc skip → `unc`=0 on op-steps) and A4 (biased
+load-balance) also live. Config unchanged otherwise: λ=0.7, **α=0.5 held** (grinding tokens per the
+anneal decision). P0.6 LoRA fold (`73a0f73` tooling) **deferred to an attended boundary before the
+Max** — B's gradient wakes ~50×, don't run it into an unattended weekend.
+
 **Prior (2026-06-27, partial):** first run (6675→6771, ~96 steps, λ=0.5) un-collapsed the α=0.0
 prose seed (top_share 0.45→0.14) — first movement on the blocker ever. Read as "dose-limited,
 prose-first"; the 06-28 higher-dose 6-seed probe showed it generalized domain-wide (and that the
