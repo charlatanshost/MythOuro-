@@ -956,6 +956,17 @@ class LoRAAdapter(nn.Module):
         self.scale = nn.Embedding(max_loops, rank)
         nn.init.normal_(self.down.weight, std=0.02)
         nn.init.ones_(self.scale.weight)
+        # Protect the ones-init from MythOuro._init_weights' blanket nn.Embedding
+        # re-init to N(0, 0.02) (P0.6 — same failure class as P0.1). _init_weights
+        # guards on `getattr(module, "_skip_global_init", False)` and iterates
+        # model.modules(), which includes this Embedding, so tagging it here is
+        # honored with no change to _init_weights. Without the tag the depth-wise
+        # LoRA scale is clobbered to small random values (mean≈0, std≈0.02),
+        # suppressing per-loop specialization ~2500× with random signs. Existing
+        # checkpoints trained pre-tag must be migrated with tools/fold_lora_scale.py
+        # (fold scale into B) before resuming, else resetting scale→ones perturbs
+        # the co-adapted B.
+        self.scale._skip_global_init = True
 
     def forward(self, x: torch.Tensor, loop_t: int) -> torch.Tensor:
         """
