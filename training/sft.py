@@ -67,6 +67,7 @@ from mythouro.training_utils import (
     load_balance_loss,
     log_expert_utilization,
     log_spectral_radius,
+    moe_router_bias,
     sparse_activation_loss,
     uncertainty_calibration_loss,
     update_router_bias_from_counts,
@@ -551,7 +552,10 @@ def main():
 
                 # ── Auxiliary losses (unchanged from distillation) ──
                 router_buf = collect_router_logits(student)
-                lb     = load_balance_loss(router_buf, topk=cfg.n_experts_per_tok)
+                lb     = load_balance_loss(
+                    router_buf, topk=cfg.n_experts_per_tok,
+                    router_bias=moe_router_bias(student),
+                )
                 unc_l  = uncertainty_calibration_loss(s_logits.detach(), unc, y)
                 sparse = sparse_activation_loss(router_buf)
 

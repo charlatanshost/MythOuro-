@@ -373,6 +373,7 @@ def log_expert_utilization(stats: "dict[str, dict]", step: int) -> None:
 def load_balance_loss(
     router_logits_buf: list[torch.Tensor],
     topk: int,
+    router_bias: "Optional[torch.Tensor]" = None,
 ) -> torch.Tensor:
     """
     Standard MoE load-balancing auxiliary loss.
@@ -387,6 +388,16 @@ def load_balance_loss(
 
     The expert count E is read from each tensor's last dim — no need to
     pass it explicitly. Returned as a single mean across all MoE layers.
+
+    `router_bias` (E,), when given, is added to the logits *for the top-k
+    selection only* — so f_i is computed over the SAME biased routing that
+    `MoEFFN.forward` dispatches on (`(logits + router_bias).topk`). Without it
+    the loss regularised a fiction (unbiased top-k) that diverges from actual
+    dispatch as the bias grows (P1, 2026-07-01). The bias is detached: it never
+    receives gradient here (it's updated separately from expert counts), and
+    P_i — the gradient-carrying term — remains the unbiased softmax, so the
+    optimisation target is unchanged; only the *selection* used to build the
+    (constant, no-grad) f_i is corrected.
     """
     if not router_logits_buf:
         return torch.tensor(0.0)
@@ -395,15 +406,35 @@ def load_balance_loss(
     for logits in router_logits_buf:                          # (N, E)
         N, E = logits.shape
         probs = F.softmax(logits, dim=-1)                     # (N, E)
-        # f_i: fraction of (token, slot) pairs assigned to expert i across
-        # the topk selection. Matches the routing path used in MoEFFN.forward.
-        _, topk_idx = probs.topk(topk, dim=-1)                # (N, topk)
+        # f_i: fraction of (token, slot) pairs assigned to expert i across the
+        # topk selection — computed on bias-shifted logits to match dispatch.
+        sel_logits = logits if router_bias is None else logits + router_bias.detach()
+        _, topk_idx = sel_logits.topk(topk, dim=-1)           # (N, topk)
         one_hot = F.one_hot(topk_idx, num_classes=E).float()  # (N, topk, E)
         f_i = one_hot.sum(dim=(0, 1)) / (N * topk)            # (E,)
         P_i = probs.mean(dim=0)                               # (E,)
         losses.append((f_i * P_i).sum() * E)
 
     return torch.stack(losses).mean()
+
+
+def moe_router_bias(model: nn.Module) -> "Optional[torch.Tensor]":
+    """
+    Return the model's MoEFFN `router_bias` buffer for `load_balance_loss`, or
+    None if the model has no MoE.
+
+    ASSUMES AT MOST ONE MoEFFN — true for the current architecture (only the
+    recurrent block is MoE; prelude/coda are dense). If MoE is ever added to
+    prelude/coda, this single-bias shortcut breaks: `router_logits_buf` would
+    then hold logits from multiple routers with different biases, and both this
+    helper and `load_balance_loss` must switch to carrying (logits, bias) pairs.
+    """
+    from mythouro.main import MoEFFN  # lazy: avoids main↔training_utils cycle
+
+    for m in model.modules():
+        if isinstance(m, MoEFFN):
+            return m.router_bias
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -628,6 +659,25 @@ class MixedDataset(IterableDataset):
         self.ratios = mix_ratios or _MIX_RATIOS
         self.seed = seed
 
+        # Document separator inserted between packed documents so the model
+        # sees a termination token and doc boundaries (P1, 2026-07-01:
+        # previously docs were concatenated with NO separator → the model
+        # could never learn to stop, and cross-doc topic jumps were
+        # indistinguishable from in-context transitions). Use <|endoftext|>
+        # (id 0 in the Ouro tokenizer) — the pretraining boundary token — NOT
+        # eos_token_id (2 = <|im_end|>, the ChatML turn terminator, which is
+        # SFT framing rather than doc packing). The teacher (Ouro) was trained
+        # with <|endoftext|>, so distillation gives the student real signal on
+        # when to emit it, not just its existence.
+        sep = self.encoding.tokenizer.convert_tokens_to_ids("<|endoftext|>")
+        if sep is None or sep < 0:
+            sep = self.encoding.eos_token_id
+            logger.warning(
+                f"MixedDataset: <|endoftext|> not found; using eos id {sep} "
+                "as the document separator"
+            )
+        self.sep_id = sep
+
     def _open_source(
         self,
         repo: str,
@@ -723,6 +773,7 @@ class MixedDataset(IterableDataset):
                 continue
 
             buf.extend(self.encoding.encode(text))
+            buf.append(self.sep_id)                              # doc boundary (P1)
             while len(buf) >= self.seq_len + 1:
                 chunk = buf[: self.seq_len + 1]
                 buf = buf[self.seq_len + 1 :]
@@ -775,7 +826,9 @@ def combined_loss(
     )
 
     router_buf = collect_router_logits(model)
-    lb = load_balance_loss(router_buf, topk=topk).to(ce.device)
+    lb = load_balance_loss(
+        router_buf, topk=topk, router_bias=moe_router_bias(model)
+    ).to(ce.device)
 
     unc = uncertainty_calibration_loss(logits.detach(), uncertainty, targets)
 
@@ -1430,7 +1483,13 @@ def distillation_loss(
         soft = div_rows.mean() * (T * T)
 
     if targets is None:
-        return alpha * soft, {"soft": float(soft.item()), "hard": 0.0}
+        # Pure-distillation path (on-policy rollouts): return the FULL soft loss,
+        # per the docstring — `alpha` is the soft/hard *blend* knob and is
+        # meaningless when there is no hard-CE term. Previously returned
+        # `alpha * soft`, which silently ran on-policy at alpha× strength (P2,
+        # 2026-07-01: with args.alpha=0.5 the whole on-policy effort backpropped
+        # half the intended gradient). `soft` in metrics is the raw pre-scale KL.
+        return soft, {"soft": float(soft.item()), "hard": 0.0}
 
     hard = F.cross_entropy(
         student_logits.view(-1, V),

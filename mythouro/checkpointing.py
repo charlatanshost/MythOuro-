@@ -277,6 +277,32 @@ def save_checkpoint(
     logger.success(f"Checkpoint saved → {final_path}")
 
 
+_ALLOWED_MISSING = {"freqs_cis", "freqs_cis_mla"}
+
+
+def _assert_clean_state_load(missing, unexpected) -> None:
+    """
+    Guard against silent partial loads (P1, 2026-07-01).
+
+    `strict=False` is required only to tolerate the RoPE `freqs_cis` /
+    `freqs_cis_mla` buffers we intentionally drop above (they're re-sized for
+    the current max_seq_len). ANY other missing key means a renamed module,
+    architecture-flag mismatch, or truncated file silently loaded random-init
+    weights for that piece; ANY unexpected key means the file carries params
+    the model lacks. Both are silent corruption without this check — and it
+    also catches a botched fold migration (tools/fold_lora_scale.py).
+    """
+    extra_missing = [k for k in missing if k not in _ALLOWED_MISSING]
+    if extra_missing or list(unexpected):
+        raise RuntimeError(
+            "load_checkpoint: unclean state-dict load — "
+            f"unexpected={list(unexpected)}, "
+            f"missing (beyond RoPE freqs)={extra_missing}. Usually an "
+            "architecture/flag mismatch between the checkpoint and the model "
+            "config; refusing to train on a silently partial load."
+        )
+
+
 def load_checkpoint(
     model,
     optimizer,
@@ -360,7 +386,8 @@ def load_checkpoint(
             StateDictType.FULL_STATE_DICT,
             FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
         ):
-            model.load_state_dict(model_state, strict=False)
+            _missing, _unexpected = model.load_state_dict(model_state, strict=False)
+            _assert_clean_state_load(_missing, _unexpected)
             if has_optim_state:
                 fsdp_state = FSDP.optim_state_dict_to_load(
                     model=model,
@@ -375,7 +402,8 @@ def load_checkpoint(
                     "grown / promoted checkpoints."
                 )
     else:
-        model.load_state_dict(model_state, strict=False)
+        _missing, _unexpected = model.load_state_dict(model_state, strict=False)
+        _assert_clean_state_load(_missing, _unexpected)
         if has_optim_state:
             optimizer.load_state_dict(optim_state)
         else:

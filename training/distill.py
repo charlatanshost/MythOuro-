@@ -81,6 +81,7 @@ from mythouro.training_utils import (
     load_distillation_teacher,
     log_expert_utilization,
     log_spectral_radius,
+    moe_router_bias,
     sparse_activation_loss,
     teacher_logits,
     uncertainty_calibration_loss,
@@ -496,8 +497,20 @@ def main():
 
                 # ── Auxiliary losses (keep MoE / uncertainty / sparsity healthy) ──
                 router_buf = collect_router_logits(student)
-                lb     = load_balance_loss(router_buf, topk=cfg.n_experts_per_tok)
-                unc_l  = uncertainty_calibration_loss(s_logits.detach(), unc, y_in)
+                lb     = load_balance_loss(
+                    router_buf, topk=cfg.n_experts_per_tok,
+                    router_bias=moe_router_bias(student),
+                )
+                # Skip uncertainty calibration on on-policy micro-steps: there
+                # y_in is the student's OWN sampled rollout, so the head would
+                # train on "did my sample match my argmax" = sampling noise, not
+                # an error signal (P1, 2026-07-01). On the offline path y_in == y
+                # (gold) — pass `y` explicitly so a future y_in refactor can't
+                # silently reintroduce the pollution.
+                if is_onpolicy:
+                    unc_l = torch.tensor(0.0, device=s_logits.device)
+                else:
+                    unc_l = uncertainty_calibration_loss(s_logits.detach(), unc, y)
                 sparse = sparse_activation_loss(router_buf)
 
                 # Depth regulariser — PonderNet × Ouro KL-to-uniform on the
