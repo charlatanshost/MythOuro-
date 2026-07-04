@@ -549,6 +549,51 @@ actual MythOuro step; don't expect it decisive — **go native, maintainability 
 Also: Intel's data-center GPU roadmap has been turbulent → some long-term
 software-support uncertainty.
 
+### XPU stack setup & tuning — vetted checklist (2026-07-03)
+
+Cross-checked: an AI-relayed Max-1100 writeup → my vet → its author's resolutions → owner's
+firsthand Xe Link correction. Native `torch.xpu` (stock PyTorch 2.8+ from
+`download.pytorch.org/whl/xpu`); do NOT architect on `ipex.optimize()` (IPEX archived — above).
+**Confirm each env var against the actual stack at install** (fast-moving area — all three of us
+can be confidently wrong on names); values below are the vetted best-guesses.
+
+**Env vars (day one):**
+- `SYCL_CACHE_PERSISTENT=1` — cache SYCL JIT to disk; first-compile on PVC is brutal, esp. under
+  `torch.compile`.
+- `ONEDNN_VERBOSE=1` — the key diagnostic: shows if a matmul fell off the **XMX** fast path
+  (wrong dtype/layout).
+- `ONEDNN_DEFAULT_FPMATH_MODE=BF16` — the real "TF32 equivalent": lets fp32 matmuls implicitly
+  downconvert to bf16 on XMX. **PVC has NO TF32 hardware format** — do NOT call this "TF32."
+  (PyTorch 2.7+ also has a generic `fp32_precision` API; env var is the reliable knob.) Low
+  impact if bf16 autocast already covers the hot path.
+- `PYTORCH_ALLOC_CONF=expandable_segments:True` — **device-agnostic** spelling (NOT
+  `PYTORCH_CUDA_ALLOC_CONF`, a no-op on XPU). Cuts fragmentation from variable-length ACT batches.
+
+**`torch.compile` — THE lever (Inductor + Triton-XPU backend):**
+- Pattern: **compile the shared per-loop block once, call it in an eager outer loop.** Recurrent
+  weight-sharing → one graph reused N times; the dynamic loop count stays in harmless eager Python.
+- `dynamic=True` does **not** fix it — data-dependent loop count is *control flow*; Dynamo
+  breaks/recompiles regardless of shape dynamism.
+- **Training runs fixed `n_loops=4`** → no dynamic control flow, so the training step should
+  compile **end-to-end** cleanly. The dynamic-loop problem is **decode/inference-only** (ACT
+  early-exit) — better than the writeup implied.
+
+**Precision / attention / memory:**
+- bf16 autocast → XMX. **No FP8 on PVC.** Throughput is loop-bound, not precision-bound (our
+  finding — holds here). `F.scaled_dot_product_attention` = fused XPU kernels (already our path);
+  custom (MLA) kernels port from CUDA via Triton-XPU. 48 GB HBM2e @ ~1.2 TB/s; MoE routing is
+  bandwidth-hungry (the card's real strength). Profiling: Kineto/`torch.profiler` native (≥2.5).
+
+**Multi-card (forward-looking — MOOT at one card):**
+- XCCL/oneCCL backend; DDP/FSDP/DeepSpeed ZeRO all supported on XPU.
+- **The 1100 HAS Xe Link via a bridge connector** (x2 and x4 topologies per datasheet;
+  chassis-specific beyond a pair) — **corrects the writeup's "no Xe Link"** (owner, 2026-07-03).
+  A bridged pair gets a **direct GPU-GPU link**, not PCIe-limited allreduce → better scaling than
+  the writeup claimed. Beyond a pair, allreduce may fall back to PCIe (Gen5 x16, tolerable for DDP).
+- **Single-stack advantage:** the 1100 is single-stack (56 Xe cores) → skips the two-stack
+  implicit-scaling / `ZE_FLAT_DEVICE_HIERARCHY` headaches of the 1550. A point for the PCIe card
+  vs the OAM route we ruled out.
+
 ### 8-bit Adam on XPU
 bitsandbytes won't run, but:
 - **torchao low-bit optimizers** (`AdamW8bit/4bit`) — native-PyTorch-based, the
