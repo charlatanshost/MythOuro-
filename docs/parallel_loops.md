@@ -5,6 +5,12 @@
 token-starved). This documents an original idea (owner's) so it's captured for the
 future model card / writeup. Honest prior-art + scoping included on purpose.
 
+**⚠ Naming clash — read first.** Distinct from **Parallel Loop Transformers** (PLT /
+"LoopCoder-v2", arXiv 2606.18023, Jun 2026) despite the near-identical name. PLT *cheapens one
+trajectory's depth* for **efficiency** ("only loop once"); this runs N **diverse** trajectories
+for **quality**. Opposite attack on the same cost. Consider renaming (e.g. "parallel diverse
+trajectories" / "multi-path loop ensemble") to avoid the collision. Full distinction in §7.
+
 ---
 
 ## 1. The core idea
@@ -160,6 +166,22 @@ off; it is not evidence that same-model parallel loops alone will work.
   art for the *saturation* premise here, via batch-across-depth-states rather than
   N diverse parallel paths. Ours adds *diversity + per-token confidence arbitration*
   on top; theirs is pure throughput. Cite it; don't reinvent the batching.
+- **Naming collision + OPPOSITE mechanism — cite explicitly:** *Parallel Loop Transformers*
+  (PLT / "LoopCoder-v2: Only Loop Once for Efficient Test-Time Computation Scaling", arXiv
+  2606.18023, Jun 2026, 7B coders) share the **name** and the **starting problem** (sequential
+  looping is latency/KV-cache-expensive) but take the *opposite* route. PLT **cheapens the
+  looping itself** — cross-loop position offsets (CLP) + shared-KV gated sliding-window attention
+  restructure *one* trajectory's depth so it isn't stranded — an **efficiency/architecture** move,
+  single trajectory, **no diversity**. Ours **spends** the stranded compute on N *diverse*
+  trajectories arbitrated per-token. So PLT is a **third response to the §2 stranded-compute
+  root — it ELIMINATES the stranding rather than SPENDING it** (cf. the quality/speed children in
+  [decode_kernel_optimization.md](decode_kernel_optimization.md) §6). They are in **tension, not
+  complementary**: if PLT-style parallel depth saturates the card with one trajectory, our
+  "diverse paths are ~free" premise weakens (the SMs are no longer idle). **A reviewer's first
+  question will be "how is this different from PLT?"** — answer: different *mechanism* (diverse
+  paths + trained-uncertainty arbitration vs position-offset attention), different *goal* (quality
+  vs efficiency), *inference strategy on an existing model* vs *trained architecture*. (Abstract-
+  level read, 2026-07-04 — confirm the exact mechanism against the full paper before the writeup.)
 - **Plausibly original for MythOuro:** (a) framing parallel paths as a way to fill the
   **structural under-saturation of sequential recurrent-depth *decode*** (a systems
   argument specific to this architecture), (b) **per-token cross-path arbitration via a
