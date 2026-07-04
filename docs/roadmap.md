@@ -219,6 +219,7 @@ points here for everything else.
 | [docs/growth_design.md](growth_design.md) | MoE expansion / model-growth design. Read before promoting a checkpoint. |
 | [docs/decode_kernel_optimization.md](decode_kernel_optimization.md) | Recurrent-decode throughput (kernel-launch overhead, `torch.compile` + graph capture). |
 | [docs/parallel_loops.md](parallel_loops.md) | Parallel-loop ensemble idea (deferred post-coherence). |
+| [docs/looped_lm_landscape.md](looped_lm_landscape.md) | Looped-LM literature map + **adopt / fork / preserve** architecture-planning (PLT, Hyperloop, MELT, RRT); the "exploit vs eliminate stranded compute" fork. |
 | [docs/ideas.md](ideas.md) | Research-idea / experiment shelf — candidate experiments (depth-6, per-step loss), MoDr direction, open questions, paper triage. |
 
 **Hardware & deployment**

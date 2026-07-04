@@ -157,6 +157,10 @@ off; it is not evidence that same-model parallel loops alone will work.
 
 ## 7. Prior art & novelty (honest)
 
+> **Full survey + planning strategy:** [looped_lm_landscape.md](looped_lm_landscape.md) — the
+> whole looped-LM neighborhood mapped by axis, with adopt / fork / preserve calls. The bullets
+> below are the parallel-paths-specific slice.
+
 - **Known / related:** best-of-N sampling, self-consistency (Wang et al.), parallel
   sampling, deep ensembles, mixture-of-experts. None of these is new on its own.
 - **Same goal, different mechanism — note for honesty:** *Continuous Depth-wise
