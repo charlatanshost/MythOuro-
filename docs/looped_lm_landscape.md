@@ -83,6 +83,41 @@ Keep these central. The space filling with looped-LM papers **validates the dire
 eroding the novelty** — treat neighbors as a **menu of base-primitive upgrades** (§2), a **fork to
 hold** (§3), and a **moat to protect** (§4).
 
+## 5. Integration into parallel-loops — which cost each kills
+
+Parallel-loops ([parallel_loops.md](parallel_loops.md)) has two known costs (its §3): **N× compute**
+and **N× memory**. Several neighbors are *precisely* the fixes — so they're the **efficiency
+substrate** for the idea, not competitors. Most-solid first.
+
+- **Depth-wise batching (RRT) → kills N× COMPUTE.** Paths are already batch rows; with ACT-budget
+  diversity (shallow vs deep paths) they sit at *different loop depths*, which is exactly what RRT
+  batches through the shared block. The throughput substrate for the depth-diverse variant —
+  low-risk, breaks no diversity assumption.
+- **KV-sharing (MELT + cross-path) → kills N× MEMORY.** MELT shares KV across loops *within* a
+  path; and the N paths share the input prefix, so they can share KV *across* paths too —
+  strongest in **Mode A** (paths aligned on the agreed token), weaker in Mode B (paths diverge).
+  Attacks the "never free in memory" tax directly.
+- **Self-speculative (DSpark) → fuses quality + speed via AGREEMENT.** Use cross-path agreement as
+  the speculative-accept signal: agree → accept fast, skip deeper compute; disagree → spend compute
+  + arbitrate. The §5-of-parallel_loops MDASH "agreement-as-signal" turned into a *speed* mechanism
+  — arbitration-quality *and* speculative-speed from one confidence signal. **Heuristic (lossy)
+  accept, not lossless rejection-sampling** — same family as the current `inference.py` early-exit.
+- **Hyper-connections → orthogonal enrichment + a bolder bet.** Cleanly: enrich each path's block
+  (better per-path representation, minimal params; stacks with all the above). Bolder: use the
+  matrix-valued residual **lanes AS cheap micro-paths** and arbitrate across lanes instead of N
+  full trajectories → sidesteps the N× cost entirely. **Rides on the parallel_loops §4 diversity
+  crux** (do lanes stay decorrelated, or collapse to copies?) — big-if, big-payoff.
+- **PLT → does NOT integrate.** The opposing fork (§3): parallelized depth eliminates the stranding
+  the paths exploit, so folding it in is self-defeating (no idle compute → paths aren't free). Its
+  KV-share *sub*-technique could be borrowed independently (overlaps MELT); its core cannot.
+
+**Net:** RRT + MELT de-risk the two *known* weaknesses (compute, memory); self-speculative +
+hyper-connections offer the quality benefit *more cheaply*. Parallel-loops stays the novel
+differentiator; the neighborhood is the substrate that makes N-path ensembling **practical instead
+of N×-expensive.** The two bolder syntheses (lanes-as-micro-paths, agreement-as-accept) ride on the
+diversity-decorrelation question (parallel_loops §4) — validate that first. All stage-gated behind
+coherence.
+
 ## See also
 
 - [parallel_loops.md](parallel_loops.md) — the parallel-paths design + §7 prior-art (PLT, RRT, Hyperloop).
