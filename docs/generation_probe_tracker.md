@@ -399,6 +399,45 @@ real dose (~1,000+ steps across sessions; the Max makes this cheap), then re-pro
 can separate "toward coherence" from "toward random." Decision context: onpolicy_plan.md 2026-06-30/07-01.
 
 
+## 2026-07-06 — 🚀 SECOND REGIME SHIFT: salad → rambling-grammatical English (de-tax worked)
+
+Probe of **step 8668** (~1,210 steps de-taxed off 7458: **full-strength on-policy (A1 fix) + EOS
+(A2)**, λ=0.7, α=0.5). The big weekend verdict.
+
+**⚠ METHODOLOGICAL CATCH — top_share INVERTED here; read the TEXT.** Mean α=0.0 top_share *rose*
+0.12→0.16, which naively reads as "flat/worse." It's not — **fluent English repeats "the/of/a" far
+more than random number-salad**, so climbing salad→sentences *raises* top_share even as coherence
+improves. On the 4 improved seeds top_share is flat (~0.12); the 2 laggards pull the mean up.
+`distinct1` is the honest metric (0.46→0.50; bacterial 0.43→0.54, quad 0.35→0.45). **Lesson: at the
+salad→fluency transition, top_share is misleading-to-inverted — the text is the only real read.**
+
+**α=0.0 evidence (7458 → 8668):** weather `"get the 1112. But as an interesting task…"` → *"the
+number of people who had been able to take… What are your new of a long-time"* (connected grammatical
+clauses); bacterial `"the low the bacterial, because…"` → *"The study of the proposed research showed
+a highly detailed review of… various treatment"* (real English, on-topic); fibonacci symbol-salad →
+**actual Python syntax** (`def test_n_r(self,c,a)`, `if not self.is_id_f_a_line():`, `for i in
+self.new_info():`). **The fluency floor lifted** — clearest α=0.0 movement of the project.
+
+**Boundary — fluent, NOT yet meaningful.** Grammar + on-topic vocab, but doesn't convey correct
+info/reasoning — grammatical rambling, not thought. Real progress (fluency = prerequisite for
+meaning), not "it works." Still ~120M tokens, deeply undertrained.
+
+**Laggards (not uniform):** ibuprofen α=0.0 still stuck in the symbol/LaTeX salad; fibonacci α=0.0
+high-variance (1/3 samples repetitive, top_share 0.62). Watch both.
+
+**α≥0.5 stronger too:** diabetes α=0.7 = genuinely good clinical prose (*"increased thirst, frequent
+urination or urination at night, but some of these symptoms can be vague, which leads people to
+dismiss them to less severe conditions"*) with correct symptoms; ibuprofen pharmacology; antibiotic
+taxonomy **with reasoning**; real fibonacci-structured code.
+
+**Verdict: the de-tax WORKED.** α=0.0 moved far more than the flat taxed run (7458) did — full-strength
+on-policy converted the big token dose into visible coherence. The A1/A2 fixes paid off (Opus
+under-predicted this as "faint, still salad"). Progression now: collapsed (`is is is`) → varied-salad
+(6906) → **rambling-grammatical English (8668)**. **Decision:** α=0.5 is *working* → **hold it, pour
+TOKENS (the Max)** to push fluency→meaning; a gentle 0.45 anneal is optional/secondary — don't tweak
+a setup that just delivered. Context: onpolicy_plan.md 2026-07-06.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts

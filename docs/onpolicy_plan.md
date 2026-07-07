@@ -40,6 +40,17 @@ across α). Anneal's payoff = *safe + distribution-nudged*, not a breakthrough. 
 before stepping α further — **bottleneck is token volume, not α.** Full read:
 generation_probe_tracker.md 2026-07-01.
 
+**✅✅✅ RESULT 2026-07-06 — THE DE-TAX WORKED (step 8668, ~1,210 de-taxed steps).** Full-strength
+on-policy (A1) + EOS (A2) over the weekend produced a **second regime shift**: α=0.0 went from
+varied-salad → **rambling-grammatical English** (weather/bacterial = connected on-topic clauses; fib
+= real Python syntax). Clearest α=0.0 movement of the project — moved *far* more than the flat taxed
+run, confirming the fixes paid off. **Methodological catch:** top_share *inverted* (0.12→0.16, fluent
+English repeats function words); the TEXT is the read, `distinct1` the honest metric. **Boundary:**
+fluent-not-meaningful (grammar+topic, no correct reasoning yet) — still ~120M tokens, undertrained.
+Laggards: ibuprofen α=0.0 still salad, fib α=0.0 high-variance. **Decision: α=0.5 is working → HOLD
+it, pour TOKENS (the Max)** to push fluency→meaning; 0.45 anneal optional/secondary. Full read:
+generation_probe_tracker.md 2026-07-06.
+
 **⚑ LOG MARKER — Batch A fixes landed 2026-07-01 (commit `ca071e8`); weekend run resumes from
 7458 with them ACTIVE.** Loss-surface shift, so the curve *will* jog at 7458 — expected, not
 regression: (a) **A1/P2** — on-policy soft was backpropping 0.5× the intended gradient the whole
