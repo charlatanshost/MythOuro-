@@ -202,12 +202,25 @@ class TestTeacherLogitsWrapper:
 
 
 class TestLoadDistillationTeacher:
+    @staticmethod
+    def _patch_autoconfig(monkeypatch):
+        # load_distillation_teacher fetches AutoConfig BEFORE the model (for
+        # the pad_token_id backfill); mock it too or the fake model id dies
+        # there and every test asserts the wrong code path.
+        from types import SimpleNamespace
+        from transformers import AutoConfig
+        monkeypatch.setattr(
+            AutoConfig, "from_pretrained",
+            lambda *_a, **_kw: SimpleNamespace(pad_token_id=0, eos_token_id=0),
+        )
+
     def test_unknown_model_returns_none(self, monkeypatch):
         # The contract: load failure logs and returns None, doesn't raise.
         # Force AutoModelForCausalLM.from_pretrained to raise.
         from transformers import AutoModelForCausalLM
         def _boom(*_a, **_kw):
             raise OSError("simulated network failure")
+        self._patch_autoconfig(monkeypatch)
         monkeypatch.setattr(AutoModelForCausalLM, "from_pretrained", _boom)
         result = load_distillation_teacher(
             "nonexistent/model", student_vocab_size=64,
@@ -223,6 +236,7 @@ class TestLoadDistillationTeacher:
         def _fake_load(*_a, **_kw):
             return _DummyTeacher(vocab_size=128, dim=16)
 
+        self._patch_autoconfig(monkeypatch)
         monkeypatch.setattr(AutoModelForCausalLM, "from_pretrained", _fake_load)
         result = load_distillation_teacher(
             "fake/model", student_vocab_size=64,    # mismatch with 128
@@ -236,6 +250,7 @@ class TestLoadDistillationTeacher:
         def _fake_load(*_a, **_kw):
             return _DummyTeacher(vocab_size=64, dim=16)
 
+        self._patch_autoconfig(monkeypatch)
         monkeypatch.setattr(AutoModelForCausalLM, "from_pretrained", _fake_load)
         teacher = load_distillation_teacher(
             "fake/model", student_vocab_size=64, dtype=torch.float32,

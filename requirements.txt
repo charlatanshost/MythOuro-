@@ -1,5 +1,7 @@
 torch>=2.1.0
-transformers>=4.40.0
+# <5: the Ouro teacher's custom modeling_ouro.py calls create_causal_mask(input_embeds=...),
+# renamed in transformers 5.x -> TypeError at the first teacher forward.
+transformers>=4.40.0,<5
 datasets>=2.18.0
 pytest>=7.0.0
 
