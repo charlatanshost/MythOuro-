@@ -1573,11 +1573,16 @@ def load_distillation_teacher(
                 eos = eos[0] if eos else None
             cfg.pad_token_id = eos if eos is not None else 0
 
+        import mythouro.device as dev
+        # XPU: Intel's SDPA kernel segfaults inside HF models. Force manual eager attention.
+        attn_impl = "eager" if dev.backend(str(device)) == "xpu" else None
+
         teacher = AutoModelForCausalLM.from_pretrained(
             model_id,
             config=cfg,
             torch_dtype=dtype,
             trust_remote_code=trust_remote_code,
+            attn_implementation=attn_impl,
         )
     except Exception as exc:                                # noqa: BLE001
         logger.error(
@@ -1811,12 +1816,18 @@ def generate_rollout(
                     teacher_mix_alpha * t_probs
                     + (1.0 - teacher_mix_alpha) * probs
                 )
+                
+            # XPU workaround: topk and multinomial often segfault on Intel GPUs.
+            # Perform all sampling logic on CPU.
+            probs = probs.cpu()
+            
             if top_k and top_k > 0:
                 k = min(top_k, probs.shape[-1])
                 v, _ = probs.topk(k, dim=-1)
                 probs = probs.masked_fill(probs < v[:, -1:], 0.0)
                 probs = probs / probs.sum(dim=-1, keepdim=True).clamp_min(1e-12)
-            next_tok = torch.multinomial(probs, num_samples=1)
+            
+            next_tok = torch.multinomial(probs, num_samples=1).to(device)
             seq = torch.cat([seq, next_tok], dim=1)
     finally:
         if was_training:

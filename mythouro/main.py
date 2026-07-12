@@ -44,7 +44,10 @@ class _Capabilities:
 
     def __init__(self):
         self.has_flash_attn_import: bool = _HAS_FLASH_ATTN_IMPORT
-        self.has_sdpa: bool = hasattr(F, "scaled_dot_product_attention")
+        self.is_xpu: bool = self._probe_xpu()
+        # XPU: Intel's SDPA kernel segfaults even with manual KV expansion.
+        # Disable it entirely so we fall through to the pure-PyTorch manual path.
+        self.has_sdpa: bool = hasattr(F, "scaled_dot_product_attention") and not self.is_xpu
         self.cuda_cc: "tuple[int, int] | None" = self._probe_cuda_cc()
         self.fa2_usable: bool = self._fa2_usable()
         self._warned: set[str] = set()
@@ -57,6 +60,11 @@ class _Capabilities:
             return torch.cuda.get_device_capability(torch.cuda.current_device())
         except Exception:                                       # noqa: BLE001
             return None
+
+    @staticmethod
+    def _probe_xpu() -> bool:
+        xpu = getattr(torch, "xpu", None)
+        return xpu is not None and xpu.is_available()
 
     def _fa2_usable(self) -> bool:
         # Three conditions must all hold:
@@ -494,20 +502,30 @@ class GQAttention(nn.Module):
                 "GQAttention: using manual SDPA fallback "
                 "(neither FA2 nor torch SDPA available)."
             )
+            
             k_e = k.repeat_interleave(self.groups, dim=2)
             v_e = v.repeat_interleave(self.groups, dim=2)
-            q_t = q.transpose(1, 2)                                   # (B, H, T, head_dim)
-            k_t = k_e.transpose(1, 2)
-            v_t = v_e.transpose(1, 2)
+            q_t = q.transpose(1, 2).contiguous()                      # (B, H, T, head_dim)
+            k_t = k_e.transpose(1, 2).contiguous()
+            v_t = v_e.transpose(1, 2).contiguous()
             scale = self.head_dim ** -0.5
-            attn = torch.matmul(q_t, k_t.transpose(-2, -1)) * scale
+            
+            # XPU 4D matmul broadcast segfaults; use 3D bmm instead
+            q_b = q_t.view(B * self.n_heads, T, self.head_dim)
+            k_b = k_t.transpose(-2, -1).contiguous().view(B * self.n_heads, self.head_dim, -1)
+            attn = torch.bmm(q_b, k_b).view(B, self.n_heads, T, -1) * scale
+            
             if mask is not None:
                 attn = attn + mask
+                
             attn = F.dropout(
                 F.softmax(attn, dim=-1),
                 p=self.dropout_p, training=self.training,
             )
-            out = torch.matmul(attn, v_t)
+            
+            attn_b = attn.view(B * self.n_heads, T, -1)
+            v_b = v_t.view(B * self.n_heads, -1, self.head_dim)
+            out = torch.bmm(attn_b, v_b).view(B, self.n_heads, T, self.head_dim)
             out = out.transpose(1, 2).contiguous().view(B, T, -1)
 
         return self.wo(out)
@@ -646,9 +664,9 @@ class MLAttention(nn.Module):
         # doesn't map onto flash_attn's API as cleanly as it does on
         # SDPA, where head_dim mismatch between K and V is supported.
         # Two-tier: SDPA → manual.
-        q = q.transpose(1, 2)  # (B, H, T, q_head_dim)
-        k = k.transpose(1, 2)  # (B, H, S, q_head_dim)
-        v = v.transpose(1, 2)  # (B, H, S, v_dim)
+        q = q.transpose(1, 2).contiguous()  # (B, H, T, q_head_dim)
+        k = k.transpose(1, 2).contiguous()  # (B, H, S, q_head_dim)
+        v = v.transpose(1, 2).contiguous()  # (B, H, S, v_dim)
 
         dropout_p = self.attn_drop.p if self.training else 0.0
         if CAPABILITIES.has_sdpa:
@@ -668,11 +686,20 @@ class MLAttention(nn.Module):
                 "(torch SDPA unavailable)."
             )
             scale = self.q_head_dim ** -0.5
-            attn = torch.matmul(q, k.transpose(-2, -1)) * scale
+            
+            # XPU 4D matmul broadcast segfaults; use 3D bmm instead
+            q_b = q.view(B * self.n_heads, T, self.q_head_dim)
+            k_b = k.transpose(-2, -1).contiguous().view(B * self.n_heads, self.q_head_dim, -1)
+            attn = torch.bmm(q_b, k_b).view(B, self.n_heads, T, -1) * scale
+            
             if mask is not None:
                 attn = attn + mask
             attn = self.attn_drop(F.softmax(attn, dim=-1))
-            out = torch.matmul(attn, v)  # (B, H, T, v_dim)
+            
+            attn_b = attn.view(B * self.n_heads, T, -1)
+            v_b = v.view(B * self.n_heads, -1, self.v_dim)
+            out = torch.bmm(attn_b, v_b).view(B, self.n_heads, T, self.v_dim)  # (B, H, T, v_dim)
+            
         out = out.transpose(1, 2).contiguous().view(B, T, -1)
         return self.wo(out)
 
@@ -1435,9 +1462,18 @@ class CrossLoopAttention(nn.Module):
         )
 
         scale = self.head_dim ** -0.5
-        attn = torch.matmul(q, k.transpose(-2, -1)) * scale
+        
+        # XPU 4D matmul broadcast segfaults; use 3D bmm instead
+        q_b = q.contiguous().view(B * self.n_heads, T, self.head_dim)
+        k_b = k.transpose(-2, -1).contiguous().view(B * self.n_heads, self.head_dim, -1)
+        attn = torch.bmm(q_b, k_b).view(B, self.n_heads, T, -1) * scale
+        
         attn = F.softmax(attn, dim=-1)
-        out = torch.matmul(attn, v)                      # (B, H, T, head_dim)
+        
+        attn_b = attn.view(B * self.n_heads, T, -1)
+        v_b = v.contiguous().view(B * self.n_heads, -1, self.head_dim)
+        out = torch.bmm(attn_b, v_b).view(B, self.n_heads, T, self.head_dim)                      # (B, H, T, head_dim)
+        
         out = out.transpose(1, 2).contiguous().view(B, T, D)
         return h + self.o_proj(out)
 
@@ -2123,8 +2159,10 @@ class MythOuro(nn.Module):
         Returns:
             Tensor of shape (1, 1, seq_len, seq_len) broadcastable over (B, H, T, S)
         """
+        # XPU bfloat16 softmax kernels can segfault on -inf. Use the minimum finite value instead.
+        mask_val = torch.finfo(dtype).min
         mask = torch.full(
-            (1, 1, seq_len, seq_len), float("-inf"), device=device, dtype=dtype
+            (1, 1, seq_len, seq_len), mask_val, device=device, dtype=dtype
         )
         return torch.triu(mask, diagonal=1)
 

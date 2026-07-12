@@ -63,7 +63,13 @@ class TestCapabilities:
         # PyTorch ≥ 2.0 exposes F.scaled_dot_product_attention. The whole
         # test suite assumes a modern torch — if this fails the cascade
         # has lost its middle tier and would always fall to manual.
-        assert CAPABILITIES.has_sdpa is True
+        # EXCEPT on XPU hosts: Intel's SDPA kernel segfaults (Max 1100,
+        # torch 2.13+xpu), so CAPABILITIES deliberately disables it there
+        # and the cascade is EXPECTED to sit on the manual tier.
+        if CAPABILITIES.is_xpu:
+            assert CAPABILITIES.has_sdpa is False
+        else:
+            assert CAPABILITIES.has_sdpa is True
 
     def test_fa2_requires_compute_capability_8(self, monkeypatch):
         # The whole point of §1: flash-attn imports cleanly on Volta

@@ -379,6 +379,13 @@ def main():
     cfg.use_sandwich_norm = args.use_sandwich_norm
     cfg.use_depth_aware_init = args.use_depth_aware_init
 
+    # XPU: complex-tensor RoPE (view_as_complex / polar) can segfault on
+    # Intel's kernels. The real-valued (cos/sin) path is mathematically
+    # identical and safe on all backends — auto-enable when on XPU.
+    if dev.backend(device) == "xpu":
+        cfg.rope_real = True
+        logger.info("sft: XPU detected → rope_real=True (complex ops unsupported)")
+
     student = MythOuro(cfg).to(device)
     n_params = sum(p.numel() for p in student.parameters())
     logger.info(
