@@ -13,6 +13,84 @@
 > can be *slower* than the 5070 on narrow, batch-1, single-stream decode — going wide is the
 > *precondition* for it winning at all, not a later optimization.
 
+## ✅✅ CARD #1 VALIDATED (2026-07-12): first real-silicon numbers — the ladder passes
+
+The Max 1100 is installed and running under native Ubuntu 24.04 (the dual-boot plan, executed).
+**The 4060 and 5060 were pulled to free power for the Max** → the rig is now 5070 (display +
+CUDA) + Max 1100 (`xpu:0`). Stack: kernel driver + Level Zero already present (`clinfo`/`xpu-smi`
+see the card), **torch 2.13.0+xpu** from `download.pytorch.org/whl/xpu` in a dedicated venv
+(`../venv-xpu` next to the repo; `../venv-cuda` cu130 for 5070 A/B). `torch.xpu.is_available()`
+✓, 48 GB visible, bf16 ✓. Full test suite: 100 passed, 8 skipped, 1 failed — the failure is a
+**transformers-5.x monkeypatch incompat in `tests/test_distillation.py`, not an XPU issue.**
+
+**Raw GEMM: 224 TFLOPS bf16** (4096² matmul, warmed) — *above* the pre-purchase 140 figure
+(that was eager/no-warmup) = **~54% of the 419 XMX peak**, healthy tuned-GEMM territory. XMX
+engages out of the box, as predicted.
+
+**The real-model number (`tools/bench_step`, `mythouro_distill_tiny` 278M, fwd+bwd, bf16,
+seq 512) — measured same-rig, same-OS, same-torch vs the 5070:**
+
+| batch | 5070 (12 GB) | Max 1100 (48 GB) |
+|---|---|---|
+| 1 | **5,889 tok/s** | 3,333 |
+| 8 | 10,662 (its ceiling) | 12,156 |
+| 16 | OOM | — |
+| 32 | OOM | 15,084 |
+| 64 | OOM | 15,596 (plateau; 128 OOM) |
+| 64 + `torch.compile` | — | **17,210** |
+
+Honest readings:
+- **Best-vs-best the Max is ~1.6× the 5070 (17.2k vs 10.7k), not the 3–4× matmul ratio.**
+  ⚠ The old "~4k tok/s SFT" Windows figure is STALE — the 5070 on Linux/torch-2.13 does
+  10.7k at its batch-8 ceiling. Don't quote ratios against the 4k number.
+- **The operating-principle callout above is confirmed on silicon:** batch-1 the 5070 wins
+  ~1.8×; the Max only pulls ahead wide (b≥8) — width is the precondition, as written.
+- **The plateau (~17k) vs the GEMM ceiling (224 TFLOPS) is the recurrent-loop small-kernel
+  pathology** — the model's per-loop small matmuls (MoE experts, MLA latents, LoRA) don't
+  saturate. `torch.compile` (Inductor/Triton-XPU) compiled the training step **end-to-end,
+  zero graph breaks** (fixed `n_loops=4`, exactly as the checklist predicted) for **+10%**.
+  `rope_real` under compile: no gain (16.9k — the complex-op Inductor fallback isn't the
+  bottleneck; keep complex RoPE). `mode="max-autotune"`: **WORSE (14.9k)** — it replaces
+  oneDNN's XMX GEMMs with Triton-XPU matmul templates, which lose on PVC; use default
+  compile mode. Next levers if/when needed: profile XMX util (`intel_gpu_top`/VTune),
+  joint_matrix on custom ops (milestone 2).
+- **The qualitative win is unconditional:** batch 32–64 training *does not exist* on the
+  5070 (OOM at 16), and teacher+student cohabitation — the OOM that triggered the purchase —
+  now fits with ~room for 3× the model.
+
+**Two rig-specific gotchas for every future `torch.compile`-on-XPU run (both solved):**
+1. **`TRITON_DEFAULT_BACKEND=intel`** — with the 5070's CUDA driver also visible, Triton dies
+   with `2 active drivers ([XPUDriver, CudaDriver])`. The env var (native in triton's
+   `runtime/driver.py`) pins it. Belongs in the training entry points / shell profile.
+2. **`apt install intel-ocloc`** — Triton-XPU shells out to `ocloc` for the final zebin;
+   without it kernel builds die with `FileNotFoundError: 'ocloc'`. (Installed.)
+Plus the day-one env vars from the checklist below: `SYCL_CACHE_PERSISTENT=1`,
+`PYTORCH_ALLOC_CONF=expandable_segments:True`.
+
+**LADDER COMPLETE (2026-07-12, same day):** teacher inference on `xpu` ✓ (Ouro-2.6B HF, 5.2 GB,
+finite logits — needed **`transformers<5`**, now pinned in requirements.txt: the custom
+`modeling_ouro.py` calls `create_causal_mask(input_embeds=...)`, renamed in 5.x) → **full
+on-policy distill smoke run ✓**: 50 steps, teacher+student+train state = **33.6 GB on one card**
+(the run that OOM'd the 5070), losses finite & falling (7.55→4.5), n_loops ramp 2→4, checkpoint
+saved. Caveats: (a) ~0.5–0.7k tok/s in the *on-policy* config — rollout-bound (sequential
+full-recompute decode + CPU-sampling workaround), NOT the 17k train-phase rate. **Still a
+~7× win on this exact workload: the 5070 ran the on-policy config at 0.0–0.1k tok/s (owner
+measurement — worse than the ~0.3k previously noted).** The 0.7k→0.5k sag within the run is
+**thermal throttling** (~30% — see (e)), so cooling + power cap directly buys tok/s back.
+Batched rollouts / KV cache is the next perf frontier. (b) A **teardown abort after "training
+complete"** ("terminate called without an active exception") — XPU runtime thread cleanup at
+exit; checkpoint already saved, cosmetic. (c) One **flaky segfault** at rollout start on the
+first attempt; identical rerun succeeded — shape/timing-dependent, watch long runs.
+(d) The tree carries **uncommitted XPU segfault workarounds** (SDPA disabled on XPU +
+bmm-ified attention in main.py, CPU sampling in generate_rollout, forced rope_real in
+distill/sft) — load-bearing until each is A/B-disproven on the current stack; commit them.
+(e) **THERMALS: the current cooling is NOT enough for training loads** — first sustained run
+hit **96°C core / 92°C memory** (throttle territory; the card boosts to ~456 W default-peak
+per the datasheet). Stopgap until the blower shroud is sorted: **`sudo xpu-smi config -d 0
+--powerlimit 225`** (resets on reboot) — costs little on our latency-bound workload, tames
+temps. Monitor with `xpu-smi dump -d 0 -m 1,2,3,18 -i 2`; targets ≤85°C sustained. The fix
+is static pressure *through* the fins (ducted blower/server fans), not more case airflow.
+
 ## 🔧 DEPLOYMENT PLAN (2026-06-26): dual-boot current rig + Max 1100 #1 now
 
 > **✅ PURCHASED 2026-06-27 — $1961 all-in** (48 GB Max 1100, taxes + free shipping). Bought and
