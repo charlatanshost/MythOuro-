@@ -67,6 +67,25 @@ Honest readings:
 Plus the day-one env vars from the checklist below: `SYCL_CACHE_PERSISTENT=1`,
 `PYTORCH_ALLOC_CONF=expandable_segments:True`.
 
+**PHASE-5 ROLLOUT BENCH (2026-07-14, branch `feat/batched-cached-rollouts`) — the on-policy
+fix, measured** (`tools/bench_rollout.py`, 278M student, bf16, rollout 96 / seed 24, n_loops 4):
+
+| config | student-only tok/s | + Ouro-2.6B teacher tok/s |
+|---|---|---|
+| legacy @ b1 / b8 / b32 | 32 / 173 / 369 | — / 23 / 39 |
+| cached @ b8 / b32 | 223 / **527** | 40 / **134** |
+
+Readings: (a) **the teacher was the rollout bottleneck** — student-only numbers are ~4× the
+teacher-inclusive ones; (b) KV cache alone buys only 1.3–1.7× because decode is **per-step
+kernel-launch-bound** (PVC latency pathology — a T=1 forward costs nearly what a T=120 one
+does); (c) **width is the multiplier that stacks**: old production path (inline legacy @
+micro-batch 8, teacher) = 23 tok/s → buffered cached @ rollout-batch 32 = **134 tok/s = 5.8×**,
+×2 buffer reuse ≈ **11.7× effective on-policy dose/decode-second**. (d) The teacher-cache
+validation gate is KL-based: bf16 kernel noise hits 0.34 max-abs logits on a *correct* cache
+(fp32-exact on CPU), so magnitude can't discriminate — softmax KL (~1e-3 nats noise vs ≫ for
+real corruption) + greedy-token equality can. (e) Next rollout lever: `torch.compile` on the
+decode step (follow-up; default mode only — max-autotune regresses on PVC).
+
 **LADDER COMPLETE (2026-07-12, same day):** teacher inference on `xpu` ✓ (Ouro-2.6B HF, 5.2 GB,
 finite logits — needed **`transformers<5`**, now pinned in requirements.txt: the custom
 `modeling_ouro.py` calls `create_causal_mask(input_embeds=...)`, renamed in 5.x) → **full
@@ -75,7 +94,9 @@ on-policy distill smoke run ✓**: 50 steps, teacher+student+train state = **33.
 saved. Caveats: (a) ~0.5–0.7k tok/s in the *on-policy* config — rollout-bound (sequential
 full-recompute decode + CPU-sampling workaround), NOT the 17k train-phase rate. **Still a
 ~7× win on this exact workload: the 5070 ran the on-policy config at 0.0–0.1k tok/s (owner
-measurement — worse than the ~0.3k previously noted).** The 0.7k→0.5k sag within the run is
+measurement — worse than the ~0.3k previously noted). Wall-clock corroboration (2026-07-14,
+resumed step-9780 on-policy run): 100 steps in under an hour on the Max vs nearly a full
+overnight session on the 5070 — ~8–10× end-to-end on the pre-phase-5 rollout path.** The 0.7k→0.5k sag within the run is
 **thermal throttling** (~30% — see (e)), so cooling + power cap directly buys tok/s back.
 Batched rollouts / KV cache is the next perf frontier. (b) A **teardown abort after "training
 complete"** ("terminate called without an active exception") — XPU runtime thread cleanup at
