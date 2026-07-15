@@ -1,0 +1,97 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-15 18:17:45.727 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1614 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=xpu:0). Teacher frozen.
+2026-07-15 18:17:47.024 | WARNING  | mythouro.main:warn_once:85 - GQAttention: using manual SDPA fallback (neither FA2 nor torch SDPA available).
+2026-07-15 18:17:58.431 | INFO     | mythouro.training_utils:_validate_teacher_cache:1892 - teacher KV-cache validation PASSED (8 steps, max KL=1.00e-02 nats) — cached teacher on.
+[probe] loaded checkpoints_onpolicy_xpu/step_0009881.pt (step 9881) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.33 [0.15-0.56] | distinct1 0.28 [0.21-0.34] | distinct2 0.51 [0.36-0.72] | n=3
+    e.g.: ' find it, in in in in in. The \n\nIfIf\n\nThe first [The\n\nAt,000001558-1111000000000000C20000000000000000000000000000000000000111. The.'
+
+  α=0.25 | top_share 0.33 [0.10-0.45] | distinct1 0.29 [0.19-0.41] | distinct2 0.52 [0.26-0.82] | n=3
+    e.g.: ' go in. . . . . . . . . . . . . . . . . . . . . . . . 2224 , , , we need more more more in by the original. . . . . . . . . . . . . . . . . . . . . ( (A) " " " " " " " " " " " " " " " " " " " " " " " " " " " "'
+
+  α=0.5  | top_share 0.19 [0.11-0.32] | distinct1 0.43 [0.26-0.52] | distinct2 0.72 [0.49-0.83] | n=3
+    e.g.: ' play the game of of survival and the game starts as 1 - .\n\nYou need     ~~****\n\n******~  \n\n\n```\n\n**~ ~ - - - - - - - - -~ ~****~ ** *********\n\n~ - ~ - - - - - ~  ~ - ~ - - ~ ~ - ~ - - ~ ~ - - - - - - - - - * *'
+
+  α=0.7  | top_share 0.11 [0.07-0.18] | distinct1 0.44 [0.34-0.53] | distinct2 0.80 [0.65-0.91] | n=3
+    e.g.: ' go sight, but it was a short. In the day the one was was a the main part of of the, it is is not on it was the day-a. The day, so it was a short day day was clear, when the in in to give more the day the was a the main part of the, or was the the day. The day day was a short day as the day, which was a the main part of the, the long the'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.38 [0.27-0.57] | distinct1 0.23 [0.17-0.33] | distinct2 0.46 [0.31-0.63] | n=3
+    e.g.: ' treating a protein protein protein protein protein protein protein protein protein protein protein protein protein protein protein protein\nH001442221 A\n\nThe\n\nThe\n\n"Is\n\nThe A A. . . a...\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+
+  α=0.25 | top_share 0.33 [0.17-0.64] | distinct1 0.28 [0.21-0.38] | distinct2 0.54 [0.39-0.68] | n=3
+    e.g.: ' the human immune and it is is is is the patient\n\nThe most most, ( (and to the most common) 11:200000\n\n\nS577\n\nD\n\nthe treatment\n\nThe most most, (H-I--\n\n, ( (526310\n\nR778644441111111133\n\n\n,'
+
+  α=0.5  | top_share 0.20 [0.12-0.30] | distinct1 0.38 [0.32-0.45] | distinct2 0.70 [0.62-0.80] | n=3
+    e.g.: ' antibiotic therapy ( (a) ) ______  \naa\n\n\nThe correct answer is d)\n\nIn the context of the the the\n\nThe correct\n\nand treatment--\n\nThis\n\nfor the the treatment\n\n******-3. **\n\n****** and the **\n\n****** treatment ( (ae) )\n\nIt\n\n---\n\n\n****\n\n****\n\n'
+
+  α=0.7  | top_share 0.19 [0.09-0.36] | distinct1 0.45 [0.26-0.56] | distinct2 0.76 [0.54-0.88] | n=3
+    e.g.: ' the use of of of the treatment for a bacterial infection, the use of antibiotic drugs is typically required. These antibiotics and antimicrobials are are are specifically designed to do that the bacteria or to kill bacterial cells. The specific antibiotic, or and choice, and the selection of the antibiotic depends on factors such as the type of of of the ... it of bacteria. [1] ]\n\n\n\n\nThe type of a bacterial bacterial infection affects the the treatment treatment choice choice- The'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.40 [0.15-0.79] | distinct1 0.22 [0.10-0.30] | distinct2 0.44 [0.19-0.58] | n=3
+    e.g.: ' the clinical health health and to to get get the health health health, for the disease disease disease disease disease disease disease and and use have to a large large small\n\n**·����????????? ? ? ? ?\n\nBut, if the one an a\n\nIt is an an an an an an an an\n\nAn\n\nThe\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+
+  α=0.25 | top_share 0.30 [0.25-0.34] | distinct1 0.30 [0.28-0.33] | distinct2 0.52 [0.44-0.58] | n=3
+    e.g.: ' a higher than normal blood A11 test, where it depends can can.\nH.\n\n******************************\n\n********__(\n\nB\n\n************__ 2\n\nA\n\n*_74\n\nAA\n\nBB\n\n(\n\n\n\n\n\n\n\n\nAAA A A A A A A'
+
+  α=0.5  | top_share 0.19 [0.12-0.26] | distinct1 0.36 [0.33-0.40] | distinct2 0.62 [0.51-0.72] | n=3
+    e.g.: ' polyuria, pol.\n\nHow How To Lower Blood Blood sugar is .\n\n*** * ** ** ** *** how a person can tell if they would likely\n\n** * **\n\n* * * * * *\n\n* * * * *\n\n** * * * ***\n\n****\n\n******\n\n** ** ** *\n\n** ** **\n\n** ******\u200b9\n\n\n****'
+
+  α=0.7  | top_share 0.36 [0.09-0.58] | distinct1 0.33 [0.14-0.54] | distinct2 0.53 [0.23-0.88] | n=3
+    e.g.: ' increased thirst, frequent urination, fatigue damage to vital\n\n##\n****\n\n#### The Difference between B\n\n**H*****M\n\n******and\n\n****\n\n**\n\n****\n\n****\n\n**\n\n**T-cell and B-cell_1**\n\n**\n\n**\n\n\n*\n\n*\n\n**\n\n**\n\n****\n\n\n**\n\n**'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.39 [0.27-0.62] | distinct1 0.22 [0.19-0.24] | distinct2 0.41 [0.34-0.46] | n=3
+    e.g.: ' the\n\naA3//*\nIt is is is an an, in in the " " " " " " " "\n\n""\n\n"\nand and a, " "  \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+
+  α=0.25 | top_share 0.46 [0.17-0.61] | distinct1 0.26 [0.12-0.41] | distinct2 0.47 [0.24-0.74] | n=3
+    e.g.: ' one one of the following in the same way as as you the first, but it\'s in a different form or the as the last,\n\n**\n\nThe 2222  and  ?! ! !  一-1\n\n*****\n\n[The "  111.5  �_0000, with with the the " "\n\n**\n\n\n\n\n\n'
+
+  α=0.5  | top_share 0.23 [0.12-0.30] | distinct1 0.34 [0.33-0.36] | distinct2 0.67 [0.55-0.81] | n=3
+    e.g.: ', among the many non----non\n\nThe. So the most common nonsteroidal. The most common nonsteroidal(C25::24745100;\n\n< 500.\n\n"I2444337"\n\n"003 ( 665 ( \n"00005000000000000000'
+
+  α=0.7  | top_share 0.12 [0.10-0.15] | distinct1 0.54 [0.42-0.64] | distinct2 0.86 [0.80-0.91] | n=3
+    e.g.: ' the symptoms of osteoarthritis.\nD344530\nNon-steroidal anti-bac\nNon-steroidal ...\nD44029\nNonsteroidal\n31194837\nNon--steroidal\n2401\n\nQuestion:\nThe [word]\n3.5.\n\nThe first word and only the 11thth word in in the list is " " " . . . " .'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.56 [0.35-0.78] | distinct1 0.20 [0.14-0.29] | distinct2 0.33 [0.23-0.44] | n=3
+    e.g.: '\n\n            return return A_____________________________________________________((114, x x1) ) ) ).\n\nLet   13611100000000001110'
+
+  α=0.25 | top_share 0.20 [0.12-0.31] | distinct1 0.32 [0.27-0.36] | distinct2 0.56 [0.53-0.62] | n=3
+    e.g.: '\n    return n l r_\nprint((fib1111100000000000000000000000001, fib.111)))\n# Output 10\n``````output\n\naaab\n\nFor a string,\n\n## 00\n\n###########\n\n##  00\n\n##########'
+
+  α=0.5  | top_share 0.25 [0.11-0.46] | distinct1 0.34 [0.26-0.42] | distinct2 0.69 [0.51-0.79] | n=3
+    e.g.: "\n\nif n e...\n\nIf that's the next second,\n\nn. And\n\nf...\n\n\n\n\n\n-\n\n\n\n\n\n\n\n\n\n\n\n-\n\n\nIf 1, a a...\n\n.\n\n\nIf \n\nIf\n\nif\n\n0 then,\n\nreturn 000...\n\n1.\n\na.\n\nIfIf\n\n0000"
+
+  α=0.7  | top_share 0.29 [0.12-0.58] | distinct1 0.42 [0.28-0.50] | distinct2 0.71 [0.43-0.88] | n=3
+    e.g.: ' if n <= 10: return n + fib  （((n一 1)）返� n n-21！\n\n\n<h2>第6�1</</</\n\n� 337 9．．� (a)   中, 66 1\n\n翻� 1734\n\n8866\n\nn＿11_'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.41 [0.32-0.54] | distinct1 0.15 [0.11-0.21] | distinct2 0.38 [0.36-0.40] | n=3
+    e.g.: ' 66 3\n\nBut the original function has the square square c x for the the\n\n********.\n\n**************************************************************** **    . . . The equation for for for (                      '
+
+  α=0.25 | top_share 0.35 [0.17-0.72] | distinct1 0.20 [0.11-0.35] | distinct2 0.45 [0.25-0.64] | n=3
+    e.g.: '  ＂�\n0  ＂� (54500000066731000000000000000000000000000000000000000000145944500000000000000000000'
+
+  α=0.5  | top_share 0.26 [0.15-0.39] | distinct1 0.33 [0.26-0.43] | distinct2 0.57 [0.43-0.76] | n=3
+    e.g.: ' 0\n\nand find the roots to be 2 and   `*A\n\n*`  \x00\x00\x00\x00羾分. . . . . . . ( ( ( ( ( ( ( ( ( ( ( ( ( ( \x00\x00\x00羲*\n\n**\n\n**\n\n*\n\n**\n\n**\n\n****\n\n\n\n\n******\n\n**\n\nFor your'
+
+  α=0.7  | top_share 0.09 [0.07-0.12] | distinct1 0.54 [0.47-0.61] | distinct2 0.86 [0.72-0.95] | n=3
+    e.g.: " 0\n\n\nOkay, I have to solve the the quadratic equation x² -5,x +66==0. Hmm, first thing I'm thinking is that this is a standard quadratic equation, which usually has is a a.x² + b.x + c... wait, in here it just has x x², so probably the the a is is is 1. and the the b and c,, coefficients are  ใ"
+

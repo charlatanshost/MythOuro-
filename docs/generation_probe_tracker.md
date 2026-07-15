@@ -438,6 +438,50 @@ TOKENS (the Max)** to push fluency→meaning; a gentle 0.45 anneal is optional/s
 a setup that just delivered. Context: onpolicy_plan.md 2026-07-06.
 
 
+## 2026-07-15 — ✅ XPU workaround stack A/B-VALIDATED (no behavioral drift) + α drift caught
+
+**Purpose: cross-backend consistency check, not quality measurement.** The Max 1100 stack changed
+the numerics under the model (rope_real instead of complex RoPE, manual bmm attention instead of
+SDPA, CPU sampling). Before attributing any future probe movement to training, we needed to know
+the workarounds themselves don't shift behavior. The exact-replay plan (re-probe step 8668 on XPU
+vs its recorded 5070 outputs) was impossible — **step_0008668.pt rotated away** (oldest survivors:
+9774 in `checkpoints_onpolicy`, 9838 in `checkpoints_onpolicy_xpu`). Ran a stronger same-checkpoint
+two-backend A/B on **step_0009881.pt** instead: 5070/`cuda:0` (original numerics: torch SDPA,
+complex RoPE) vs Max/`xpu:0` (full workaround stack), same venv-per-backend rig.
+
+**Raw-logit A/B (6 prompts, identical inputs, text-free):** max per-position KL **≤ 0.03 nats**
+(against 2–7 nats of distribution entropy), mean |Δlogit| 0.02–0.05, max |Δlogit| ~1.05. Greedy
+argmax agreement 100% on 4/6 prompts, 83–86% on the rest — mismatches only at near-tie positions.
+
+**Greedy 19-prompt probe (`collapse_metrics --probe-set all`), both backends:** first-token
+distributions match to ~0.01 top_prob on all 19; texts fork mid-sequence on 15/19 but only where a
+near-tie flips, then chaos-amplify. Same degeneration character on both sides. **Verdict: ordinary
+bf16 cross-backend noise, NOT drift — the segfault-workaround stack is behaviorally faithful.**
+Corollary: greedy text is NOT diffable across backends; diff distributions/metrics, or sampled
+n=3 aggregates. Raw: `reports/collapse_onpolicy_xpu_9881_greedy_{xpu,cuda5070}.txt`.
+
+**⚠ α drift caught in the doc command.** The XPU main-run block in `training_commands.md` carried
+`--teacher-mix-alpha 0.6`, copied from the pre-anneal 2026-06-27 command — but the validated
+decision (7458 → 8668) is **hold α=0.5**. The ~100 XPU steps of 2026-07-14 (9780→9881) and the
+smoke tests likely ran at 0.6. **Decision (2026-07-15): α=0.5 for all future runs**; doc fixed.
+Config-attribution caveat for the next entry: 8668→9881 spans ~1,200 steps at mixed/uncertain α.
+
+**Baseline for the first Max token-dose (6-seed rollout probe, n=3, step 9881, XPU) — ⚠ α=0.0
+REGRESSED vs 8668.** Per-seed α=0.0 `top_share` (mean of 3): weather **0.33** / bacterial **0.38**
+/ diabetes **0.40** / ibuprofen **0.39** / fibonacci **0.56** / quadratic **0.41** → **mean ~0.41
+vs 8668's 0.16**; `distinct1` mean **~0.22 vs 8668's 0.50**. The text agrees with the metrics this
+time (no top_share inversion): α=0.0 is back to fragmented salad with repetition bursts (`protein
+protein protein…`, `in in in in`) — the 8668 "rambling-grammatical English" is gone at α=0.0.
+High-α capability persists (α=0.5 bacterial: *"antibiotic therapy… The correct answer is d)"*;
+α=0.7 quadratic: genuine CoT-style *"Okay, I have to solve the quadratic equation… Hmm, first
+thing I'm thinking…"*), so the regression is in the student's own trajectory, not capability —
+the exposure-bias signature again. **Prime suspect: the ~1,200 post-8668 steps run from the doc
+command at un-annealed α=0.6** (exactly the flat-0.6 regime that left α=0.0 flat pre-anneal);
+backend is exonerated by the A/B above. Cannot fully rule out other causes — the overnight α=0.5
+dose diffs against THIS baseline and should arbitrate. Raw:
+`reports/onpolicy_rollout_probe_9881_xpu.txt`.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts

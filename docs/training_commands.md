@@ -36,7 +36,7 @@ python -m training.distill \
   --total-steps 12000 --warmup-steps 500 --lr 1e-4 \
   --depth-reg-coeff 0.3 --divergence rev_kl \
   --use-sandwich-norm --use-depth-aware-init \
-  --onpolicy-lambda 0.7 --teacher-mix-alpha 0.6 --rollout-len 64 \
+  --onpolicy-lambda 0.7 --teacher-mix-alpha 0.5 --rollout-len 64 \
   --rollout-batch 32 --rollout-reuse 2 \
   --ckpt-every-mins 15 --num-workers 0 --trust-remote-code --log-every 5 \
   --ckpt-dir checkpoints_onpolicy_xpu
@@ -44,6 +44,10 @@ python -m training.distill \
 Micro-batch 8 × accum 2 = the old effective batch 16 (optimizer-state coherent with the
 5070-era runs); go WIDE, never narrow — the Max loses to a 5070 at batch 1.
 `--rollout-legacy` = escape hatch to the old inline rollout path if quality ever looks off.
+**α=0.5, not 0.6** (fixed 2026-07-15): this block was originally copied from the pre-anneal
+2026-06-27 command and silently carried `--teacher-mix-alpha 0.6`; the probe-validated decision
+(7458 anneal verdict → 8668 "hold 0.5, pour tokens") is **0.5**. The ~100 XPU steps of 2026-07-14
+(9780→9881) and the smoke tests likely ran at 0.6 — see generation_probe_tracker.md 2026-07-15.
 
 **Monitoring (second terminal):**
 ```bash
