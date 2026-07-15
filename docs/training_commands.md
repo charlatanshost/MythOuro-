@@ -4,13 +4,89 @@ Copy-paste-ready command reference. Companion to
 [`training_runs.md`](training_runs.md) (which records what the runs *produced*)
 — this file is *how to run them*.
 
-GPU map on this rig (not intuitive — verify with `torch.cuda.get_device_name`):
-`cuda:0` = RTX 5070 (12 GB, student), `cuda:1` = RTX 4060, `cuda:2` = RTX 5060
-(teacher host for distillation).
+GPU map on this rig: **Linux side (CURRENT): `xpu:0` = Intel Max 1100 (48 GB) — teacher AND
+student on one card; `cuda:0` = RTX 5070 (12 GB, display + A/B benches).** The 4060/5060 were
+removed 2026-07-12 (power connectors freed for the Max) — old `cuda:1`/`cuda:2` commands below
+are Windows-era references.
 
 ---
 
-## ⚠️ Python environment — USE THE CUDA BUILD (env gotcha, 2026-06-24)
+## ⭐⭐ XPU / Max 1100 (native Ubuntu) — THE CURRENT ENVIRONMENT (2026-07-14)
+
+**Shell setup — start EVERY session with this** (fresh terminals have no `python`; the three
+env vars are load-bearing: SYCL cache skips the brutal first-JIT, the allocator flag cuts
+ACT-batch fragmentation, the Triton var fixes the dual-GPU `2 active drivers` crash):
+```bash
+cd /media/charlatanshost/94C4EE28C4EE0C74/MythOuro-main/MythOuro-main
+source ../venv-xpu/bin/activate
+export SYCL_CACHE_PERSISTENT=1
+export PYTORCH_ALLOC_CONF=expandable_segments:True
+export TRITON_DEFAULT_BACKEND=intel
+```
+
+**The main run — on-policy distill, teacher+student on one card, phase-5 buffered rollouts**
+(resumes automatically from the latest ckpt in `--ckpt-dir`; expect
+`teacher KV-cache validation PASSED` after the teacher loads, then 1.5–3k tok/s):
+```bash
+python -m training.distill \
+  --student-variant mythouro_distill_tiny \
+  --student-device xpu:0 --teacher-device xpu:0 \
+  --teacher-id ByteDance/Ouro-2.6B-Thinking \
+  --seq-len 1024 --micro-batch 8 --grad-accum 2 \
+  --total-steps 12000 --warmup-steps 500 --lr 1e-4 \
+  --depth-reg-coeff 0.3 --divergence rev_kl \
+  --use-sandwich-norm --use-depth-aware-init \
+  --onpolicy-lambda 0.7 --teacher-mix-alpha 0.6 --rollout-len 64 \
+  --rollout-batch 32 --rollout-reuse 2 \
+  --ckpt-every-mins 15 --num-workers 0 --trust-remote-code --log-every 5 \
+  --ckpt-dir checkpoints_onpolicy_xpu
+```
+Micro-batch 8 × accum 2 = the old effective batch 16 (optimizer-state coherent with the
+5070-era runs); go WIDE, never narrow — the Max loses to a 5070 at batch 1.
+`--rollout-legacy` = escape hatch to the old inline rollout path if quality ever looks off.
+
+**Monitoring (second terminal):**
+```bash
+xpu-smi dump -d 0 -m 1,2,3,18 -i 2    # power, core °C, mem °C, mem-used, every 2 s
+watch -n 2 xpu-smi stats -d 0          # coarser dashboard (temps show N/A here; use dump)
+```
+Temp target ≤85 °C sustained (fan holds ~68–70 °C; training's fine at ~80 °C with teacher).
+If cooling ever regresses: `sudo xpu-smi config -d 0 --powerlimit 225` (resets on reboot).
+
+**Benchmarks:**
+```bash
+python -m tools.bench_step --variant mythouro_distill_tiny --device xpu --batch 64   # train phase
+python -m tools.bench_rollout --device xpu                                           # rollout, student-only
+python -m tools.bench_rollout --device xpu --batches 8 32 \
+  --teacher-id ByteDance/Ouro-2.6B-Thinking --trust-remote-code                      # rollout, real teacher
+```
+
+**Smoke test (run before any long run after env/code changes)** — 50 steps, ~7 min:
+same command as the main run but `--total-steps 50 --warmup-steps 10 --onpolicy-lambda 0.5
+--rollout-batch 16 --ckpt-dir /tmp/smoke_xpu`. Pass = falling losses + gate PASSED + ckpt saved.
+
+**Sanity checks:**
+```bash
+xpu-smi discovery                      # kernel driver sees the card
+python -c "import torch; print(torch.xpu.is_available(), torch.xpu.get_device_name(0))"
+pytest tests/ -q                       # full suite (365+; all green expected)
+```
+
+**XPU gotchas (all solved — don't re-debug):**
+- `transformers` must be **<5** (pinned in requirements.txt) — Ouro's custom code breaks on 5.x.
+- `TRITON_DEFAULT_BACKEND=intel` + `apt install intel-ocloc` are required for any
+  `torch.compile` run (dual-GPU driver clash / missing kernel compiler).
+- `torch.compile`: default mode only — **`max-autotune` is a measured regression on PVC.**
+- **Teardown abort after "training complete"** (`terminate called without an active
+  exception` + core dump) is cosmetic — checkpoint is already saved; ignore it.
+- Segfault workarounds (no SDPA on XPU, bmm attention, CPU sampling, forced rope_real) are
+  committed and load-bearing — see hardware_options.md before "cleaning them up".
+- One flaky segfault at rollout start was seen 2026-07-12; rollouts auto-retry once now.
+  If a run dies hard, just rerun — `--ckpt-every-mins 15` bounds the loss.
+
+---
+
+## ⚠️ Python environment (WINDOWS side) — USE THE CUDA BUILD (env gotcha, 2026-06-24)
 
 Automated/fresh shells resolve `python` to a **CPU-only `.venv`** (`d:\MythOuro-main\.venv`) →
 `AssertionError: Torch not compiled with CUDA enabled`. The working **CUDA build**
