@@ -1805,8 +1805,15 @@ def teacher_logits_cached(
     """
     One cached teacher decode step. Same no-grad/detach/cross-device
     discipline as `teacher_logits`; additionally threads `past_key_values`
-    (a `transformers` DynamicCache, created here on first call) and an
-    explicit tensor `cache_position` through the forward.
+    and an explicit tensor `cache_position` through the forward.
+
+    On the first call pass ``past_key_values=None`` — with ``use_cache=True``
+    the model constructs its OWN cache type, which matters for custom
+    architectures: Ouro builds a ``UniversalTransformerCache`` (per-UT-loop
+    slots; a plain DynamicCache silently flat-appends across the 4 loops and
+    produces wrong logits — 0.30 max-abs divergence, caught by the gate on
+    2026-07-14). Plain HF models build their usual DynamicCache. Never
+    pre-create a cache here.
 
     Returns (logits, updated_past). Caller passes `updated_past` back on the
     next step with only the new token(s) in `cur_ids`.
@@ -1818,10 +1825,6 @@ def teacher_logits_cached(
 
     if cur_ids.device != teacher_device:
         cur_ids = cur_ids.to(teacher_device)
-
-    if past_key_values is None:
-        from transformers.cache_utils import DynamicCache
-        past_key_values = DynamicCache()
 
     T = cur_ids.shape[1]
     cache_position = torch.arange(
@@ -1843,39 +1846,52 @@ def _validate_teacher_cache(
     teacher: nn.Module,
     sample_ids: torch.Tensor,
     n_check: int = 8,
-    tol: float = 5e-2,
+    kl_tol: float = 5e-2,
 ) -> bool:
     """
     Startup gate: greedy-decode `n_check` tokens with the cached and the
     uncached path from the same prefix and compare. Both paths follow the
     UNCACHED path's greedy choice so they always score the same prefix; the
-    cached path must reproduce the argmax token AND stay within `tol`
-    max-abs logit difference at every step. Any exception or mismatch
-    → False (run falls back to full recompute; a warning is logged).
+    cached path must reproduce the argmax token AND keep
+    KL(uncached ‖ cached) under `kl_tol` nats at every step.
+
+    Why KL, not max-abs logits: cached (T=1) and uncached (full-seq)
+    forwards hit different kernels, and in bf16 the resulting elementwise
+    logit noise reaches ~0.1–0.34 max-abs on a CORRECT cache (measured,
+    Ouro-2.6B on XPU 2026-07-14; the same cache is fp32-exact at 1.7e-05
+    on CPU) — indistinguishable by magnitude from real corruption. The
+    softmax KL separates them by orders of magnitude: uncorrelated bf16
+    noise measured ~1e-3–1e-4 nats, while a genuinely misaligned cache
+    changes the distribution itself (≫ kl_tol) and diverges the greedy
+    tokens within a few steps.
     """
     try:
         ids = sample_ids[:1].detach()          # single row is enough
         past = None
-        max_diff = 0.0
+        max_kl = 0.0
         for i in range(n_check):
             ref = teacher_logits(teacher, ids)[:, -1, :].float()
             cur = ids if i == 0 else ids[:, -1:]
             start = 0 if i == 0 else ids.shape[1] - 1
             got, past = teacher_logits_cached(teacher, cur, past, start)
             got = got[:, -1, :].float().to(ref.device)
-            diff = (ref - got).abs().max().item()
-            max_diff = max(max_diff, diff)
+            kl = F.kl_div(
+                F.log_softmax(got, dim=-1), F.log_softmax(ref, dim=-1),
+                log_target=True, reduction="sum",
+            ).item()
+            max_kl = max(max_kl, kl)
             ref_tok = ref.argmax(dim=-1, keepdim=True)
             if not torch.equal(ref_tok, got.argmax(dim=-1, keepdim=True)):
                 raise RuntimeError(f"greedy token mismatch at step {i}")
-            if diff > tol:
+            if not (kl < kl_tol):               # NaN-safe: NaN fails too
                 raise RuntimeError(
-                    f"logit divergence {diff:.3e} > tol {tol:g} at step {i}"
+                    f"distribution divergence KL={kl:.3e} nats "
+                    f">= tol {kl_tol:g} at step {i}"
                 )
             ids = torch.cat([ids, ref_tok.to(ids.device)], dim=1)
         logger.info(
             f"teacher KV-cache validation PASSED "
-            f"({n_check} steps, max|Δlogit|={max_diff:.2e}) — cached teacher on."
+            f"({n_check} steps, max KL={max_kl:.2e} nats) — cached teacher on."
         )
         return True
     except Exception as exc:                                    # noqa: BLE001
