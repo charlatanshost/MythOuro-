@@ -84,12 +84,13 @@ first attempt; identical rerun succeeded — shape/timing-dependent, watch long 
 (d) The tree carries **uncommitted XPU segfault workarounds** (SDPA disabled on XPU +
 bmm-ified attention in main.py, CPU sampling in generate_rollout, forced rope_real in
 distill/sft) — load-bearing until each is A/B-disproven on the current stack; commit them.
-(e) **THERMALS: the current cooling is NOT enough for training loads** — first sustained run
-hit **96°C core / 92°C memory** (throttle territory; the card boosts to ~456 W default-peak
-per the datasheet). Stopgap until the blower shroud is sorted: **`sudo xpu-smi config -d 0
---powerlimit 225`** (resets on reboot) — costs little on our latency-bound workload, tames
-temps. Monitor with `xpu-smi dump -d 0 -m 1,2,3,18 -i 2`; targets ≤85°C sustained. The fix
-is static pressure *through* the fins (ducted blower/server fans), not more case airflow.
+(e) **THERMALS — RESOLVED (2026-07-14):** first sustained run hit **96°C core / 92°C memory**
+(throttle territory — the card boosts to ~456 W default-peak per the datasheet; the throttling
+showed up as 0.7k→0.5k tok/s sag). Fix: a **counter-rotating 40 mm fan on the card** → stable
+**68–70°C under training load**, no power cap needed. (Stopgap if cooling ever regresses:
+`sudo xpu-smi config -d 0 --powerlimit 225`, resets on reboot. Monitor with
+`xpu-smi dump -d 0 -m 1,2,3,18 -i 2`.) Lesson held: the passive Max needs static pressure
+*through* the fins, not case airflow — a single well-placed server fan sufficed.
 
 ## 🔧 DEPLOYMENT PLAN (2026-06-26): dual-boot current rig + Max 1100 #1 now
 
