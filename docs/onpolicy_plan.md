@@ -149,7 +149,20 @@ on-policy (new): x ← generate_rollout(); t = teacher_logits(x);  s = student(x
    you *see* it firing.
 4. **🔄 Schedule + polish** — λ-ramp (start small), length-norm; **α-anneal ACTIVE (2026-06-30):
    manual step 0.6 → 0.5, probe-gated. Lower further if α=0.0 improves + fragile seeds hold.**
-5. **⏭ Optimize** — teacher kv-cache, larger batch/rollouts, throughput.
+5. **✅ Optimize (2026-07-14, branch `feat/batched-cached-rollouts`)** — teacher kv-cache,
+   larger batch/rollouts, throughput. Landed: (a) cached student decode in
+   `generate_rollout` (mirrors `MythOuro.generate`; `use_kv_cache=False` = exact legacy
+   path); (b) cached teacher via model-built cache (Ouro's `UniversalTransformerCache`)
+   behind a **KL-based startup validation gate** that falls back to full recompute on any
+   mismatch — never silently trains against wrong teacher logits (bf16 max-abs logit noise
+   reaches 0.34 on a *correct* cache, so the gate compares softmax KL ~1e-3 nats + greedy
+   tokens instead); (c) `RolloutBuffer` (`mythouro/rollout.py`) — one wide generate call
+   serves micro-batch slices with reuse budget + staleness cap; flags `--rollout-batch/
+   --rollout-reuse/--rollout-max-age-steps/--rollout-legacy`. **Measured (Max 1100, bf16,
+   teacher incl., rollout 96):** old inline path 23 tok/s → cached @ batch 32 = 134 tok/s
+   (5.8×), ×2 reuse ≈ **11.7× effective on-policy dose per decode-second**. Remaining
+   floor is PVC per-step kernel-launch latency → follow-up ticket: `torch.compile` on the
+   decode step (default mode only; max-autotune is a measured regression on PVC).
 
 ## How to run
 **Step 1 — α-probe (no training; pick α).** Generates rollouts from 6675 at each α and
