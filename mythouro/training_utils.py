@@ -59,6 +59,8 @@ import torch.nn.functional as F
 from loguru import logger
 from torch.utils.data import IterableDataset, get_worker_info
 
+from mythouro import device as dev
+
 # Importing inside functions where datasets is needed keeps the rest of this
 # module importable from environments that don't have `datasets` installed
 # (CI, lint, smoke tests). Same trick for the MoEFFN / LTIInjection type
@@ -1764,6 +1766,158 @@ def teacher_logits(
         return out.detach()
 
 
+# ---------------------------------------------------------------------------
+# Teacher KV cache (guarded)
+# ---------------------------------------------------------------------------
+#
+# `teacher_logits` above pins use_cache=False because Ouro's custom modeling
+# code crashed when called without `model.generate`'s kwargs — the
+# "cache_position is an int" failure. That was a missing-kwargs problem, not a
+# fundamental one: passing an explicit *tensor* cache_position plus a
+# DynamicCache is exactly what generate() supplies. The cached path cuts the
+# per-token teacher cost during rollouts from O(L) to O(1) forwards.
+#
+# Because custom modeling code makes no API promises, the cached path is
+# gated: the first rollout of a run validates cached-vs-uncached greedy
+# decode; any mismatch or exception permanently falls back to the uncached
+# path for the run (never silently train against wrong teacher logits).
+
+_TEACHER_CACHE_OK: "Optional[bool]" = None
+
+
+def _reset_teacher_cache_gate() -> None:
+    """Test hook: forget the validation verdict (module-level state)."""
+    global _TEACHER_CACHE_OK
+    _TEACHER_CACHE_OK = None
+
+
+def _set_teacher_cache_ok(ok: bool) -> None:
+    global _TEACHER_CACHE_OK
+    _TEACHER_CACHE_OK = ok
+
+
+def teacher_logits_cached(
+    teacher: nn.Module,
+    cur_ids: torch.Tensor,
+    past_key_values,
+    start_pos: int,
+) -> "tuple[torch.Tensor, object]":
+    """
+    One cached teacher decode step. Same no-grad/detach/cross-device
+    discipline as `teacher_logits`; additionally threads `past_key_values`
+    (a `transformers` DynamicCache, created here on first call) and an
+    explicit tensor `cache_position` through the forward.
+
+    Returns (logits, updated_past). Caller passes `updated_past` back on the
+    next step with only the new token(s) in `cur_ids`.
+    """
+    try:
+        teacher_device = next(teacher.parameters()).device
+    except StopIteration:
+        teacher_device = cur_ids.device
+
+    if cur_ids.device != teacher_device:
+        cur_ids = cur_ids.to(teacher_device)
+
+    if past_key_values is None:
+        from transformers.cache_utils import DynamicCache
+        past_key_values = DynamicCache()
+
+    T = cur_ids.shape[1]
+    cache_position = torch.arange(
+        start_pos, start_pos + T, device=teacher_device
+    )
+    with torch.no_grad():
+        out = teacher(
+            input_ids=cur_ids,
+            use_cache=True,
+            past_key_values=past_key_values,
+            cache_position=cache_position,
+        )
+    logits = out.logits if hasattr(out, "logits") else out
+    new_past = getattr(out, "past_key_values", past_key_values)
+    return logits.detach(), new_past
+
+
+def _validate_teacher_cache(
+    teacher: nn.Module,
+    sample_ids: torch.Tensor,
+    n_check: int = 8,
+    tol: float = 5e-2,
+) -> bool:
+    """
+    Startup gate: greedy-decode `n_check` tokens with the cached and the
+    uncached path from the same prefix and compare. Both paths follow the
+    UNCACHED path's greedy choice so they always score the same prefix; the
+    cached path must reproduce the argmax token AND stay within `tol`
+    max-abs logit difference at every step. Any exception or mismatch
+    → False (run falls back to full recompute; a warning is logged).
+    """
+    try:
+        ids = sample_ids[:1].detach()          # single row is enough
+        past = None
+        max_diff = 0.0
+        for i in range(n_check):
+            ref = teacher_logits(teacher, ids)[:, -1, :].float()
+            cur = ids if i == 0 else ids[:, -1:]
+            start = 0 if i == 0 else ids.shape[1] - 1
+            got, past = teacher_logits_cached(teacher, cur, past, start)
+            got = got[:, -1, :].float().to(ref.device)
+            diff = (ref - got).abs().max().item()
+            max_diff = max(max_diff, diff)
+            ref_tok = ref.argmax(dim=-1, keepdim=True)
+            if not torch.equal(ref_tok, got.argmax(dim=-1, keepdim=True)):
+                raise RuntimeError(f"greedy token mismatch at step {i}")
+            if diff > tol:
+                raise RuntimeError(
+                    f"logit divergence {diff:.3e} > tol {tol:g} at step {i}"
+                )
+            ids = torch.cat([ids, ref_tok.to(ids.device)], dim=1)
+        logger.info(
+            f"teacher KV-cache validation PASSED "
+            f"({n_check} steps, max|Δlogit|={max_diff:.2e}) — cached teacher on."
+        )
+        return True
+    except Exception as exc:                                    # noqa: BLE001
+        logger.warning(
+            f"teacher KV-cache validation FAILED ({exc}); "
+            "using full-recompute teacher for this run."
+        )
+        return False
+
+
+def _teacher_cache_usable(teacher: nn.Module, sample_ids: torch.Tensor) -> bool:
+    """Validate once per run (module-level memo), then reuse the verdict."""
+    global _TEACHER_CACHE_OK
+    if _TEACHER_CACHE_OK is None:
+        _TEACHER_CACHE_OK = _validate_teacher_cache(teacher, sample_ids)
+    return _TEACHER_CACHE_OK
+
+
+def _sample_next_token(
+    probs: torch.Tensor,
+    top_k: int,
+    device: torch.device,
+    sample_on_cpu: bool,
+) -> torch.Tensor:
+    """
+    Top-k filter + multinomial draw on a (B, vocab) probability tensor.
+
+    XPU workaround: topk and multinomial segfault on Intel GPUs (observed on
+    Max 1100, torch 2.13+xpu — see the committed workaround stack), so on an
+    XPU device the whole sampling step runs on CPU. CUDA/CPU backends sample
+    in place and skip the device→host hop.
+    """
+    if sample_on_cpu:
+        probs = probs.cpu()
+    if top_k and top_k > 0:
+        k = min(top_k, probs.shape[-1])
+        v, _ = probs.topk(k, dim=-1)
+        probs = probs.masked_fill(probs < v[:, -1:], 0.0)
+        probs = probs / probs.sum(dim=-1, keepdim=True).clamp_min(1e-12)
+    return torch.multinomial(probs, num_samples=1).to(device)
+
+
 @torch.no_grad()
 def generate_rollout(
     student: nn.Module,
@@ -1775,6 +1929,7 @@ def generate_rollout(
     teacher_mix_alpha: float = 0.25,
     temperature: float = 1.0,
     top_k: int = 50,
+    use_kv_cache: bool = True,
 ) -> torch.Tensor:
     """
     Generate an on-policy rollout by autoregressive sampling from the STUDENT,
@@ -1794,40 +1949,76 @@ def generate_rollout(
     SAMPLING pass only; the on-policy loss re-runs the student WITH grad on the
     returned sequence.
 
-    Perf: deliberately-simple correct version — full forward each step for both
-    student and teacher (O(L²)). Keep ``max_new_tokens`` short (recurrent decode
-    is slow); optimise with a kv-cache later (docs/onpolicy_plan.md phase 5).
+    Perf (docs/onpolicy_plan.md phase 5): with ``use_kv_cache=True`` (default)
+    the student decodes incrementally — prefill once, then one-token steps
+    against the shared kv_cache, mirroring ``MythOuro.generate`` — and the
+    teacher runs through the gated cached path (``teacher_logits_cached``;
+    falls back to full recompute if the startup validation gate fails). With
+    a cache the recurrent block emits the ACT-weighted sum (eval semantics),
+    which is what the uncached eval-mode path already produced — the sampling
+    distribution is unchanged. ``use_kv_cache=False`` restores the legacy
+    O(L²) full-recompute path exactly (requires nothing of the student
+    beyond ``student(seq, n_loops=)``, so stub models keep working).
     """
     was_training = student.training
     student.eval()
     device = prompt_ids.device
     seq = prompt_ids
+    prompt_len = prompt_ids.shape[1]
     use_teacher = teacher is not None and teacher_mix_alpha > 0.0
     inv_t = 1.0 / max(temperature, 1e-5)
+    # XPU workaround: topk/multinomial segfault on Intel GPUs → sample on CPU
+    # there (load-bearing); CUDA/CPU sample in place, skipping the sync.
+    sample_on_cpu = dev.backend(str(device)) == "xpu"
+
+    kv_cache: "Optional[dict]" = {} if use_kv_cache else None
+    teacher_cached = (
+        use_teacher and use_kv_cache and _teacher_cache_usable(teacher, seq)
+    )
+    t_past = None
     try:
-        for _ in range(max_new_tokens):
-            s_logits, _ = student(seq, n_loops=n_loops)
+        for i in range(max_new_tokens):
+            # ── Student forward: prefill once, then one-token cached steps ──
+            if not use_kv_cache:
+                s_logits, _ = student(seq, n_loops=n_loops)
+            elif i == 0:
+                s_logits, _ = student(
+                    seq, n_loops=n_loops, kv_cache=kv_cache, start_pos=0
+                )
+            else:
+                s_logits, _ = student(
+                    seq[:, -1:], n_loops=n_loops,
+                    kv_cache=kv_cache, start_pos=prompt_len + i - 1,
+                )
             probs = torch.softmax(s_logits[:, -1, :].float() * inv_t, dim=-1)
+
+            # ── Teacher mix (cached when the gate passed, else recompute) ──
             if use_teacher:
-                t_logits = teacher_logits(teacher, seq)
+                if teacher_cached:
+                    cur = seq if i == 0 else seq[:, -1:]
+                    start = 0 if i == 0 else seq.shape[1] - 1
+                    try:
+                        t_logits, t_past = teacher_logits_cached(
+                            teacher, cur, t_past, start
+                        )
+                    except Exception as exc:                    # noqa: BLE001
+                        logger.warning(
+                            f"cached teacher failed mid-rollout ({exc}); "
+                            "falling back to full recompute for this run."
+                        )
+                        _set_teacher_cache_ok(False)
+                        teacher_cached = False
+                        t_logits = teacher_logits(teacher, seq)
+                else:
+                    t_logits = teacher_logits(teacher, seq)
                 t_last = t_logits[:, -1, :].to(device).float()
                 t_probs = torch.softmax(t_last * inv_t, dim=-1)
                 probs = (
                     teacher_mix_alpha * t_probs
                     + (1.0 - teacher_mix_alpha) * probs
                 )
-                
-            # XPU workaround: topk and multinomial often segfault on Intel GPUs.
-            # Perform all sampling logic on CPU.
-            probs = probs.cpu()
-            
-            if top_k and top_k > 0:
-                k = min(top_k, probs.shape[-1])
-                v, _ = probs.topk(k, dim=-1)
-                probs = probs.masked_fill(probs < v[:, -1:], 0.0)
-                probs = probs / probs.sum(dim=-1, keepdim=True).clamp_min(1e-12)
-            
-            next_tok = torch.multinomial(probs, num_samples=1).to(device)
+
+            next_tok = _sample_next_token(probs, top_k, device, sample_on_cpu)
             seq = torch.cat([seq, next_tok], dim=1)
     finally:
         if was_training:

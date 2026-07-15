@@ -96,6 +96,7 @@ from mythouro.variants import (
     mythouro_500b, mythouro_1t,
 )
 from mythouro import device as dev
+from mythouro.rollout import RolloutBuffer, rollout_with_retry
 
 
 _VARIANT_FUNCS = {
@@ -207,6 +208,25 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--onpolicy-top-k", type=int, default=50,
                    help="Top-k filter for on-policy rollout sampling (0=off). "
                         "Used only when --onpolicy-lambda > 0.")
+    p.add_argument("--rollout-batch", type=int, default=16,
+                   help="Sequences generated per WIDE rollout call. Decode "
+                        "cost is amortised across this batch (latency-bound "
+                        "accelerators only win wide), then served to the "
+                        "training loop in micro-batch slices via the reuse "
+                        "buffer. Scale up against accelerator memory.")
+    p.add_argument("--rollout-reuse", type=int, default=2,
+                   help="Times each buffered rollout batch is consumed before "
+                        "a forced refill. >1 is deliberate mild off-policyness "
+                        "(GKD tolerates it) that multiplies on-policy dose per "
+                        "decode-second.")
+    p.add_argument("--rollout-max-age-steps", type=int, default=50,
+                   help="Force a rollout-buffer refill after this many "
+                        "optimizer steps regardless of remaining reuse "
+                        "(staleness cap).")
+    p.add_argument("--rollout-legacy", action="store_true",
+                   help="Escape hatch: inline per-micro-step rollout "
+                        "generation with full O(L^2) recompute (the "
+                        "pre-buffer, pre-KV-cache behaviour).")
     p.add_argument("--use-sandwich-norm", action="store_true",
                    help="Huginn sandwich norm (extra post-sublayer RMSNorm in "
                         "every TransformerBlock) — recurrent hidden-state-collapse "
@@ -418,6 +438,19 @@ def main():
     shutdown = ShutdownHandler()
     shutdown.install()
 
+    # Rollout reuse buffer (docs/onpolicy_plan.md phase 5): decouple the wide
+    # GENERATION batch from the training micro-batch. --rollout-legacy keeps
+    # the old inline per-micro-step path.
+    rollout_buffer = (
+        None
+        if (args.rollout_legacy or args.onpolicy_lambda <= 0.0)
+        else RolloutBuffer(
+            args.rollout_batch, args.micro_batch,
+            reuse=args.rollout_reuse,
+            max_age_steps=args.rollout_max_age_steps,
+        )
+    )
+
     # ------------------------------------------------------------------
     # Training loop
     # ------------------------------------------------------------------
@@ -468,15 +501,48 @@ def main():
             )
             if is_onpolicy:
                 seed_len = max(8, args.rollout_len // 4)
-                with amp_ctx:
-                    rollout = generate_rollout(
-                        student, teacher, x[:, :seed_len],
-                        n_loops=n_loops,
-                        max_new_tokens=args.rollout_len,
-                        teacher_mix_alpha=args.teacher_mix_alpha,
-                        temperature=args.onpolicy_temp,
-                        top_k=args.onpolicy_top_k,
-                    )
+                if rollout_buffer is None:
+                    # Legacy escape hatch: inline per-micro-step generation.
+                    with amp_ctx:
+                        rollout = generate_rollout(
+                            student, teacher, x[:, :seed_len],
+                            n_loops=n_loops,
+                            max_new_tokens=args.rollout_len,
+                            teacher_mix_alpha=args.teacher_mix_alpha,
+                            temperature=args.onpolicy_temp,
+                            top_k=args.onpolicy_top_k,
+                            use_kv_cache=not args.rollout_legacy,
+                        )
+                else:
+                    if rollout_buffer.needs_refill(step):
+                        # Accumulate rollout_batch seed rows from the corpus
+                        # stream (the current micro-batch plus as many more
+                        # as needed), then ONE wide generate call.
+                        seeds = [x[:, :seed_len]]
+                        n_rows = x.shape[0]
+                        while n_rows < rollout_buffer.rollout_batch:
+                            try:
+                                xs, _ = next(data_iter)
+                            except StopIteration:
+                                data_iter = iter(loader)
+                                xs, _ = next(data_iter)
+                            xs = xs.to(device, non_blocking=True)
+                            seeds.append(xs[:, :seed_len])
+                            n_rows += xs.shape[0]
+                        seed_batch = torch.cat(seeds, dim=0)
+                        seed_batch = seed_batch[: rollout_buffer.rollout_batch]
+                        with amp_ctx:
+                            wide = rollout_with_retry(
+                                generate_rollout,
+                                student, teacher, seed_batch,
+                                n_loops=n_loops,
+                                max_new_tokens=args.rollout_len,
+                                teacher_mix_alpha=args.teacher_mix_alpha,
+                                temperature=args.onpolicy_temp,
+                                top_k=args.onpolicy_top_k,
+                            )
+                        rollout_buffer.fill(wide, step)
+                    rollout = rollout_buffer.draw()
                 x_in, y_in = rollout[:, :-1], rollout[:, 1:]
                 # Sampled tokens aren't gold → pure soft divergence (targets=None
                 # makes distillation_loss drop the hard-CE term).
