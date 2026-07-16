@@ -1,0 +1,96 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-16 05:35:39.521 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1614 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=xpu:0). Teacher frozen.
+2026-07-16 05:35:40.758 | WARNING  | mythouro.main:warn_once:85 - GQAttention: using manual SDPA fallback (neither FA2 nor torch SDPA available).
+[probe] loaded checkpoints_onpolicy_xpu/step_0012000.pt (step 12000) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.20 [0.08-0.38] | distinct1 0.54 [0.47-0.62] | distinct2 0.82 [0.65-0.95] | n=3
+    e.g.: ' find a high, when I’ve an alternative in the original point by a single 12. This question is a very long, but actually the time here is the same at the right. But why we got the 6678 of a year. How do you think you are only a big to get with the 129. In the first 8000 – 2016. If you look at the end. It is'
+
+  α=0.25 | top_share 0.10 [0.08-0.12] | distinct1 0.57 [0.49-0.62] | distinct2 0.89 [0.83-0.93] | n=3
+    e.g.: " go in the day, so, no. The rest in your own post, I can do an image, but the very good is from the middle, but you could also need to keep a good place. What happened to the original as the problem has the first two of the other. So, that is a first time I did a lot of them, but in a first time now when you can do like that it's what you can feel, but what I want to"
+
+  α=0.5  | top_share 0.11 [0.07-0.15] | distinct1 0.56 [0.49-0.60] | distinct2 0.87 [0.83-0.93] | n=3
+    e.g.: ' play the game of one on the same day.\n\n"In the land, the total 40, 450, and the total of 42 (in the two categories of the category and in the 3rd, in the 4th, in the last five days of the 3rd of the 5) 52 years. "There are 21 players were the most active " and all the members were at war in'
+
+  α=0.7  | top_share 0.10 [0.07-0.16] | distinct1 0.63 [0.52-0.75] | distinct2 0.93 [0.86-0.97] | n=3
+    e.g.: " go sight, but it was a short. In the day the weather changed before the bus left, the bus ride, it didn't rain on it for the day- long trip. The trip to the capital, we had a guide, the guide was in the front seat. The reason the guide said the bus's route was, or the reason the guide said that they'd take a different path as the path, which was not as the bus-route, the bus route"
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.34 [0.11-0.65] | distinct1 0.35 [0.20-0.46] | distinct2 0.65 [0.38-0.82] | n=3
+    e.g.: ' treating a significant, when the underlying type, in those\nand,\n\nWhat would be the total number of 500 people that are the\n\n*\n\nThe most common treatment (and the most significant.\n\nA:\n\nThe\n\nThe\n\n[158505025024223232007\n\nIs the\n\nThe\n\n**\n\nT\n\nIn'
+
+  α=0.25 | top_share 0.14 [0.08-0.18] | distinct1 0.48 [0.31-0.59] | distinct2 0.84 [0.77-0.94] | n=3
+    e.g.: " the human immune/response which must be in the patient, which in the case of the patient they found in the same, the ability to fight the same, at the time they can be the the patient's. a strong human treatment of the in the case of the overall medical approach as the first. Is, he is a part of the in the\n\nis not there no. That's a new case of the. The second-and I think\n\nThat's"
+
+  α=0.5  | top_share 0.11 [0.08-0.12] | distinct1 0.55 [0.52-0.57] | distinct2 0.91 [0.88-0.94] | n=3
+    e.g.: " antibiotic and antibiotics are, like so on the 109th of them have a negative impact of the human, the more the same number of the 50-and 60's, is a negative health effect. Which is a negative and is the same. 3. The effect is and the same. and then from in this: that is also the same. In my opinion, it is not\n\nPay Someone To Your Your Online Ex\n\n"
+
+  α=0.7  | top_share 0.10 [0.07-0.14] | distinct1 0.56 [0.41-0.64] | distinct2 0.87 [0.75-0.95] | n=3
+    e.g.: ' the use of genetic markers, but there are many bacteria, for which it is not easy to test for these genetic and its difficult to get them in a normal way.\nHow are the bacteria being used in these examples of the medical community and the scientific community.\nWhen the human genome is edited, the person is not affected, the main benefit of editing genes is that we can use your own genetic markers based on individual samples from your genetic history, as opposed to your genetic'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.46 [0.38-0.52] | distinct1 0.27 [0.21-0.32] | distinct2 0.48 [0.38-0.54] | n=3
+    e.g.: ' "the "..." and "  " " + 65)\n\n" \n" " " ")\n\nI have to make the whole " " " " ,\n\n" and " " " " "  " " " " " " " " " " " " " " " " "\n"\n\n"\n\n"\n\n"\n\n"\n\n"\n\n\n"\n\n"\n\n" " " "\n\n""'
+
+  α=0.25 | top_share 0.37 [0.17-0.58] | distinct1 0.32 [0.10-0.43] | distinct2 0.57 [0.15-0.85] | n=3
+    e.g.: ' a specific health. It is a primary, the first few people who are.\nH.\n\nM.\n\nQuestion: What does the author say, in the given\npass the given passage, a little\nis the\nA.\n\nand the best of the two\n\nA\n\nand the\nB\n\nbest\n\nI\n\nis\nand\n\nthe\n\nbest\n\nto make\n\na\n\nthe\n\n'
+
+  α=0.5  | top_share 0.08 [0.06-0.08] | distinct1 0.59 [0.47-0.70] | distinct2 0.92 [0.89-0.95] | n=3
+    e.g.: ' polyuria, this particular is because glucose from a high, a blood is taken in a 11-day. They help get a proper diet and its also related to a 34-day (5th) 2005 and 21,937 5445 (4149.03515) in the 34-day-10067. When you get a single blood sugar'
+
+  α=0.7  | top_share 0.12 [0.08-0.19] | distinct1 0.61 [0.56-0.66] | distinct2 0.87 [0.81-0.92] | n=3
+    e.g.: " increased thirst, frequent urination, fatigue, or blurred vision. It's not exclusive to children; it primarily affects adults. So you get type 2 diabetes, you could not, even though you know you could have the symptoms. So you can have the health, you could be eating your vegetables for a lot of months before you know that the following that type 2 diabetes does, if you just get blood work in a\n\nQuestion: At the 8-minute mark"
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.25 [0.12-0.50] | distinct1 0.45 [0.29-0.59] | distinct2 0.79 [0.51-0.98] | n=3
+    e.g.: ' the\n\n-A lot of the "t-n" for a certain, in the following, the following, for the "117"\n\n\n:\n\nand and/S. in the form\n\n(t-2) 14 (a, A) and 277 99\nof a, and, i c)\n\n(7662\n\nI am not as a part of this this this of'
+
+  α=0.25 | top_share 0.41 [0.08-0.72] | distinct1 0.38 [0.24-0.53] | distinct2 0.64 [0.35-0.92] | n=3
+    e.g.: ' one-third (18) or higher and for any.\n\n- The use of a single dose or the two of the,\n\n- The ability to do it without taking a a  and to. You can say, you\'ll have to be a good. 55, you have a " 1, and in that there is only one time, you know, in the first case, there is one, in the same for the second case.'
+
+  α=0.5  | top_share 0.10 [0.07-0.12] | distinct1 0.57 [0.49-0.61] | distinct2 0.91 [0.89-0.92] | n=3
+    e.g.: ', among the many non-selective-NSAIDs, which affect the same enzyme (CO) as well an other-non selective-COX: cyclo. This drug should have a significant (positive) impact as the most common.\nC1724273879\n\nC043 (COX) enzymes (with\n\nC\n\nThis can be used to treat the conditions of the most common (C) to be'
+
+  α=0.7  | top_share 0.08 [0.07-0.08] | distinct1 0.58 [0.52-0.61] | distinct2 0.87 [0.80-0.91] | n=3
+    e.g.: ' the symptoms of osteoarthritis.\nD3.3.3 Explain how a variety of interventions should be considered in the management of the condition.\nExamples could include physiotherapy to be able to move their hip better, a hip replacement and other types of therapy, like acupuncture.\n\nQuestion: Which drug is commonly used in the management of the condition with a 30-minute half ½ life?\nAnswer: What is the half-life of the the drug? Well'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.24 [0.09-0.36] | distinct1 0.31 [0.19-0.40] | distinct2 0.66 [0.56-0.81] | n=3
+    e.g.: '\n    return (222222222222222222222222222222220*a22244.0441\n\n\ndef f:\n\nfor_l(p_s, x) as m = 0\n\ny = [a[361] + (15 - 100001)  \n'
+
+  α=0.25 | top_share 0.14 [0.10-0.18] | distinct1 0.50 [0.47-0.52] | distinct2 0.83 [0.76-0.87] | n=3
+    e.g.: "\n    with open_in_from_all(fib, p.get_x_p(g)):\n    aaa1t.x_p = '0'\n    aaa=m._160.1172.8562\n    a_f = 15a (1 + a[1](x: 7.0*a, y.2.2))  # 1111\n    # 1"
+
+  α=0.5  | top_share 0.15 [0.07-0.24] | distinct1 0.38 [0.30-0.52] | distinct2 0.78 [0.75-0.81] | n=3
+    e.g.: '\n    from functools import randomize\n    randomize()\n    (first,second=0,1)\n    while True:\n        # print(first)\n        # print(e)\n        # print("testing" + " ")\n        if (first >= n == 0)\n        # print(first,  last\n        # return first, second\n        yield\n    # print(first)\n    first = first + 2 * second.\n\n    @property\n    def is_test_'
+
+  α=0.7  | top_share 0.10 [0.07-0.14] | distinct1 0.53 [0.45-0.60] | distinct2 0.82 [0.74-0.94] | n=3
+    e.g.: ' if n <= 1): return (True, 0) a, b = 0? Well, maybe better to return the tuple, as per the example.\nSo, for example, the sample case: fibonacci, n 3 gives true 2, so with the function (a tuple) that is returned, since the output is is_valid, result. Thus, for the first call, the first row of the table would have true 0,'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.19 [0.07-0.32] | distinct1 0.30 [0.12-0.44] | distinct2 0.69 [0.52-0.87] | n=3
+    e.g.: ' 6, 3\n\nQuestion: Is the third expression of the following equation for the inverse, 121, 3163, 3, as in the same 96,21, 0.5100. The following equation is. (1000) -2,2)\n\nAnswer: 11.25: 16-22222222222'
+
+  α=0.25 | top_share 0.16 [0.10-0.20] | distinct1 0.34 [0.30-0.39] | distinct2 0.78 [0.76-0.80] | n=3
+    e.g.: ' 0\n\n#\n0 2021 (5)\n\n#\n0.06773102\n\n##99,2030\n\n# 3  0 81694\n\n# \n\n #3002.\n\n# The solution to the quadratic equation x^25 (x111) is (2231) for the\n\n##44'
+
+  α=0.5  | top_share 0.10 [0.08-0.11] | distinct1 0.66 [0.60-0.74] | distinct2 0.92 [0.92-0.93] | n=3
+    e.g.: " 0\n\nand find the roots to be 2 and 4. So let me do a quick check 2*(2) which is 45. Let's see, x is 2= 1)  (x+1)(1-x/2) when a=1\n\nwhich is a 4th order polynomial equation. Now, here's the following method i have to use this for every 4x... in which you're"
+
+  α=0.7  | top_share 0.10 [0.05-0.14] | distinct1 0.53 [0.41-0.62] | distinct2 0.79 [0.71-0.85] | n=3
+    e.g.: ' 0\n\n\nOkay, I am working back through the math problems here and I need to solve the quadratic equation \\sqrt{x} - \\frac{1}{\\sqrt{x}} = \\sqrt{x^2 - 1} - \\pi^x^2. Wait... wait, I think you want me to be an expert in algebra or the like...\n\nFirst: I need to have a square equation, so maybe I need to manipulate terms'
+

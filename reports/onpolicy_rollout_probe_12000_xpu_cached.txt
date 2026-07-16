@@ -1,0 +1,97 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-16 04:53:35.551 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1614 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=xpu:0). Teacher frozen.
+2026-07-16 04:53:36.827 | WARNING  | mythouro.main:warn_once:85 - GQAttention: using manual SDPA fallback (neither FA2 nor torch SDPA available).
+2026-07-16 04:53:48.405 | INFO     | mythouro.training_utils:_validate_teacher_cache:1892 - teacher KV-cache validation PASSED (8 steps, max KL=9.04e-03 nats) — cached teacher on.
+[probe] loaded checkpoints_onpolicy_xpu/step_0012000.pt (step 12000) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.62 [0.34-0.76] | distinct1 0.16 [0.09-0.24] | distinct2 0.26 [0.15-0.39] | n=3
+    e.g.: " find it it's\n\nThe answer. The in\n\nIfIf\n\nThe first [TheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheC\n\nYes\n\nAfter\n\nWeThenNext__t__L____m________F_____________"
+
+  α=0.25 | top_share 0.72 [0.44-0.88] | distinct1 0.17 [0.08-0.31] | distinct2 0.26 [0.14-0.51] | n=3
+    e.g.: ' go in. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\n\n*Coming to to the the the the the'
+
+  α=0.5  | top_share 0.35 [0.30-0.39] | distinct1 0.27 [0.21-0.31] | distinct2 0.47 [0.32-0.56] | n=3
+    e.g.: ' play the game of of survival and and and to do 1 - . . . . . . . . . . . . . . . . . . . . . ( . . . . . . . . )\n\n53700107472766444\n\nand the main problem is is to write to to a a to a c is is is is is is is is is is is is is is is is'
+
+  α=0.7  | top_share 0.12 [0.10-0.15] | distinct1 0.52 [0.50-0.55] | distinct2 0.86 [0.78-0.91] | n=3
+    e.g.: " go go on on the first day of. In the day we saw lots of animals. The next day of weather, it is is not clear\n(rain). So, we decided to do different things. We went to go to a different zoo. in in in the the the the the third day, it's clear,, or the , the weather. Today I am going going to be a zookeeper, and I will keep the the animals and the the weather the"
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.55 [0.30-0.83] | distinct1 0.13 [0.05-0.25] | distinct2 0.24 [0.06-0.51] | n=3
+    e.g.: ' treating a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a\n\n*\n\nThe\n\n**\n\nThe\n\n. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .'
+
+  α=0.25 | top_share 0.65 [0.45-1.00] | distinct1 0.17 [0.01-0.26] | distinct2 0.26 [0.01-0.43] | n=3
+    e.g.: ' the human immune and and which other other function function can have effects effects in in addition after, they to the most common in the the the the the the the the the the the the the the the the the. a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a\n\n- The'
+
+  α=0.5  | top_share 0.41 [0.12-0.89] | distinct1 0.28 [0.08-0.38] | distinct2 0.48 [0.13-0.71] | n=3
+    e.g.: ' antibiotic and and and, like in in the case of of the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the'
+
+  α=0.7  | top_share 0.26 [0.14-0.40] | distinct1 0.40 [0.40-0.41] | distinct2 0.69 [0.59-0.77] | n=3
+    e.g.: ' the use of of of antibiotics that kill or or or inhibit the growth of the bacteria. Antibiotics that they are very effective in in treating infections are are very effective but do do the are but do not do to have side-effects, particularly as as as the the more effective the antibiotics are, the more severe the side-effects of the are are are are. In in addition in in to the side--Effects of of the antibiotics are also include include the development of of'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.68 [0.30-0.99] | distinct1 0.11 [0.02-0.21] | distinct2 0.24 [0.03-0.51] | n=3
+    e.g.: ' "A4433330006568874……...1000011?\n\nWhat3338667544499877221444422233499\n\nIt is an an an an an an an an an an an an an an an an an an an an an an an an an an an an an'
+
+  α=0.25 | top_share 0.35 [0.27-0.47] | distinct1 0.27 [0.21-0.32] | distinct2 0.51 [0.43-0.56] | n=3
+    e.g.: ' a a a a a a a a a a a a a a a.\nH.\n\n**In a clinical\n\n*\n\n****\n\n\n.\n\n****\n\n****(\n\nB\n\n*******\n\n**\n\n)**\n\n.**\n\n******\n\nThe\n\nThis\n\nBB\n\n(\n\nTheTheThe\n\n<\n\n\n\n\n\n\na\n\n\n\n\n'
+
+  α=0.5  | top_share 0.50 [0.25-0.94] | distinct1 0.22 [0.07-0.35] | distinct2 0.34 [0.07-0.52] | n=3
+    e.g.: ' polyuria, pol.\n\n.\n\nThe initial treatment of of .\n\n*\n\n11) which, and and and which this this and and and and\n\n*\n\n\n\n\n\n\n\n*\n\n\n\n\n\n**\n\n\n\n\n\n\n\n\n*\n\n\n\n\n\n*\n\n\n\n*\n\n*\n\nThe\n\n\n\n***\n\n\n***\n\n***\n\n***(\n\n\n*.\n\n*\n\n\n'
+
+  α=0.7  | top_share 0.34 [0.10-0.51] | distinct1 0.32 [0.23-0.46] | distinct2 0.50 [0.37-0.76] | n=3
+    e.g.: ' increased thirst, frequent urination, fatigue damage to vital\n\n##\n**Numericalical: A Toolbox\nfor 479*\n\nNN**\n\n******\n\n**\n\n****\n\n****\n\n**\n\n**Numericalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalicalical'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.55 [0.26-0.99] | distinct1 0.10 [0.02-0.18] | distinct2 0.16 [0.03-0.26] | n=3
+    e.g.: ' the\n\naA3/68\n\nni\n\n*\n\n[[[B----------------------\n\n( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) )'
+
+  α=0.25 | top_share 0.56 [0.32-0.95] | distinct1 0.11 [0.04-0.15] | distinct2 0.19 [0.07-0.24] | n=3
+    e.g.: ' one one of the following in in in my and and and and and and and and and and and and and and the the the the the the the the the the the the and and and and and the and and. You\n\n# The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The, with with the the the the the the the the the the the the the the'
+
+  α=0.5  | top_share 0.31 [0.10-0.57] | distinct1 0.30 [0.18-0.43] | distinct2 0.56 [0.36-0.73] | n=3
+    e.g.: ', among the many non----non\n\nThe. So the the main nonsteroidal. The main other\n\nthe main main.\n\n\n\n\n2474\n\nnonsteroidal ( ( (the the the (nonsteroidal). ( (non? The main ( ( ( ( (nonnonnon) ) ) ( ( (the the ( ( ( (the the main is is the the the the the ( (thethethe ( ( ( ( ('
+
+  α=0.7  | top_share 0.10 [0.08-0.10] | distinct1 0.53 [0.48-0.56] | distinct2 0.83 [0.74-0.89] | n=3
+    e.g.: ' pain, fever, and and and acute muscle pain.\n\nIn In 1997, the United States\n\n"In 1997000, when many patients were are a few years and more for several months, it is recommended to use high and low\n\nIn 2030, if you\n\nInIn 1997, it\'s recommended to to the\n\nIt was recommended to the the the of'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.55 [0.49-0.64] | distinct1 0.08 [0.07-0.10] | distinct2 0.14 [0.12-0.17] | n=3
+    e.g.: '\n    return return = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ========(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((('
+
+  α=0.25 | top_share 0.57 [0.45-0.78] | distinct1 0.17 [0.12-0.21] | distinct2 0.28 [0.18-0.37] | n=3
+    e.g.: '\n    with with_in_\nprint(fib\n111111111111111111111111111111110.11111111111\n```\n\n\n\nThis\n\nFor\n\n,\n\n#####*\n\n######################\n\n##########'
+
+  α=0.5  | top_share 0.29 [0.12-0.42] | distinct1 0.33 [0.26-0.46] | distinct2 0.57 [0.47-0.76] | n=3
+    e.g.: '\n\nif n == ==1 or n==0 (for for this\n\nn\n\n?\n\nYes.\n\nA.\n\nWell, for ( 11113 11 ) ) ) ) 111111111500 \n\n#\n\nH0000000000000000000000000000'
+
+  α=0.7  | top_share 0.30 [0.21-0.43] | distinct1 0.37 [0.28-0.45] | distinct2 0.61 [0.56-0.65] | n=3
+    e.g.: ' if n <= 11: return n + +  这个函数. 比�\n\nWait. 这个的的.\n\nThe task is to write the base as a a base function 的。 � 的. 一个,是的的的的的的的的的的的的的的的的的的的的的的的的的的的的的的的的的的的的的'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.57 [0.33-0.72] | distinct1 0.11 [0.09-0.15] | distinct2 0.19 [0.13-0.24] | n=3
+    e.g.: ' 66 3\n\nQuestion ( ( (2222220000322222211100000000000000000000000000000000000000000000000000000000000000000'
+
+  α=0.25 | top_share 0.65 [0.46-0.78] | distinct1 0.10 [0.07-0.11] | distinct2 0.20 [0.15-0.28] | n=3
+    e.g.: ' 0000\n000000 ( ( )\n\n********\n**********\n\n****\n\n****************************************\n\n***************\n\n************************************************************\n'
+
+  α=0.5  | top_share 0.34 [0.26-0.42] | distinct1 0.31 [0.22-0.36] | distinct2 0.54 [0.42-0.60] | n=3
+    e.g.: ' 0\n\nand find the roots to be 2 and and  해겲이_   、、，\n\n잪�須�\n\n�\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n�\n\na/b\n\n\n\n\n\n \n\n\n\n\n\n\n\n\nTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheTheThe'
+
+  α=0.7  | top_share 0.14 [0.07-0.17] | distinct1 0.43 [0.29-0.58] | distinct2 0.70 [0.49-0.88] | n=3
+    e.g.: ' 0\n\n\nOkay, I need to solve the the quadratic equation x² -5,x +64? Wait, but the problem says x.\n\nWaitI\'m sorry! It seems there was an error in the a a. Please check the problem to to confirm it...\n\nOh. The quadratic equation x x² -56=0 is...\n\nWait: but and the the equation given is"x^2 - 2 x'
+

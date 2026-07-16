@@ -1,0 +1,97 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-16 05:17:44.764 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1614 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=xpu:0). Teacher frozen.
+2026-07-16 05:17:46.020 | WARNING  | mythouro.main:warn_once:85 - GQAttention: using manual SDPA fallback (neither FA2 nor torch SDPA available).
+2026-07-16 05:17:57.362 | INFO     | mythouro.training_utils:_validate_teacher_cache:1892 - teacher KV-cache validation PASSED (8 steps, max KL=5.33e-03 nats) — cached teacher on.
+[probe] loaded checkpoints_onpolicy/step_0009780.pt (step 9780) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.28 [0.12-0.36] | distinct1 0.32 [0.22-0.42] | distinct2 0.55 [0.36-0.69] | n=3
+    e.g.: ' find a new new T C. . . The 66.\n\nFor\n\nIB\n\nAt, A A A A A A A A A A A A A A A A A A A A A A A A\n\nC. 11111447. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .'
+
+  α=0.25 | top_share 0.16 [0.10-0.23] | distinct1 0.38 [0.31-0.44] | distinct2 0.72 [0.56-0.82] | n=3
+    e.g.: ' go in. This\n\nTo help help help get... ... A B, 22140, a.\n\nAnswer\n\nB\n\n"C-1300A.E.K44: A S1220011210411110A. The  00055359958_3486999933333'
+
+  α=0.5  | top_share 0.12 [0.10-0.15] | distinct1 0.51 [0.43-0.61] | distinct2 0.84 [0.76-0.91] | n=3
+    e.g.: ' play the game of of survival and the game starts as 1 - .\n\nYou need    𝑚 \ncoins to win this game.\n\nWe have two piles- one...\n\n \n\n\n\n5370010447:  6444 - - - - - - - - 5220010521.........\n\n\n\n- - -  ........\n\n'
+
+  α=0.7  | top_share 0.11 [0.09-0.12] | distinct1 0.58 [0.54-0.62] | distinct2 0.91 [0.88-0.94] | n=3
+    e.g.: ' go all the way from Aqq. In the day we saw 1100 m of of 3-4 m high rock\n(Por-a--Shik -5100 m) in a steep valley. The rock is at at the edge of a a huge snowfield (5, or the like). We reached the camp ...\n28.0000000 (WGS---844'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.38 [0.27-0.49] | distinct1 0.29 [0.20-0.35] | distinct2 0.57 [0.36-0.76] | n=3
+    e.g.: ' treating a protein protein protein protein protein protein protein protein protein protein protein protein protein protein protein tissue\nH001 00000 A\n\nThe\n\nThe\n\n"Is\n\nThe A A. . . a...\n\nThe\n\nThis\n\n[[]]]]\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+
+  α=0.25 | top_share 0.26 [0.15-0.44] | distinct1 0.36 [0.31-0.42] | distinct2 0.65 [0.54-0.71] | n=3
+    e.g.: ' the DNA of of of which the the same as as as as as the host, ( (and to the most common) 11% 00000\n\n\nS_PK\n. a\n\n(122944400000000, ( (526310\n\nR778644441111111,, II\n\n--'
+
+  α=0.5  | top_share 0.22 [0.10-0.29] | distinct1 0.37 [0.27-0.43] | distinct2 0.71 [0.58-0.81] | n=3
+    e.g.: ' antibiotic therapy ( (a) ) ______  \naa\n\n\nThe correct answer is d)\n\nIn the context of the the sentence\n\nThe treatment\n\nand treatment--l-ing,\n\n## Explanation\n\nThe The correct\n\nanswer.\n\nthe correct answer is and the explanation\n\n#### in In the sentence \nin the\n\nIt\n\n##\n\n\n#### ## The\n\n########'
+
+  α=0.7  | top_share 0.13 [0.10-0.17] | distinct1 0.56 [0.51-0.59] | distinct2 0.89 [0.88-0.89] | n=3
+    e.g.: ' the use of of of the treatment for a bacterial infection, the use of antibiotic drugs is typically required. These antibiotics and antimicrobials are are are specifically designed to do that the bacteria or to kill bacterial cells. The specific antibiotic, or and choice, and the effectiveness of the choice depends on factors such as the type of of of the and bacteria causing the infection, which which region you are may be, and a sensitivity of the may may also depends also also be on on'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.25 [0.16-0.41] | distinct1 0.31 [0.25-0.40] | distinct2 0.51 [0.43-0.61] | n=3
+    e.g.: ' the clinical health health and and and and and the health is the\n\n\n\n"A……\n\n[F]]]]?\n\nWhat a\n\n###\n\nThe \n\n...\n\n********************\n\n****<\n\n[[[][][][][][][][][]]]]]]]]]]]]]]}'
+
+  α=0.25 | top_share 0.27 [0.21-0.32] | distinct1 0.37 [0.31-0.41] | distinct2 0.64 [0.56-0.69] | n=3
+    e.g.: ' a higher than normal blood sugar level, is the first 222.\nH.\n\n**In a clinical evaluation test by an endocr-11\n.\n\n**-285(\n\nB\n\n-15111/ 22222 -1_7447441722\n\n(\n\n\n\n\n\nWhat\n\nAAA A A A A A A'
+
+  α=0.5  | top_share 0.26 [0.12-0.41] | distinct1 0.40 [0.28-0.53] | distinct2 0.60 [0.37-0.80] | n=3
+    e.g.: ' polyuria, pol.\n\nHow How To Lower Blood Blood sugar is the sugar?\n\n* How To Lower Blood Sugar how a person can tell if it would help\n\n** * *\n\n* * * * * *\n\n* * * * *\n\n* * * * * *\n\n* * * * * * * * * * * * * * * * *\n\n**** * * * * * * *'
+
+  α=0.7  | top_share 0.21 [0.06-0.35] | distinct1 0.49 [0.36-0.69] | distinct2 0.73 [0.59-0.96] | n=3
+    e.g.: ' increased thirst, frequent urination, fatigue damage to vital\norgans such as kidneys, eyes, and the nervous system. The 479 million people worldwide in in the first two decades of the twenty-first century  (2005–00%2) and it is for the highest prevalence in Africa.\n\nWhat is obesity??\n\n\nObesity, A condition where an individual has too much\n\nfat in the the 888 million'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.41 [0.34-0.49] | distinct1 0.28 [0.22-0.32] | distinct2 0.48 [0.34-0.57] | n=3
+    e.g.: ' the\n\naA... ...  "\nIt is a for . . . , ,  0, a a a a, B\n\nB\n\n...\nand and A, " "  \n\n\n******c (\n\n, A A A 277099\n\n***************************'
+
+  α=0.25 | top_share 0.41 [0.26-0.57] | distinct1 0.27 [0.12-0.40] | distinct2 0.51 [0.25-0.76] | n=3
+    e.g.: " one one of the following in the same way as as you the first most common common\n\nAndAnd\n\nIf you think can,\n\n**I'm.\n\n*II  and can. You\n\n******\n\n\n\n\n\n\n\n\n\n\n\n\nH \n\n************************\n\nThe\n\n**\n\n*\n\n\n\n\n\n\n"
+
+  α=0.5  | top_share 0.28 [0.09-0.56] | distinct1 0.30 [0.20-0.35] | distinct2 0.53 [0.33-0.65] | n=3
+    e.g.: ', among the many non----non\n\nThe. So the most common nonsteroidal. The most common nonsteroidal(C) which have the the best chance for the most at the (C) which the the (C.\n\n"I2427337"\n\nThe most common non ( (C)  (C\n\nThe most common is that the most common is that ( ( (CC33332'
+
+  α=0.7  | top_share 0.17 [0.15-0.21] | distinct1 0.58 [0.54-0.61] | distinct2 0.84 [0.82-0.86] | n=3
+    e.g.: ' the symptoms of osteoarthritis.\nD3\nVitamin D3 helps your body process calcium, which plays an an an essential\nrole in healthy. (Betheth\nD3 is important for maintaining muscle, a)\n\nQuestion-the doctor is seeing your father and\n\n"My\n\ndoctor\'s\n\n--isisis\n\n-his 10 111\n\nfather is the\n\n-heheh the\n\n-'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.23 [0.16-0.35] | distinct1 0.25 [0.18-0.35] | distinct2 0.53 [0.46-0.57] | n=3
+    e.g.: '\n\n            return return return____________1111.f200000___f__10************\n\n \n\n\n*====((1136081)\n\n(\n\n****(aa3611100000000001111'
+
+  α=0.25 | top_share 0.36 [0.26-0.43] | distinct1 0.29 [0.26-0.34] | distinct2 0.52 [0.48-0.57] | n=3
+    e.g.: '\n    return n l r_\nprint((fib1111100000000000000000000000001, fib\n\n* 2) 5 - **  \n```python\n\naa ( (\n\n\n\n**A:   〼�\n\n****A:    ,**\n\n******AA'
+
+  α=0.5  | top_share 0.17 [0.09-0.27] | distinct1 0.38 [0.35-0.40] | distinct2 0.76 [0.68-0.81] | n=3
+    e.g.: "\n\nif n e...\n\nIf that's the next second,\n\nn.\n\nif if...\n\n\n\nBut here is that that that is 11003653344397440000.\n\nBut I think,\n\n\n\nif if n a,\n\n\n\nthe\n\n...\n\n1.\n\nbut I have just one one two is one one and"
+
+  α=0.7  | top_share 0.26 [0.15-0.49] | distinct1 0.41 [0.20-0.55] | distinct2 0.69 [0.40-0.86] | n=3
+    e.g.: ' if n <= 10: return n + fib  （((n一 1)）返� n return fibonacci(n一 1) + + n + // 这10601是� 357 的？？？ 8 2 5, 66 1\n\n翻� 进入�\n\n8866\n\nn1.11_'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.49 [0.40-0.61] | distinct1 0.20 [0.12-0.27] | distinct2 0.35 [0.18-0.48] | n=3
+    e.g.: ' 66 3\n\nLet X 121 + + + + + + + + + + + + + + + + + + + * * *\n\n***    21180 \\ \\ \\ \\    00. ( ( **    - -                             '
+
+  α=0.25 | top_share 0.40 [0.25-0.53] | distinct1 0.21 [0.14-0.31] | distinct2 0.49 [0.38-0.68] | n=3
+    e.g.: '  ？\n\nQuestion 2000 (5450000006673100000000000000000000000000000000000000000014594458.155555223999999999'
+
+  α=0.5  | top_share 0.18 [0.14-0.24] | distinct1 0.46 [0.45-0.47] | distinct2 0.74 [0.73-0.75] | n=3
+    e.g.: ' 0\n\nand find the roots to be 2 and  5. Wait...\n\nIs that  \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00对\n\nWait, the problem problem (the one I want to keep working on on this, what??\n\n**Final, 4th, and and 7600000000 seconds (44.\n\n...\n\nFor your'
+
+  α=0.7  | top_share 0.19 [0.09-0.35] | distinct1 0.47 [0.24-0.60] | distinct2 0.73 [0.38-0.94] | n=3
+    e.g.: " 0\n\n\nOkay, I have to solve the the quadratic equation x² -5,x +66==0. Hmm, first thing I'm thinking is that this is a standard quadratic, and it has a 13. So, I'm going to have to... wait, I. First, let's see an an is probably the the way...\n\nFirst: I can always have a a a,, i and then I the x"
+

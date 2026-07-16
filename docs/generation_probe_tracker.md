@@ -482,6 +482,46 @@ dose diffs against THIS baseline and should arbitrate. Raw:
 `reports/onpolicy_rollout_probe_9881_xpu.txt`.
 
 
+## 2026-07-16 — 🔴 PHASE-5 CACHED ROLLOUTS NOT DISTRIBUTION-PRESERVING; probe instrument split (cached vs uncached)
+
+**The α=0.5 arbitration dose (9881→12000, ~2,100 steps overnight) did NOT recover α=0.0 — the
+cached-instrument probe got WORSE** (top_share mean 0.41→0.59, distinct1 0.22→0.12, all 6 seeds,
+n=3), with a new **token-doubling signature at every α** ("go go on on", "of of of") — evidence
+of learning from corrupted rollout text, not exposure bias. α-drift hypothesis REJECTED as main
+driver. Raw: `reports/onpolicy_rollout_probe_12000_xpu_cached.txt`.
+
+**Root cause found & measured — the phase-5 cached student decode samples OFF-DISTRIBUTION.**
+Cached vs uncached student logits on the SAME device/weights/trajectory (step-12000 ckpt, XPU):
+max |Δlogit| **5.5**, KL up to **0.95 nats** — ~30× the entire cross-backend gap (≤0.03) validated
+2026-07-15. Mechanism: the recurrent block's convergence/ACT early-exit needs *every position in
+the current forward* to converge — the whole sequence uncached, but only the single new token
+cached → per-token effective loop depth differs → different ACT-weighted output. Greedy argmax
+survives (why `test_greedy_sequences_*` stayed green) but temp-1.0 sampling draws from a shifted
+distribution. `generate_rollout` defaults `use_kv_cache=True`, so **all phase-5 training rollouts
+AND the 07-15/07-16 probes used the shifted path**; every probe entry ≤8668 is the uncached
+instrument. The two instruments are NOT comparable — probe entries must state which they used.
+(`--no-kv-cache` flag added to `onpolicy_rollout_probe` for the legacy instrument.)
+
+**Dose–response, cached instrument (apples-to-apples):** α=0.0 top_share mean 9780 (0 phase-5
+steps) **0.34** → 9881 (~100) **0.41** → 12000 (~2,200) **0.59**; distinct1 0.28→0.22→0.12.
+Monotone in phase-5 steps. Raw: `reports/onpolicy_rollout_probe_9780_xpu_cached.txt`.
+
+**True damage is real but ~half instrument artifact — 12000 re-probed UNCACHED:** α=0.0
+top_share mean **0.28** (not 0.59), distinct1 **0.37** (not 0.12), and the text is still
+recognizably the 8668 rambling-grammatical-English regime (weather: *"This question is a very
+long, but actually the time here is the same at the right…"*), NOT hard salad. vs 8668 (0.16 /
+0.50): a **moderate real regression**, consistent with ~2,200 steps of training on
+off-distribution rollout text at tail LR. Raw:
+`reports/onpolicy_rollout_probe_12000_xpu_uncached.txt`.
+
+**Standing lessons:** (1) any cached/incremental decode path in an ACT/early-exit architecture
+needs a DISTRIBUTION-level (KL) equivalence gate, like the teacher cache already has — greedy
+sequence tests are insufficient by construction; (2) never change training path and measurement
+instrument in the same window. **Next:** fix rollout generation (wide-batch uncached, or repair
+cache semantics), restart on-policy from a pre-phase-5 checkpoint (9780) with the LR schedule
+extended, re-probe uncached against the 8668 baseline.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts

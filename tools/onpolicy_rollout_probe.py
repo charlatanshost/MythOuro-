@@ -107,6 +107,14 @@ def main() -> None:
     p.add_argument("--no-sandwich-norm", action="store_true",
                    help="Build WITHOUT sandwich norm (default: WITH, matching "
                         "the rev-KL-stable 6675 recipe).")
+    p.add_argument("--no-kv-cache", action="store_true",
+                   help="Sample rollouts through the legacy full-recompute path "
+                        "(pre-phase-5 instrument). The cached student decode is "
+                        "NOT distribution-preserving under ACT early-exit — "
+                        "cached one-token steps halt on their own convergence "
+                        "while the uncached path needs every position to "
+                        "converge, so effective depth (and the logits) differ. "
+                        "Use this to compare against pre-2026-07 probe entries.")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
 
@@ -162,6 +170,7 @@ def main() -> None:
                     teacher_mix_alpha=alpha,
                     temperature=args.temp,
                     top_k=args.top_k,
+                    use_kv_cache=not args.no_kv_cache,
                 )
                 gen_ids = roll[0, len(seed_ids):].tolist()
                 d1, d2, ts = _rep_numbers(gen_ids)
