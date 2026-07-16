@@ -33,13 +33,13 @@ python -m training.distill \
   --student-device xpu:0 --teacher-device xpu:0 \
   --teacher-id ByteDance/Ouro-2.6B-Thinking \
   --seq-len 1024 --micro-batch 8 --grad-accum 2 \
-  --total-steps 12000 --warmup-steps 500 --lr 1e-4 \
+  --total-steps 18000 --warmup-steps 500 --lr 1e-4 \
   --depth-reg-coeff 0.3 --divergence rev_kl \
   --use-sandwich-norm --use-depth-aware-init \
   --onpolicy-lambda 0.7 --teacher-mix-alpha 0.5 --rollout-len 64 \
   --rollout-batch 32 --rollout-reuse 2 \
   --ckpt-every-mins 15 --num-workers 0 --trust-remote-code --log-every 5 \
-  --ckpt-dir checkpoints_onpolicy_xpu
+  --ckpt-dir checkpoints_onpolicy_fixed
 ```
 Micro-batch 8 × accum 2 = the old effective batch 16 (optimizer-state coherent with the
 5070-era runs); go WIDE, never narrow — the Max loses to a 5070 at batch 1.
@@ -48,6 +48,13 @@ Micro-batch 8 × accum 2 = the old effective batch 16 (optimizer-state coherent 
 2026-06-27 command and silently carried `--teacher-mix-alpha 0.6`; the probe-validated decision
 (7458 anneal verdict → 8668 "hold 0.5, pour tokens") is **0.5**. The ~100 XPU steps of 2026-07-14
 (9780→9881) and the smoke tests likely ran at 0.6 — see generation_probe_tracker.md 2026-07-15.
+**Restart from 9780 in `checkpoints_onpolicy_fixed`** (2026-07-16): the phase-5 CACHED student
+decode sampled rollouts off-distribution (~1 nat KL; tracker 2026-07-16) — all 9780→12000
+training is tainted and `checkpoints_onpolicy_xpu` is retired. Rollout generation is now
+hard-pinned uncached in `training/distill.py` (wide batching kept); expect lower rollout tok/s
+than the phase-5 bench tables. `--total-steps 18000` stretches the cosine so the restarted
+stretch trains at real LR, not the tail. **Probe comparisons: use `--no-kv-cache`** — cached-path
+probe numbers (2026-07-15/16 entries) are a different instrument than everything ≤8668.
 
 **Monitoring (second terminal):**
 ```bash

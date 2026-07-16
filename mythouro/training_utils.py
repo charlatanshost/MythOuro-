@@ -1965,15 +1965,21 @@ def generate_rollout(
     SAMPLING pass only; the on-policy loss re-runs the student WITH grad on the
     returned sequence.
 
-    Perf (docs/onpolicy_plan.md phase 5): with ``use_kv_cache=True`` (default)
+    Perf (docs/onpolicy_plan.md phase 5): with ``use_kv_cache=True``
     the student decodes incrementally — prefill once, then one-token steps
     against the shared kv_cache, mirroring ``MythOuro.generate`` — and the
     teacher runs through the gated cached path (``teacher_logits_cached``;
-    falls back to full recompute if the startup validation gate fails). With
-    a cache the recurrent block emits the ACT-weighted sum (eval semantics),
-    which is what the uncached eval-mode path already produced — the sampling
-    distribution is unchanged. ``use_kv_cache=False`` restores the legacy
-    O(L²) full-recompute path exactly (requires nothing of the student
+    falls back to full recompute if the startup validation gate fails).
+
+    ⚠ The cached student path is NOT distribution-preserving (measured
+    2026-07-16, probe tracker): the recurrent block's convergence/ACT
+    early-exit is evaluated over the positions of the CURRENT forward — the
+    whole sequence uncached, a single token cached — so effective loop depth
+    (and the ACT-weighted output) differ, by up to ~1 nat KL on real
+    checkpoints. Greedy argmax mostly survives; sampled rollouts do not.
+    Training callers must pass ``use_kv_cache=False`` until the cached path
+    has a KL equivalence gate like the teacher's. ``use_kv_cache=False`` is
+    the legacy O(L²) full-recompute path (requires nothing of the student
     beyond ``student(seq, n_loops=)``, so stub models keep working).
     """
     was_training = student.training

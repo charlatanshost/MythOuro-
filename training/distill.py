@@ -532,6 +532,13 @@ def main():
                         seed_batch = torch.cat(seeds, dim=0)
                         seed_batch = seed_batch[: rollout_buffer.rollout_batch]
                         with amp_ctx:
+                            # use_kv_cache=False: the cached student decode is NOT
+                            # distribution-preserving — ACT early-exit converges
+                            # per-forward (single token cached vs whole sequence
+                            # uncached), shifting logits by up to ~1 nat KL on real
+                            # checkpoints (probe tracker 2026-07-16). Wide batching
+                            # keeps the phase-5 throughput win; do not re-enable the
+                            # cache without a KL equivalence gate like the teacher's.
                             wide = rollout_with_retry(
                                 generate_rollout,
                                 student, teacher, seed_batch,
@@ -540,6 +547,7 @@ def main():
                                 teacher_mix_alpha=args.teacher_mix_alpha,
                                 temperature=args.onpolicy_temp,
                                 top_k=args.onpolicy_top_k,
+                                use_kv_cache=False,
                             )
                         rollout_buffer.fill(wide, step)
                     rollout = rollout_buffer.draw()
