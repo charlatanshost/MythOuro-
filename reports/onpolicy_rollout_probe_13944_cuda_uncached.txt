@@ -1,0 +1,96 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-17 08:37:21.267 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1614 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=cuda:0). Teacher frozen.
+2026-07-17 08:37:21.481 | WARNING  | mythouro.main:warn_once:85 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).
+[probe] loaded checkpoints_onpolicy_fixed/step_0014000.pt (step 14000) on cuda:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on cuda:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.15 [0.09-0.23] | distinct1 0.56 [0.51-0.66] | distinct2 0.83 [0.77-0.95] | n=3
+    e.g.: " get the same place, he was so much of an interesting task for the 10,000, and also the day's day but the man with that way.\n\nFor example, what is the exact reason to the second 10-year hour, the final time that we must get a one-hour hour, the time that has 1,20004000000000000050"
+
+  α=0.25 | top_share 0.09 [0.08-0.10] | distinct1 0.61 [0.58-0.67] | distinct2 0.91 [0.86-0.95] | n=3
+    e.g.: " go through.\n\nIn this experiment, one of the main aims towards creating an accurate simulation for those processes. Using the following is an example of a single line, while we saw from the first 100000.\n\nWait a little better is needed. So what's not necessarily true?\n\nSo, let's create a problem for us. For example, the first one is the maximum of the second, the first one is the third digit"
+
+  α=0.5  | top_share 0.12 [0.09-0.17] | distinct1 0.57 [0.48-0.62] | distinct2 0.87 [0.79-0.96] | n=3
+    e.g.: " explore the field for the first day, so the morning of the first day, the weather of the ground was the ground the night before, because there was an interesting day. And that's how the second time, the first week, the third day which we were exploring, from the next time, the last time, a few days, because I was the day. We've been exploring the ground and ground and this part of the next part, which I have a few days"
+
+  α=0.7  | top_share 0.12 [0.09-0.15] | distinct1 0.63 [0.58-0.72] | distinct2 0.90 [0.84-0.95] | n=3
+    e.g.: ' make a new friend.\n\n"Forget it!", said,\n\n"Suns of our stars can be hot and,\n\n"I wish you\'d have known that, you\'ll never make all.\n\n"If you were the one, to get in touch with\n\n"I think that the stars and the planets\n\n"Can\'t be the same as the "Earth\'s planets. To\n\n"In fact, I don\'t even know'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.10 [0.08-0.12] | distinct1 0.60 [0.57-0.62] | distinct2 0.93 [0.89-0.95] | n=3
+    e.g.: " the use of an alternative method that causes the amount of the body;\n\nWhat is the relationship between an immune and is the most effective disease (which is a good thing that's more than what the body's. If you think the people can have that kind of them are the very common human, but it's more likely to be more of more than a. In other cases, all you're at the actual\n\nIn this case you are, the number of people"
+
+  α=0.25 | top_share 0.11 [0.07-0.12] | distinct1 0.63 [0.58-0.67] | distinct2 0.91 [0.86-0.95] | n=3
+    e.g.: " such as the genetic material, which would have been able to achieve the same thing. This would lead to the development of the entire population's resistance to these antibiotics, and thus their natural evolution has been artificially\n\nthe first use of antibiotics that can only be beneficial in the health system such as the treatment.\n\n1.\n\nThe primary advantage of using antibiotics is that is the most important of its human, but is a common type of\n\nof this treatment. It"
+
+  α=0.5  | top_share 0.12 [0.06-0.21] | distinct1 0.55 [0.38-0.65] | distinct2 0.84 [0.64-0.96] | n=3
+    e.g.: ' a specific antibiotic. Additionally, the correct dosage can vary depending on the severity of the infection. \n\nIn this example, a small amount of the antibiotic for a mild infection will be the optimal dosage of the drug. However, it may result in a small improvement in any given patient’s medical condition is the most common.\n\nThe most optimal effect are the bacteria in a healthy individual; a low or high, but not quite to the first, which is, because'
+
+  α=0.7  | top_share 0.08 [0.06-0.09] | distinct1 0.65 [0.59-0.75] | distinct2 0.91 [0.84-0.96] | n=3
+    e.g.: ' antibiotics. So the answer is: antibiotics, since it\'s the standard treatment, not the cause. Wait, according. It\'s a treatment, which the question says "not a treatment", so antibiotics, as they treat the infection, and hence are a treatment. Therefore, this is the opposite. Wait, no.\n\nThe question is asking "a common and effective treatment". The treatments for bacterial infections are things like antibiotics, maybe antivirals (if they are more'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.14 [0.05-0.25] | distinct1 0.58 [0.44-0.70] | distinct2 0.87 [0.78-0.97] | n=3
+    e.g.: " the D121/G of a severe and chronic ...\n\nQuestion: What is the presence of the 0-year (L23) and the first half of the following test. The two (1016) are related to all of the new areas of the other, and the first-19, which would be the most significant cause. (7774) \n\nQuestion: What does the presence of the 'th' in"
+
+  α=0.25 | top_share 0.11 [0.09-0.12] | distinct1 0.55 [0.50-0.60] | distinct2 0.87 [0.84-0.91] | n=3
+    e.g.: ' different\n\nA. The total of these groups in the medical record (e.\n\nPanc of the first and the most serious\n\n(46572, 525% of the 44 to 800.\n\nHow to lower to the\n\nCabin-2 Diabetes and MMP\n\nin the first decade, the prevalence of a small percentage and the 885558112'
+
+  α=0.5  | top_share 0.08 [0.06-0.09] | distinct1 0.65 [0.59-0.71] | distinct2 0.94 [0.92-0.98] | n=3
+    e.g.: ' the classic symptoms of the disease, which is also called non-proteolysis diabetes. These clinical disorders are most characteristic, as they may be due to the high of blood-pressure, but also one of the most commonly studied by the insulin-type. There is no other way that you have to be.\n\nIf he is still an ordinary in the end of the year of life.\n\nIf your blood glucose levels are high and will be be.\n\n'
+
+  α=0.7  | top_share 0.12 [0.06-0.23] | distinct1 0.58 [0.44-0.69] | distinct2 0.87 [0.73-0.95] | n=3
+    e.g.: ' increased\nthirst and urination. What is the correct\npath for the blood and urine flow through the whole\nkidney?\nA. blood -> filtering is done inside nephron -> urine ->\nurinary tract\nB. urine -> filtering is done inside nephron -> or\nblood -> urinary tract\n2:3.4:5:\n\nAnswer: A\nA\n\nAnswer:\n\nAnswer:\n\nA\n\nAnswer\n\nA\n'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.38 [0.21-0.56] | distinct1 0.40 [0.18-0.52] | distinct2 0.62 [0.29-0.83] | n=3
+    e.g.: ' the\nand potentially under the\n\n*c)\n\n**\n\n**f\n\n(e)\n**\n\n(a)\n\n**\n\n)\n\n**\n\n**\n\n**\n\n*C\n\n**\n\n**\n\n**\n\n**\n\n**\n\n(b)\n\n**\n\n**\n\n**\n\n.\n\n**\n\n**\n\nA\n\n**\n\n**'
+
+  α=0.25 | top_share 0.11 [0.07-0.15] | distinct1 0.58 [0.52-0.61] | distinct2 0.91 [0.91-0.92] | n=3
+    e.g.: ' the a.\n\nQuestion: What is the type of reaction in the body in which the reaction is a. The purpose of the 5th chapter, what would you do to get from the same to the current time.\n\nIs it really important to the first half of the study of the other thing you have to find in a very short (the other in the last one) you will come on on the actual position or in the last two and the two on'
+
+  α=0.5  | top_share 0.09 [0.07-0.10] | distinct1 0.64 [0.60-0.67] | distinct2 0.93 [0.91-0.96] | n=3
+    e.g.: ' pain, fever and the inflammation/reduction inflammation of the joints. An example of a nonsteroidal\nsteroid, in turn is ibuprofen, and the difference is the same as those of an anabolic androgenic steroid. The body is also able to\n\nQuestion: Compare and contrast to each other is a steroid to do what is the steroid is a compound derived from testosterone, or of the human hormone, which can be used to increase the growth of hair-free tissues'
+
+  α=0.7  | top_share 0.12 [0.08-0.16] | distinct1 0.59 [0.56-0.62] | distinct2 0.86 [0.81-0.92] | n=3
+    e.g.: ' pain, inflammation, fever, and pain relief. It is not used for the "prophylaxis and treatment and/or relief of the severe, acute, moderate, and mild forms.\n\nTramadol and OxyContin (Oxymorphone) will help in the use of some common symptoms such as severe and long-term pain relief, even though we do not know what it will do for acute pain and pain relief.\n\nT14 and'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.10 [0.07-0.12] | distinct1 0.60 [0.56-0.65] | distinct2 0.91 [0.88-0.94] | n=3
+    e.g.: '\n    print("\\n- " (i) \\n 2)  \' \' \'+ str(a) 57370...(0:   , \n#\n#      # This is the same, but it has been for\n#       )\n#       # So it will be written by adding the following:\n# 2179  744458 46  \n#  669    \n#'
+
+  α=0.25 | top_share 0.06 [0.05-0.07] | distinct1 0.62 [0.55-0.66] | distinct2 0.90 [0.82-0.95] | n=3
+    e.g.: "\n    result = 0\n    if len(n) == 3:\n        for i in range(n):\n            # Handle (1) case:\n            return 1\n        for each in n[0]\n\nSo, that's a list of examples. The first one is the longest and the first. It's almost a single string if it's just the numbers here, but it's not a problem.\n\nWait, the first time I think there's"
+
+  α=0.5  | top_share 0.17 [0.11-0.27] | distinct1 0.51 [0.46-0.56] | distinct2 0.78 [0.65-0.88] | n=3
+    e.g.: '\n    if not pos_integer:\n        return np.nan  # This allows a negative result of the function\n        assert n >= 2\n        fib_cache = [0.000000, 1000, 0]\n        for x in range(10000000):\n          y = x1 + x + fib_cache\n            fib_cache = [0.000000, 0]'
+
+  α=0.7  | top_share 0.09 [0.06-0.14] | distinct1 0.54 [0.39-0.67] | distinct2 0.82 [0.69-0.89] | n=3
+    e.g.: "\n    fib_sequence = [0, 1]\n    while len(fib_sequence) < n:\n        s = fib_i - fib_r\n        if s > 0 and 0 < n < f(val('fib_i,f'...))\n        return fib_n + 1\n\n    if n is not in fib_sequence:\n        return ''\n\n    return list comprehension to find the sum of the fibonacci sequence\n    # TODO: fix it"
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.12 [0.08-0.17] | distinct1 0.34 [0.17-0.45] | distinct2 0.73 [0.71-0.78] | n=3
+    e.g.: ' 5x x + 6x + 6215 = 2 x + 39143844715 = 3323917940529935000145039912934992649982770374922185966 - 286699'
+
+  α=0.25 | top_share 0.15 [0.08-0.26] | distinct1 0.45 [0.26-0.55] | distinct2 0.78 [0.58-0.88] | n=3
+    e.g.: ' 0.\n\nThe sum of the above are the two roots and the equation obtained in the form of the 2x88s (10-4) which is an algebraic equation of the function g as the same as the equation of the first equation (2x^4) in that in particular 52 (x1 - x - x) = 0. That is not a simple equation, as they would have been the two of them but'
+
+  α=0.5  | top_share 0.10 [0.06-0.12] | distinct1 0.54 [0.50-0.59] | distinct2 0.85 [0.78-0.89] | n=3
+    e.g.: ' 6x - 5\n\nNow we will do that, we can add the 2x to both sides which must be done to make the question for x and the 3x + x.\n\nThe answer is as the equation to find the solution.\n\nWe must simplify the equation to obtain a simple function for a quadratic equation.\n\nSo,\n\nx = (6y + 55, 45) and\n\nx'
+
+  α=0.7  | top_share 0.11 [0.07-0.17] | distinct1 0.51 [0.45-0.54] | distinct2 0.80 [0.74-0.85] | n=3
+    e.g.: ' 0\n\nSolve the quadratic equation for x, where x is a real number: The equation is x^2 - 2x - 8 = 0.\n\nGiven the quadratic equation for a given value, which asks to express it in intercept. It is x^2(x+ y).\n\nThe quadratic equation for a given value that wants to find out the roots of a quadratic equation, where this equation can also be expressed a quadratic equation'
+

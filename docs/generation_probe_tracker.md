@@ -522,6 +522,33 @@ cache semantics), restart on-policy from a pre-phase-5 checkpoint (9780) with th
 extended, re-probe uncached against the 8668 baseline.
 
 
+## 2026-07-17 — ✅✅ FULL RECOVERY at 13,944 — fixed rollouts un-did the phase-5 damage
+
+Mid-run probe of `checkpoints_onpolicy_fixed/step_0013944.pt` (~4,160 fixed-rollout steps past
+the clean 9780 restart, α=0.5, λ=0.7, real LR). **Instrument: uncached, 5070/CUDA** — the SAME
+instrument and backend as the 8668 baseline, cleanest comparison since the migration. (venv-cuda
+had drifted to transformers 5.13.1, which breaks Ouro's custom code — the known `<5` pin; fixed
+to 4.57.6. Probe ran on the idle 5070 while training continued on the Max, zero interference.)
+
+**α=0.0 per seed (top_share / distinct1):** weather **0.15/0.56** · bacterial **0.10/0.60** ·
+diabetes **0.14/0.58** · ibuprofen 0.38/0.40 · fibonacci **0.10/0.60** · quadratic **0.12/0.34**
+→ **mean 0.17 / 0.51 — the 8668 level (0.16/0.50) exactly**, from the tainted-12000 read of
+0.28/0.37. **5/6 seeds individually at-or-better than 8668**; ibuprofen remains the documented
+laggard (it lagged at 8668 too). distinct2 mostly 0.7–0.9. The doubling signature is GONE.
+Text agrees: connected clauses with emerging Q&A structure (bacterial: *"the use of an
+alternative method that causes the amount of the body; What is the relationship between an
+immune and is the most effective disease…"*), python-comment-structured code on fibonacci,
+real algebraic manipulation attempts on quadratic.
+
+**Verdict: the cached-rollout defect was THE cause of the 9780→12000 damage, and clean
+on-policy tokens repair it fast** — ~4.2k fixed steps fully reversed ~2.2k corrupted steps and
+re-reached the pre-damage frontier. The coherence-scales-with-clean-on-policy-tokens thesis
+survives with its strongest evidence yet. Run continues to 18,000 (ETA ~19:30 tonight);
+final probe then, same instrument (`--no-kv-cache`, 5070). Watch whether 18,000 pushes PAST
+8668 (first new frontier since 07-06) and whether ibuprofen de-lags.
+Raw: `reports/onpolicy_rollout_probe_13944_cuda_uncached.txt`.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts
