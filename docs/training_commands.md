@@ -94,6 +94,12 @@ pytest tests/ -q                       # full suite (365+; all green expected)
   committed and load-bearing — see hardware_options.md before "cleaning them up".
 - One flaky segfault at rollout start was seen 2026-07-12; rollouts auto-retry once now.
   If a run dies hard, just rerun — `--ckpt-every-mins 15` bounds the loss.
+- **After ANY reboot: "XPU device count is zero" / `xpu-smi` sees nothing** (hit 2026-07-16).
+  The original setup granted GPU access via a setfacl ACL on `/dev/dri/renderD*`, which lives
+  in devtmpfs and evaporates on reboot. Durable fix: `sudo usermod -aG render,video
+  charlatanshost` + relogin. Same-session stopgap: `sudo setfacl -m u:charlatanshost:rw
+  /dev/dri/renderD12*`. Also: the 225 W power limit resets to default on reboot — re-apply
+  only if temps push past ~85 °C.
 
 ---
 

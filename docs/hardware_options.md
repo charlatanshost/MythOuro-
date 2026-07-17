@@ -58,6 +58,22 @@ Honest readings:
   5070 (OOM at 16), and teacher+student cohabitation — the OOM that triggered the purchase —
   now fits with ~room for 3× the model.
 
+**Effective TFLOPS during the main distill run (estimated 2026-07-16, not profiled):**
+the on-policy distill config (teacher+student one card, micro-batch 8 × accum 2, seq 1024,
+~6.1 s/step measured) works out to **~60–65 TFLOPS sustained ≈ 25–30% of the realized 224
+GEMM ceiling** (~15% of XMX peak). Arithmetic: ~390 TFLOP/optimizer-step over 16,384 trained
+tokens — teacher forward **~341 TFLOP** (Ouro-2.6B always runs its full 4 UT steps →
+≈ 2·2.6B·4 ≈ 21 GF/token) + student fwd+bwd **~49 TFLOP** (≈ 440M *activated* params/token:
+prelude 21M + coda 21M + head 63M once, plus 4 loops × ~85M — 55M attn/injection + 6-of-24
+experts ≈ 30M — ≈ 3 GF/token trained). Error bars ±15% (attention quadratic terms,
+teacher embed/head split hand-waved). Readings: (a) **~85% of the card's work is the
+TEACHER** — the student alone draws only ~8 TFLOPS (the small-kernel pathology above);
+the blended utilization is decent *because* the teacher's big GEMMs saturate XMX;
+(b) post-fix runs (uncached rollout generation, 2026-07-16) read ~10–20% lower — rollout
+regeneration is compute spent making data, not training; (c) don't compare this to the
+17.2k tok/s bench number — that was student-only, no teacher. True MFU via
+`intel_gpu_top`/VTune remains unmeasured (next lever if it ever matters).
+
 **Two rig-specific gotchas for every future `torch.compile`-on-XPU run (both solved):**
 1. **`TRITON_DEFAULT_BACKEND=intel`** — with the 5070's CUDA driver also visible, Triton dies
    with `2 active drivers ([XPUDriver, CudaDriver])`. The env var (native in triton's
@@ -245,8 +261,10 @@ NOT conflate:
   legitimately applies). 419 is not the target; ~140 is the honest realized matmul figure today.
 - **Real MythOuro training throughput** — an **MFU fraction *below* 140** (training is
   MFU × the matmul ceiling, and MFU < 100% — *lower* for our recurrent-loop + MoE + ACT
-  architecture with its many small awkward matmuls). **We do not have this number yet** — only
-  a card-#1 run of a real MythOuro step gives it. Expect noticeably under 140.
+  architecture with its many small awkward matmuls). ~~We do not have this number yet~~
+  **Estimated 2026-07-16** (see "Effective TFLOPS during the main distill run" above):
+  ~60–65 TFLOPS blended for the distill workload — but ~85% of that is the Ouro teacher's
+  forward; the student alone draws ~8 TFLOPS, confirming the small-kernel expectation.
 
 **Correction to the prior draft of this note:** an earlier version called 140 "~33% MFU,
 normal for LLM training." That was wrong — 140 is a *matmul* microbench, not an MFU. 33% is
