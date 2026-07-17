@@ -542,3 +542,14 @@ produce plausible outputs yet. Sequence stays: (1) token grind to fluency→mean
 **Flip to KTO iff** the model is ever deployed and collecting real, unpaired, imbalanced
 human feedback. Triage rubric: passes (2) cheap and (3) reversible; fails (1) *today* — hence
 parked here, not active.
+
+**Addendum (same day, after surveying the 2025–26 field):** decision widens to **"ORPO or
+SimPO — decide on arrival"**: SimPO is equally reference-free, ~equally simple, beats ORPO in
+most published comparisons, and its length-normalization suits our verbosity/repetition
+history. Two standing constraints prune everything else: (a) **TRL/Axolotl trainers can't run
+our custom looped/ACT/MoE module** — any method is hand-implemented, so simple losses win;
+(b) fresh arXiv variants (RoPO/RePO/RC-PO/EvoPref/CPO…) are unproven at 278M and fail triage
+(1). **One calendar note: GRPO at stage 4** (post-SFT) — our mix is 40% math + 20% code where
+rewards are *verifiable* (RLVR), which is GRPO's home turf; it's an infrastructure project
+(online rollouts + reward checkers), not a loss swap, so it waits for a model whose outputs
+are worth verifying. PEFT/LoRA: irrelevant at 278M on 48 GB.
