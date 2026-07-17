@@ -521,3 +521,24 @@ than a deep spatial network.
 
 ---
 
+
+## Decision (parked): preference-tuning flavor when we reach that stage = ORPO, not KTO
+
+**Logged 2026-07-17** (asked during the fixed-rollout recovery run). Preference methods are
+**≥2 stages away** — they tune *which plausible output a model prefers*, and α=0.0 doesn't
+produce plausible outputs yet. Sequence stays: (1) token grind to fluency→meaning,
+(2) **v6 clean-data SFT** (chat/QA stops being OOD; instruction-following appears),
+(3) preference round — and there, **ORPO**:
+
+- **No reference model.** KTO/DPO keep a frozen reference policy resident; ORPO folds the
+  preference term into the SFT loss (odds-ratio penalty) — one model, one stage. On a
+  one-card rig that just barely fits teacher+student, that's a hard constraint, not taste.
+- **Our preference data will be synthetic PAIRS** — teacher generation = chosen, student
+  generation = rejected, same prompt; the rollout infrastructure already emits both halves.
+  KTO's headline advantage (unpaired thumbs-up/down) targets data we don't have and won't
+  have without deployed users.
+- **One-stage SFT+preference** rides along with the v6 SFT pass instead of adding a phase.
+
+**Flip to KTO iff** the model is ever deployed and collecting real, unpaired, imbalanced
+human feedback. Triage rubric: passes (2) cheap and (3) reversible; fails (1) *today* — hence
+parked here, not active.
