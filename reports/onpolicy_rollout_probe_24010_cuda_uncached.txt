@@ -1,0 +1,97 @@
+step_0024000.pt
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-18 14:09:02.934 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1614 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=cuda:0). Teacher frozen.
+2026-07-18 14:09:03.139 | WARNING  | mythouro.main:warn_once:85 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).
+[probe] loaded checkpoints_onpolicy_fixed/step_0024000.pt (step 24000) on cuda:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on cuda:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.13 [0.08-0.22] | distinct1 0.54 [0.38-0.68] | distinct2 0.84 [0.62-0.98] | n=3
+    e.g.: " get the people of the people, and those who were not the first.\n\nThen, now the problem is not that the day's day is a single word that can't be a bit strange. At least, you must do that, we can easily start this.\n\n\nAfter a few people living in a lot of people are making the time a lot of people, and as it has not been the only one that a man, but actually one of the people who"
+
+  α=0.25 | top_share 0.13 [0.06-0.25] | distinct1 0.62 [0.47-0.71] | distinct2 0.87 [0.71-0.96] | n=3
+    e.g.: ' go through.\n\nIn June during the day there is nothing else. You can do the "good" thing the good is always.\n\nThis way you can use a certain type of water in the first three months of the last two days, a total increase in water (which is also not necessarily true).\n\nSo, for some natural conditions, we need to have a lot of other "non-linear" types of systems, including various types of plants ('
+
+  α=0.5  | top_share 0.14 [0.08-0.24] | distinct1 0.55 [0.39-0.65] | distinct2 0.84 [0.65-0.94] | n=3
+    e.g.: ' explore the field of black and the white. The field of the is the following, or a way to find the real number to fill up the grid.\n\n0 5 0 = 42 13 12 9 15 \n-24 - 13 0 16 3 15 12 9 10 11 4 11 10 12 8 '
+
+  α=0.7  | top_share 0.08 [0.04-0.12] | distinct1 0.69 [0.62-0.73] | distinct2 0.95 [0.91-0.98] | n=3
+    e.g.: ' make a new friend.\n\n"Forget it!", said,\n\n"Squirrel, you can\'t make a good friend to a good friend with your small\nskills."\n\nSo we are still alone.\n\nWe were alone again, and then, to our surprise, we saw two little\ninsects. And we have done our\n\nprayers! "My God!" "B.E. "We are alive!" They had the'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.13 [0.09-0.18] | distinct1 0.60 [0.52-0.66] | distinct2 0.89 [0.81-0.94] | n=3
+    e.g.: ' the use of an alternative method that incorporates a functional strategy that is a solution.\n\nFor a given number of cases is determined by a combination of the properties of the observed (M) from the previous studies of a non-punt-l 2012a\n\nThis approach could be used to describe the potential distribution of the NMC (SZC) and the difference between the following three phases. This technique is used to describe the number of components'
+
+  α=0.25 | top_share 0.09 [0.08-0.09] | distinct1 0.58 [0.51-0.65] | distinct2 0.89 [0.87-0.92] | n=3
+    e.g.: ' the use of a new "mattress" (and other "mattip". Some doctors have given a "viral" or just a "d" for a "bacterial infection, or "b" , the "b". So, what is the "m" of the bacterial infections (which we may have had in an earlier study) and the other is the "c" of the viral\'s, and with more people that are going as a result in'
+
+  α=0.5  | top_share 0.11 [0.08-0.12] | distinct1 0.60 [0.58-0.64] | distinct2 0.89 [0.85-0.94] | n=3
+    e.g.: " a specific antibiotic. Additionally, the correct approach involves understanding the mechanism of the antibiotic and the nature of different infections. Therefore, it is important to consider the nature of the infection and the antibiotic's chemical nature. Here are the correct methods for treating the bacterial or viral infections and the other common infections:\n\nThe most common methods for the bacterial and viral infections are the following:• A drug that a doctor or\n\n## How Is The Correct Antibiotic Prophylopy Given"
+
+  α=0.7  | top_share 0.11 [0.07-0.17] | distinct1 0.56 [0.48-0.61] | distinct2 0.86 [0.79-0.91] | n=3
+    e.g.: " antibiotics. So the answer is: antibiotics.\n\nBut just to confirm, it's important to be sure.\n\n\nTo treat the underlying cause of a bacterial infection, the appropriate method of treatment is required. To determine how best and correct this method is needed to take into the consideration of the following:\n- The method is needed to obtain the best results possible.\n- The most important factor is to keep the patient as comfortable as possible, if possible."
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.25 [0.10-0.51] | distinct1 0.32 [0.29-0.33] | distinct2 0.66 [0.47-0.77] | n=3
+    e.g.: ' the following conditions of the MMA of the current and AAC\n\nand the 3rd of our own (0) (not only 3) 2030,114 3rd in the 3000000. 0000000000000000000000000000000000000000'
+
+  α=0.25 | top_share 0.27 [0.15-0.41] | distinct1 0.36 [0.32-0.41] | distinct2 0.64 [0.57-0.69] | n=3
+    e.g.: " different disease patterns, but it has a complex and non-linear distribution of the data\n\nAs the following examples do, and the other two examples, one of the\n\n*I***'s*in*\n\n**\n\n**and*\n\n**B**are of\n\n*type2 diabetes**.**\n\n**\n\n**\n\n**and other\n\n*l**\n\n**l**\n\n**l**\n\n"
+
+  α=0.5  | top_share 0.11 [0.07-0.17] | distinct1 0.56 [0.42-0.72] | distinct2 0.80 [0.61-0.96] | n=3
+    e.g.: ' the classic and non-classic 225, and.\n\n## Step 3: Determine the most characteristic, distinctive symptom of type 2.\n\nThe most common and non-conspicuous symptoms of type 2 diabetes are the classic, but these are not all distinctive or pathogn. The classic includes\ni) Polyuria\nand non-classic include\n\n2. Pol-\n\n## Type 2 Diabetes and Endocrine\n\nType '
+
+  α=0.7  | top_share 0.12 [0.08-0.15] | distinct1 0.62 [0.60-0.65] | distinct2 0.91 [0.91-0.92] | n=3
+    e.g.: ' increased\nthirst and urination. What is the correct\npath?\n\nIf a person is in a non-di?\nand he had some type 1 (insulin) and,\nwithin 15 mins, he will be able to\nconsume (metabolize) in this very moment:\n(A) glucose (B) fructose (C) sucrose (D)\n\nIsotonic saline\n\nA 1.\n\nA '
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.40 [0.30-0.53] | distinct1 0.31 [0.17-0.39] | distinct2 0.52 [0.27-0.68] | n=3
+    e.g.: ' the\nand potentially under the\n\n*cram\n\n**\n\n**finally\n\n**\n\n**\n\n**\n\n**\n\n**f\n\n3 **\n\n**\n\n**\n\n**\n\n**\n\n**f**\n\n**\n\n***f\n\n**\n\n*\n\n**f\n\n**\n\n**finally\n\n**\n\n**\n\n**A**\n\n*\n\n'
+
+  α=0.25 | top_share 0.14 [0.10-0.19] | distinct1 0.49 [0.35-0.59] | distinct2 0.83 [0.78-0.91] | n=3
+    e.g.: ' the same.\n\nQuestion: What is the recommended option to obtain a "dental" (or "temporary" condition) 5500 m/j?\nOptions: \nA 10000m/m\n\nQuestion: How can you change the answer by the answer to the previous 50000 years in the last day.\n\nAnswer:\n\nTo keep the "dental" and "10'
+
+  α=0.5  | top_share 0.12 [0.07-0.19] | distinct1 0.56 [0.41-0.65] | distinct2 0.88 [0.73-0.97] | n=3
+    e.g.: ' pain, which is usually taken by mouth. According to the data collection sheet, there are \n- 63-75mg tablets. An adult can usually take up from \n- 200 mg to 36-75\n- 1000 mg = 1 Grams. \n- 20000000000-0.125-20211-50'
+
+  α=0.7  | top_share 0.17 [0.10-0.22] | distinct1 0.48 [0.45-0.49] | distinct2 0.75 [0.74-0.76] | n=3
+    e.g.: ' pain, inflammation, fever, and pain relief. It is not used for the "prophylaxis and treatment procedure" described in the question.\n\n\nC: Cetiriz.\n\nT: CENTER\n\nCet-ir-izine\n\nF: 1\n\nD. C.\n\nI: Cetir\n\nT: CETIR-IZE\n\nCETIR-\n\nI\n\nZE\n\n'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.10 [0.09-0.10] | distinct1 0.48 [0.44-0.54] | distinct2 0.82 [0.78-0.88] | n=3
+    e.g.: '\n    print("\\n  " + st)\n    c = 1\n    print(f"FUNCT", "A: F" + "B0", i , "A", "I")\n    r = i * (- (1000000 )\n    \n    s = 1\n    T_F = {645000, 1967, 458, 6185, 89958'
+
+  α=0.25 | top_share 0.10 [0.07-0.15] | distinct1 0.40 [0.23-0.52] | distinct2 0.75 [0.71-0.81] | n=3
+    e.g.: '\n    result = 0\n    if len(n) == 3 and len(n) == 1:\n        # Handle the edge, not one, return 1 in\n    print("No value in the end".format(n, n, n, 5)\n    num_num = 1\n    # For the following cases, if len(n) == 3, then return the value\n    if len(n) != 10000'
+
+  α=0.5  | top_share 0.10 [0.05-0.17] | distinct1 0.52 [0.44-0.57] | distinct2 0.86 [0.82-0.89] | n=3
+    e.g.: "\n    if not pos_integer:\n        return None\n    prev = 0\n    current = 1\n    for q in range(n):\n        if not np.isscalar(q0):\n            if q is not None:\n                prev = r\n            else:\n                # No one that is a positive integer\n                pass\n        q -= 1\n    #   print('0', x, 0, 0, x)\n        # The final condition is that the result"
+
+  α=0.7  | top_share 0.18 [0.12-0.28] | distinct1 0.41 [0.38-0.45] | distinct2 0.71 [0.68-0.74] | n=3
+    e.g.: '\n    fib_sequence = [0, 1]\n    while len(fib_count) < n:\n        s = fib_i + fib_r\n        if s > max(fib_pos):\n            fib_sequence = [fib_i]\n        else:\n            if fib_sequence > fib_pos:\n                fib_pos = fib_sequence\n            if n != len(fib_i):\n                if isi and 1 == len(i):\n                   '
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.23 [0.11-0.45] | distinct1 0.45 [0.34-0.61] | distinct2 0.73 [0.55-0.91] | n=3
+    e.g.: ' 5 - x + 6\n\nThe function is a function f:\n\nWhich is the quadratic function f(x + 7) = 23 ?\n[\n\nAnswer the sum of the quadratic function to a real number\n\n## The general equation of (11)\n\nSo, we can use the method to solve this equation. Note that the problem has been solved by applying the equation in the equation equation formula on the general and other'
+
+  α=0.25 | top_share 0.12 [0.08-0.19] | distinct1 0.51 [0.44-0.65] | distinct2 0.82 [0.69-0.95] | n=3
+    e.g.: ' 0.\n\nThe sum of the roots can be obtained by considering the equation:\n\nx - 2 = 8\n\nThen, we need to compute the following equation:\n\nThis is the first step of the following equation:\n\nBy solving equation 3, we can solve the equation 5.\n\nFirst equation: 1111\n\nThe solution problem becomes the equation:\n\n$$ \n$$ \nThe function'
+
+  α=0.5  | top_share 0.12 [0.09-0.14] | distinct1 0.48 [0.40-0.59] | distinct2 0.84 [0.76-0.89] | n=3
+    e.g.: ' 6, where X is the x.\n\nQuestion 12: Find the product of (x) and 3. We can set this question as x and the equation that the product of x and 3 = 12. Therefore we get x = 4. Which statement is a correct method of using a mathematical method in the linear model for the question\nA simple procedure for solving the equation would be to find the equation with the following function:\n'
+
+  α=0.7  | top_share 0.11 [0.09-0.16] | distinct1 0.56 [0.52-0.60] | distinct2 0.82 [0.78-0.89] | n=3
+    e.g.: ' 0\n\nSolve: x^2 - 5x + 6 = 0\n\nWait, that’s not too complicated:\n\n\\(x + 1 = \\frac{\\sqrt{5} - 4\\sqrt{3}}{3 \\sqrt{24}}\\\\\n\nWait, I need to figure out whether this is a quadratic and solve it.\n\nQuadr...\n\nWait...\n\nWait...\n'
+

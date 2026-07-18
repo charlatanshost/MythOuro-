@@ -580,6 +580,28 @@ The teacher-corpus build (docs/teacher_corpus_plan.md) was gated on "probe passe
 Raw: `reports/onpolicy_rollout_probe_18000_cuda_uncached.txt`.
 
 
+## 2026-07-18 — mid-leg probe @24,010 (real LR, half dose): starvation-dip recovered, frontier plateau holds
+
+Probe of `step_0024010`-era checkpoint (~6,000 min-lr steps / ~35M tokens past 18k at LR
+5.5e-5→3.7e-5), uncached/5070. **α=0.0 means: top_share 0.207 / distinct1 0.45** — per seed
+(ts/d1): weather 0.13/0.54 · bacterial 0.13/0.60 · diabetes 0.25/0.32 · ibuprofen 0.40/0.31 ·
+fibonacci 0.10/0.48 · quadratic 0.23/0.45. **Read:** the starved-18k dip (0.225/0.385) lifted
+once real LR resumed, but the metric sits AT the 8668/13,944 parity band (0.16–0.17/0.50–0.51),
+not past it. Four probes now cluster in a **plateau around the frontier** (0.17 / 0.225 / 0.207
+vs 8668's 0.16) with n=3 brackets wide enough (diabetes ts [0.10–0.51]) that within-plateau
+ordering is noise. Text regime unchanged-to-slightly-sharper: quadratic drew its most math-shaped
+sample yet (*"Which is the quadratic function f(x + 7) = 23? … we can use the method to solve
+this equation"*); bacterial holds academic register; **ibuprofen laggard: 4th consecutive probe**.
+
+**Verdict: no breakout at half dose; no regression; second half runs (nothing better to do
+with the card before Sunday).** If the 30k final also lands in the plateau band, that's the
+first honest evidence that tokens-alone plateau at this size/data — plan-B experiments
+(teacher-corpus ratio A/B per docs/teacher_corpus_plan.md; unlikelihood for the laggard) are
+next, not more extension. **Methodology for the 30k referendum: run `--samples 5`** — the
+verdict probe should not inherit n=3 error bars.
+Raw: `reports/onpolicy_rollout_probe_24010_cuda_uncached.txt`.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts
