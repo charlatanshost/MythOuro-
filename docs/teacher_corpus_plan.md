@@ -1,7 +1,16 @@
 # Teacher-generated corpus (token supply) — design
 
-**Status: DESIGN, 2026-07-17.** Implementation gated on the 18,000 probe passing
-(frontier past 8668). Backlog items it implements: *teacher-generated synthetic
+**Status: IMPLEMENTED 2026-07-18** (`tools/gen_teacher_corpus.py` + `--teacher-data-ratio`
+in distill; smoke-validated on the 5070, suite green). Built after the mid-leg 24,010 probe
+read "frontier plateau" — plan-B input. **The A/B (R=0.2 vs 0) stays gated on the 30k verdict.**
+
+**⚠ Measured throughput corrects the estimate below:** the 5070 generates **~25 accepted
+tok/s at batch 4** (~2M tok/day), not 500–1,000 — the estimate ignored Ouro's 4-UT-loop
+decode cost on a 12 GB bandwidth-class card. Larger batches help sublinearly (KV headroom is
+tight next to the desktop). Realistic plan: the 5070 banks a trickle; **serious generation
+runs on the Max between training legs** (wide-batch, teacher-only ≈ 0.5k+ tok/s by the
+rollout bench → ~40M/day *when the Max is free*). Token supply via generation is a
+between-legs harvest, not a free parallel stream. Backlog items it implements: *teacher-generated synthetic
 data* + *sequence-level KD* (ideas.md — one build, two entries). Attacks the #1
 bottleneck (token SUPPLY), feeds main-thread #2 (the token curve).
 

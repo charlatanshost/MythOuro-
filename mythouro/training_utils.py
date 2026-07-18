@@ -653,6 +653,7 @@ class MixedDataset(IterableDataset):
         world_size: int,
         mix_ratios: Optional[dict] = None,
         seed: int = 0,
+        extra_specs: Optional[list] = None,
     ):
         self.encoding = encoding
         self.seq_len = seq_len
@@ -660,6 +661,11 @@ class MixedDataset(IterableDataset):
         self.world_size = world_size
         self.ratios = mix_ratios or _MIX_RATIOS
         self.seed = seed
+        # Additional (key, repo, config, split, field) specs beyond
+        # _DATASET_SPECS — e.g. the local teacher-generated corpus
+        # (docs/teacher_corpus_plan.md). A `repo` of the form
+        # "json:<glob>" streams local JSONL files instead of an HF repo.
+        self.extra_specs = list(extra_specs) if extra_specs else []
 
         # Document separator inserted between packed documents so the model
         # sees a termination token and doc boundaries (P1, 2026-07-01:
@@ -688,13 +694,31 @@ class MixedDataset(IterableDataset):
         total_shards: int,
         shard_index: int,
     ) -> Optional[Iterator]:
-        """Open one streaming, sharded dataset. Returns None on failure."""
+        """Open one streaming, sharded dataset. Returns None on failure.
+
+        `repo` may be "json:<glob>" — a local JSONL corpus (e.g. the
+        teacher-generated one) streamed with the same interface as HF repos.
+        """
         from datasets import load_dataset
 
         try:
-            ds = load_dataset(
-                repo, name=config, split=split, streaming=True,
-            ).shard(num_shards=total_shards, index=shard_index)
+            if repo.startswith("json:"):
+                import glob as _glob
+                files = sorted(_glob.glob(repo[len("json:"):]))
+                if not files:
+                    logger.warning(
+                        f"MixedDataset: no files match {repo!r}; skipping source"
+                    )
+                    return None
+                ds = load_dataset(
+                    "json", data_files=files, split="train", streaming=True,
+                )
+            else:
+                ds = load_dataset(
+                    repo, name=config, split=split, streaming=True,
+                )
+            if total_shards > 1:
+                ds = ds.shard(num_shards=total_shards, index=shard_index)
             return iter(ds)
         except Exception as exc:                                 # noqa: BLE001
             logger.warning(
@@ -717,7 +741,7 @@ class MixedDataset(IterableDataset):
         # touch the others. We keep the spec alongside the iterator so we
         # can re-open exactly that source on StopIteration.
         active: list[dict] = []
-        for key, repo, config, split, field in _DATASET_SPECS:
+        for key, repo, config, split, field in list(_DATASET_SPECS) + self.extra_specs:
             if self.ratios.get(key, 0.0) <= 0:
                 continue
             it = self._open_source(repo, config, split, total_shards, shard_index)

@@ -66,6 +66,7 @@ from mythouro.checkpointing import (
 )
 from mythouro.tokenizer import MythOuroTokenizer
 from mythouro.training_utils import (
+    _MIX_RATIOS,
     LoopCurriculum,
     MixedDataset,
     ExpertSpecializationProbe,
@@ -146,6 +147,13 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "(load_distillation_teacher refuses to return a "
                         "mismatched teacher).")
     p.add_argument("--total-steps", type=int, default=5000)
+    p.add_argument("--teacher-data-ratio", type=float, default=0.0,
+               help="Fraction of the data stream drawn from the local "
+                    "teacher-generated corpus (tools/gen_teacher_corpus). "
+                    "0 = off (default, stream unchanged). Start A/Bs at 0.2 "
+                    "per docs/teacher_corpus_plan.md.")
+    p.add_argument("--teacher-data-files", default="data_teacher/*.jsonl",
+               help="Glob of local JSONL shards for --teacher-data-ratio.")
     p.add_argument("--min-lr", type=float, default=None,
                help="Cosine-decay floor. Default None = lr*0.1 (legacy). The "
                     "18k probe (tracker 2026-07-17) showed the legacy floor "
@@ -414,7 +422,22 @@ def main():
     # ------------------------------------------------------------------
     # Data + curriculum
     # ------------------------------------------------------------------
-    dataset = MixedDataset(encoding, args.seq_len, rank=0, world_size=1)
+    # Teacher-generated corpus mix-in (docs/teacher_corpus_plan.md): ratio R
+    # of the stream comes from local JSONL written by tools/gen_teacher_corpus,
+    # the real corpora scaled by (1-R). R=0 (default) = exactly the old stream.
+    mix_ratios = None
+    extra_specs = None
+    if args.teacher_data_ratio > 0.0:
+        scale = 1.0 - args.teacher_data_ratio
+        mix_ratios = {k: v * scale for k, v in _MIX_RATIOS.items()}
+        mix_ratios["teacher"] = args.teacher_data_ratio
+        extra_specs = [
+            ("teacher", f"json:{args.teacher_data_files}", None, "train", "text"),
+        ]
+    dataset = MixedDataset(
+        encoding, args.seq_len, rank=0, world_size=1,
+        mix_ratios=mix_ratios, extra_specs=extra_specs,
+    )
     loader = DataLoader(
         dataset, batch_size=args.micro_batch, num_workers=args.num_workers, pin_memory=True,
     )

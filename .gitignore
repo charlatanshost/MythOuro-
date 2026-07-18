@@ -448,3 +448,6 @@ flycheck_*.el
 # network security
 /network-security.data
 
+
+# Teacher-generated corpus (tools/gen_teacher_corpus) — large, regenerable
+data_teacher/
