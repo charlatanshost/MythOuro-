@@ -127,6 +127,28 @@ card survives its vendor's pivot. Multi-card: Xe Link bridging works on the
 PCIe cards in pair topologies; standard DDP/FSDP backends exist for XPU
 (untested by us so far — single card to date).
 
+## Why third-party benchmarks underreport this card
+
+Treat published PVC numbers as a floor, not an estimate. Benchmarking the Max
+the way reviewers benchmark NVIDIA cards — cold start, narrow batch, default
+knobs — systematically understates it. Our own receipts:
+
+- **Warmup**: the identical GEMM measures 140 TFLOPS cold and **224 warmed**
+  (+60%). Most published figures are the cold one.
+- **Batch width**: real-model training swings **3.3k → 17.2k tok/s (5×)**
+  from batch 1 to 64. Any batch-1 benchmark reports the card's worst case.
+- **The "obvious" knob is a trap**: `torch.compile` default mode gains +10%,
+  but `max-autotune` — the setting a reviewer reaches for — *loses* 13%
+  (Triton GEMM templates displace oneDNN's XMX kernels). A tuned-looking
+  config can be slower than eager.
+
+None of this is exotic tuning — warm the kernels, go wide, leave oneDNN in
+charge — but defaults don't do it for you, and neither do most reviews.
+
+*Planned addition: standard-model numbers (Llama-class via HF transformers,
+vLLM-XPU batch serving, llama.cpp SYCL) measured on this same rig, for
+apples-to-apples comparison with published reviews.*
+
 ## Honest buying guidance (2026 gray market)
 
 - ES/QS samples circulate cheaply; ours runs on stock everything. Ask sellers
