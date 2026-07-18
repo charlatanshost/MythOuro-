@@ -335,6 +335,34 @@ all mitigated by the open, self-patchable stack (the project's through-line).
 4. **EOL availability risk:** 1100 is discontinued → buying #2–4 *later* is a supply gamble. Acquire as a batch while available, or accept a card-count cap.
 5. **Benchmark XMX engagement on card #1 BEFORE buying more** (vector floor 1.4× vs XMX ceiling 3–6×; patch oneDNN if it falls back — open stack). Don't buy 4 if #1 reveals an unpatchable XMX problem.
 
+### Rig build plan (2026-07-18) — dedicated multi-1100 box, Xeon Max QS host
+
+Card #1 checklist items are now retired (XMX engages — 224 TFLOPS GEMM; workaround stack
+A/B-validated 07-15; distill workload measured ~60–65 TFLOPS blended), so the 4-card path is
+GO and gets its own chassis. Decisions:
+
+- **Host: Xeon Max 9462 (QS, not ES — retail stepping, standard C741/LGA4677 boards).**
+  Runs **HBM-only with ZERO DIMMs** (64 GB on-package) → deletes the ~$2k DDR5 line. 64 GB
+  host RAM is ample for GPU-host duty (models live on cards; `--num-workers 0` pipeline).
+  Verify the chosen board's BIOS exposes the HBM mode toggle; cooler rated ~350 W LGA4677.
+  80 Gen5 lanes = 4×16 GPU + NVMe/NIC with nothing spare — draw the slot map before ordering.
+- **Owner's Genoa ES: REJECTED as host** — locked to 3 rare motherboards, and still needs
+  DIMMs. Sell/trade candidate. (A 12-channel populate is also overkill for a GPU host —
+  4 used RDIMMs suffice — but the board scarcity kills it regardless.)
+- **Max 1550 ES on OAM→PCIe adapter: considered 07-17, dropped** — same-silicon-twice in a
+  hostile form factor; 600 W passive cooling in a tower and adapter/binning roulette buy
+  nothing over two 1100s. (Its one real charm — two tiles = teacher/student split on one
+  card — comes free with card #2 anyway.)
+- **Cards: batch-buy 1100 ES while gray-market stock exists** (EOL supply risk, checklist #4
+  above stands). Bridged pairs (Xe Link, adjacent slots); front-to-back server-chassis
+  airflow retires the per-card 40 mm-fan hack; 1,600 W+ PSU (4×300 W + host); budget PVC
+  idle draw ×4 for an always-on box.
+- **First software wins when card #2 lands (no DDP needed):** teacher-on-#2 / student-on-#1
+  split ≈ 1.5–2× training throughput (85% of the single-card's FLOPS is the teacher —
+  measured 07-16); card #2 also hosts teacher-corpus generation at Max speeds (~40M tok/day
+  vs the 5070's measured ~2M — gen_teacher_corpus smoke, 07-18). Serving proper (vLLM-XPU)
+  and DDP/FSDP scale-up remain milestone-2 software on this same box.
+
 **Optimization knowledge (oneAPI training, 2026-06-18):** Intel's official SYCL GPU-opt
 notebooks give **Max 1100-specific** occupancy numbers — 64 threads/Xe-core, 56 cores =
 3,584 threads, **~112 properly-sized work-groups → 100% occupancy**, WG sizes ×64
