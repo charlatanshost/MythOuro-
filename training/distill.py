@@ -146,6 +146,11 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "(load_distillation_teacher refuses to return a "
                         "mismatched teacher).")
     p.add_argument("--total-steps", type=int, default=5000)
+    p.add_argument("--min-lr", type=float, default=None,
+               help="Cosine-decay floor. Default None = lr*0.1 (legacy). The "
+                    "18k probe (tracker 2026-07-17) showed the legacy floor "
+                    "starves late-schedule legs — frontier runs want ~lr*0.3 "
+                    "so extended legs keep real signal.")
     p.add_argument("--warmup-steps", type=int, default=500,
                help="v1's proven from-scratch recipe used 500. The old "
                     "default (200) hit full LR too early on a fresh 4-loop "
@@ -464,7 +469,9 @@ def main():
 
     while step < args.total_steps:
         cur_lr = _cosine_lr(step, args.warmup_steps, args.total_steps,
-                             args.lr, args.lr * 0.1)
+                             args.lr,
+                             args.min_lr if args.min_lr is not None
+                             else args.lr * 0.1)
         warmup_factor = apply_component_warmup(
             optimizer, cur_lr, step, cfg.new_component_warmup_steps,
         )

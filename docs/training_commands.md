@@ -33,7 +33,7 @@ python -m training.distill \
   --student-device xpu:0 --teacher-device xpu:0 \
   --teacher-id ByteDance/Ouro-2.6B-Thinking \
   --seq-len 1024 --micro-batch 8 --grad-accum 2 \
-  --total-steps 18000 --warmup-steps 500 --lr 1e-4 \
+  --total-steps 30000 --warmup-steps 500 --lr 1e-4 --min-lr 3e-5 \
   --depth-reg-coeff 0.3 --divergence rev_kl \
   --use-sandwich-norm --use-depth-aware-init \
   --onpolicy-lambda 0.7 --teacher-mix-alpha 0.5 --rollout-len 64 \
@@ -52,9 +52,12 @@ Micro-batch 8 × accum 2 = the old effective batch 16 (optimizer-state coherent 
 decode sampled rollouts off-distribution (~1 nat KL; tracker 2026-07-16) — all 9780→12000
 training is tainted and `checkpoints_onpolicy_xpu` is retired. Rollout generation is now
 hard-pinned uncached in `training/distill.py` (wide batching kept); expect lower rollout tok/s
-than the phase-5 bench tables. `--total-steps 18000` stretches the cosine so the restarted
-stretch trains at real LR, not the tail. **Probe comparisons: use `--no-kv-cache`** — cached-path
-probe numbers (2026-07-15/16 entries) are a different instrument than everything ≤8668.
+than the phase-5 bench tables. **`--min-lr 3e-5` (added 2026-07-17):** the legacy cosine floor
+(lr·0.1 = 1e-5) starved the last ~4k steps of both long legs — the 18k "frontier" phase
+effectively ran without signal (tracker 2026-07-17 evening). The floor keeps extended/resumed
+legs at real LR (30k leg: 5.5e-5 → 3e-5); extend `--total-steps` freely without re-creating the
+tail. **Probe comparisons: use `--no-kv-cache`** — cached-path probe numbers (2026-07-15/16
+entries) are a different instrument than everything ≤8668.
 
 **Monitoring (second terminal):**
 ```bash

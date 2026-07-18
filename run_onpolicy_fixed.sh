@@ -15,7 +15,7 @@ exec python -m training.distill \
   --student-device xpu:0 --teacher-device xpu:0 \
   --teacher-id ByteDance/Ouro-2.6B-Thinking \
   --seq-len 1024 --micro-batch 8 --grad-accum 2 \
-  --total-steps 18000 --warmup-steps 500 --lr 1e-4 \
+  --total-steps 30000 --warmup-steps 500 --lr 1e-4 --min-lr 3e-5 \
   --depth-reg-coeff 0.3 --divergence rev_kl \
   --use-sandwich-norm --use-depth-aware-init \
   --onpolicy-lambda 0.7 --teacher-mix-alpha 0.5 --rollout-len 64 \
