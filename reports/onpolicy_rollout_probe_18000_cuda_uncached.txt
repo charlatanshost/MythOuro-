@@ -1,0 +1,98 @@
+step_0017952.pt
+step_0018000.pt
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-17 20:01:04.336 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1614 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=cuda:0). Teacher frozen.
+2026-07-17 20:01:04.551 | WARNING  | mythouro.main:warn_once:85 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).
+[probe] loaded checkpoints_onpolicy_fixed/step_0018000.pt (step 18000) on cuda:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on cuda:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.14 [0.09-0.18] | distinct1 0.39 [0.14-0.65] | distinct2 0.80 [0.65-0.94] | n=3
+    e.g.: ' get the 111283667680740138678808232943902884423076383401796298302847781692222368787454978293268504558'
+
+  α=0.25 | top_share 0.24 [0.09-0.52] | distinct1 0.54 [0.34-0.70] | distinct2 0.78 [0.47-0.96] | n=3
+    e.g.: ' go through.\n\nIn June 22 there were 54,800,000 people of the population. A common way to keep a food diary of a 6.5000 pounds. \n\nFor example, the same is actually 7.4% (M68000), it was just a good start in a simple family history. But the reason it was in a different way to do more than just one'
+
+  α=0.5  | top_share 0.09 [0.07-0.11] | distinct1 0.64 [0.58-0.69] | distinct2 0.93 [0.88-0.96] | n=3
+    e.g.: ' explore the field for the first time, so the "F" is not being "used" yet... but of the the "good" parts of the fields of T. And that\'s how the second time, the game came in a bit... which we found\n\n- The game was done with A0, a few days, because I was too busy. We\'ve always been working hard to do a lot in this game...\n- 12/8/'
+
+  α=0.7  | top_share 0.08 [0.06-0.10] | distinct1 0.66 [0.61-0.71] | distinct2 0.94 [0.89-0.98] | n=3
+    e.g.: ' make a new friend.\n\n"Forget it!", said the old people, and the very wise looked like they knew and were beginning to the wise.\n\nIt\'s quite simple: when you meet all the good you get, you have to make yourself to get all the good. You can do as well, for instance. And you have done it.\n\nAnd what is it? You get what you get, you are really in trouble. They know exactly'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.24 [0.12-0.45] | distinct1 0.48 [0.27-0.61] | distinct2 0.75 [0.52-0.92] | n=3
+    e.g.: " the use of an alternative method that causes the amount of the body.\n\nWhat is the relationship between an immune and is the most effective disease (which is a good thing for the patient's own.\n\nI'm going to use the specific form that is actually the way you put it, as the problem mentioned before going to be more than what's a patient's.\n\nThere were more of the symptoms of this issue to the question, but the number of people"
+
+  α=0.25 | top_share 0.12 [0.06-0.20] | distinct1 0.62 [0.56-0.67] | distinct2 0.89 [0.82-0.96] | n=3
+    e.g.: ' such a drug (for example, as a antibiotic, and some anti-pre-sporulation) and it has a high concentration of the drug.\nBacterial infections are often not so sensitive or they often have certain side of the system. However, these side of the system may also be considered as an essential part of the system.\nHow we define the disease is a primary way of giving us that this is a medical-l\nThis is as a result of'
+
+  α=0.5  | top_share 0.08 [0.05-0.11] | distinct1 0.59 [0.58-0.59] | distinct2 0.89 [0.85-0.93] | n=3
+    e.g.: " a specific condition. Additionally, the question is about the presence of the drug in the bloodstream. Let's examine this. The drug is not a vitamin and has to be administered via IV or a similar route. Here are the best methods for treating the brain:\n*IV\n*Cann\nCef: CIN. Cinnabasic. C\nC\nC-f; a\n.\n.\n5,3.\n.\n\n*IV"
+
+  α=0.7  | top_share 0.10 [0.06-0.12] | distinct1 0.61 [0.56-0.69] | distinct2 0.86 [0.77-0.94] | n=3
+    e.g.: ' antibiotics. So the answer is: antibiotics, since it\'s the standard treatment, not the cause. Wait, according to the question stem, "the most likely cause of this infection" is antibiotics. That makes no sense. If we pick C and C or D, then that the answer is antibiotics. If antibiotics are in the end as part of the answer. So the first one that\'s about the cause of infection?\n\nNo. The answer choices are the factors listed'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.24 [0.10-0.42] | distinct1 0.30 [0.18-0.44] | distinct2 0.59 [0.35-0.76] | n=3
+    e.g.: '.\n\nC. M.H.P., A. C.A.A.A.\n\nR. C.A.A.S.I.A.A.\n\nD.A.P.A.T.P.\n\nA.A.I.H.A.A.\n\nA. A.A.A.A.\n\nE.A.H.L.\n\nC.A.I'
+
+  α=0.25 | top_share 0.16 [0.08-0.29] | distinct1 0.44 [0.20-0.56] | distinct2 0.71 [0.39-0.88] | n=3
+    e.g.: ' different\n\nA. a) a (b) a b. a. a\n\na the a. a. (b) a single\n\nthe first\n\n, a. A. a. a.\n\na. a.\n\na. a. a.\n\n(b), a.a. a. D. a.a. a.\n\na. a. a. a.\n\na. a. b.'
+
+  α=0.5  | top_share 0.10 [0.08-0.10] | distinct1 0.62 [0.60-0.65] | distinct2 0.87 [0.85-0.89] | n=3
+    e.g.: ' the type of of the human body, which also can help.\nSo you how to lower your food group and if the brain has to work to build the\n\nQuestion: What is the reason for getting a blood-sugar system for a child on the most "insulin-low" or "anxiety" medications for a child? Answer: To make a child with a good life.\n\nQuestion: What is the most recent and comprehensive scientific study on the best'
+
+  α=0.7  | top_share 0.12 [0.07-0.21] | distinct1 0.64 [0.53-0.71] | distinct2 0.91 [0.80-0.97] | n=3
+    e.g.: ' increased\nthirst and urination. What is the correct\npath for the blood and urine flow through\nthe kidney and/or bladder?\n\nStep 1 of 2 :\n\nU-shaped blood vessels, called the\ncapillaries and loop. There are two main\norgans in this system, the kidney and the\nbladder.\n\nStep 2\n\nStep 3\n\nStep 4\n\nStep 1.\n\nExplanation of'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.44 [0.18-0.64] | distinct1 0.36 [0.23-0.57] | distinct2 0.60 [0.41-0.87] | n=3
+    e.g.: ' the\nand a single.\nWhat is the main goal of\nC:\nSECTION A(G)\nThe B1-A is the ( )\nIn contrast to the the 2-Gb\nTo the question regarding whether the H\nS is the most common one.\nA\nA and that a C.\nTo a\n\nIf there is no other type.\n\nBut the answer is what I do here in the\n\nThe'
+
+  α=0.25 | top_share 0.21 [0.10-0.39] | distinct1 0.42 [0.34-0.55] | distinct2 0.74 [0.63-0.83] | n=3
+    e.g.: ' the a. a\n\n.\n,\n:\n,\n\n(d) the most important part of this article. It 5\n\nn. the\n\nin this particular and\n\np.\n\n(g).\n\n,\n\na.\n\nthe\n\nThe\n\na.\n\nof\n\n(a) in the\n\n5.\n\na\n\n(2)\n\n(a)\n\n(b'
+
+  α=0.5  | top_share 0.08 [0.06-0.09] | distinct1 0.59 [0.54-0.66] | distinct2 0.93 [0.89-0.95] | n=3
+    e.g.: " pain, fever and the inflammation/reduction inflammation of the joints. An example of a nonsteroidal\nsteroid, in turn is ibuprofen, and the difference is the same as those of an anabolic androgenic steroid. The body is also able to\n\nQuestion: Compare and contrast to the effects and side of the drug in the same person's\n\nA person is taking the steroid hormone and the non-steroidal, non-adadipipipipipip"
+
+  α=0.7  | top_share 0.11 [0.08-0.14] | distinct1 0.56 [0.52-0.60] | distinct2 0.83 [0.81-0.84] | n=3
+    e.g.: ' pain, inflammation, fever, or low-shelf sleep and blood pressure.\n\nIt also helps lower blood pressure by the blood vessels.\n\n\nThe more you will see it.\n\nwhat are your hypertension and stroke levels during pregnancy and the body.\n\ndrugs for the treatment.\n\nwhat are the names of blood pressure drugs, and in the general of the most common side of the blood pressure supplements for hypertension.\n\nA study and how to'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.12 [0.09-0.16] | distinct1 0.43 [0.30-0.54] | distinct2 0.73 [0.64-0.78] | n=3
+    e.g.: '\n    print("\\n-1:\\n\\n". 2)\n    print(f"F+", [573,0,60,71], 1800, 167, 100, 0, 487, 0, 79864, 10, 19, 1445, 16, 1, 11000'
+
+  α=0.25 | top_share 0.09 [0.07-0.12] | distinct1 0.54 [0.48-0.57] | distinct2 0.84 [0.76-0.91] | n=3
+    e.g.: '\n    result = 0\n    if len(n) == 3:\n        for i in range(n):\n            # Handle all values in case of a single number. 2 cases are not handled as the 1000000 digit and the 1800 digit\n    # Use both values:\n    if not str(number)(self.name)[::-1] and not is_x_1800(x>180'
+
+  α=0.5  | top_share 0.08 [0.06-0.09] | distinct1 0.62 [0.54-0.70] | distinct2 0.91 [0.91-0.92] | n=3
+    e.g.: '\n    if not pos_integer:\n        return None\n    prev = 0\n    current = 1\n    for q in range(n):\n        if not np.isscalar(q0):\n            if q is not None:\n                prev = r\n            else:\n                # No one that is a positive-integer in the pos-integer\n                break\n        return prev + i_prev + i\n\ndef get_fib_number(n):\n    fib_n_'
+
+  α=0.7  | top_share 0.09 [0.06-0.12] | distinct1 0.55 [0.46-0.67] | distinct2 0.83 [0.76-0.89] | n=3
+    e.g.: "\n    fib sequence = [0] * n\n    if n > 0:\n    fib_sequence = [0]\n    # The rest of the code is probably more correct, but it's missing the logic\n    # to find the 10th number in the first sequence of 30 numbers, which is probably 12\n    # because (1 + 2 + 1 + 3 + 7) and so it is not correct\n    # it"
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.17 [0.08-0.24] | distinct1 0.35 [0.24-0.54] | distinct2 0.66 [0.54-0.78] | n=3
+    e.g.: ' 4x+9 = 10x + 15 = 2 x + 39x + 3x + 15 = 3x + 4x + 4x = 25x + 2x + 10x (912x) + 1000 + 8\n\nNote that 111221 is 16.\n\n6 x +6\n\nx'
+
+  α=0.25 | top_share 0.12 [0.05-0.20] | distinct1 0.42 [0.28-0.60] | distinct2 0.80 [0.65-0.93] | n=3
+    e.g.: ' 0.\n\nThe sum of the above are not equal to 1, so if we have more than 2.88, we can use the equation in terms of an algebraic equation. The function g is the same as the equation of x (and other values). The standard equation for x in terms of an algebraic (x + 3) is not one of them. That is not a simple equation, as they represent 6555. But'
+
+  α=0.5  | top_share 0.14 [0.07-0.18] | distinct1 0.49 [0.43-0.60] | distinct2 0.73 [0.62-0.89] | n=3
+    e.g.: ' 6x - 5\n\nNow we will do that, we can add the 2x - 3 to both n + 7 = 2x and the 3x + 6 to 3 = 1 - 4x - 72.\n\nNow you can check the first problem with the solution in the second step by adding the 2x - 3 to 3 = 1.\n\nSolving 20'
+
+  α=0.7  | top_share 0.12 [0.09-0.17] | distinct1 0.42 [0.31-0.49] | distinct2 0.74 [0.59-0.84] | n=3
+    e.g.: ' 0\n\nSolve the equation (x - 3x)^2 = (1/4)x^2 for the number of solutions:\n\n- 0 solutions\n- 2 \n- 1 0 \n- 13/4\n\nIn the first term of an arithmetic progression, the number of terms is 223, and can be rewritten as a quadratic equation, where the first term of the AP has a value'
+

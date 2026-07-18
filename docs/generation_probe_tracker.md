@@ -549,6 +549,37 @@ final probe then, same instrument (`--no-kv-cache`, 5070). Watch whether 18,000 
 Raw: `reports/onpolicy_rollout_probe_13944_cuda_uncached.txt`.
 
 
+## 2026-07-17 (evening) — 18,000 final: PARITY HELD, NO ADVANCE — but the frontier test ran at tail LR
+
+Run complete (9780→18000, all fixed rollouts, α=0.5, λ=0.7). Final probe, same instrument
+(uncached, 5070). **α=0.0 means: top_share 0.225 / distinct1 0.385** vs 13,944's 0.17/0.51 and
+8668's 0.16/0.50 — numerically flat-to-slightly-down, and the per-sample brackets are huge
+(weather d1 [0.14–0.65]: one number-runaway draw drags the mean). **Text says regime UNCHANGED**:
+bacterial still produces connected self-questioning English (*"What is the relationship between
+an immune and is the most effective disease…"*), quadratic still algebra-shaped, fibonacci emits
+runnable-looking `print(...)` calls; diabetes drew an initials-salad sample. Same
+grammatical-rambling regime as 13,944, noisier draws. **Ibuprofen did NOT de-lag** (0.44 —
+three probes running; candidate for the unlikelihood lever, ideas.md).
+
+**Mid/high α improved slightly** (α=0.5 mean top_share 0.113→0.095, d1 0.58→0.59; α=0.7
+healthy) — the training-distribution band is fine; no re-collapse anywhere.
+
+**⚠ The confound that keeps this from being a clean negative: steps 13,944→18,000 ran at
+LR ~1.2e-5 → 0** (cosine tail, again). The recovery phase (9780→13,944) had real LR
+(~4.5e-5→1.5e-5); the frontier phase got a dying schedule. So "tokens don't move the frontier"
+has NOT actually been tested at full signal — what's been shown is: clean on-policy tokens
+REPAIR damage fast at real LR, and do ~nothing at near-zero LR (which is what near-zero LR does).
+
+**Decision options for the next leg (pick before more compute):** (a) **extend
+`--total-steps` to 30,000** — zero-code, puts step-18k LR at ~3.6e-5 (real), ~34 h for the
+12k-step leg; (b) same but shorter legs with re-extension each time (keeps LR floor higher,
+more probe points); (c) add a constant-LR / min-LR floor option to the schedule (small code).
+The teacher-corpus build (docs/teacher_corpus_plan.md) was gated on "probe passes" — status is
+**inconclusive-due-to-LR**, so the gate decision passes to the owner; the generator's value case
+(token supply for exactly these longer legs) is unchanged.
+Raw: `reports/onpolicy_rollout_probe_18000_cuda_uncached.txt`.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts
