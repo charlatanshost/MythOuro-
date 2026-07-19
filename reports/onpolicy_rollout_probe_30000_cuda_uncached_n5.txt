@@ -1,0 +1,97 @@
+final checkpoint settled: step 30000 (age 440s)
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-19 08:15:10.207 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1638 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=cuda:0). Teacher frozen.
+2026-07-19 08:15:10.419 | WARNING  | mythouro.main:warn_once:85 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).
+[probe] loaded checkpoints_onpolicy_fixed/step_0030000.pt (step 30000) on cuda:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on cuda:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.26 [0.07-0.88] | distinct1 0.47 [0.11-0.69] | distinct2 0.72 [0.13-0.95] | n=5
+    e.g.: ' get the water of the water was less than 12000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+
+  α=0.25 | top_share 0.11 [0.09-0.11] | distinct1 0.56 [0.51-0.61] | distinct2 0.88 [0.85-0.91] | n=5
+    e.g.: ' play in the backyard and to have a picnic—\n\nSo the first thing the kids on the problem, after returning them, we need to know how the kids are going to be able to do\n\nAnd the problem is that the best solution is just a little bit.\n\nThe first thing we are going to know about the next step is to create a number of ways, and then the number of people that are able to do the same thing, so all the'
+
+  α=0.5  | top_share 0.10 [0.06-0.11] | distinct1 0.64 [0.61-0.70] | distinct2 0.94 [0.91-0.99] | n=5
+    e.g.: " go down the river. We are currently 40 miles of the starting time. That's the first part of the story.\nWe must be able to do that because it's a good example of the problem and a way to find the solution to it.\nNow we can see that the time when we have the information in the time frame.\nSo in this case I think you should be able to write a program that solves that problem using the idea of the problem"
+
+  α=0.7  | top_share 0.09 [0.06-0.10] | distinct1 0.64 [0.58-0.73] | distinct2 0.91 [0.84-0.95] | n=5
+    e.g.: ' go to the exhibition. We had been told us that the exhibition had only two parts of their display: The first one is the first part, and the first one is the first section of the first part. So we went forward to the first part of the first section. And so the first four-hundred or so floors were empty, while the last few were crowded. The next thing that I noticed is that there is a museum next door which is going as well. This'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.10 [0.07-0.17] | distinct1 0.59 [0.54-0.68] | distinct2 0.89 [0.86-0.96] | n=5
+    e.g.: ' the effect of the infection (M), and the effects of the specific type of body, and the effects of the chemical-related health conditions and chemical types of the chemical and non-stabr.\n\nA20 (PDE)\nA000900;\nthe use of the R and N(H)\nand the specific treatment of this process in the case of a series of DSTA-P1945s.'
+
+  α=0.25 | top_share 0.10 [0.07-0.15] | distinct1 0.58 [0.43-0.65] | distinct2 0.87 [0.66-0.97] | n=5
+    e.g.: ' it. I need to know the treatment process for the bacterial infection. \n\nFor example, if the cell does not have a normal (the same structure I think the same as the B-D to the second stage of the cycle), then I would get to the next steps in the process to have the same number of different factors in which the normal and different properties are taken with a normal number. Since there are some other different combinations, like 1199.'
+
+  α=0.5  | top_share 0.09 [0.07-0.15] | distinct1 0.64 [0.58-0.72] | distinct2 0.94 [0.87-0.99] | n=5
+    e.g.: " the use of antibiotics as opposed to the treatments for the common.\nSo you probably could also be a bit less strict, I think, and maybe a person who has a long time to treat a bacterial disease. But when there's a case of the common, the person has to give a shot about how to handle the illness, the patient will need to take a shot with a medicine. So when you have a lot of health, you use it properly, but it's"
+
+  α=0.7  | top_share 0.11 [0.07-0.21] | distinct1 0.61 [0.48-0.73] | distinct2 0.87 [0.67-0.99] | n=5
+    e.g.: ' antibiotics, which can inhibit the growth of the pathogen. The bacteria can become resistant to the antibiotics through mutations, allowing them to be cured more easily. The presence of certain bacteria in the form of bio-films can be the cause of several conditions. The bio-films are used to aid in the treatment of conditions such as chronic wound infections, and also the formation of a protein called pepsinogen. The formation of the bio-film are characterized by an increased amount of'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.26 [0.09-0.46] | distinct1 0.40 [0.24-0.53] | distinct2 0.72 [0.67-0.84] | n=5
+    e.g.: ' symptoms. For example, in a two studies called:\n\n- a. S. I.B. I. A. and S.A.G. 35\n\n- a. S. C. (The H.M.F.A.P.M.H.R.A.R.3C. A.R.S.D.S.A.A.*\n\n- 1038 (\n\n-'
+
+  α=0.25 | top_share 0.11 [0.06-0.15] | distinct1 0.57 [0.47-0.62] | distinct2 0.86 [0.78-0.94] | n=5
+    e.g.: " a high blood blood blood\nA high-level disease\nA long \na-p 2\n2\n(1). In the \n(1) [\n0.611-40\n*\nB809\n3\n.84 1 (3)\n6\n\nQuestion: Is the initial cost of the human brain's first step to make the second question (e.g., the body does not cause a new"
+
+  α=0.5  | top_share 0.10 [0.07-0.14] | distinct1 0.57 [0.28-0.76] | distinct2 0.87 [0.76-0.96] | n=5
+    e.g.: ':\n- Increased symptoms of hyperglycemia, such as increased thirst and frequent urination (an enlarged bladder), and other symptoms.\n\nKey Symptoms and Types:\n- Type 2 diabetes is also referred to the "sugar diabetes in the world" (I hope this explanation clarifies, but it\'s not a comprehensive analysis).\n\nHow to Use the Symptoms A1C?\n\nThe HbA1b46 is an actual clinical measurement from the patient\'s'
+
+  α=0.7  | top_share 0.07 [0.04-0.09] | distinct1 0.61 [0.51-0.69] | distinct2 0.87 [0.76-0.94] | n=5
+    e.g.: " both the inability to feel hunger and an increased need for glucose.\nH: Diabetes causes the symptoms of type 2 diabetes, which include both the inability to feel hunger and an increased rate of the need for glucose.\nI: Diabetes is a condition for type 20 diabetes.\nJ: Diabetes is a problem in the field.\nI think there's probably a typo or something about the type of diabetes. Let me think about diabetes type 1 and type"
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.13 [0.05-0.33] | distinct1 0.61 [0.40-0.72] | distinct2 0.87 [0.68-0.94] | n=5
+    e.g.: ' diseases.\n\nCMD is a specific type of enzyme for a patient:\n\nCIS and also the\n\nCQB7\n\nFLA33\n\nC17\n\nDIA\n\nS-C100\n\nADG-191\n\n.\n\n.\n\nM. R.\n\nC03\n\nS22\n\nB166\n\nB86\n\nC'
+
+  α=0.25 | top_share 0.10 [0.08-0.14] | distinct1 0.55 [0.45-0.66] | distinct2 0.85 [0.76-0.96] | n=5
+    e.g.: '\n\n...\n\nThe most critical medical condition that can be addressed is the "G" which is the greatest concern given by the "G" (Efficient\n\n...\n\nThe question is to know which medication is best used to identify "G" or "P" or "P" and "C" means that is the first 35% of the "G" in the test, the "P" is "40%" because they are'
+
+  α=0.5  | top_share 0.12 [0.05-0.33] | distinct1 0.59 [0.32-0.68] | distinct2 0.85 [0.56-0.96] | n=5
+    e.g.: ' symptoms of osteoarthritis.\n\nPara, A.\n\nBohland, H. L.\n\nSzmukldk,\n\nP. A.\n\nCohia, T.\n\nR.\n\nSzmld\n\nA. S. A.\n\nC\n\nR.\n\nR. K.\n\nH.\n\na.\n\nM.\n\nP-R.\n\nP'
+
+  α=0.7  | top_share 0.12 [0.06-0.19] | distinct1 0.61 [0.55-0.69] | distinct2 0.90 [0.81-0.99] | n=5
+    e.g.: ' inflammation and reduce the severity of symptoms including sore muscles. The main ingredient to remember when taking the drug is ibuprofen.\n\nWhen is the best time to take a pill, how often should it be taken, and can be called, "truly" safe? As soon. It may take you a while,\n\nIf you don\'t know, you do the first question. Take It. Now go up to the top of the page. You can take this again at'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.16 [0.09-0.34] | distinct1 0.47 [0.31-0.70] | distinct2 0.80 [0.59-0.91] | n=5
+    e.g.: '\n     if n > 0:\n      if (x > 3) == 0 :\n      return:\n    return None\n    return (n <= 2)\n  \n    # else:\n      # check if it is a linear representation\n    # ...\n    return 0\n}\n\n}\n\n# if 3 < 29:\n\ndef compute(n):\n    return (x + 3, 29)\n   \n\n# - - '
+
+  α=0.25 | top_share 0.11 [0.07-0.21] | distinct1 0.53 [0.44-0.64] | distinct2 0.84 [0.72-0.92] | n=5
+    e.g.: '\n        with open("purchase_data", "w") as f:\n            with os.path.exists "purchase_data" as existing_from_file_path: # if we have a path_to_file file, we can check if there is not an empty string.\n                if p.startswith("m-") or isinstance(s[str(path.get(path)),\n                    (len(str(index)),\n                            \n                            len(str'
+
+  α=0.5  | top_share 0.10 [0.07-0.14] | distinct1 0.52 [0.41-0.61] | distinct2 0.85 [0.81-0.89] | n=5
+    e.g.: '\n\tresult = (1, 3)\n\tfor r in range(r[0] + 1, y = r[1], -13):\n\t\tprint(result)\n\n\treturn result\n\nfrom numpy import zeros\nfrom numpy.random.rand import get_nonzero\nfrom g1 import get_nonzero\nfrom math import *\nfrom math.mutable_trend\nfrom math import log_function, log_function'
+
+  α=0.7  | top_share 0.07 [0.05-0.09] | distinct1 0.56 [0.48-0.67] | distinct2 0.82 [0.68-0.88] | n=5
+    e.g.: '\n    pass\n\n\nCorrected Solution in code:\n\n```python\n\ndef fibonacci(n, memo={}):\n    if n <= 1:\n        return n\n    if n not in (fib(n, m) for m in memo.values()):\n    \t# Calculate the nth Fibonacci number without using a list or recursation\n        # TODO: Implement the nth Fibonacci number calculation using only iteration and without a list or recursion\n       '
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.17 [0.07-0.35] | distinct1 0.41 [0.25-0.55] | distinct2 0.77 [0.60-0.91] | n=5
+    e.g.: ' 97 and 2x^2 - 13700(15) + 15x + 76 - x^3 + 43x - 218406 (35)\n\nThis is part of the quadratic equation that is obtained by using a linear equation.\n\nThe first one must be found, so we can write the first two and in that form as follows:\n\nSolx('
+
+  α=0.25 | top_share 0.12 [0.08-0.23] | distinct1 0.42 [0.20-0.68] | distinct2 0.76 [0.48-0.92] | n=5
+    e.g.: ' 0 \n3.141.4) 16.122-492\n\n# 56 3027.1675 10.5\n\n# 2\n\n# 202-1.15134\n\n# 3734\n\n# 67.2891.21106  2 .  5.35'
+
+  α=0.5  | top_share 0.12 [0.09-0.16] | distinct1 0.48 [0.39-0.62] | distinct2 0.80 [0.69-0.89] | n=5
+    e.g.: ' 0 \n\nThe method of solving the equation involves an equation where the answer is given as 2x - 4 = 0. \n\nThis is related to the idea that it is easier to solve an equation step by applying the equation for the equation for which the quadratic equation is to be solved. \n\nIf the equation is not a function with only one argument of its equation, then by adding some equations you can get the solution of the first equation at this'
+
+  α=0.7  | top_share 0.10 [0.06-0.12] | distinct1 0.51 [0.41-0.68] | distinct2 0.81 [0.60-0.98] | n=5
+    e.g.: " 2. Please show the steps.\n\n\nOkay, let me try to see how to solve this as a quadratic equation. The equation is x squared, but in the problem it's written as x - 5x + 16 =3. Wait, how do I know that is the equation? Maybe there was a mistype. Let me think.\n\nWait no, maybe there's a typo that the first formula can be written as x^"
+

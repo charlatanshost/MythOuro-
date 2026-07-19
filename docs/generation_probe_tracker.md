@@ -602,6 +602,42 @@ verdict probe should not inherit n=3 error bars.
 Raw: `reports/onpolicy_rollout_probe_24010_cuda_uncached.txt`.
 
 
+## 2026-07-19 — ⚖️ THE 30k REFERENDUM (n=5): aggregate PLATEAU CONFIRMED — but the laggard fixed and structure improved underneath
+
+Leg complete: 18,000→30,000, all at real LR (5.5e-5→3e-5 floor), fixed rollouts, α=0.5, λ=0.7 —
+~70M tokens, the first properly-powered frontier test. Final probe: **n=5** (tighter brackets,
+as pre-registered), uncached/5070. **α=0.0 means: top_share 0.180 / distinct1 0.492.**
+
+Ladder: 8668 **0.16/0.50** → 13,944 **0.17/0.51** → 24,010 **0.207/0.45** → 30,000
+**0.180/0.49**. Five probes, one band. **The aggregate verdict is in: at 278M on this corpus,
+clean on-policy tokens alone do NOT push the mean past the 8668 frontier — they hold and
+polish it.** This is the honest negative the whole week was built to make trustworthy: no
+cache defect, no α drift, no LR starvation, n=5 — the plateau is real, not an artifact.
+
+**But the composition under the flat mean moved substantially:**
+- **Ibuprofen DE-LAGGED: 0.13/0.61 — best-ever, after four probes stuck at 0.38–0.44.** The
+  last stuck-attractor seed is unstuck; the unlikelihood lever loses its motivating case.
+- **The "awkward middle" α=0.25 band is uniformly healthy for the first time** (all seeds
+  0.10–0.12 top_share) — historically where fragile seeds fell into untrained-vocab salad.
+- **Structure gains in text**: fibonacci's best code sample of the project (multi-line Python
+  with conditionals + an apt comment); quadratic writes connected math prose ("This is part of
+  the quadratic equation… The first one must be found, so we can write…").
+- Failure mode shifted from *stuck seeds* to *occasional runaway draws* (weather mean 0.26 is
+  one 0.88 sample; 4/5 draws fine).
+
+**Reading:** more same-distribution tokens now buy within-regime polish, not regime change.
+Fluency is a solved problem; **meaning does not emerge from more of this corpus at this
+size.** Exactly the fork the roadmap's token-curve was built to detect.
+
+**Decision → PLAN-B, as pre-registered:** the teacher-corpus mix A/B
+(docs/teacher_corpus_plan.md). Sequence: (1) **harvest** teacher tokens on the now-free Max
+(gen_teacher_corpus; ~day-scale for ~30M); (2) continue from 30,000 with
+`--teacher-data-ratio 0.2`, total-steps extended, min-lr floor — ONE variable changes (R);
+(3) probe after ~8–9k steps vs THIS n=5 baseline. If teacher-text also plateaus, the next
+conversations are data curation (phi-style) and the v6 SFT milestone, not more tokens.
+Raw: `reports/onpolicy_rollout_probe_30000_cuda_uncached_n5.txt`.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts
