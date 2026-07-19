@@ -22,7 +22,7 @@ genuine code. **Recalibrated to 0.20** → 75% acceptance, 56 tok/s, mix balance
 `top_share` (never fired) remains the true degeneracy guard. Lesson for any length-changed
 filter: calibrate against the real corpus at the same length first.
 
-**Harvest v1 running** (2026-07-19, batch 24, Max): ~4.8M/day → A/B-ready ~10M in ~2 days;
+**Spot-read of the admitted 0.20–0.30 band (shard_0002, 2026-07-19): PASS** — contains genuinely good Python (docstringed functions the old floor would have rejected) plus a tolerable template-prose tax; mix on-target (45/35/20). **Harvest v1 running** (2026-07-19, batch 24, Max): ~4.8M/day → A/B-ready ~10M in ~2 days;
 30M ≈ 6 days. At R=0.2 a ~9k-step leg consumes ~10M teacher tokens; launching on ~6.5M
 means ~1.5 epochs of teacher data (acceptable mild repetition — owner's call). Backlog items it implements: *teacher-generated synthetic
 data* + *sequence-level KD* (ideas.md — one build, two entries). Attacks the #1
