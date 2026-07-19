@@ -67,6 +67,11 @@ costs nearly what a 120-token one does. Consequences, measured:
 - Autoregressive rollout generation (96-token, with 2.6B teacher in the mix):
   23 tok/s naive → **134 tok/s** by batching 32 sequences wide and caching —
   batch amortization is life.
+- Long-form generation from the 2.6B (4-loop) teacher, 768-token continuations,
+  KV-cached: **~56 tok/s at batch 24** — and batch 24 is the 48 GB memory cap
+  at that length, because HF's KV-cache `torch.cat` pattern transiently
+  *doubles* the cache each step. Wall-clock per decode step is ~flat in batch
+  (launch-bound), so tokens/s scales with batch until memory says stop.
 
 If your workload is single-stream chat inference, this is not your card. If
 it's training or wide batch serving, carry on.

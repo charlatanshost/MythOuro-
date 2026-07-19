@@ -4,13 +4,27 @@
 in distill; smoke-validated on the 5070, suite green). Built after the mid-leg 24,010 probe
 read "frontier plateau" — plan-B input. **The A/B (R=0.2 vs 0) stays gated on the 30k verdict.**
 
-**⚠ Measured throughput corrects the estimate below:** the 5070 generates **~25 accepted
-tok/s at batch 4** (~2M tok/day), not 500–1,000 — the estimate ignored Ouro's 4-UT-loop
-decode cost on a 12 GB bandwidth-class card. Larger batches help sublinearly (KV headroom is
-tight next to the desktop). Realistic plan: the 5070 banks a trickle; **serious generation
-runs on the Max between training legs** (wide-batch, teacher-only ≈ 0.5k+ tok/s by the
-rollout bench → ~40M/day *when the Max is free*). Token supply via generation is a
-between-legs harvest, not a free parallel stream. Backlog items it implements: *teacher-generated synthetic
+**⚠ Measured throughput (final, 2026-07-19 — corrects BOTH earlier estimates):** decode is
+**launch-bound on every backend** — wall-clock per step is ~flat in batch, so tokens/s ∝
+batch, and batch is MEMORY-capped. Measured: 5070 ~25 accepted tok/s (batch 4); **Max
+~56 accepted tok/s at batch 24** = **~4.8M tok/day** (not the 40M/day guessed from the
+short-rollout bench). Batch 48 × 768-tok continuations **OOMs the 48 GB card** — the HF
+KV-cache `torch.cat` transiently doubles the cache, and an XPU OOM can leave a **zombie
+process holding all VRAM** (field-notes gotcha #7; `pkill` + `xpu-smi -m 18` check before
+relaunch). Batch 24 peaks ~43 GB. Future throughput levers (backlog): compiled decode step,
+on-device top-p (sort appears XPU-safe; topk/multinomial are not), preallocated cache.
+
+**Filter calibration (2026-07-19, from reject-reason telemetry):** the v1 distinct-1 floor
+of 0.30 rejected 62% of output — telemetry showed 100% `low_distinct1`, and measurement of
+REAL corpus text at ~768 tok (general p10=0.38 / math 0.26 / code **0.23** — distinct-1
+falls with length, code is naturally repetitive) proved the floor would reject ~half of
+genuine code. **Recalibrated to 0.20** → 75% acceptance, 56 tok/s, mix balance restored;
+`top_share` (never fired) remains the true degeneracy guard. Lesson for any length-changed
+filter: calibrate against the real corpus at the same length first.
+
+**Harvest v1 running** (2026-07-19, batch 24, Max): ~4.8M/day → A/B-ready ~10M in ~2 days;
+30M ≈ 6 days. At R=0.2 a ~9k-step leg consumes ~10M teacher tokens; launching on ~6.5M
+means ~1.5 epochs of teacher data (acceptable mild repetition — owner's call). Backlog items it implements: *teacher-generated synthetic
 data* + *sequence-level KD* (ideas.md — one build, two entries). Attacks the #1
 bottleneck (token SUPPLY), feeds main-thread #2 (the token curve).
 

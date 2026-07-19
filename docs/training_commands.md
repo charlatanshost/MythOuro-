@@ -59,6 +59,25 @@ legs at real LR (30k leg: 5.5e-5 → 3e-5); extend `--total-steps` freely withou
 tail. **Probe comparisons: use `--no-kv-cache`** — cached-path probe numbers (2026-07-15/16
 entries) are a different instrument than everything ≤8668.
 
+**⭐ NEXT LEG (2026-07-19): the teacher-corpus A/B — R=0.2 from 30,000.** The 30k n=5
+referendum confirmed the same-corpus plateau (tracker 2026-07-19); plan-B changes ONE
+variable. Same command as the main run but `--total-steps 39000 --teacher-data-ratio 0.2`
+(~9k steps ≈ 26 h; needs ≥6.5M teacher tokens banked in `data_teacher/` — check
+`data_teacher/MANIFEST.json` accepted_tokens). Probe vs the 30k n=5 baseline with
+`--no-kv-cache --samples 5`.
+
+**Teacher-corpus harvest (between legs, occupies the card):**
+```bash
+python -u -m tools.gen_teacher_corpus --device xpu:0 --trust-remote-code \
+  --target-tokens 30000000 --batch 24
+```
+Batch 24 is the 48 GB memory cap for 768-tok continuations (48 OOMs — and see the
+zombie-OOM gotcha below before relaunching after ANY crash). ~56 accepted tok/s ≈
+4.8M/day. Stop/resume freely: shards + MANIFEST persist, shard numbering continues.
+**Before switching the card between harvest and training:** `pkill -f gen_teacher_corpus`,
+then `xpu-smi dump -d 0 -m 18 -n 1` must show memory ~0 — an XPU OOM/kill can leave a
+zombie holding all VRAM.
+
 **Monitoring (second terminal):**
 ```bash
 xpu-smi dump -d 0 -m 1,2,3,18 -i 2    # power, core °C, mem °C, mem-used, every 2 s
