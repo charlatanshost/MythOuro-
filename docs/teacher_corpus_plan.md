@@ -1,5 +1,23 @@
 # Teacher-generated corpus (token supply) — design
 
+## What this is, in one breath (read this first when returning after a gap)
+
+**The teacher is writing a textbook for its student, because the student stopped improving
+from reading the raw internet.** We give Ouro (the 2.6B teacher) short snippets of real
+corpus text as writing prompts, let it continue them at length, filter the junk, and bank
+the results (`data_teacher/`). Why it should help, in priority order: (1) the 30k plateau
+(tracker 2026-07-19) says more *web* tokens no longer improve the student's own generation —
+teacher text is the cheap test of "the data was too noisy" before concluding "the model is
+too small"; (2) distillation signal is sharper on text the teacher itself wrote — its
+logits there are confident, not mushy (sequence-level KD); (3) it's an unlimited token
+supply we control (the #1 recorded bottleneck). It's the mirror of on-policy training:
+on-policy = student writes, teacher grades (fixes the student's habits); this = teacher
+writes, student imitates (provides good examples). The literature blends both. It enters
+training as a 20% mix-in (`--teacher-data-ratio 0.2`), NOT a replacement — an all-teacher
+diet risks collapsing the student into one model's style. The A/B probe after the R=0.2
+leg decides: score moves → data quality was the wall, lean in; flat → the wall is likely
+model size → v6 SFT / scale-up conversations.
+
 **Status: IMPLEMENTED 2026-07-18** (`tools/gen_teacher_corpus.py` + `--teacher-data-ratio`
 in distill; smoke-validated on the 5070, suite green). Built after the mid-leg 24,010 probe
 read "frontier plateau" — plan-B input. **The A/B (R=0.2 vs 0) stays gated on the 30k verdict.**
