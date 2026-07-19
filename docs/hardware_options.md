@@ -349,10 +349,23 @@ GO and gets its own chassis. Decisions:
 - **Owner's Genoa ES: REJECTED as host** — locked to 3 rare motherboards, and still needs
   DIMMs. Sell/trade candidate. (A 12-channel populate is also overkill for a GPU host —
   4 used RDIMMs suffice — but the board scarcity kills it regardless.)
-- **Max 1550 ES on OAM→PCIe adapter: considered 07-17, dropped** — same-silicon-twice in a
-  hostile form factor; 600 W passive cooling in a tower and adapter/binning roulette buy
-  nothing over two 1100s. (Its one real charm — two tiles = teacher/student split on one
-  card — comes free with card #2 anyway.)
+- **Max 1550 ES on OAM→PCIe adapter: LIVE OPTION (owner, 2026-07-19)** — the running ES
+  1100 on stock i915/Level Zero retires the driver risk (same silicon family, same driver
+  path), and owner is confident in the adapter route. Unlike Gaudi (below), the 1550's OAM
+  problem is ONLY mechanical — everything above the connector is the already-validated
+  stack. Two tiles enumerate as two xpu devices (FLAT hierarchy) → teacher/student split on
+  one card + 128 GB. Remaining diligence before money moves: 600 W cooling design in a
+  tower (the hard part), PSU headroom, ES tile-binning (seller `sycl-ls` showing BOTH
+  stacks), adapter wattage rating. Sits alongside — not instead of — more 1100s in the
+  rig plan; slot/power budget decides the mix.
+- **Gaudi 2 (suggested externally 2026-07-19): REJECTED** — competent silicon, wrong
+  project. It is OAM *plus* an alien stack: SynapseAI/hpu graph-compiler lazy mode, NOT
+  oneAPI/Level Zero/torch.xpu — zero transfer of our workarounds/field notes, and our
+  defining features (ACT early-exit, convergence breaks, dynamic per-token depth) are
+  dynamic control flow, the most graph-compiler-hostile pattern we have. Roadmap risk is
+  worse than the Max's (SynapseAI is proprietary; Falcon Shores canceled; no upstream
+  lifeboat like torch.xpu). A second 1100/1550 delivers the same practical scale step with
+  zero porting days. Don't re-litigate without a SynapseAI-upstreaming event.
 - **Cards: batch-buy 1100 ES while gray-market stock exists** (EOL supply risk, checklist #4
   above stands). Bridged pairs (Xe Link, adjacent slots); front-to-back server-chassis
   airflow retires the per-card 40 mm-fan hack; 1,600 W+ PSU (4×300 W + host); budget PVC
