@@ -69,11 +69,12 @@ its logits are maximally informative).
 
 ## Throughput / dose math
 
-Ouro-2.6B batched KV-cached generation on the 5070, batch ~12, seq ~768:
-plausibly 500–1,000 tok/s sustained → **~40–80M filtered tokens/day** of
-teacher-clean text, generated for free alongside training. For scale: the
-entire distill history to date is ~200M tokens. A week of background
-generation ≈ doubles the clean-token supply.
+~~Original estimate (500–1,000 tok/s on the 5070 → 40–80M/day)~~ — **wrong by
+~10×; see the measured-throughput block at the top** (launch-bound decode,
+memory-capped batch: Max ~56 accepted tok/s ≈ 4.8M/day). The scale framing
+survives: the entire distill history is ~200M tokens, so even at measured
+rates a week of harvest is a double-digit-percent addition to the model's
+lifetime clean-token diet.
 
 ## Validation (before trusting it)
 
