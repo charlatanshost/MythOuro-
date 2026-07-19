@@ -108,6 +108,15 @@ backends, exactly as they do between any two backends.
 6. **After ANY reboot**: if `xpu-smi` suddenly sees nothing / "XPU device count
    is zero" — your `/dev/dri/renderD*` access was via a session ACL that died
    with the reboot. Durable fix: `sudo usermod -aG render,video <user>` + relogin.
+7. **An OOM'd job may not actually die.** On CUDA, a crashed process = driver
+   reclaims VRAM, clean slate. Here we've observed a Level-Zero OOM
+   (`UR_RESULT_ERROR_OUT_OF_RESOURCES`, surfaced as generic `RuntimeError`, so
+   typed-OOM catch blocks miss it) followed by the SYCL runtime **deadlocking in
+   teardown** — the process hangs half-dead holding its full allocation, and the
+   next job OOMs at model load on a "free" card. Before any relaunch after a
+   crash: `pgrep` the old job, `kill -9` if present, verify with
+   `xpu-smi dump -d 0 -m 18` that memory actually returned. (Same runtime
+   teardown quirk as item 4, landing on the harmful side.)
 
 ## Thermals (the passive-card tax)
 
