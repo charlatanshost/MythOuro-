@@ -97,16 +97,17 @@ def _seed_streams(tok, seed_len: int):
     }
 
 
-def _passes(cont_ids: list[int], min_new: int, min_distinct1: float,
-            max_top_share: float) -> bool:
+def _reject_reason(cont_ids: list[int], min_new: int, min_distinct1: float,
+                   max_top_share: float) -> "str | None":
+    """None = passes; else which filter rejected (for the tuning telemetry)."""
     if len(cont_ids) < min_new:
-        return False
+        return "too_short"
     counts = Counter(cont_ids)
     if len(counts) / len(cont_ids) < min_distinct1:
-        return False
+        return "low_distinct1"
     if counts.most_common(1)[0][1] / len(cont_ids) > max_top_share:
-        return False
-    return True
+        return "high_top_share"
+    return None
 
 
 def main() -> None:
@@ -124,7 +125,13 @@ def main() -> None:
     p.add_argument("--top-p", type=float, default=0.95)
     p.add_argument("--min-new", type=int, default=128,
                    help="Reject continuations shorter than this after EOS trim.")
-    p.add_argument("--min-distinct1", type=float, default=0.30)
+    p.add_argument("--min-distinct1", type=float, default=0.20,
+                   help="Floor on unique/total tokens of the continuation. "
+                        "Calibrated against REAL corpus text at ~768 tok "
+                        "(2026-07-19: general p10=0.38, math p10=0.26, code "
+                        "p10=0.23 — distinct-1 falls with length and is "
+                        "naturally low for code). 0.20 sits under all three; "
+                        "top-share is the actual degeneracy guard.")
     p.add_argument("--max-top-share", type=float, default=0.50)
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
@@ -152,6 +159,7 @@ def main() -> None:
     rng = torch.Generator().manual_seed(args.seed)
 
     accepted_tok = accepted_n = rejected_n = 0
+    reject_reasons: Counter = Counter()
     rows: list[dict] = []
     t0 = time.time()
     manifest = {
@@ -174,6 +182,7 @@ def main() -> None:
         rows = []
         shard_idx += 1
         manifest.update(accepted=accepted_n, rejected=rejected_n,
+                        reject_reasons=dict(reject_reasons),
                         accepted_tokens=accepted_tok,
                         updated=time.strftime("%Y-%m-%d %H:%M:%S"))
         (out / "MANIFEST.json").write_text(json.dumps(manifest, indent=2))
@@ -200,9 +209,11 @@ def main() -> None:
             cont = row[args.seed_len:]
             if eot is not None and eot in cont:
                 cont = cont[:cont.index(eot)]
-            if not _passes(cont, args.min_new, args.min_distinct1,
-                           args.max_top_share):
+            reason = _reject_reason(cont, args.min_new, args.min_distinct1,
+                                    args.max_top_share)
+            if reason is not None:
                 rejected_n += 1
+                reject_reasons[reason] += 1
                 continue
             accepted_n += 1
             accepted_tok += len(cont)
@@ -213,8 +224,9 @@ def main() -> None:
         if len(rows) >= ROWS_PER_SHARD:
             flush()
         el = time.time() - t0
+        rj = " ".join(f"{k}={v}" for k, v in reject_reasons.most_common())
         print(f"accepted {accepted_n} ({accepted_tok/1e6:.2f}M tok) "
-              f"rejected {rejected_n} | {accepted_tok/max(el,1):.0f} tok/s",
+              f"rejected {rejected_n} [{rj}] | {accepted_tok/max(el,1):.0f} tok/s",
               flush=True)
 
     flush()
