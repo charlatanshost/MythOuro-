@@ -30,13 +30,50 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import mythouro.device as dev                  # noqa: E402
 from mythouro.training_utils import (          # noqa: E402
     _DATASET_SPECS,
     _MIX_RATIOS,
+    _teacher_cache_usable,
     load_distillation_teacher,
+    teacher_logits,
+    teacher_logits_cached,
 )
 
 ROWS_PER_SHARD = 1000
+
+
+def _generate_xpu_safe(teacher, input_ids: torch.Tensor, *, max_new: int,
+                       temperature: float, top_p: float) -> torch.Tensor:
+    """
+    Manual batched decode for XPU, where HF `generate()` segfaults (on-device
+    topk/multinomial — workaround list, docs/max1100_field_notes.md). Mirrors
+    the production `generate_rollout` pattern: KL-gated cached teacher forward
+    (`teacher_logits_cached`, falls back to full recompute if the gate fails)
+    + top-p sampling on CPU. Same sampling distribution as the HF path.
+    """
+    seq = input_ids
+    cached = _teacher_cache_usable(teacher, seq)
+    past = None
+    inv_t = 1.0 / max(temperature, 1e-5)
+    with torch.no_grad():
+        for i in range(max_new):
+            if cached:
+                cur = seq if i == 0 else seq[:, -1:]
+                start = 0 if i == 0 else seq.shape[1] - 1
+                logits, past = teacher_logits_cached(teacher, cur, past, start)
+            else:
+                logits = teacher_logits(teacher, seq)
+            probs = torch.softmax(
+                logits[:, -1, :].float() * inv_t, dim=-1).cpu()
+            sorted_p, order = probs.sort(dim=-1, descending=True)
+            cum = sorted_p.cumsum(dim=-1)
+            sorted_p[cum - sorted_p > top_p] = 0.0
+            sorted_p = sorted_p / sorted_p.sum(dim=-1, keepdim=True)
+            pick = torch.multinomial(sorted_p, 1)
+            nxt = order.gather(-1, pick).to(seq.device)
+            seq = torch.cat([seq, nxt], dim=1)
+    return seq
 
 
 def _seed_streams(tok, seed_len: int):
@@ -147,11 +184,18 @@ def main() -> None:
             for _ in range(args.batch)]
         seeds = [next(streams[s]) for s in sources]
         input_ids = torch.tensor(seeds, device=args.device)
-        with torch.no_grad():
-            gen = teacher.generate(
-                input_ids, max_new_tokens=args.max_new, do_sample=True,
-                temperature=args.temperature, top_p=args.top_p,
-                pad_token_id=tok.pad_token_id or eot or 0)
+        if dev.backend(args.device) == "xpu":
+            # HF generate() segfaults on XPU (on-device topk/multinomial);
+            # use the manual cached-teacher + CPU-sampling path.
+            gen = _generate_xpu_safe(
+                teacher, input_ids, max_new=args.max_new,
+                temperature=args.temperature, top_p=args.top_p)
+        else:
+            with torch.no_grad():
+                gen = teacher.generate(
+                    input_ids, max_new_tokens=args.max_new, do_sample=True,
+                    temperature=args.temperature, top_p=args.top_p,
+                    pad_token_id=tok.pad_token_id or eot or 0)
         for row, src in zip(gen.tolist(), sources):
             cont = row[args.seed_len:]
             if eot is not None and eot in cont:
