@@ -370,11 +370,17 @@ GO and gets its own chassis. Decisions:
   above stands). Bridged pairs (Xe Link, adjacent slots); front-to-back server-chassis
   airflow retires the per-card 40 mm-fan hack; 1,600 W+ PSU (4×300 W + host); budget PVC
   idle draw ×4 for an always-on box.
-- **First software wins when card #2 lands (no DDP needed):** teacher-on-#2 / student-on-#1
-  split ≈ 1.5–2× training throughput (85% of the single-card's FLOPS is the teacher —
-  measured 07-16); card #2 also hosts teacher-corpus generation at Max speeds (~40M tok/day
-  vs the 5070's measured ~2M — gen_teacher_corpus smoke, 07-18). Serving proper (vLLM-XPU)
-  and DDP/FSDP scale-up remain milestone-2 software on this same box.
+- **Card #2 utilization plan (2026-07-19, phased — applies tile-for-tile to a 1550):**
+  *Day one, zero code:* `--teacher-device xpu:1` + spend the freed ~40 GB going wide
+  (micro-batch 16 × accum 1 = same effective 16; rollout-batch 64) ≈ 1.3–1.5×.
+  *First build (~2×):* async card-#2 — rollout refills via a stale-student generator
+  (RolloutBuffer already tolerates staleness by design) + teacher-logits prefetch for
+  batch N+1; step time → max(components), not sum. *Harvest:* the training teacher only
+  BURSTS on card #2 → a niced gen_teacher_corpus shares its idle cycles (two Ouro copies
+  fit in 48 GB), so the corpus grows DURING legs (measured Max harvest rate: ~4.8M
+  tok/day dedicated, 07-19; fallback = harvest owns #2 between legs). *Later:* DDP/FSDP
+  at the 1B scale-up where bigger effective batch is wanted anyway — not at 278M.
+  Serving proper (vLLM-XPU) remains milestone-2 on this same box.
 
 **Optimization knowledge (oneAPI training, 2026-06-18):** Intel's official SYCL GPU-opt
 notebooks give **Max 1100-specific** occupancy numbers — 64 threads/Xe-core, 56 cores =
