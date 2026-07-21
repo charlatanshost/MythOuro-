@@ -663,12 +663,28 @@ not different *kinds* of output):
   now multi-sentence medical prose (*"These are used for the case of a severe and chronic
   illness. However, many of these problems of increased mental diseases include 34 symptoms…
   The two main factors are the major factors of the patient's health."*).
-- bacterial opens well then degrades to `B-P-P-P-P` late; code/math seeds ~flat (fibonacci
-  keeps `def` + docstring structure with junk bodies; quadratic stays equation-shaped).
+- bacterial opens well then degrades to `B-P-P-P-P` late (~flat); ibuprofen a modest win
+  (baseline dumped code fragments `CQB7 / FLA33 / C17`, now prose-shaped).
 
-**Caveats, stated up front:** n=3 vs an n=5 baseline; half the planned dose; prose seeds moved,
-code/math didn't. **First movement in the α=0.0 text since 2026-07-06** — but the n=5 verdict
-probe on the stop-point checkpoint (~36,200) is what settles it.
+**⚠ CORRECTION on full text review (same day): CODE/MATH SEEDS ARGUABLY REGRESSED — and the
+metric hid it (top_share inversion, the 8668 lesson in reverse).**
+- fibonacci: baseline had recognizable control flow (`if n > 0: … return None … # check if it
+  is a linear representation`) → now a degenerate string-concat `print()` + empty docstring.
+  Metric flat (0.16→0.15), text worse.
+- quadratic: baseline produced equations **with English explanation** (*"This is part of the
+  quadratic equation that is obtained by using a linear equation. The first one must be
+  found, so we can write the first two…"*) → now pure equation soup, **the prose vanished**.
+  Metric "improved" 0.17→0.12 *because* dropping the English lowered repetition.
+
+**Mechanism hypothesis:** the harvest seeds at 40/40/20 general/math/code but the teacher
+writes **prose-flavored continuations regardless of seed domain** → an R=0.2 diet may enrich
+prose while *diluting* genuine math/code signal. If the verdict probe confirms this split, the
+fix is **source-conditional mixing** (teacher text into the general slice only; keep real
+documents for math/code) — cheap, since `_MIX_RATIOS` already keys by source.
+
+**Caveats:** n=3 vs an n=5 baseline; half the planned dose. **First α=0.0 text movement since
+2026-07-06 on prose seeds — with a possible code/math cost.** The n=5 verdict probe on the
+stop-point checkpoint (~36,200) settles both halves.
 Raw: `reports/onpolicy_rollout_probe_34500_cuda_uncached.txt`.
 
 
