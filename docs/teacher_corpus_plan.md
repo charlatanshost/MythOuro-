@@ -51,6 +51,17 @@ regression seen in the 34,500 tripwire probe. **Fix:** seed from a RANDOM WINDOW
 The v1 corpus is retained (the running A/B trains on it) — which makes that A/B a **lower
 bound**: it improved prose *despite* ~10% of the corpus being license spam.
 
+**Did this affect earlier training runs? NO — measured 2026-07-21.** (a) Every leg before the
+R=0.2 A/B ran `--teacher-data-ratio 0.0`, so no teacher text existed in them. (b) The REAL
+corpora are clean: sampling 300 docs each, license-opening docs are code 44.3% / math 0% /
+general 0.7%, but as a share of *tokens* that is **code 3.9%, math 0%, general 0.2%** ≈ **0.8%
+of all training tokens** — the honest distribution of real source files, not an artifact.
+`MixedDataset` packs whole documents, so there is no head bias on the real side either.
+**The lesson:** head-seeding *amplified* a benign feature into a pathology — a license header
+is ~4% of a real file, but a 768-token continuation *seeded on* that header is ~100% legalese.
+Same material, ~25× the concentration. Any future seeded-generation pipeline should assume the
+seed distribution, not the corpus distribution, determines what you get.
+
 **Harvest v1 running** (2026-07-19, batch 24, Max): ~4.8M/day → A/B-ready ~10M in ~2 days;
 30M ≈ 6 days. At R=0.2 a ~9k-step leg consumes ~10M teacher tokens; launching on ~6.5M
 means ~1.5 epochs of teacher data (acceptable mild repetition — owner's call). Backlog items it implements: *teacher-generated synthetic
