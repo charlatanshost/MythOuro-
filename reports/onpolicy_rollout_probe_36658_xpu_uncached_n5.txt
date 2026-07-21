@@ -1,0 +1,96 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-21 18:22:52.073 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1638 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=xpu:0). Teacher frozen.
+2026-07-21 18:22:53.425 | WARNING  | mythouro.main:warn_once:85 - GQAttention: using manual SDPA fallback (neither FA2 nor torch SDPA available).
+[probe] loaded checkpoints_onpolicy_fixed/step_0036658.pt (step 36658) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.09 [0.07-0.11] | distinct1 0.59 [0.54-0.65] | distinct2 0.90 [0.82-0.94] | n=5
+    e.g.: ' start building the water at once.\n\nWe had to work on the sun\'s surface and we can make an event which is the result of the "big earth" and the "v" in the second year. This was "at least" of his friend.\n\nSo, the second week of the second week, which was called the "the sun" in this "the-purch" way because we are looking at the other two months at the start.'
+
+  α=0.25 | top_share 0.10 [0.08-0.12] | distinct1 0.61 [0.58-0.62] | distinct2 0.90 [0.87-0.92] | n=5
+    e.g.: " keep the windows open and went into the top-to-loose\n\n79\n\ntop, because these parts of the system were less than one meter wide, but the more they were more, and we also had that of the top- and middle parts, with the most in the upper- and upper-\n\nbut the other two parts (the top-like) are the same as the bottom- to-l'\n\ntop, and a lot more"
+
+  α=0.5  | top_share 0.10 [0.07-0.12] | distinct1 0.60 [0.49-0.70] | distinct2 0.90 [0.81-0.96] | n=5
+    e.g.: ' go the zoo to the water, and we will take a rowboat to get to the island and then do some sight on the other side.\n\nYou can see the island as this 2D grid, which is a 2x35 array. Each cell, a 1-unit square (in the first row of the grid), is 3×1 units to the west.\n\nEach of the rows has 1x1 cells. So we'
+
+  α=0.7  | top_share 0.10 [0.08-0.15] | distinct1 0.62 [0.56-0.66] | distinct2 0.91 [0.85-0.95] | n=5
+    e.g.: " go through the sunset of the skyline of the city. When I reached the roof of the Ferrisis, I made a mistake in the order of the tickets, and had to look up the Ferris.\n\nThe Ferris wheel in Tokyo is very close to the observation platform of the Tokyo Sky, so you can see the entire moon.\n\nWhen I saw the same shape and size of the two circles from the Ferris wheel I found\n\nThat's"
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.11 [0.06-0.16] | distinct1 0.58 [0.49-0.65] | distinct2 0.89 [0.79-0.95] | n=5
+    e.g.: ' the "high-risk medical" and "high-quality treatment" which is to be detected. However, the following are some symptoms that usually occur when the study is not so important, but the same as the following. If the patient has a different level, one of the most important in case is the most recent, the results are more complex and not necessarily, and they are not likely to be used. In the case of health, the same is the most common as'
+
+  α=0.25 | top_share 0.14 [0.07-0.27] | distinct1 0.52 [0.30-0.65] | distinct2 0.84 [0.59-1.00] | n=5
+    e.g.: " antibiotics and a specific health-related.\n\nHmm. Because all the health-related parameters are in a more than regular way in the patient's current state.\n\nSo what about a doctor's health-related?\n\nIn order to prevent you feel your heart and blood (and most of the time), you may consider the main topic of this. If you can choose a health-related patient, can you feel like the disease?\n\nIf you make"
+
+  α=0.5  | top_share 0.09 [0.06-0.10] | distinct1 0.62 [0.52-0.69] | distinct2 0.91 [0.85-0.97] | n=5
+    e.g.: " antibiotics, which are medications in the process of a doctor, a child with the most important aspects.\nThe symptoms which most help prevent a significant decrease in the heart rate, also the other.\nIf you're always aware of the first to the following, and the second is to have a good answer to an important part of the medication.\nYou should take their own blood-treatment and the medication the same as you're on a healthy blood pressure.\nThe study and"
+
+  α=0.7  | top_share 0.12 [0.05-0.17] | distinct1 0.55 [0.43-0.69] | distinct2 0.82 [0.69-0.93] | n=5
+    e.g.: " antibiotics. For parasitic infections, you might have things like the parasite's, which are also antimicrobial. It comes back to the basics. And you need to do them in concert to get the best results for your health. If you want to stay in the 10 percent who has not been used to antibiotics, then a 1-year program where you've probably reached a low-level of use for antibiotics. You can take a 1-year program with an antibiotic"
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.27 [0.11-0.49] | distinct1 0.38 [0.16-0.59] | distinct2 0.65 [0.34-0.88] | n=5
+    e.g.: ' for a 22222.3227.565695752666 or any new non-gathered, such a very specific type of the most common\n\nThe most recent information that most of the first known-carp-TRA-T (which is often used for the most recent 22482443.61401693, which is not the exact'
+
+  α=0.25 | top_share 0.20 [0.06-0.39] | distinct1 0.52 [0.25-0.68] | distinct2 0.77 [0.45-0.95] | n=5
+    e.g.: ' increased, I think that increased and a few other side-effects have a lower risk of an 80% increase.\n\nHowever, the body doesn\'t have a "mild" in your body. For example, you know that you need to use a diet for many people, if you\'re going to be a good, you can\'t see a different and you can read it.\n\nThis particular drug is often associated with the heart heart the person with a'
+
+  α=0.5  | top_share 0.24 [0.12-0.35] | distinct1 0.46 [0.33-0.57] | distinct2 0.71 [0.51-0.85] | n=5
+    e.g.: ' increased in\n\nThe early-stage of type 1, type 2 diabetes symptoms are not at all\n\nsore or painful\n\nThese symptoms can be easily used as a type "15\n\nA B1718\n\n"5657"\n\n"\n\nType A A. The same can be used as a medication. (2007) In the following research it is concluded that type 12.5'
+
+  α=0.7  | top_share 0.11 [0.05-0.19] | distinct1 0.64 [0.57-0.68] | distinct2 0.85 [0.81-0.88] | n=5
+    e.g.: " increased,  or perhaps, \n[ ]  A. thirst, \n[ ]  B. urination (nocturia, which is the frequent urinating at: night. \n\nIt's possible to see this problem, \nwhat's there is an increasing number of people with these problems, \nso, there are people who cannot find a job.\n\n\n\nI can think I'm not, but it would be a very serious, \nand"
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.10 [0.05-0.17] | distinct1 0.57 [0.34-0.69] | distinct2 0.88 [0.73-0.98] | n=5
+    e.g.: ' the H-23\n\nIs the same as in the patient\'s\n\nThe "V" is an example of a. the other three lines are not the best as they are also being used in the same type of treatment when you are not the same. The use of the.\n\nA person having a different type of a high-\n\nA 3rd and/e: The\n\n-The first one gives a\n\nThe first two are'
+
+  α=0.25 | top_share 0.14 [0.08-0.26] | distinct1 0.52 [0.27-0.66] | distinct2 0.81 [0.64-0.92] | n=5
+    e.g.: ' the following conditions.\nWhich of the P-carn has a similar mechanism of action in different-phase systems.\nWhich of the most important sources of the three-dimensional structure (in the P-C-C) in the P-d-M-R system and S-B and M-A systems\nWhich of the P-c, P-pqn are the primary-secondary one\n\nQuestion: How is the total number of molecules in'
+
+  α=0.5  | top_share 0.10 [0.06-0.15] | distinct1 0.60 [0.58-0.61] | distinct2 0.89 [0.85-0.97] | n=5
+    e.g.: ' pain, inflammation, and fever. It works by a patient taking a pill as a daily dose for a given number of days. To understand the effects of the drug on the body after several types of dosing and medical treatment.\n\nThe question is: When taking 200mg per gram of a body from 150-pound patient after taking ibuprofen, what the first dose of ibuprofen is at 1 dose. Since the drug dose is calculated based on the'
+
+  α=0.7  | top_share 0.12 [0.06-0.25] | distinct1 0.66 [0.57-0.73] | distinct2 0.89 [0.78-0.93] | n=5
+    e.g.: " pain and inflammation, but it's not used to directly cause weight loss.\n\nE-cigarette\nE-cigarettes\n\nE-therapeutic\nE-therapy has been designed to be an important complementary aspect of traditional treatment programmes. It is also often used in conjunction with conventional medications for the treatment of psychological or medical conditions. E-therapy is often used as an online treatment for people with mental health disorders, such as substance and sex addiction, depression, general-risk"
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.11 [0.06-0.17] | distinct1 0.41 [0.11-0.68] | distinct2 0.78 [0.63-0.94] | n=5
+    e.g.: '\n    if n == 855384299668536778086114999946217867630189635.99463337821174989888489220845560478606.000000'
+
+  α=0.25 | top_share 0.14 [0.07-0.40] | distinct1 0.44 [0.20-0.61] | distinct2 0.71 [0.27-0.88] | n=5
+    e.g.: '\n    # We know this the0 base case\n    n <!--\n    # We will generate a  (base) tuple that the\n    # recursive calls with pass a new list\n    # [this] we are going on a block and we \n    # in return a list that contains a\n    #  for the same element.\n    # 2. create a new type\n    # if the initial list is 1, we are not so easy to see the 1st'
+
+  α=0.5  | top_share 0.10 [0.06-0.16] | distinct1 0.46 [0.30-0.70] | distinct2 0.76 [0.57-0.93] | n=5
+    e.g.: '\n  a = 1\n  b = 1\n  a_d = 1\n  b = 2\n  a = b - a\n  return 1\n  a = 0\n  b = max(a,b)\n  return a * b\n\n  a = 1\n  l = len(b)\n  if l > 1:\n    return False\n  while b:\n    return 0\n  c = b * a * b\n  return 1\n  c ='
+
+  α=0.7  | top_share 0.11 [0.07-0.12] | distinct1 0.45 [0.40-0.50] | distinct2 0.75 [0.67-0.84] | n=5
+    e.g.: "\n\n    if x is not an integer, or x <= 0, raise ValueError, say ' '?\n\n    a, b, c = x, x, x\n\n    for i in xrange(0, n):\n\n    # print a\n\n    if i:\n\n        # b and b?\n\n        if a is not 1:\n            ...\n                ...\n            # c = 1, 1, 5, 7,\n            # because c = ...\n            ...\n        a ="
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.10 [0.06-0.16] | distinct1 0.47 [0.40-0.55] | distinct2 0.82 [0.73-0.92] | n=5
+    e.g.: ' 24.\n\nThe problem is presented in this equation:\n\nThe problem is presented in a more abstract format, and it is used to solve the following problem:\n\n1) The first equation (\\(x,y) = (x^3) - \\( -x^4 \\) \\( -x^2 - 3 \\) + 20 \\\\\n\\text{(A) \\cdot * *\\\n\\text{'
+
+  α=0.25 | top_share 0.25 [0.06-0.74] | distinct1 0.42 [0.16-0.59] | distinct2 0.66 [0.23-0.89] | n=5
+    e.g.: ' 5x - 7x^3 x^2. Find the sum of the second term x y and the same the value of z in the solution is 5x – 3x - 4z = 3y. Find the value of n, given that the second term is a value of -10, and hence, we have an x-term system. \n\n5A and 6X. The expression (f + 3b –'
+
+  α=0.5  | top_share 0.12 [0.07-0.22] | distinct1 0.37 [0.21-0.58] | distinct2 0.77 [0.59-0.97] | n=5
+    e.g.: " 18\n\n2. A single person, to find the product of roots to a quadratic with 2 roots:\n\n3. Let's assume that 9 is always divided by something. Therefore, the total amount of 9 is 14, what will be the divut. 44 + (?)/11 = 62\n\n1. The base of a triangle with the same base and also height is (30x) and (1"
+
+  α=0.7  | top_share 0.07 [0.05-0.08] | distinct1 0.55 [0.47-0.67] | distinct2 0.83 [0.76-0.95] | n=5
+    e.g.: ' 0. The solutions should be returned to 5 decimal places and the solutions should be sorted in ascending and descending  order.\nIn addition to the initial request, the equation may not always have real numbers. The task is to modify the function to return a number if it is not a quadratic equation (and therefore not solvable, such as linear equations, cubic and higher degree, or constant) and return an empty list if the equation is 0x^2 +'
+

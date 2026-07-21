@@ -688,6 +688,43 @@ stop-point checkpoint (~36,200) settles both halves.
 Raw: `reports/onpolicy_rollout_probe_34500_cuda_uncached.txt`.
 
 
+## 2026-07-21 (evening) — ✅ A/B VERDICT @36,658 (n=5): teacher data HELPS — and it's a LOWER BOUND
+
+Full R=0.2 dose (30,000 → 36,658; ~6,658 steps, ~39M tokens, ~7M teacher-sourced from the
+CONTAMINATED v1 corpus — ~10% license spam, so this result *understates* clean teacher data).
+n=5, uncached. **Instrument note: run on the Max (xpu:0), not the 5070** — empirically ~2× faster
+for the teacher-in-loop rollout probe (bench: XPU n=3 ~20min vs CUDA ~38min; the teacher's dense
+GEMMs are the Max's strength). Backends A/B-validated to ≤0.03 nats (07-15), well inside band
+noise, so comparison to the 5070 30k baseline holds.
+
+**α=0.0 per seed (ts/d1): mean 0.180/0.492 → 0.130/0.500.**
+- weather **0.26/0.47 → 0.09/0.59 IMPROVED** (digit-salad → *"start building the water at once.
+  We had to work on the sun's surface and we can make an event which is the result of…"*)
+- fibonacci **0.16/0.47 → 0.11/0.41 IMPROVED (metric)** — but TEXT is worse: baseline had control
+  flow (`if n>0: … return None`), now a giant float literal. top_share inversion again.
+- quadratic **0.17/0.41 → 0.10/0.47 IMPROVED** — and text genuinely better: baseline was equation
+  soup, now *"The problem is presented in this equation: … it is used to solve the following
+  problem: 1) The first equation…"* (framing prose returned).
+- bacterial / diabetes / ibuprofen: **flat**. Diabetes 0.10 at the half-dose tripwire → 0.27 here
+  (wide [0.11–0.49]) — the tripwire gain was an n=3 noise draw, now corrected. (Lesson re-confirmed:
+  n=3 within-band ordering is noise; the n=5 is why we run it.)
+
+**Verdict: net positive, modest, real.** Mean top_share −28% (0.180→0.130), distinct1 flat-up.
+3 seeds improved on metric / 3 flat / 0 regressed on metric; on TEXT, weather + quadratic are
+clear wins, fibonacci is a metric-only artifact (code still degrades — consistent with the v1
+corpus's code slice being 57% license spam). **This is the first intervention to move the mean
+below the 8668/13,944 plateau floor (0.165) since 07-06 — and it did so handicapped by a
+corpus that was ~10% legalese and code-starved.**
+
+**Decision → the data-quality wall is REAL; lean in.** Next leg (owner's call on timing):
+re-harvest with the FIXED generator (random-window seeding + boilerplate filter, committed
+a7ab0f4) for a clean, properly-code-balanced v2 corpus; OR quick interim test on
+`data_teacher_clean/` (5.56M, boilerplate stripped but prose-skewed) at R=0.2 from 36,658.
+The clean-corpus A/B is the real confirmation — if code seeds stop regressing with balanced
+teacher code, the whole plateau is a data-quality story, not a size story (defers the v6-SFT /
+scale-up pivot). Raw: `reports/onpolicy_rollout_probe_36658_xpu_uncached_n5.txt`.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts
