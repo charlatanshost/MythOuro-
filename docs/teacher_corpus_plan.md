@@ -40,7 +40,18 @@ genuine code. **Recalibrated to 0.20** → 75% acceptance, 56 tok/s, mix balance
 `top_share` (never fired) remains the true degeneracy guard. Lesson for any length-changed
 filter: calibrate against the real corpus at the same length first.
 
-**Spot-read of the admitted 0.20–0.30 band (shard_0002, 2026-07-19): PASS** — contains genuinely good Python (docstringed functions the old floor would have rejected) plus a tolerable template-prose tax; mix on-target (45/35/20). **Harvest v1 running** (2026-07-19, batch 24, Max): ~4.8M/day → A/B-ready ~10M in ~2 days;
+**Spot-read of the admitted 0.20–0.30 band (shard_0002, 2026-07-19): PASS** — contains genuinely good Python (docstringed functions the old floor would have rejected) plus a tolerable template-prose tax; mix on-target (45/35/20). **⚠ v1 SEEDING BUG (found 2026-07-21, fixed): head-seeding harvested boilerplate.** v1 took
+`ids[:seed_len]` — the FIRST 48 tokens of each document — and documents open with boilerplate:
+source files with license headers, scraped math pages with nav cruft. Measured on the 5.84M v1
+corpus: **57% of CODE samples are the teacher faithfully continuing an Apache/copyright header**
+(~600k tokens of legalese); math 0.7%, general 0.5% — the bias is code-specific because code
+files have the most stereotyped openings. Almost certainly the cause of the fibonacci/quadratic
+regression seen in the 34,500 tripwire probe. **Fix:** seed from a RANDOM WINDOW of the first
+2048 tokens + a `boilerplate` reject filter (≥2 license-ish matches in the first 800 chars).
+The v1 corpus is retained (the running A/B trains on it) — which makes that A/B a **lower
+bound**: it improved prose *despite* ~10% of the corpus being license spam.
+
+**Harvest v1 running** (2026-07-19, batch 24, Max): ~4.8M/day → A/B-ready ~10M in ~2 days;
 30M ≈ 6 days. At R=0.2 a ~9k-step leg consumes ~10M teacher tokens; launching on ~6.5M
 means ~1.5 epochs of teacher data (acceptable mild repetition — owner's call). Backlog items it implements: *teacher-generated synthetic
 data* + *sequence-level KD* (ideas.md — one build, two entries). Attacks the #1

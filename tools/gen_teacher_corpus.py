@@ -21,6 +21,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
+import re
 import sys
 import time
 from collections import Counter
@@ -76,8 +78,19 @@ def _generate_xpu_safe(teacher, input_ids: torch.Tensor, *, max_new: int,
     return seq
 
 
-def _seed_streams(tok, seed_len: int):
-    """Per-corpus generators yielding fixed-length token seeds."""
+def _seed_streams(tok, seed_len: int, rng: "random.Random"):
+    """
+    Per-corpus generators yielding fixed-length token seeds from a RANDOM
+    WINDOW of each document.
+
+    Seeding from the document HEAD (the v1 behaviour) is systematically
+    biased toward boilerplate: source files open with license headers and
+    imports, scraped math pages with nav cruft. Measured on the first
+    5.84M-token harvest (2026-07-21): **57% of code samples were the teacher
+    faithfully continuing an Apache/copyright header** — ~600k tokens of
+    legalese — while math/general were only ~0.5% affected. A random offset
+    lands mid-document where the actual content lives.
+    """
     from datasets import load_dataset
 
     def stream(repo, config, split, field):
@@ -87,9 +100,13 @@ def _seed_streams(tok, seed_len: int):
                 text = sample.get(field, "")
                 if not text:
                     continue
-                ids = tok(text, truncation=True, max_length=seed_len + 8)["input_ids"]
-                if len(ids) >= seed_len:
-                    yield ids[:seed_len]
+                # Tokenize a generous prefix so there is room to pick a window.
+                ids = tok(text, truncation=True, max_length=2048)["input_ids"]
+                if len(ids) < seed_len:
+                    continue
+                hi = len(ids) - seed_len
+                start = rng.randint(0, hi) if hi > 0 else 0
+                yield ids[start:start + seed_len]
 
     return {
         key: stream(repo, config, split, field)
@@ -97,11 +114,18 @@ def _seed_streams(tok, seed_len: int):
     }
 
 
+_BOILERPLATE = re.compile(
+    r"licen[sc]e|copyright|Apache License|permission is hereby|"
+    r"WITHOUT WARRANTIES|redistribut", re.I)
+
+
 def _reject_reason(cont_ids: list[int], min_new: int, min_distinct1: float,
-                   max_top_share: float) -> "str | None":
+                   max_top_share: float, text: str = "") -> "str | None":
     """None = passes; else which filter rejected (for the tuning telemetry)."""
     if len(cont_ids) < min_new:
         return "too_short"
+    if text and len(_BOILERPLATE.findall(text[:800])) >= 2:
+        return "boilerplate"
     counts = Counter(cont_ids)
     if len(counts) / len(cont_ids) < min_distinct1:
         return "low_distinct1"
@@ -153,7 +177,7 @@ def main() -> None:
     existing = sorted(out.glob("shard_*.jsonl"))
     shard_idx = int(existing[-1].stem.split("_")[1]) + 1 if existing else 0
 
-    streams = _seed_streams(tok, args.seed_len)
+    streams = _seed_streams(tok, args.seed_len, random.Random(args.seed))
     keys = list(_MIX_RATIOS)
     weights = [_MIX_RATIOS[k] for k in keys]
     rng = torch.Generator().manual_seed(args.seed)
@@ -210,7 +234,8 @@ def main() -> None:
             if eot is not None and eot in cont:
                 cont = cont[:cont.index(eot)]
             reason = _reject_reason(cont, args.min_new, args.min_distinct1,
-                                    args.max_top_share)
+                                    args.max_top_share,
+                                    tok.decode(cont[:300]))
             if reason is not None:
                 rejected_n += 1
                 reject_reasons[reason] += 1
