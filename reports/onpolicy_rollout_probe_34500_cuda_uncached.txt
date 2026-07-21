@@ -1,0 +1,97 @@
+halfway: step 34500
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-21 11:57:06.498 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1638 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=cuda:0). Teacher frozen.
+2026-07-21 11:57:06.775 | WARNING  | mythouro.main:warn_once:85 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=(12, 0)).
+[probe] loaded checkpoints_onpolicy_fixed/step_0034500.pt (step 34500) on cuda:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on cuda:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.09 [0.06-0.12] | distinct1 0.57 [0.53-0.64] | distinct2 0.91 [0.91-0.91] | n=3
+    e.g.: " get the same place, how do we make sure we have the first three sections, and I'll give the next year.\n\nThe first thing that I find out in this problem I will have three hours of life and this will be, we start here. I will give the final time, we must get a lot of things that can be used with the initial time, and I will be able to find out how to make this, I can easily write a program for"
+
+  α=0.25 | top_share 0.11 [0.07-0.16] | distinct1 0.57 [0.51-0.60] | distinct2 0.88 [0.85-0.91] | n=3
+    e.g.: ' go through.\n\nIn this experiment, one of the main aims towards our understanding and the understanding of the nature of the ocean is to understand some of the consequences of the evolution of the Earth, in the future. The Earth changes, so does the fact that an atmosphere like 1:45, which is different from the current Earth, the rest of the planet, and everything on the other side is different.\n\nWhat is the difference between the surface temperature and'
+
+  α=0.5  | top_share 0.10 [0.09-0.10] | distinct1 0.59 [0.55-0.64] | distinct2 0.91 [0.87-0.95] | n=3
+    e.g.: " explore the house's location in the main. The idea of the best place, which comes from the ground and the ground, to reach our own goal, but of course we are not sure how long we have to do it, and we are not sure how much\n\n- The next time you visit, your friend's face may look very familiar with the sun. We've always been the best and the best for the entire family.\n- You should always know the best"
+
+  α=0.7  | top_share 0.10 [0.06-0.15] | distinct1 0.61 [0.52-0.69] | distinct2 0.88 [0.80-0.98] | n=3
+    e.g.: ' make a new friend.\n\n"Forget it!", said the old people, and the very wise looked like they knew and were told to forget.\n\n"Not necessary", said the youth\n\n"Come now, don\'t you see the big clouds?"\n\nThese are big clouds. Clouds as big\n\nas the top side of the mountain\n\n"And what are you going to do with me\n\nif you really see that these big clouds are'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.14 [0.06-0.26] | distinct1 0.57 [0.39-0.72] | distinct2 0.80 [0.53-0.97] | n=3
+    e.g.: ' adjusting the effect of the T and its growth and the resulting development of the original blood that could be linked to the current level of new treatment.\n\nQuestion: Which of the five main reasons would the new approach for the B-P-P-P-P-P-P-P-P-P-P-P-P-P-S-P-P-T-P-P-P-S-S-P-P-P'
+
+  α=0.25 | top_share 0.08 [0.06-0.10] | distinct1 0.65 [0.59-0.74] | distinct2 0.93 [0.88-0.97] | n=3
+    e.g.: ' the use of a new protocol which would have its own health, the only thing that may possibly lead to the development of a bacterial infection.\nTreatment-Pneumogenetic Inactive SCCI-\nHippocrates is a kind of type of clinical treatment developed after we took a lot of those people that we may have had in an earlier study that was done in the long term.\nThis has been a very valuable medical care and has been seen as a long standing'
+
+  α=0.5  | top_share 0.07 [0.05-0.08] | distinct1 0.68 [0.64-0.71] | distinct2 0.96 [0.95-0.97] | n=3
+    e.g.: " a specific condition. Additionally, the question is about the presence of the drug in the bloodstream. Let me think.\n\nThere is a term specifically for bacteria that can't be done or reduced to the normal infection level. For example, if we think about bacteria in any given case, we can imagine to take a certain part of our own body's infection source out of consideration and that all of a certain part of my own cells, and the first step of a different therapy"
+
+  α=0.7  | top_share 0.06 [0.04-0.07] | distinct1 0.64 [0.61-0.68] | distinct2 0.91 [0.87-0.96] | n=3
+    e.g.: " antibiotics. There are many different types of antibiotics that can help fight different types of bacteria. Some types can affect the cell wall's ability to create the needed materials. The cell wall helps the cell stay intact, so it’s important for the cell to be able to function normally.\n\nWhat is the significance of pept-id as part of the peptidoglycan? Peptidoglycan. In addition to carbohydrates, the peptidoglycan also consists of long"
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.10 [0.08-0.12] | distinct1 0.51 [0.38-0.58] | distinct2 0.86 [0.77-0.93] | n=3
+    e.g.: ". These are used for the case of a severe and chronic illness. However, many of these problems of increased mental diseases include 34 symptoms, the most common and most common treatment of the acute. The two main factors are the major factors of the patient's health. The study of the risk of the death and the medical problems, which are important for the treatment of a few more than one of a large number of individuals. The patients of the last years of the disease"
+
+  α=0.25 | top_share 0.10 [0.08-0.11] | distinct1 0.63 [0.57-0.67] | distinct2 0.91 [0.83-0.96] | n=3
+    e.g.: " different types of 5% increase of glucose and the overall blood sugar (e.g. For the following cases, but there is the presence of multiple types of the cells in the pancreas. I'm not sure whether a treatment for a healthy weight and the treatment of both the main type of inflammation that is a treatment with a certain amount of stress that the other way of life might be more often.\nBiology and Bioengineering Review 1558 12"
+
+  α=0.5  | top_share 0.09 [0.08-0.11] | distinct1 0.58 [0.56-0.60] | distinct2 0.87 [0.85-0.88] | n=3
+    e.g.: " the type of of the human body body. The first of the same type of diabetes is a single type of diabetes.\nThe first of these factors, the most of the body's insulin, is usually more likely to have type 2 diabetes. The pancreas, the first of the highest levels of glucose for the brain when there are other conditions. The body has a large number of insulin.\ndiabetes is much easier to keep your own blood cells but will be aware of the"
+
+  α=0.7  | top_share 0.08 [0.04-0.15] | distinct1 0.64 [0.54-0.73] | distinct2 0.93 [0.88-0.98] | n=3
+    e.g.: ' increased\nthirst and urination. What is the correct\npath for the blood and urine flow through the whole organ\nit?\nA. blood -> kidneys\nB. kidney -> ureters -> urinary. Bladder -> urethra\nC. blood -> urinary.Bladder -> ure\nD. in this context, the answer may be:\n1 blood flows into the kidneys\n2\n3.\n\nAnswers\n\nThe correct answer is B. kidney -> ure'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.13 [0.07-0.17] | distinct1 0.57 [0.48-0.67] | distinct2 0.87 [0.83-0.93] | n=3
+    e.g.: ' the\nand potentially under the onset of an enzyme. The first\nof these types of blood,\nin an effective and efficient, the most commonly formed (n)\n\nIn addition the following is an effective\n\nTo the following is an application of\nSAC:\n\nA.\nA good candidate and that was found in the first- and 1211011.\n\nThe primary\nThe first-year\n\n(c)'
+
+  α=0.25 | top_share 0.11 [0.07-0.16] | distinct1 0.53 [0.32-0.71] | distinct2 0.87 [0.76-0.98] | n=3
+    e.g.: " the body. One possible way to develop a certain type of bone cancer is through the treatment of an acute illness. The goal of this exercise is to be healthy and the main concern for this particular disease and the fact that it works for a certain number of days, the first-year results from the patient's age are very well controlled and are considered more than just the most important one that is a good choice for any other day-to-day.\n\nThe concept of"
+
+  α=0.5  | top_share 0.07 [0.05-0.10] | distinct1 0.65 [0.61-0.71] | distinct2 0.93 [0.92-0.95] | n=3
+    e.g.: ' pain, which is usually taken by mouth. I have a strong feeling that taking a few years later, the first step involves a healthy body and the whole blood pressure and low blood pressure (e.\n\nSo, the reason that is already to ensure the correct answer is to be more likely to be very important: you do not have any problems at all.\n\nIn conclusion, there is no "magic bullet" for treating hypertension. In any case, you should talk'
+
+  α=0.7  | top_share 0.08 [0.04-0.15] | distinct1 0.70 [0.65-0.77] | distinct2 0.94 [0.87-0.98] | n=3
+    e.g.: ' pain, inflammation, fever, and pain relief. It is not used for the treatment of hypertension in pregnancy. Other NSAIDs like celecoxib are a major class affecting cardiac arrhythmias. (Bond and others, 1998), (Krakovitch and the others in 19.\n\nQuestion: Are NSAIDs used to treat hypertension? Answer: The text suggests that there are several NSAIDs on the market market market for treating other conditions, such as celecox'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.15 [0.07-0.27] | distinct1 0.48 [0.44-0.50] | distinct2 0.78 [0.64-0.91] | n=3
+    e.g.: '\n    print("\\n  "+"", " " " + " "* " + " " " + n + " " + " " + " " " + " , "  " + " " + " ", " \\n" + " " + " ")\n )\n\ndef generateIn_c_a_c_c_e_d(m, s):\n    """\n    return from f\'s for all the first 266\n    """\n    """'
+
+  α=0.25 | top_share 0.08 [0.06-0.10] | distinct1 0.53 [0.51-0.57] | distinct2 0.80 [0.74-0.88] | n=3
+    e.g.: '\n    result = 0\n    if len(n) > 3:\n        for i in range(len(n)):\n            for item in range(0, 1):\n                if not result[0]:\n                    if num_length(0, 1) == 8:\n                        assert len(len(n)) == 8: if len(n) == 3:\n                        return(len(x))\n\n    # We want to iterate over the first three'
+
+  α=0.5  | top_share 0.09 [0.06-0.14] | distinct1 0.52 [0.36-0.60] | distinct2 0.80 [0.68-0.87] | n=3
+    e.g.: '\n    if not pos:\n        return None\n    if n != 0:\n        return fib(n) != 0\n    return True\n\ndef fib(n):\n    if s00:\n        return 3\n    if not m[0] == 0:\n        return m1\n    a0 = s1\n    a1 = s2\n    return a00_f1[0]\n\ns1 = 0\na00_b_'
+
+  α=0.7  | top_share 0.07 [0.06-0.07] | distinct1 0.59 [0.54-0.62] | distinct2 0.86 [0.82-0.88] | n=3
+    e.g.: "\n    fib_sequence = [0, 1]\n    while len(fib_count) < n:\n        s = fib_sequence[-1] + fib_sequence[-2]\n        fib_sequence.append(s)\n    return fib_sequence[-1]\n\n# print the result of the fib_sequence when we call print(fibonacci(0x2A))\n\nprint('\\n' + ', '.join(map(str, list("
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.12 [0.10-0.15] | distinct1 0.38 [0.24-0.46] | distinct2 0.67 [0.59-0.73] | n=3
+    e.g.: ' 5: x + 6 = 2x + 5 = 2 x + 3 = 4 x^2 + 15 = 3x^2.\n\nSim\n\n(2) 2y^2 = 4/3 ( (11) (3) = 2 (11) =\n\n(0)\n\n(2)\n\n(11) - 2 + 11^'
+
+  α=0.25 | top_share 0.09 [0.06-0.11] | distinct1 0.53 [0.43-0.60] | distinct2 0.84 [0.82-0.85] | n=3
+    e.g.: ' 0.\n\nThe sum of the x-values is 5x^2x^2 - 6 = 8.\n\nWe start with solving the problem, and then we come up with the first step.\n\nThe question is how to factorize 3x^2x in terms of x* (x + 3). The question is: How many different ways to solve the equation, and they can be written in two different ways.'
+
+  α=0.5  | top_share 0.08 [0.07-0.09] | distinct1 0.51 [0.40-0.58] | distinct2 0.87 [0.82-0.94] | n=3
+    e.g.: ' 6, where X is the x.\n\nThis equation can be made in the form of x^2. The function f can be expressed as f(x), where x is the number of times we can take a number as the second one. This is exactly what we will do as much as the derivative of f.\n\nIn mathematics, we have three different cases. The result is different to the other. We have to go with the following function:\n'
+
+  α=0.7  | top_share 0.09 [0.07-0.10] | distinct1 0.46 [0.40-0.53] | distinct2 0.76 [0.64-0.83] | n=3
+    e.g.: ' 0\n\nSolve: x^2 - 5x + 6 = 0\n\nFirst term: x^2\nSecond: x, y: (2nd term coefficient squared)\nThird to be 0 in an equation\nThird term: x^2\n\n( (5)^ (1/3) (5)^ (2) (10)^ (1/3) (10)^ (1/3)) = \n\n'
+

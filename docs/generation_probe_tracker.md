@@ -638,6 +638,40 @@ conversations are data curation (phi-style) and the v6 SFT milestone, not more t
 Raw: `reports/onpolicy_rollout_probe_30000_cuda_uncached_n5.txt`.
 
 
+## 2026-07-21 — 🟢 A/B TRIPWIRE @34,500 (half dose): no harm, and the SALAD MODE BROKE on prose seeds
+
+Mid-leg probe of the R=0.2 teacher-corpus A/B (~4,500 steps past the 30k baseline, ~26M
+tokens of which ~5M teacher-sourced; LR 3.9e-5, uncached/5070, **n=3** — a tripwire, not a
+verdict). Run continues; owner stops it ~16:45 for the n=5 verdict probe.
+
+**Purpose was harm-detection** (the plan doc's flagged risk: teacher text *narrowing* the
+distribution). **No harm found** — no homogenization across seeds, no metric blowout.
+
+**Unexpectedly, the metrics moved the right way.** Matched per-seed vs the 30k n=5 baseline
+(ts/d1): weather **0.26/0.47 → 0.09/0.57** · bacterial 0.10/0.59 → 0.14/0.57 (only regression)
+· diabetes **0.26/0.40 → 0.10/0.51** · ibuprofen 0.13/0.61 → 0.13/0.57 · fibonacci 0.16/0.47 →
+0.15/0.48 · quadratic **0.17/0.41 → 0.12/0.38**. **Mean 0.180/0.492 → 0.122/0.513** (top_share
+−32%). 3 improved / 2 flat / 1 worse.
+
+**The text is the real find — the FAILURE MODE changed on the two big movers**, which is why
+this reads as signal rather than lucky draws (regression-to-the-mean would give different junk,
+not different *kinds* of output):
+- weather: baseline was **pure digit salad** (`get the 111283667680740138678...`) → now
+  connected clauses (*"get the same place, how do we make sure we have the first three
+  sections, and I'll give the next year…"*).
+- diabetes: baseline was **initials salad** (`C. M.H.P., A. C.A.A.A. / R. C.A.A.S.I.A.A.`) →
+  now multi-sentence medical prose (*"These are used for the case of a severe and chronic
+  illness. However, many of these problems of increased mental diseases include 34 symptoms…
+  The two main factors are the major factors of the patient's health."*).
+- bacterial opens well then degrades to `B-P-P-P-P` late; code/math seeds ~flat (fibonacci
+  keeps `def` + docstring structure with junk bodies; quadratic stays equation-shaped).
+
+**Caveats, stated up front:** n=3 vs an n=5 baseline; half the planned dose; prose seeds moved,
+code/math didn't. **First movement in the α=0.0 text since 2026-07-06** — but the n=5 verdict
+probe on the stop-point checkpoint (~36,200) is what settles it.
+Raw: `reports/onpolicy_rollout_probe_34500_cuda_uncached.txt`.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts
