@@ -66,6 +66,17 @@ variable. Same command as the main run but `--total-steps 39000 --teacher-data-r
 `data_teacher/MANIFEST.json` accepted_tokens). Probe vs the 30k n=5 baseline with
 `--no-kv-cache --samples 5`.
 
+**⚡ Which card for probes? (measured 2026-07-21 — the intuition inverts by probe TYPE):**
+- **Rollout probe** (`onpolicy_rollout_probe`, teacher-in-the-loop): **run on the MAX** —
+  `--student-device xpu:0 --teacher-device xpu:0`. Empirically **~2× faster than the 5070**
+  (XPU n=3 ~20 min vs CUDA ~38 min) because the 2.6B teacher's dense GEMMs — present on
+  α=0.25/0.5/0.7, the bulk of the compute — are the Max's strength.
+- **Greedy student-only probe** (`collapse_metrics --generate`, no teacher): the 5070 is ~2×
+  faster (batch-1 student decode is PVC's weak spot). Opposite answer.
+- Backends A/B-validated to ≤0.03 nats logit KL (07-15) → cross-card comparison is fine; note
+  the card in the tracker entry. Future speedup for either card: batch the n=5 samples in the
+  probe tool (currently sequential) — would favor the Max further.
+
 **Teacher-corpus harvest (between legs, occupies the card):**
 ```bash
 python -u -m tools.gen_teacher_corpus --device xpu:0 --trust-remote-code \

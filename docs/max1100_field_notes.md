@@ -76,6 +76,15 @@ costs nearly what a 120-token one does. Consequences, measured:
 If your workload is single-stream chat inference, this is not your card. If
 it's training or wide batch serving, carry on.
 
+**Nuance worth knowing (measured 2026-07-21): batch-1 is only slow when SMALL
+kernels dominate.** We ran the same batch-1 autoregressive probe two ways.
+Student-only (278M) decode: the RTX 5070 is ~2× faster, as expected. But the
+*same* decode loop with a 2.6B teacher mixed in per token: the **Max is ~2×
+faster** (20 min vs 38 min, identical run). The teacher's large dense GEMMs
+saturate XMX even at batch 1 and dominate the loop — so "batch-1 = weak" flips
+to "batch-1 = strong" the moment a big model is the bottleneck. Match the card
+to what dominates the inner loop, not to the batch size.
+
 ## `torch.compile` on XPU
 
 Works (Inductor/Triton-XPU), compiled a nontrivial recurrent training step
