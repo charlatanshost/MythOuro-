@@ -14,6 +14,20 @@ eval JSONs where they exist (paths in the last column). Update after each run.
 >    quote against external baselines.
 > 3. v2's PPL rise vs v1 is expected (SFT specialises away from raw web text).
 
+> **⚠ This table stops at the offline-distillation era (through 2026-06-28). The
+> on-policy / teacher-corpus era (2026-06 → 07) is tracked in
+> [`generation_probe_tracker.md`](generation_probe_tracker.md), NOT here — by
+> design.** The June diagnosis was that generation collapse is **decoupled from
+> every formal metric** (best-ever PPL 1.759 + good ECE + solved stability all
+> coexisted with hard `is is is` mode-collapse). Once PPL/ECE stopped tracking
+> the actual problem, the scoreboard moved to generation probes (α=0.0
+> `top_share`/`distinct1` + read the text). The on-policy line
+> (`checkpoints_onpolicy_fixed`, steps 6675→36658) has **no comparable eval-JSON
+> row** because eval-harness stats aren't the yardstick for it. Arc summary:
+> collapse cured domain-wide (06-28) → fluency → the web-token plateau (30000,
+> n=5) → teacher-generated data breached the plateau floor (36658). Rejoin this
+> table only if/when a v6 SFT or a scale-up run is eval-harnessed again.
+
 ## Run overview
 
 | Run | Date | Arch / params | Method + recipe deltas | Steps | Final PPL | loop_eff | ECE | Verdict |

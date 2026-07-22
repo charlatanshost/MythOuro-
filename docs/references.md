@@ -71,12 +71,15 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
 - **Knowledge Distillation (Hinton KD)** — Hinton, Vinyals, Dean 2015. arXiv
   **1503.02531**. *The soft-KL distillation objective we use.*
 - **GKD — On-Policy Distillation of LLMs** — Agarwal et al. (ICLR 2024). arXiv
-  **2306.13649**. *The on-policy mode-seeking lever; our identified cure direction.*
+  **2306.13649**. *The on-policy mode-seeking lever — **VALIDATED as the collapse
+  cure** (broke generation collapse domain-wide, 2026-06-28); now the core of the
+  training recipe, not just a direction.*
 - **MiniLLM — Knowledge Distillation of LLMs** — Gu et al. 2023. arXiv **2306.08543**.
   *Reverse-KL mode-seeking; teacher-mixed sampling; the "forward-KL degenerates a
   small student" insight that matches our exposure-bias finding.*
 - **Sequence-Level KD** — Kim & Rush 2016. arXiv **1606.07947**. *Offline
-  teacher-generated sequences; cheaper on-policy precursor.*
+  teacher-generated sequences — **implemented** as the teacher-corpus pipeline
+  (`gen_teacher_corpus`); the R=0.2 A/B breached the plateau floor (2026-07-21).*
 - **DistiLLM / DistiLLM-2** — Ko et al. 2024/2025. arXiv **2402.03898** (DistiLLM);
   DistiLLM-2 *(verify ID)*. *Skew-KL + adaptive scheduling refinements.*
 - **DeepSeek-V3** — DeepSeek-AI 2024. arXiv **2412.19437**. *Aux-loss-free MoE
@@ -102,7 +105,14 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
   effective depth). *(verify ID)* *Used by Huginn and MeSH; our
   `--use-depth-aware-init` implements it.*
 - **Textbooks Are All You Need (phi)** — Gunasekar et al. 2023. arXiv **2306.11644**.
-  *Data-quality → coherence at fewer tokens (backlog).*
+  *Data-quality → coherence at fewer tokens — the thesis the teacher-corpus A/B
+  is now testing (2026-07).*
+- **BeyondWeb** — scaling synthetic data for trillion-scale pretraining, 2025.
+  arXiv **2508.10975**. *Rephrase-over-generate + frame diversity; the quality
+  upgrade queued for the teacher-corpus generator (harvest_speedup_plan.md).*
+- **Synthetic Continued Pretraining / EntiGraph** — Yang et al. 2024. arXiv
+  **2409.07431**. *Squeezing small domain corpora; filed for the medical-domain
+  phase (teacher_data_curriculum.md Rung 1).*
 - **Clean SFT datasets** — Tulu-3, OASST2, OpenMathInstruct-2, NuminaMath-CoT,
   OpenCodeInstruct, MIRIAD, PubMedQA, ChemData700K. Full attribution/licences in
   `docs/clean_sft_datasets.md`. *OpenAI-free distillable SFT mix.*

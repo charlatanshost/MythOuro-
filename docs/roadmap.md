@@ -1000,6 +1000,18 @@ Full writeup in the README's "Licensing & data provenance" section. Short versio
 - `checkpoints_grown_v5\step_*.pt` — v5 2nd-expansion run (632M, 96 experts);
   last step 2887. Archived as `mythouro_distill_xl_grown_v5`; **expert-count
   ceiling** data point, not an improvement over v4.
+- **On-policy line (2026-06/07, the collapse-cure → teacher-data lineage):**
+  - `checkpoints_revkl_stable/step_0006675.pt` — the depth-matched rev-KL stable
+    base; warm-start root of all on-policy work.
+  - `checkpoints_onpolicy/` — pre-phase-5 on-policy (6771→~9780), CUDA-era.
+  - `checkpoints_onpolicy_xpu/` — **RETIRED/tainted** (phase-5 cached-decode bug,
+    steps 9780→12000; kept for forensics only, do not resume).
+  - `checkpoints_onpolicy_fixed/` — **the LIVE line.** Clean restart from 9780
+    with uncached rollouts + `--min-lr`; carried through the plateau referendum
+    (30000) and the teacher-corpus A/B (36658). Latest here is current best.
+  - `data_teacher/`, `data_teacher_clean/`, `data_teacher_v2/` — teacher-generated
+    corpora (gitignored; manifests carry provenance). v2 = the fixed random-window
+    harvest.
 
 ## Sessions log
 
@@ -1013,6 +1025,11 @@ Full writeup in the README's "Licensing & data provenance" section. Short versio
 | 2026-06-10/11 | Ablation arm 2 (dense, seed 0) trained overnight | **MoE-vs-dense seed-0 verdict: MoE wins 4.0×** (dense 22.66 vs MoE 5.72 final PPL; gap grows with training). MoE retained per pre-registered rule, pending seed 1. Dense still beats v1 — fixes+recipe lifted everything. |
 | 2026-06-09/10 | External code review (Fable 5): P0.1–P0.5 + most P1s fixed, invariant tests added; v2 re-baseline (PPL 46.3→39.25 from P0.3 alone); per-loop calibration audit (loop 0 miscalibrated → MoDr target = per-loop CE); GPU smokes both training paths; first ablation attempt flatlined → root cause: script defaults ≠ v1's proven recipe (warmup 500/depth-reg 0.3) → defaults fixed | **Ablation arm 1 (MoE, seed 0) COMPLETE on fixed code + proven recipe: final PPL 5.72 vs v1's 37.4 (6.5× better in 1k fewer steps), loop_eff 0.500, ECE 0.015.** Likely mechanism: P0.1 (v1 trained with noise-injecting clobbered o_proj) + P0.2 (all-loop balancing). Caveat: FineWeb train/eval stream overlap may flatter absolute PPL — applies equally to v1, so the relative gain stands; don't quote 5.7 against external baselines. Evals archived in checkpoints_ablation_moe_s0/. Dense arm + seed-1 runs await user go. |
 | 2026-06-06 | bnb fixed (cuda130 auto-detect); 2nd MoE expansion 48→96 (`distill_xl`, 632M); v5 run to step 2887; full docs/attribution/licensing pass; hardware analysis (A10 identified as best-fit upgrade) | v5 archived — **expert-count ceiling hit**: 2nd expansion net-comparable to v4 (7-prompt inspector), cv wouldn't tighten below ~0.5. Q#1 answered. Next lever: width/scale, not more experts. |
+| 2026-06-16→24 | Exposure-bias diagnosis; divergence sweep (fwd/rev-KL/JSD all collapse); stability recipe (rev-KL + lr 1e-4 + sandwich-norm/depth-init); depth-matched 6675 base | Collapse is exposure bias, decoupled from every formal metric; offline objectives closed; stable base for on-policy. |
+| 2026-06-27→28 | On-policy/GKD implemented (`generate_rollout` + MiniLLM α-mix); first α=0.0 movement, then **domain-wide break** at 6906 | Collapse cured on every seed; fluency became a throughput problem. Detail in `generation_probe_tracker.md`. |
+| 2026-07-12→14 | **XPU migration** (native Ubuntu, Max 1100, `torch.xpu`); phase-5 batched+cached rollouts (11.7× effective); segfault workarounds; thermals resolved | Card #1 validated; on-policy runs at real throughput on one 48 GB card. `max1100_field_notes.md`, `hardware_options.md`. |
+| 2026-07-15→17 | Cached-decode bug caught (not distribution-preserving, ~1 nat) + fix (uncached rollouts); `--min-lr` floor; clean restart 9780→18000→30000 | Corrupted line retired; the plateau confirmed at n=5 real-LR clean-instrument: more web tokens don't move α=0.0 at 278M. |
+| 2026-07-18→21 | Teacher-corpus pipeline (gen + seq-KD + `--teacher-data-ratio`); R=0.2 A/B (30000→36658); random-window seeding fix + corpus clean; strategy docs | **Teacher data breached the plateau floor** (lower bound; v1 corpus was code-starved). Curriculum + speedup plans written. Next: clean v2 harvest → confirming A/B → lean in or grow. |
 
 ---
 

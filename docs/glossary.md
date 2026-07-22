@@ -39,6 +39,14 @@ Project-specific terms used throughout the code and docs:
 | **P0 / P1 / P2** | Review priorities: P0 = correctness (fix before training), P1 = perf/measurement validity, P2 = strategic. Tracker: `docs/review_action_plan.md`. |
 | **XPU / `rope_real`** | `torch.xpu` = Intel GPU backend (native ≥ PyTorch 2.5); `mythouro/device.py` abstracts cuda/xpu/cpu. `rope_real` swaps the complex RoPE table for an equivalent cos/sin form for backends without complex-op support. |
 | **tok/s (k-suffix!)** | The training log prints `2.5k tok/s` = 2,500. Misreading the k once spawned a multi-day "training is slow" investigation (it wasn't). |
+| **exposure bias** | The diagnosed cause of generation collapse: the model, trained only on gold text, never learns to recover from its *own* outputs, so free-running it spirals into a repetition attractor. Decoupled from PPL/ECE — cured by on-policy training, not by any offline objective. |
+| **on-policy / GKD** | The cure: the student trains on *its own* generated rollouts under teacher scoring (reverse-KL), directly attacking exposure bias. `--onpolicy-lambda` = fraction of steps on rollouts. Broke collapse domain-wide 2026-06-28. |
+| **α / teacher-mix (`--teacher-mix-alpha`)** | MiniLLM teacher-mixed sampling during rollouts: `α·teacher + (1-α)·student`. α=0.0 in a probe = the student's *own* trajectory (the exposure-bias scoreboard); high α = teacher-guided (a capability check). |
+| **the plateau** | The finding (30k referendum, n=5, 2026-07) that more *web* tokens stopped improving α=0.0 generation at 278M — a **data-quality** wall, not quantity. First breached by teacher-generated data. |
+| **teacher corpus** | Text the teacher (Ouro) *writes* from real-corpus seeds, banked for training (sequence-level KD). `tools/gen_teacher_corpus`, mixed in via `--teacher-data-ratio`. The current data-quality lever. |
+| **top_share / distinct1** | Generation-probe metrics: `top_share` = most-frequent token's share (high = repetitive); `distinct1` = unique/total (low = repetitive). ⚠ `top_share` *inverts* at the salad→fluency transition (fluent English repeats "the/of/a") — always read the text too. |
+| **`exit_at_step` / UT loops** | Ouro's Universal-Transformer early-exit knob: run N of the 4 loops. `exit_at_step=1` = cheap shallow draft (basis for the queued self-speculative decode), `None` = full 4-loop. |
+| **plateau floor** | The α=0.0 `top_share` level of the best pre-teacher-data checkpoints (~0.16, the 8668/13944 regime); the number an intervention must push *below* to count as new frontier progress. |
 
 ---
 

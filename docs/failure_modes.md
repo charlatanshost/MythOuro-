@@ -10,6 +10,56 @@
 Institutional memory. If any of these come back in a future session,
 the fix is already known — saves hours of re-debugging.
 
+### Cached decode was NOT distribution-preserving (2026-07-16) — the big one
+
+- *Symptom*: on-policy runs quietly degraded (α=0.0 worsened 9780→12000) with no
+  crash and no metric alarm; the phase-5 *cached* student rollout decode looked
+  fine by greedy-equivalence tests.
+- *Root cause*: the recurrent block's ACT early-exit converges per-forward — the
+  whole sequence uncached vs a single token cached — so effective loop depth (and
+  the ACT-weighted logits) differ by up to **~1 nat KL** on real checkpoints.
+  Greedy argmax survived (why the tests passed); temp-1.0 sampling drew from a
+  shifted distribution.
+- *Fix*: pin rollout generation `use_kv_cache=False` (wide batching kept). **Any
+  cached/incremental decode on an ACT/early-exit model needs a distribution-level
+  (KL) equivalence gate, not a greedy-sequence test.** Full: generation_probe_tracker.md 2026-07-16.
+
+### Two long legs silently starved at the cosine tail (2026-07-18)
+
+- *Symptom*: a "frontier" leg produced no probe movement; looked like a plateau.
+- *Root cause*: default cosine floor `lr·0.1` = 1e-5 — the last ~4k steps of a
+  long/resumed leg trained at near-zero LR = no real signal. Two legs lost this way.
+- *Fix*: `--min-lr` flag (e.g. 3e-5); extend `--total-steps` without re-creating
+  the tail. Lesson: a flat probe at tail LR is not a null result.
+
+### XPU OOM can zombie the process holding all VRAM (2026-07-19)
+
+- *Symptom*: next GPU job OOMs at model load on a "free" card.
+- *Root cause*: a Level-Zero OOM (`UR_RESULT_ERROR_OUT_OF_RESOURCES`, surfaced as
+  generic `RuntimeError`) then the SYCL runtime deadlocks in teardown — the process
+  hangs half-dead. Unlike CUDA, a crash ≠ reclaimed VRAM.
+- *Fix*: after any crash, `pgrep` the job, `kill -9`, verify with
+  `xpu-smi dump -d 0 -m 18` that memory returned before relaunching. Field notes gotcha #7.
+
+### Seeded generation harvested boilerplate (2026-07-21)
+
+- *Symptom*: teacher-corpus code slice was 57% Apache/license headers; code seeds
+  regressed in the A/B.
+- *Root cause*: seeded from each document's HEAD (`ids[:seed_len]`); documents open
+  with boilerplate, code files worst. The *seed* distribution, not the corpus
+  distribution, determines what seeded generation produces.
+- *Fix*: random-window seeding + a write-time boilerplate reject filter
+  (`gen_teacher_corpus`), plus `clean_teacher_corpus` to retro-strip an existing
+  corpus. teacher_corpus_plan.md 2026-07-21.
+
+### Post-reboot: "XPU device count is zero" (2026-07-16)
+
+- *Symptom*: `xpu-smi` / `torch.xpu.is_available()` suddenly see nothing after a reboot.
+- *Root cause*: GPU access was granted via a session ACL on `/dev/dri/renderD*`,
+  which lives in devtmpfs and evaporates on reboot.
+- *Fix*: `sudo usermod -aG render,video <user>` + relogin (durable);
+  `sudo setfacl -m u:<user>:rw /dev/dri/renderD12*` (same-session stopgap).
+
 ### Script defaults are NOT the proven recipe (2026-06-10)
 - *Symptom*: both ablation arms (MoE AND dense) flatlined identically from
   scratch — hard CE stuck at ~7.6–8 after step ~20, eval PPL in the thousands
