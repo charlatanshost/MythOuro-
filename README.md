@@ -148,8 +148,16 @@ rig is native Ubuntu with a single **48 GB Intel Max 1100** (`torch.xpu`) carryi
 teacher **and** student on one card — the current-generation training environment —
 hosted on a **Xeon Platinum 8480+ (Sapphire Rapids, 56C/112T, QYFS sample)**, an
 all-Intel-datacenter-sample build on stock drivers (the CPU provides the card's
-PCIe Gen5 x16). Both GPUs are validated end-to-end. Larger-model, multi-GPU, and FSDP tiers remain
-**design targets, not tested configs**, and export backends (GGUF/GPTQ/AWQ, vLLM,
+PCIe Gen5 x16). Both GPUs are validated end-to-end.
+
+Beyond the GPUs, several other configs were **benchmarked/smoke-tested but not
+adopted** as the training path (all recorded in
+[`docs/hardware_options.md`](docs/hardware_options.md)): **CPU/AMX compute** on
+the 8480 itself (AMX engaged — 16 TFLOPS cache-resident, but `distill_tiny` only
+85 tok/s, memory-bandwidth-starved on 2-of-8 DDR5 channels → HBM is the answer,
+not DIMMs), **teacher-on-CPU** and **device-sharding/placement** experiments, and
+per-run smoke tests. Larger-model, multi-GPU, and true **FSDP** training remain
+**design targets, not validated configs**; export backends (GGUF/GPTQ/AWQ, vLLM,
 llama.cpp) are out of scope until there's integration code. The hardware
 decision record is in [`docs/hardware_options.md`](docs/hardware_options.md); the
 measured Max 1100 experience (benchmarks, `torch.xpu` gotchas, buying guidance) is
