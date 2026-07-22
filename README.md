@@ -303,7 +303,7 @@ Key design choices:
 |---|---|
 | Optimizer | AdamW |
 | Dataset | `HuggingFaceFW/fineweb-edu` (`sample-10BT` by default, swap to `sample-100BT` or `default` for full run) |
-| Tokenizer | `openai/gpt-oss-20b` via `MythOuroTokenizer` |
+| Tokenizer | `ByteDance/Ouro-2.6B-Thinking` (vocab 49,152) via `MythOuroTokenizer` — matched to the distillation teacher |
 | Parallelism | PyTorch DDP via `torchrun`, sharded streaming dataset |
 | Precision | bfloat16 on H100/A100, float16 + GradScaler on older GPUs |
 | Schedule | Linear warmup (2000 steps) → cosine decay |
@@ -322,13 +322,22 @@ trained reference checkpoints.
 Ouro-2.6B-Thinking (teacher)
         │  logit distillation  (training/distill.py)
         ▼
-distill_tiny  278M  ──── SFT ────►  distill_tiny  278M  (instruction-tuned)
+distill_tiny  279M  ──── SFT ────►  distill_tiny  279M  (instruction-tuned)
  (v1)                (training/sft.py)        (v2)
                                               │  MoE expansion  (tools/grow_checkpoint.py)
                                               ▼
-                                       distill_small  420M  ──── SFT ───►  distill_small  420M
+                                       distill_small  397M  ──── SFT ───►  distill_small  397M
                                         (v3, 24→48 experts)                  (v4, +OpenHermes)
+                                              │  2nd expansion 48→96
+                                              ▼
+                                       distill_xl  633M  (v5 — expert-count ceiling)
 ```
+
+> This is the **offline-distillation → SFT → growth** pipeline (v1–v5, the
+> CUDA/consumer-GPU era). The **current frontier** — on-policy/GKD training and
+> the teacher-generated corpus on the Max 1100 — is the "Current state" section
+> above and [`docs/generation_probe_tracker.md`](docs/generation_probe_tracker.md);
+> run commands for it are in [`docs/training_commands.md`](docs/training_commands.md).
 
 | Stage | Script | What it does |
 |---|---|---|
