@@ -45,8 +45,8 @@ hybrid that draws on three distinct lineages but is identical to none of them:
 - A single-card consumer-hardware training recipe (8-bit Adam, staged seq-len, growth-based scaling)
 - A pre-registered **MoE-vs-dense ablation** at matched active compute, and the measured depth/calibration findings feeding the MoDr direction — [`docs/roadmap.md`](docs/roadmap.md)
 
-**Current state (2026-06-27):** the long-standing blocker — **free-running
-generation degeneration** at small scale — has had its **first real break.** It
+**Current state (updated 2026-07-21):** the long-standing blocker — **free-running
+generation degeneration** at small scale — was broken in stages. It
 was diagnosed as **exposure bias** (a learned repetition attractor; *not* a
 recurrent/hidden-state collapse — the recurrent representations stay healthy,
 verified with [`tools/collapse_metrics.py`](tools/collapse_metrics.py)) and shown
@@ -57,13 +57,39 @@ and solved training stability all coexisted with hard mode-collapse). The offlin
 distillation (GKD / MiniLLM)** — the student trains on *its own* rollouts under
 teacher correction, attacking exposure bias directly.
 
-**On-policy is now implemented and partially validated (2026-06-27):** the first
-on-policy run produced the **first movement on the unaided-generation metric in
-the project's history** — a collapsed prose seed went from a stuck `the the the`
-attractor to varied sentences (top-token share 0.45 → 0.14, distinct-1
-0.15 → 0.66). It's *partial* — under-represented domains (medical, code) still
-need more on-policy dose — so reaching coherence is now a **throughput / scaling
-problem**, not an open research question. Full record:
+**On-policy validated, and the collapse is broken domain-wide (2026-06 → 07).**
+On-policy distillation produced the first movement on the unaided-generation
+metric in the project's history, then two regime shifts: collapsed `the the the`
+→ varied salad → **rambling-grammatical English** across every probe seed.
+Reaching *fluency* stopped being an open research question and became a
+throughput problem.
+
+**The current frontier — a data-quality wall, and the first tool to move it
+(2026-07).** Four developments since June, all in
+[`docs/generation_probe_tracker.md`](docs/generation_probe_tracker.md):
+1. **Hardware migration** — moved to native Ubuntu on a single 48 GB **Intel
+   Max 1100** (`torch.xpu`, no IPEX). The whole gray-market / stock-driver
+   experience, benchmarks, and gotchas are written up as standalone field notes:
+   [`docs/max1100_field_notes.md`](docs/max1100_field_notes.md).
+2. **Rollout infrastructure + a caught bug** — batched/cached on-policy rollouts
+   (11.7× effective throughput), and the discovery (with fix) that the *cached*
+   student decode was **not distribution-preserving** under ACT early-exit — a
+   ~1 nat skew that corrupted a run before a probe caught it. Rollout generation
+   is now pinned to the correctness-preserving path.
+3. **The plateau** — a properly-powered, confound-free test (n=5, real LR, clean
+   instrument) showed **more *web* tokens no longer improve α=0.0 generation** at
+   278M. The wall is *data quality*, not quantity.
+4. **The break** — a **teacher-generated corpus** (Ouro writes clean training
+   text; sequence-level KD) mixed in at 20% became the **first intervention to
+   push the mean below the plateau floor since the June regime shift** — salad
+   → framing prose on the seeds that moved. Plan, pipeline, and the corpus
+   lifecycle ladder: [`docs/teacher_corpus_plan.md`](docs/teacher_corpus_plan.md)
+   · [`docs/teacher_data_curriculum.md`](docs/teacher_data_curriculum.md).
+
+**Where that leaves it:** fluency is solved; *meaning* is now a **data-quality**
+problem being attacked with teacher-generated data, with a measured go/no-go
+(does teacher data keep paying off → lean in; does it plateau too → grow the
+model). Full record:
 [`docs/training_runs.md`](docs/training_runs.md) ·
 [`docs/generation_probe_tracker.md`](docs/generation_probe_tracker.md) ·
 [`docs/onpolicy_plan.md`](docs/onpolicy_plan.md).
@@ -72,10 +98,14 @@ problem**, not an open research question. Full record:
 models.** They validate that the architecture + recipe work end-to-end (stable
 training, balanced MoE routing, calibrated uncertainty, all three halt
 mechanisms firing). Their free-running generation was mode-collapsed (exposure
-bias) — **on-policy distillation is now un-collapsing it** (partial; see current
-state above) — but full **content fluency** still needs the real scale-up (more
-parameters **and** ~1000× more tokens than can be ground out locally). This
-remains a research / architecture project, not a deployable model.
+bias) — **on-policy distillation un-collapsed it domain-wide, and fluent
+free-running text now generates** (see current state above). The open problem
+has moved *up a level*: from "does it produce fluent text" (solved) to "does the
+text carry **meaning**" — currently a data-quality problem, with teacher-
+generated data the first lever to move it. Full **content coherence** at useful
+breadth still needs the real scale-up (more parameters **and** far more tokens
+than can be ground out locally). This remains a research / architecture project,
+not a deployable model.
 
 **One-line description:** *a research project on recurrent-depth MoE
 transformers — distillation efficiency, training dynamics, and calibrated
@@ -112,12 +142,16 @@ pip install -e ".[data,train]"   # data prep + tracking
 
 ### Hardware — what's actually been run
 
-The trained checkpoints (278M–632M) were produced on a **single consumer GPU**
-(RTX 5070, 12 GB) with the frozen teacher hosted on a second card. That is the only
-configuration **validated end-to-end**. Larger-model, multi-GPU, and FSDP tiers are
+The early checkpoints (278M–632M) were produced on a **single consumer GPU**
+(RTX 5070, 12 GB) with the frozen teacher on a second card. As of **2026-07**, the
+rig is native Ubuntu with a single **48 GB Intel Max 1100** (`torch.xpu`) carrying
+teacher **and** student on one card — the current-generation training environment.
+Both are validated end-to-end. Larger-model, multi-GPU, and FSDP tiers remain
 **design targets, not tested configs**, and export backends (GGUF/GPTQ/AWQ, vLLM,
-llama.cpp) are out of scope until there's integration code. The real scale-up plan —
-a single 48 GB Intel Max 1100 — is in [`docs/hardware_options.md`](docs/hardware_options.md).
+llama.cpp) are out of scope until there's integration code. The hardware
+decision record is in [`docs/hardware_options.md`](docs/hardware_options.md); the
+measured Max 1100 experience (benchmarks, `torch.xpu` gotchas, buying guidance) is
+in [`docs/max1100_field_notes.md`](docs/max1100_field_notes.md).
 
 ### Console scripts
 
@@ -308,7 +342,13 @@ lineage, hardware notes, failure-mode recovery patterns, and forward plan in
 | Page | Description |
 |---|---|
 | [`docs/roadmap.md`](docs/roadmap.md) | **Start here when resuming.** Forward plan, checkpoint lineage, capability milestones, decision rules — and the **complete documentation index** (master router to every doc). |
-| [`docs/onpolicy_plan.md`](docs/onpolicy_plan.md) | The **on-policy / GKD** work — the live cure for generation collapse (design, run commands, status). |
+| [`docs/generation_probe_tracker.md`](docs/generation_probe_tracker.md) | **The "is it learning, where, how fast" scoreboard** — every generation probe over time, the collapse→fluency→plateau→teacher-data arc, with sample texts. The live pulse of the project. |
+| [`docs/onpolicy_plan.md`](docs/onpolicy_plan.md) | The **on-policy / GKD** work — the cure for generation collapse (design, run commands, status). |
+| [`docs/teacher_corpus_plan.md`](docs/teacher_corpus_plan.md) | **Teacher-generated corpus** — why (the plateau), the generator, filters, measured throughput, and the A/B that moved the needle. |
+| [`docs/teacher_data_curriculum.md`](docs/teacher_data_curriculum.md) | The **teacher/data lifecycle ladder** — new seed domains → grow student → new teacher, with the parity gate that decides which rung. |
+| [`docs/harvest_speedup_plan.md`](docs/harvest_speedup_plan.md) | Ranked catalog of harvest-throughput levers (continuous batching, KV preallocation, speculation…), safe vs quality-risking, benchmark-gated. |
+| [`docs/max1100_field_notes.md`](docs/max1100_field_notes.md) | **Standalone, shareable** Intel Max 1100 field notes — benchmarks, `torch.xpu` workarounds, thermals, buying guidance, from daily LLM-training use. |
+| [`docs/training_commands.md`](docs/training_commands.md) | Copy-paste-ready run/probe/harvest commands for the current (XPU) environment. |
 | [`docs/failure_modes.md`](docs/failure_modes.md) | Failure modes encountered + recovery patterns — the debugging / lessons-learned reference. |
 | [`docs/mythouro.md`](docs/mythouro.md) | Full API reference for the `MythOuro` class — constructor, `forward`, `generate`, all sub-modules, configuration reference, and usage examples |
 | [`docs/growth_design.md`](docs/growth_design.md) | MoE-expansion / model-growth design notes — the function-preserving promotion algorithm and its training contract |
