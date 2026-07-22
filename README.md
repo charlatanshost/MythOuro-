@@ -617,6 +617,20 @@ Theoretical analysis suggests 2–3× inference-throughput improvements. For Myt
 - DeepSeek-V3 — aux-loss-free load balancing for MoE routing: https://arxiv.org/abs/2412.19437
 - Distilling the Knowledge in a Neural Network (Hinton et al., 2015) — the soft-label distillation objective: https://arxiv.org/abs/1503.02531
 
+**On-policy distillation & exposure bias (the collapse cure — the project's central 2026-06/07 work):**
+
+- On-Policy Distillation of Language Models / **GKD** (Agarwal et al., 2023) — student trains on its own generations under teacher scoring: https://arxiv.org/abs/2306.13649
+- **MiniLLM** — Knowledge Distillation of LLMs (Gu et al., 2023) — reverse-KL + teacher-mixed sampling; the α-mix that un-collapses a degenerate student: https://arxiv.org/abs/2306.08543
+- **Sequence-level KD** (Kim & Rush, 2016) — train the student on teacher-generated sequences; the basis of the teacher-corpus pipeline: https://arxiv.org/abs/1606.07947
+- Neural Text Degeneration / nucleus sampling (Holtzman et al., 2019) — the exposure-bias / repetition-attractor framing: https://arxiv.org/abs/1904.09751
+- Unlikelihood Training (Welleck et al., 2019) — the queued surgical anti-repetition lever: https://arxiv.org/abs/1908.04319
+
+**Synthetic / teacher-generated training data (the current data-quality frontier):**
+
+- **BeyondWeb** — scaling synthetic data for trillion-scale pretraining (2025); the rephrase-over-generate lesson: https://arxiv.org/abs/2508.10975
+- Cosmopedia / phi-style "textbook-quality" synthetic corpora — small models get coherent on curated data at far fewer tokens.
+- **Synthetic Continued Pretraining** / EntiGraph (Yang et al., 2024) — squeezing small domain corpora; filed for the medical-domain phase: https://arxiv.org/abs/2409.07431
+
 ---
 
 ## Acknowledgements

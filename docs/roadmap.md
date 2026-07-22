@@ -23,7 +23,7 @@ the README "Acknowledgements" and "Licensing & data provenance" sections.
 **Full research credits:** every paper, dataset, and tool that informed the design
 is catalogued in `docs/references.md` (with how each was used).
 
-**Current status (2026-06-17, updated 2026-06-28):** the generation-degeneration investigation is
+**Current status (2026-06-17, updated 2026-07-21):** the generation-degeneration investigation is
 complete — it is **exposure bias** (a learned repetition attractor), **not**
 recurrent/hidden-state collapse (reps are healthy; verified with
 `tools/collapse_metrics.py`). v4's old "edge" was train-time noise co-adaptation,
@@ -73,6 +73,31 @@ earlier "medical still collapsed" read was partly **single-sample RNG noise** (s
 different seed-order → bacterial α=0.0 went 0.97→0.18; probe now multi-samples). **Next = pour
 tokens on the un-collapsed base** — exactly what the Max 1100's batched-rollout throughput is for.
 Full: `docs/generation_probe_tracker.md` (06-28).
+
+**UPDATE 2026-07 (through 07-21) — fluency SOLVED; the frontier moved to MEANING (a data-quality
+wall), and teacher-generated data is the first lever to breach it.** The month's arc, all in
+`docs/generation_probe_tracker.md`:
+- **Hardware:** migrated to native Ubuntu on a single 48 GB **Intel Max 1100** (`torch.xpu`, no
+  IPEX); teacher+student co-fit one card. Standalone write-up: `docs/max1100_field_notes.md`.
+- **Rollout infra + a caught bug:** batched/cached rollouts (11.7× effective), then the discovery
+  that the **cached student decode was NOT distribution-preserving** under ACT early-exit (~1 nat
+  skew; corrupted steps 9780→12000 before a probe caught it). Rollout generation pinned uncached;
+  `--min-lr` floor added after two legs were found starved at the cosine tail.
+- **The plateau (confirmed, confound-free):** an n=5, real-LR, clean-instrument test showed **more
+  *web* tokens no longer move α=0.0** at 278M. Not starvation behaving normally — the wall is
+  **data quality**, not quantity.
+- **The break:** a **teacher-generated corpus** (Ouro writes clean text; seq-level KD —
+  `docs/teacher_corpus_plan.md`) at R=0.2 became the **first intervention to push the mean below
+  the plateau floor since the 06 regime shift** — salad→framing-prose on the seeds that moved.
+  Result is a *lower bound* (trained on a v1 corpus later found ~10% license-boilerplate from a
+  head-seeding bug, since fixed). Prose gained; code/math lagged (the boilerplate), motivating a
+  clean v2 harvest + the confirming A/B.
+- **Strategy crystallized:** `docs/teacher_data_curriculum.md` (new seed domains → grow student →
+  new teacher, gated by a measured student↔teacher parity signal) and `docs/harvest_speedup_plan.md`
+  (ranked throughput levers, benchmark-gated).
+**Next:** clean v2 teacher corpus → confirming R=0.2 A/B → if teacher data keeps paying, lean in
+(more domains, higher R); if it plateaus too, the wall is capacity → **grow the student (Path A)**.
+The go/no-go is now measured, not guessed.
 
 ---
 
