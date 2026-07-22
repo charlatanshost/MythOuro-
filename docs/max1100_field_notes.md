@@ -6,7 +6,13 @@ engineering sample** running on **stock upstream drivers** — no vendor hand-ho
 involved, which is rather the point: everything here is reproducible by anyone with
 the card and a Linux box.
 
-**Rig**: native Ubuntu (kernel 6.8, i915), `torch 2.13.0+xpu` from
+**Rig**: an all-Intel-datacenter-**sample** build (fitting — both are gray-market
+on stock drivers): host is a **Xeon Platinum 8480+ (Sapphire Rapids, 56C/112T),
+QYFS qualification sample** — reports as `Genuine Intel(R) CPU 0000%@`, the
+telltale sample fingerprint. It matters here for two concrete reasons: it
+provides the **PCIe Gen5 x16** the Max 1100 wants, and its 56 cores carry the
+CPU-side harvest load (tokenization, the XPU CPU-sampling workaround, JSONL
+writes). native Ubuntu (kernel 6.8, i915), `torch 2.13.0+xpu` from
 `download.pytorch.org/whl/xpu` in a plain venv — **no IPEX** (it's EOL; Intel
 upstreamed XPU support into PyTorch core, and `torch.xpu` mirrors `torch.cuda`
 ~1:1). Same box hosts an RTX 5070 (12 GB, `torch 2.13.0+cu130`) — all

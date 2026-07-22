@@ -17,7 +17,10 @@
 
 The Max 1100 is installed and running under native Ubuntu 24.04 (the dual-boot plan, executed).
 **The 4060 and 5060 were pulled to free power for the Max** → the rig is now 5070 (display +
-CUDA) + Max 1100 (`xpu:0`). Stack: kernel driver + Level Zero already present (`clinfo`/`xpu-smi`
+CUDA) + Max 1100 (`xpu:0`). **Host CPU: Xeon Platinum 8480+ (Sapphire Rapids, 56C/112T), QYFS
+qualification sample** (reports `Genuine Intel(R) CPU 0000%@`) — same gray-market-sample
+provenance as the Max; provides the PCIe Gen5 x16 for the card and 56 cores for CPU-side
+harvest/sampling. All benchmarks in this doc were measured on this host. Stack: kernel driver + Level Zero already present (`clinfo`/`xpu-smi`
 see the card), **torch 2.13.0+xpu** from `download.pytorch.org/whl/xpu` in a dedicated venv
 (`../venv-xpu` next to the repo; `../venv-cuda` cu130 for 5070 A/B). `torch.xpu.is_available()`
 ✓, 48 GB visible, bf16 ✓. Full test suite: 100 passed, 8 skipped, 1 failed — the failure is a
