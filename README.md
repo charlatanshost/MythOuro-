@@ -145,8 +145,10 @@ pip install -e ".[data,train]"   # data prep + tracking
 The early checkpoints (278M–632M) were produced on a **single consumer GPU**
 (RTX 5070, 12 GB) with the frozen teacher on a second card. As of **2026-07**, the
 rig is native Ubuntu with a single **48 GB Intel Max 1100** (`torch.xpu`) carrying
-teacher **and** student on one card — the current-generation training environment.
-Both are validated end-to-end. Larger-model, multi-GPU, and FSDP tiers remain
+teacher **and** student on one card — the current-generation training environment —
+hosted on a **Xeon Platinum 8480+ (Sapphire Rapids, 56C/112T, QYFS sample)**, an
+all-Intel-datacenter-sample build on stock drivers (the CPU provides the card's
+PCIe Gen5 x16). Both GPUs are validated end-to-end. Larger-model, multi-GPU, and FSDP tiers remain
 **design targets, not tested configs**, and export backends (GGUF/GPTQ/AWQ, vLLM,
 llama.cpp) are out of scope until there's integration code. The hardware
 decision record is in [`docs/hardware_options.md`](docs/hardware_options.md); the
