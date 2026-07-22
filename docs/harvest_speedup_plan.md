@@ -1,57 +1,186 @@
 # Harvest throughput speedups — design & benchmark plan
 
 **Status: DESIGN, 2026-07-21.** Goal: more teacher-corpus tokens per card-hour.
-Baseline (measured): ~55 accepted tok/s, batch 24, 768-tok continuations,
-launch-bound decode (docs/teacher_corpus_plan.md). The A/B verdict (tracker
-2026-07-21) proved teacher data is the lever moving the plateau, so faster
-harvest = faster iteration on the one intervention that's working.
+The A/B verdict (tracker 2026-07-21) proved teacher data is the lever moving the
+plateau, so faster harvest = faster iteration on the one intervention that's
+working — and, paired with a second card, the difference between corpus
+generation being a bottleneck vs a solved problem.
 
-## Feasibility findings (from reading modeling_ouro.py + training_utils.py)
+## Baseline (measured 2026-07-19/21)
 
-- **Ouro exposes `exit_at_step`** in `OuroForCausalLM.forward` (native early
-  exit): `exit_at_step=1` → logits from 1 UT loop (cheap draft), `None` → full
-  4 loops (verify). So self-speculation needs NO model surgery — the draft is
-  the same weights at reduced depth.
-- **The hard part is the KV cache.** Ouro builds a `UniversalTransformerCache`
-  with per-UT-loop slots (`total_layers * total_ut_steps`; a plain DynamicCache
-  silently corrupts — 0.30 divergence, caught 2026-07-14). Speculative decoding
-  needs **cache rollback on rejected tokens**, and rolling back a UT cache
-  across all 4 loop sub-slots is the bug-prone, correctness-critical step.
-- **The equivalence gate already has a template:** `_validate_teacher_cache`
-  (KL(uncached‖cached) < 5e-2 nats, argmax match) is exactly the shape of the
-  gate a speculative path needs.
+- `tools/gen_teacher_corpus._generate_xpu_safe`, batch 24, 768-tok continuations,
+  Ouro-2.6B teacher (4 UT loops), bf16, Max 1100.
+- **~55 accepted tok/s ≈ 4.8M tok/day.** Decode is **launch-bound** (per-step
+  wall-clock ~flat in batch → throughput ∝ batch), and batch is **memory-capped
+  at 24** because the HF KV-cache `torch.cat` transiently doubles the cache each
+  step (batch 48 OOMs the 48 GB card; batch 24 peaks ~43 GB).
+- Sampling runs on **CPU** (`.cpu()` each step) — XPU `topk`/`multinomial`
+  segfault; `sort`/`cumsum` are XPU-safe.
 
-## ⚠ The open question the literature doesn't answer for us
+## Two classes of lever — keep them separate
 
-Speculative decoding is a **single-stream latency** optimization. **We run
-batch 24 — a throughput regime** where launch overhead is already amortized.
-The 2–3× figures are batch-1 numbers. In our batched case the win may be small,
-and draft compute + rollback overhead could cancel it. **Must be measured on
-our workload, not assumed.** This is an honest-negative candidate.
+**SAFE (distribution-preserving):** the teacher's per-token output distribution
+is byte-for-byte unchanged; only the schedule/packing/memory changes. No corpus-
+quality risk. Prefer these.
 
-## Plan (benchmark-first, correctness-gated)
+**RISKY (distribution-changing):** the teacher emits a *different* (worse)
+distribution. Trades corpus quality — the exact thing the A/B proved is our
+lever — for speed. Avoid unless a benchmark proves the quality cost is
+negligible, gated like §Correctness below.
 
-1. **Prototype** `--speculative` in gen_teacher_corpus (default off; old path is
-   the reference). Draft K tokens at `exit_at_step=1`, verify in one 4-loop
-   parallel forward, standard speculative accept rule (sampling-correct), roll
-   back both caches to the accepted length.
-2. **Distribution-equivalence gate** (blocking): at startup, generate from a
-   fixed prompt both ways (speculative vs full-4-loop) and assert token-dist KL
-   under tolerance, mirroring `_validate_teacher_cache`. Refuse to run if it
-   diverges — a silent skew here poisons the corpus (cf. the 07-16 cached-decode
-   incident: the exact failure mode to avoid).
-3. **Benchmark** accepted tok/s speculative vs baseline at batch 24. Also try
-   the acceptance rate at K=2/4/8 (low acceptance = draft too weak at 1 loop →
-   try 2-loop draft).
-4. **Decision:** adopt only if it BEATS baseline AND passes the gate. If not,
-   log the honest negative and pursue a throughput-native lever instead:
-   - **KV-cache preallocation** — the cat-doubling caps batch at 24; a
-     preallocated cache could allow batch 32–40 at 768 (~1.4–1.7×), no
-     distribution change.
-   - **torch.compile the decode step** — +10% measured on training; launch-bound
-     decode may gain more.
+---
+
+## The catalog (ranked by value × safety ÷ effort)
+
+### 1. Continuous batching — SAFE — **top pick**
+
+**The waste, seen in code:** `_generate_xpu_safe` runs `for i in range(max_new)`
+with **no early stop**. Every sequence generates the full 768 tokens even after
+it emits `<|endoftext|>` at token 50 (main() trims at EOS only *after*). On top
+of that, ~25% of finished samples are dropped by the reject filter — their full
+768-token compute is pure waste. In a static batch of 24, a slot that finishes
+early (EOS or doomed-to-reject) idles until the *longest* sequence in the batch
+reaches 768.
+
+**The fix:** refill each batch slot with a fresh seed the moment it frees
+(EOS emitted, or an online degeneracy check trips). All 24 slots always do
+useful work. Recovers BOTH the post-EOS waste and the reject waste. This is what
+vLLM's continuous batching does; we implement a minimal version in the manual
+loop.
+
+**Why it's the top pick:** larger *expected* win than speculation and far more
+certain — it attacks waste we can *see*, not a theoretical latency gain that may
+not survive the batched regime. Completely distribution-preserving. **Stacks
+with every other lever below.**
+
+**Effort:** medium — rewrite the batch loop to track per-slot state (position,
+done-flag), evict+refill finished slots, handle the ragged KV cache (each slot
+at a different length). The KV-cache raggedness is the real work; a
+preallocated cache (lever 2) makes it much easier, so build them together.
+
+**Sub-win — online degeneracy abort:** check distinct-1 / top-share at ~256
+tokens; if a sample is already doomed to fail the reject filter, evict it now
+instead of finishing 768. Recovers the reject compute *before* it's spent.
+
+### 2. KV-cache preallocation — SAFE — **stack-mate of #1**
+
+The `torch.cat` doubling caps batch at 24. Preallocate the cache to
+`prompt+max_new` up front and write in place (no `cat`) → the transient
+doubling disappears → **batch 32–40 fits at 768**. Launch-bound ⇒ ~1.4–1.7×
+throughput. Also the natural substrate for continuous batching's ragged cache
+(fixed buffer, per-slot write cursor). No distribution change.
+
+**Effort:** medium, **risk unknown until checked** — depends on whether Ouro's
+`UniversalTransformerCache` allows a preallocated / in-place-write mode or must
+be subclassed. First task: read the cache class, determine overridability. If
+the custom cache resists, a fallback is a hand-rolled cache in our decode loop
+that calls the model layer-by-layer (more invasive).
+
+### 3. On-XPU sampling — SAFE — small, low-risk
+
+Replace the per-step `.cpu()` + `multinomial` with an XPU-native top-p sample
+(`sort` → `cumsum` → threshold → `searchsorted`/`gather`, all XPU-safe). Removes
+a host↔device round-trip every token — meaningful in a launch-bound loop.
+Distribution-identical (same top-p math). Low effort; good warm-up task.
+
+### 4. torch.compile the decode step — SAFE — medium risk
+
++10% measured on the *training* step (hardware_options.md); launch-bound decode
+may gain more because compile fuses kernels and cuts exactly the launch overhead
+that dominates. Risk: `torch.compile` + XPU + the custom UT cache + dynamic
+shapes (growing sequence) may not compile cleanly or may hit graph breaks. Try
+after 1–3; measure, keep only if it helps.
+
+### 5. Self-speculative decode (`exit_at_step`) — SAFE\* — high effort, uncertain
+
+The one the owner first asked for. **\*Safe only behind a proven equivalence
+gate** — a subtle bug silently skews the distribution (the 07-16 cached-decode
+failure mode exactly). See §Correctness and §The open question. Kept in the plan
+because it's the *only* way to get the loop-reduction speedup WITHOUT the quality
+cost of lever 7 — but ranked below 1–3 because its benefit in our batched
+throughput regime is genuinely uncertain and it's the most bug-prone build.
+
+Feasibility (from reading the model):
+- **Ouro exposes `exit_at_step`** in `OuroForCausalLM.forward`: `exit_at_step=1`
+  → 1-UT-loop logits (cheap draft), `None` → full 4-loop (verify). No model
+  surgery; the draft is the same weights at reduced depth.
+- **The hard part is cache rollback.** `UniversalTransformerCache` has per-UT-
+  loop slots; speculative decoding must roll the cache back to the accepted
+  length on every rejection, across all 4 loop sub-slots. Bug-prone.
+- **Gate template exists:** `_validate_teacher_cache` (KL(uncached‖cached) <
+  5e-2 nats + argmax match) is exactly the equivalence check shape needed.
+
+### 6. Shorter continuations + higher batch — SAFE(dist) — zero code
+
+Drop `--max-new` 768→384: halves KV memory → ~batch 40–48 → more parallel
+sequences. Zero code (flags only). Distribution-preserving per token, but the
+*corpus* changes (shorter samples). 384 tokens is still substantial for seq-KD,
+so this is a legitimate quick lever if a fast win is wanted before 1–2 are
+built. Note: not free lunch — shorter samples mean more seeds/less context per
+sample.
+
+### 7. Fewer teacher loops, unconditionally — RISKY — **do not, except as a dial**
+
+`exit_at_step=2` for ALL generation ≈ 2× faster, but the teacher runs at half
+depth → a *different, dumber* distribution. Directly trades the corpus quality
+the A/B proved is our lever. Recorded only so it's not re-proposed as "free 2×":
+it isn't free, it's quality-for-speed, and speculation (5) exists precisely to
+get the loop-reduction win *without* this cost.
+
+### 8. Greedy instead of sampled — RISKY — no
+
+Faster (no sampling step) but greedy teacher text is low-entropy and KD-poor
+(teacher_corpus_plan.md §Generator). Rejected.
+
+---
+
+## Correctness gate (blocking, for ANY distribution-touching lever)
+
+Mirror `_validate_teacher_cache`: at startup, generate from a fixed prompt both
+the new way and the reference full-4-loop way; assert token-distribution
+KL under tolerance AND greedy-argmax match for N steps. **Refuse to run on
+failure.** A silent skew here poisons the corpus, and unlike a training bug it's
+invisible until after the model has trained on it (cf. the 07-16 cached-decode
+incident — a "distribution unchanged" claim that was false by ~1 nat and cost a
+week). Levers 1–4 and 6 don't need this (they don't change the distribution),
+but the gate is cheap insurance — run it whenever the decode path changes at all.
+
+## The open question the literature can't answer for us (re: lever 5)
+
+Speculative decoding is a **single-stream latency** optimization; the 2–3×
+figures are batch-1 numbers. **We run batch 24 — a throughput regime** where
+launch overhead is already amortized across 24 sequences, and continuous
+batching (1) fills idle slots that speculation would instead fill with draft
+compute. Speculation's win here may be small or negative. **Measure on our
+workload; do not assume.** Honest-negative candidate.
+
+## Benchmark protocol (how "faster" is decided)
+
+Single harness, same seed corpus, same batch budget, report **accepted tok/s**
+(not raw tok/s — rejects don't count) plus peak VRAM:
+1. Baseline (current path) — the number to beat.
+2. Each lever in isolation, then stacked (1+2, 1+2+3, …).
+3. For speculation: sweep draft depth (`exit_at_step` 1 vs 2) × block size K
+   (2/4/8); report acceptance rate — low acceptance means the 1-loop draft is
+   too weak.
+Adopt a lever only if it **beats baseline on accepted tok/s AND passes the gate.**
+
+## Build order
+
+1. **On-XPU sampling** (3) — small, safe, self-contained warm-up; immediate.
+2. **KV-cache preallocation** (2) — unblocks bigger batch AND is the substrate
+   for continuous batching; do the cache-overridability spike first.
+3. **Continuous batching** (1) — the big safe win, on top of 2.
+4. Benchmark 1+2+3 stacked vs baseline → this is the likely production config.
+5. **Speculative decode** (5) — prototype + gate + benchmark head-to-head vs the
+   1+2+3 stack. Adopt only if it adds on top.
+6. **torch.compile** (4) — last, opportunistic +10%.
+
+All GPU work waits for the card to free after the current v2 harvest; the
+logic/cache-spike/prototype work does not.
 
 ## Non-goals
 
 - No change to the sampling distribution, ever, without the gate proving it.
-- Not launched into an unattended overnight harvest until benchmarked + gated.
+- Nothing launched into an unattended overnight harvest until benchmarked + gated.
+- No corpus-quality-for-speed trades (7, 8) without an explicit quality benchmark.
