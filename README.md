@@ -237,7 +237,9 @@ aspirational 1T frontier config:
 ```python
 from mythouro import (
     mythouro_distill_tiny,
+    mythouro_distill_tiny_dense,
     mythouro_distill_small,
+    mythouro_distill_xl,
     mythouro_1b,
     mythouro_3b,
     mythouro_10b,
@@ -255,22 +257,29 @@ total = sum(p.numel() for p in model.parameters())
 print(f"Parameters: {total:,}")
 ```
 
+Param counts below are the measured build with the Ouro vocab (49,152).
+
 | Variant | `dim` | Routed experts | `expert_dim` | Loop iters | Context | Notes |
 |---|---|---|---|---|---|---|
-| `mythouro_distill_tiny`  | 1280 | 24 | 1280 | 4 | 2k | **278M** — Ouro-aligned distillation student; fits a 12 GB GPU alongside the teacher |
-| `mythouro_distill_small` | 1280 | 48 | 1280 | 4 | 2k | **420M** — MoE-expansion target of `distill_tiny` (see [growth_design](docs/growth_design.md)) |
-| `mythouro_1b` | 2048 | 64 | 2048 | 6 | 4k | research / fine-tune scale |
-| `mythouro_3b` | 3072 | 64 | 4096 | 6 | 4k | compact inference model |
-| `mythouro_10b` | 4096 | 128 | 5632 | 8 | 8k | mid-scale |
-| `mythouro_50b` | 6144 | 256 | 9728 | 8 | 8k | large reasoning |
-| `mythouro_100b` | 8192 | 256 | 13568 | 12 | 1M | frontier-class |
-| `mythouro_500b` | 12288 | 512 | 23040 | 12 | 1M | ultra-scale MoE |
-| `mythouro_1t` | 16384 | 512 | 34560 | 12 | 1M | maximum scale |
+| `mythouro_distill_tiny`  | 1280 | 24 | 1280 | 4 | 2k | **279M** — Ouro-aligned distillation student; the main trained line. Teacher + student co-fit one 48 GB card (or a 12 GB card with the teacher on a second GPU). |
+| `mythouro_distill_tiny_dense` | 1280 | *dense* | — | 4 | 2k | **181M** — dense twin of `distill_tiny` at **matched active compute**; the control arm of the pre-registered MoE-vs-dense ablation. |
+| `mythouro_distill_small` | 1280 | 48 | 1280 | 4 | 2k | **397M** — 24→48 routed-expert MoE expansion of `distill_tiny` (see [growth_design](docs/growth_design.md)). |
+| `mythouro_distill_xl` | 1280 | 96 | 1280 | 4 | 2k | **633M** — 24→96 expert expansion; the **v5 grown checkpoint** (the "632M" referenced above). |
+| `mythouro_1b` | 2048 | 64 | 2048 | 6 | 4k | **1.1B** — research / fine-tune scale target |
+| `mythouro_3b` | 3072 | 64 | 4096 | 6 | 4k | **3.2B** — compact inference target |
+| `mythouro_10b` | 4096 | 128 | 5632 | 8 | 8k | mid-scale target |
+| `mythouro_50b` | 6144 | 256 | 9728 | 8 | 8k | large-reasoning target |
+| `mythouro_100b` | 8192 | 256 | 13568 | 12 | 1M | frontier-class target |
+| `mythouro_500b` | 12288 | 512 | 23040 | 12 | 1M | ultra-scale MoE target |
+| `mythouro_1t` | 16384 | 512 | 34560 | 12 | 1M | maximum-scale target |
 
-The `distill_tiny` and `distill_small` variants are the ones actually
-trained and validated end-to-end on consumer hardware (see [Practical
-training pipeline](#practical-training-pipeline) below). The 1B–1T configs
-are pre-defined scale targets, not trained checkpoints.
+The **`distill_*` family (279M–633M) are the trained/trainable configs**,
+validated end-to-end on consumer hardware — `distill_tiny` is the main line,
+`distill_small`/`distill_xl` are its function-preserving MoE-growth stages, and
+`distill_tiny_dense` is the dense control arm of the MoE-vs-dense ablation (see
+[Practical training pipeline](#practical-training-pipeline) below and
+[`docs/training_runs.md`](docs/training_runs.md)). The **`1b`–`1t` configs are
+pre-defined scale *targets*, not trained checkpoints.**
 
 ---
 
