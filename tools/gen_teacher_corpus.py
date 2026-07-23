@@ -45,18 +45,51 @@ from mythouro.training_utils import (          # noqa: E402
 ROWS_PER_SHARD = 1000
 
 
+def _sample_top_p(probs: torch.Tensor, top_p: float, on_device: bool) -> torch.Tensor:
+    """
+    Top-p (nucleus) categorical sample → indices into the vocab, shape (B, 1).
+
+    `on_device=True` samples where `probs` lives via inverse-CDF
+    (sort → cumsum → threshold → renormalise → searchsorted on a uniform draw)
+    — every op verified segfault-free on XPU/PVC 2026-07-22, unlike
+    `topk`/`multinomial`. `on_device=False` is the legacy CPU round-trip
+    (`.cpu()` + `multinomial`). The two are the SAME distribution — inverse-CDF
+    over the renormalised nucleus is exact categorical sampling — only the RNG
+    stream differs.
+    """
+    if not on_device:
+        probs = probs.cpu()
+    sorted_p, order = probs.sort(dim=-1, descending=True)
+    cum = sorted_p.cumsum(dim=-1)
+    sorted_p[cum - sorted_p > top_p] = 0.0
+    sorted_p = sorted_p / sorted_p.sum(dim=-1, keepdim=True)
+    if on_device:
+        cdf = sorted_p.cumsum(dim=-1)
+        u = torch.rand(sorted_p.shape[0], 1, device=sorted_p.device)
+        pick = torch.searchsorted(cdf, u).clamp(max=sorted_p.shape[-1] - 1)
+    else:
+        pick = torch.multinomial(sorted_p, 1)
+    return order.gather(-1, pick)
+
+
 def _generate_xpu_safe(teacher, input_ids: torch.Tensor, *, max_new: int,
-                       temperature: float, top_p: float) -> torch.Tensor:
+                       temperature: float, top_p: float,
+                       cpu_sampling: bool = False,
+                       cache_factory=None) -> torch.Tensor:
     """
     Manual batched decode for XPU, where HF `generate()` segfaults (on-device
     topk/multinomial — workaround list, docs/max1100_field_notes.md). Mirrors
     the production `generate_rollout` pattern: KL-gated cached teacher forward
-    (`teacher_logits_cached`, falls back to full recompute if the gate fails)
-    + top-p sampling on CPU. Same sampling distribution as the HF path.
+    (`teacher_logits_cached`, falls back to full recompute if the gate fails).
+    Sampling runs on-device by default (removes a host↔device sync per token —
+    meaningful in a launch-bound loop); `cpu_sampling=True` restores the legacy
+    CPU path. Identical distribution either way (see `_sample_top_p`).
     """
     seq = input_ids
     cached = _teacher_cache_usable(teacher, seq)
-    past = None
+    # Preallocated cache (gated upstream): fresh instance per generation call;
+    # sized for prompt + max_new so update() can never overflow.
+    past = cache_factory() if (cache_factory and cached) else None
     inv_t = 1.0 / max(temperature, 1e-5)
     with torch.no_grad():
         for i in range(max_new):
@@ -66,15 +99,9 @@ def _generate_xpu_safe(teacher, input_ids: torch.Tensor, *, max_new: int,
                 logits, past = teacher_logits_cached(teacher, cur, past, start)
             else:
                 logits = teacher_logits(teacher, seq)
-            probs = torch.softmax(
-                logits[:, -1, :].float() * inv_t, dim=-1).cpu()
-            sorted_p, order = probs.sort(dim=-1, descending=True)
-            cum = sorted_p.cumsum(dim=-1)
-            sorted_p[cum - sorted_p > top_p] = 0.0
-            sorted_p = sorted_p / sorted_p.sum(dim=-1, keepdim=True)
-            pick = torch.multinomial(sorted_p, 1)
-            nxt = order.gather(-1, pick).to(seq.device)
-            seq = torch.cat([seq, nxt], dim=1)
+            probs = torch.softmax(logits[:, -1, :].float() * inv_t, dim=-1)
+            nxt = _sample_top_p(probs, top_p, on_device=not cpu_sampling)
+            seq = torch.cat([seq, nxt.to(seq.device)], dim=1)
     return seq
 
 
@@ -157,6 +184,14 @@ def main() -> None:
                         "naturally low for code). 0.20 sits under all three; "
                         "top-share is the actual degeneracy guard.")
     p.add_argument("--max-top-share", type=float, default=0.50)
+    p.add_argument("--prealloc-cache", action="store_true",
+                   help="Preallocate the teacher KV cache (no cat-doubling -> "
+                        "bigger batch fits). Runs a KL equivalence gate at "
+                        "startup and falls back to the stock cache on failure.")
+    p.add_argument("--cpu-sampling", action="store_true",
+                   help="Restore the legacy CPU top-p path (.cpu()+multinomial) "
+                        "instead of on-device inverse-CDF sampling. Identical "
+                        "distribution; keep as rollback only.")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
 
@@ -171,6 +206,18 @@ def main() -> None:
     if teacher is None:
         raise SystemExit("teacher failed to load")
     eot = tok.convert_tokens_to_ids("<|endoftext|>")
+
+    cache_factory = None
+    if args.prealloc_cache:
+        from tools.prealloc_ut_cache import (
+            make_prealloc_cache, validate_cache_equivalence)
+        total = args.seed_len + args.max_new + 8
+        probe_ids = torch.randint(
+            0, tok.vocab_size, (1, 12), device=args.device)
+        if validate_cache_equivalence(teacher, probe_ids, max_len=total):
+            cache_factory = lambda: make_prealloc_cache(teacher, max_len=total)  # noqa: E731
+        else:
+            print("prealloc-cache gate FAILED -> using stock dynamic cache")
 
     out = Path(args.out_dir)
     out.mkdir(exist_ok=True)
@@ -222,7 +269,9 @@ def main() -> None:
             # use the manual cached-teacher + CPU-sampling path.
             gen = _generate_xpu_safe(
                 teacher, input_ids, max_new=args.max_new,
-                temperature=args.temperature, top_p=args.top_p)
+                temperature=args.temperature, top_p=args.top_p,
+                cpu_sampling=args.cpu_sampling,
+                cache_factory=cache_factory)
         else:
             with torch.no_grad():
                 gen = teacher.generate(

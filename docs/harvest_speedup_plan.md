@@ -30,6 +30,32 @@ negligible, gated like §Correctness below.
 
 ---
 
+## ⚠ RANKING REVISED BY MEASUREMENT (2026-07-22) — read before the catalog
+
+Two measurements taken before building (the doc's own benchmark-first rule,
+applied one step earlier):
+1. **The EOS-waste that motivated continuous batching is small.** Measured on
+   1,006 accepted v2 samples: p50 = 768 (the cap), **85% run ≥750 of 768**,
+   post-EOS idle = **7.8%** of accepted lanes. In a launch-bound regime, idle
+   lanes cost ~no time anyway — the only real lever is MORE lanes. **Continuous
+   batching demoted from top pick to "small win, high complexity — deferred."**
+   (Reject lanes ~30% still waste compute, but reclaiming them needs the same
+   mixed-length cache surgery; not worth it at this payoff.)
+2. **Every op needed for on-device sampling is XPU-safe on this card/driver**
+   (sort, cumsum, rand, searchsorted, cmp+sum, gather — micro-tested 07-22;
+   searchsorted and cmp+sum indexing agree exactly). The `topk`/`multinomial`
+   segfaults are the only bad ops.
+
+**Build status (2026-07-22):** lever 3 (on-XPU sampling) **BUILT** — default on,
+`--cpu-sampling` rollback flag. Lever 2 (prealloc cache) **BUILT + unit-tested**
+(`tools/prealloc_ut_cache.py`, 5 CPU tests green; runtime subclass of the
+teacher's own UT cache class, slice-write update, reorder support) behind
+`--prealloc-cache` with a **blocking KL equivalence gate** at startup. Cache
+overridability spike: ANSWERED — subclassing works; the stock class even ships
+`reorder_cache` (batch index_select) if slot surgery is ever wanted. **Both
+levers await the on-card benchmark** (card busy harvesting): equivalence gate,
+then batch 32/40 sweep vs the 24-baseline.
+
 ## The catalog (ranked by value × safety ÷ effort)
 
 ### 1. Continuous batching — SAFE — **top pick**
