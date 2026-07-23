@@ -450,5 +450,4 @@ flycheck_*.el
 
 
 # Teacher-generated corpus (tools/gen_teacher_corpus) — large, regenerable
-data_teacher/
-data_teacher_clean/
+data_teacher*/
