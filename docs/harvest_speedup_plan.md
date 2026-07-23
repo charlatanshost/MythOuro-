@@ -91,21 +91,75 @@ then batch 32/40 sweep vs the 24-baseline.
 > scheduling, but no known speed lever is ever "done enough" to delete from
 > this list; they queue for idle card windows.
 
-**Remaining squeeze queue after the 07-23 productionization (104 tok/s live):**
-1. **Seed-prefetch thread** — seeds for the NEXT batch are tokenized between
-   generation cycles while the GPU idles (~5–15 s per ~230 s cycle ≈ 3–6%).
-   Prefetch on a background thread during generation. Trivial, distribution-safe.
+**❌ SEED-PREFETCH KILLED BY MEASUREMENT (2026-07-23 evening) — honest negative.**
+The queued estimate was "5–15 s idle per ~230 s cycle ≈ 3–6%". Measured directly
+(`_seed_streams` + the real post-generate decode/filter path, batch 30, n=5):
+**seed fetch = 0.21 s median** (min 0.09, max 0.51), **decode+filter = 0.01 s**.
+Against the *current* 143 s cycle (b30 @ 101 tok/s — the 230 s figure was the old
+b24 config) that is **0.15% + 0.01% = 0.16% total GPU-idle CPU work**. The
+estimate was ~50× too pessimistic. Why it's so cheap: the seed corpora are
+`streaming=True` over HTTP with **metadata-only local caches** (36–60 KB each),
+and HF streams *parquet row groups* — one range request yields thousands of
+documents, so per-seed cost amortises to ~7 ms; only row-group boundaries cost
+anything (that's the 0.51 s max). **Do not build it** — the ceiling is 0.16%
+even if prefetch were free and perfect. Lesson (same shape as the 07-22
+continuous-batching demotion): *measure the idle before building machinery to
+hide it.* Two for two — both "obvious" scheduling wins evaporated under a
+stopwatch, because this loop is genuinely ~100% GPU-bound.
+
+**Corollary — the ONLY remaining software levers are launch-count levers.** With
+CPU-side idle at 0.16%, nothing is left to overlap. Throughput now moves only by
+(a) more lanes per launch (batch) or (b) fewer/cheaper launches (compile,
+speculation). That is exactly the launch-bound model, now confirmed from the
+idle side too.
+
+**Remaining squeeze queue after the 07-23 productionization (101 tok/s live):**
+1. **Continuous batching / reject-lane refill** — **re-promoted 2026-07-23**, ~1.28×
+   (see the re-promotion note in the catalog). Gated on reading a full run's
+   `--telemetry` to fix per-source abort thresholds.
 2. **torch.compile the decode step** — +10% on training; launch-bound decode may
-   gain more.
+   gain more. The top lever that needs no new measurement.
 3. **b32 revisit** — +6–7% over b30, gated on observing long-run fragmentation
    behaviour at 45.3 GB (a multi-day run that never creeps → the 0.9 GB margin
    at b32 may be acceptable; or shave `--max-new` to ~704 to buy the margin).
-4. **Speculative decode** — the wildcard (0 to +2×); benchmark-gated as designed.
-5. **Second card** — the hardware multiplier (+~100%/card); see hardware_options.
+3. **Speculative decode** — the wildcard (0 to +2×); benchmark-gated as designed.
+4. **Second card** — the hardware multiplier (+~100%/card); see hardware_options.
+5. ~~Seed-prefetch thread~~ — **killed by measurement, see above.**
 
 ## The catalog (ranked by value × safety ÷ effort)
 
-### 1. Continuous batching — SAFE — **top pick**
+### ⚠ 1. Continuous batching — SAFE — **RE-PROMOTED 2026-07-23** (demoted 07-22 on the wrong number)
+
+**The 07-22 demotion measured the wrong waste.** It sized continuous batching on
+**post-EOS idle = 7.8%** and shelved it. But the dominant waste is **REJECTS: 33%
+of all generations** (9,035 attempts → 6,038 accepted) each burn a full 768
+tokens and are thrown away — **4× the EOS waste the demotion was based on.**
+Abort a doomed lane at token 256 and refill it and the recoverable compute is
+`2,997 × 512 / (9,035 × 768)` ≈ **22% → ~1.28×**, larger than compile (+10%) or
+b32 (+6–7%). The prealloc cache (lever 2) is already built, gated, and in
+production — and this doc already notes it is the natural substrate for the
+ragged per-slot cursor continuous batching needs. The 07-22 note stands only for
+the *EOS* slice; it should not have carried the reject slice with it.
+
+**Safety half measured (2026-07-23), on accepted v2 rows — false-kill rate if we
+abort at N tokens below a distinct-1 threshold:**
+| N | thr 0.20 | 0.25 | 0.30 | 0.35 |
+|---|---|---|---|---|
+| 128 | 0.23% | 0.45% | 1.09% | 2.68% |
+| 256 | 0.62% | 1.73% | 4.16% | 10.18% |
+| 384 | 0.65% | 2.84% | 10.18% | 25.47% |
+Conservative aborts are nearly free of false kills (0.62% at N=256/thr 0.20).
+**The unknown is the CATCH rate** — rejects never reach the shards, so their
+early-token behaviour was unmeasurable. Hence `--telemetry` (added 2026-07-23):
+logs `d1_128/256/384`, `d1_final`, `top_share`, source and reject reason for
+**every** sample, accepted or rejected. First live sample already shows clean
+separation on code (accepted `d1_256`=0.535 vs rejected 0.328). **Build only
+after reading a full run's telemetry** — and note the threshold must be
+**per-source**, because distinct-1 aborts would preferentially kill *code* (the
+naturally-repetitive slice we are simultaneously trying to strengthen; see the
+mix-drift fix in teacher_corpus_plan.md), which would silently undo that fix.
+
+### 1a. Continuous batching — original write-up
 
 **The waste, seen in code:** `_generate_xpu_safe` runs `for i in range(max_new)`
 with **no early stop**. Every sequence generates the full 768 tokens even after
