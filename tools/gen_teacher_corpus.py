@@ -192,8 +192,60 @@ def main() -> None:
                    help="Restore the legacy CPU top-p path (.cpu()+multinomial) "
                         "instead of on-device inverse-CDF sampling. Identical "
                         "distribution; keep as rollback only.")
+    p.add_argument("--seed-mix", default=None,
+                   help="Override the SEED-draw mix, e.g. "
+                        "'general=0.32,math=0.42,code=0.26'. Defaults to "
+                        "_MIX_RATIOS (40/40/20). Needed because acceptance and "
+                        "mean length differ per source, so drawing 40/40/20 "
+                        "does NOT yield a 40/40/20 ACCEPTED corpus (measured "
+                        "2026-07-23 on v2: 45.3/38.0/16.7 by token). This flag "
+                        "is harvest-local on purpose — _MIX_RATIOS is shared "
+                        "with the training MixedDataset and must not move.")
+    p.add_argument("--telemetry", action="store_true",
+                   help="Log per-sample filter stats (source, length, "
+                        "distinct-1 at 256 tokens and final, top-share, reject "
+                        "reason) to <out-dir>/telemetry_<start>.jsonl for EVERY "
+                        "sample, accepted or rejected. Rejects never reach the "
+                        "shards, so this is the only way to measure early-abort "
+                        "separability (harvest_speedup_plan.md lever 1) or to "
+                        "predict a filter change's acceptance impact. Cheap: "
+                        "~30 short lines per ~143 s generation cycle.")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
+
+    # Resolve the seed mix BEFORE the teacher load — a typo here should cost a
+    # second, not a two-minute model load on an unattended overnight launch.
+    seed_mix = dict(_MIX_RATIOS)
+    if args.seed_mix:
+        override = {}
+        for part in args.seed_mix.split(","):
+            k, sep, v = part.partition("=")
+            k = k.strip()
+            if not sep:
+                raise SystemExit(
+                    f"--seed-mix: expected 'source=weight', got {part!r}")
+            if k not in _MIX_RATIOS:
+                raise SystemExit(
+                    f"--seed-mix: unknown source {k!r}; "
+                    f"expected one of {sorted(_MIX_RATIOS)}")
+            try:
+                override[k] = float(v)
+            except ValueError:
+                raise SystemExit(
+                    f"--seed-mix: weight for {k!r} is not a number: {v!r}")
+            if override[k] < 0:
+                raise SystemExit(f"--seed-mix: negative weight for {k!r}")
+        if set(override) != set(_MIX_RATIOS):
+            missing = sorted(set(_MIX_RATIOS) - set(override))
+            raise SystemExit(
+                f"--seed-mix must name every source {sorted(_MIX_RATIOS)}; "
+                f"missing {missing}")
+        total = sum(override.values())
+        if total <= 0:
+            raise SystemExit("--seed-mix weights must sum to > 0")
+        seed_mix = {k: v / total for k, v in override.items()}
+        print(f"seed mix overridden -> {seed_mix} (targets the ACCEPTED mix; "
+              f"shared _MIX_RATIOS is untouched)", flush=True)
 
     torch.manual_seed(args.seed)
     from transformers import AutoTokenizer
@@ -225,8 +277,8 @@ def main() -> None:
     shard_idx = int(existing[-1].stem.split("_")[1]) + 1 if existing else 0
 
     streams = _seed_streams(tok, args.seed_len, random.Random(args.seed))
-    keys = list(_MIX_RATIOS)
-    weights = [_MIX_RATIOS[k] for k in keys]
+    keys = list(seed_mix)
+    weights = [seed_mix[k] for k in keys]
     rng = torch.Generator().manual_seed(args.seed)
 
     accepted_tok = accepted_n = rejected_n = 0
@@ -261,9 +313,17 @@ def main() -> None:
         "filters": {
             "min_new": args.min_new, "min_distinct1": args.min_distinct1,
             "max_top_share": args.max_top_share},
-        "mix": _MIX_RATIOS,
+        # The mix actually DRAWN this session (may differ from _MIX_RATIOS when
+        # --seed-mix compensates for per-source acceptance/length differences).
+        "mix": seed_mix,
+        "seed_mix_overridden": bool(args.seed_mix),
     }
     manifest["sessions"].append(session)
+
+    tele_path = out / f"telemetry_{session['started'].replace(':', '').replace(' ', '_')}.jsonl"
+    tele = tele_path.open("a") if args.telemetry else None
+    if tele is not None:
+        print(f"telemetry -> {tele_path}", flush=True)
 
     def flush():
         nonlocal rows, shard_idx
@@ -312,6 +372,21 @@ def main() -> None:
             reason = _reject_reason(cont, args.min_new, args.min_distinct1,
                                     args.max_top_share,
                                     tok.decode(cont[:300]))
+            if tele is not None and cont:
+                counts = Counter(cont)
+                rec = {
+                    "source": src, "len": len(cont), "reason": reason,
+                    "d1_final": round(len(counts) / len(cont), 4),
+                    "top_share": round(
+                        counts.most_common(1)[0][1] / len(cont), 4),
+                }
+                # distinct-1 at candidate early-abort points: the separability
+                # signal for continuous-batching lane eviction.
+                for n in (128, 256, 384):
+                    rec[f"d1_{n}"] = (
+                        round(len(Counter(cont[:n])) / n, 4)
+                        if len(cont) >= n else None)
+                tele.write(json.dumps(rec) + "\n")
             if reason is not None:
                 rejected_n += 1
                 reject_reasons[reason] += 1
@@ -324,6 +399,8 @@ def main() -> None:
             })
         if len(rows) >= ROWS_PER_SHARD:
             flush()
+        if tele is not None:
+            tele.flush()   # per batch: an outage costs one cycle, not the run
         el = time.time() - t0
         rj = " ".join(f"{k}={v}" for k, v in reject_reasons.most_common())
         print(f"accepted {accepted_n} ({accepted_tok/1e6:.2f}M tok) "
@@ -331,6 +408,8 @@ def main() -> None:
               flush=True)
 
     flush()
+    if tele is not None:
+        tele.close()
     print(f"done: {accepted_tok/1e6:.2f}M accepted tokens in "
           f"{(time.time()-t0)/3600:.2f} h → {out}")
 

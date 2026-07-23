@@ -62,6 +62,27 @@ is ~4% of a real file, but a 768-token continuation *seeded on* that header is ~
 Same material, ~25× the concentration. Any future seeded-generation pipeline should assume the
 seed distribution, not the corpus distribution, determines what you get.
 
+**⚠ MIX DRIFT — the seed mix is NOT the corpus mix (measured 2026-07-23, fixed).** Seeds are
+drawn at `_MIX_RATIOS` 40/40/20, but the **accepted** corpus landed at **45.3 / 38.0 / 16.7**
+by token. Two compounding causes, both measured on the first 4.28M of v2:
+| source | acceptance | mean len | usable tokens per seed |
+|---|---|---|---|
+| general | 82.5% | 649.6 | 535.8 |
+| math | 58.8% | 765.6 | 450.0 |
+| code | **51.6%** | 767.6 | **396.3** |
+Code passes the filter at *half* general's rate (it is naturally repetitive, so `low_distinct1`
+— 96% of all rejects — hits it hardest), and general emits EOS earlier so its samples are
+shorter. A code seed therefore returns **26% fewer usable tokens** than a general seed. Left
+uncorrected this starves exactly the slice the 07-21 A/B flagged as still regressing.
+**Fix: `--seed-mix` (harvest-local override, 2026-07-23).** `_MIX_RATIOS` is **shared with the
+training `MixedDataset`** (`training/distill.py`) and must never be moved for harvest reasons —
+hence a separate flag. Weights `general=0.3211, math=0.4237, code=0.2552` over-draw code+math
+so the **full 12M corpus** lands on 40/40/20, compensating for the drift already banked.
+Recompute if the target, the filters, or the measured acceptance rates change. **Generalised
+lesson (the sibling of the head-seeding lesson above): the seed distribution is not the corpus
+distribution — anything downstream of a filter must be measured at the OUTPUT, not assumed
+from the input.**
+
 **Harvest v1 running** (2026-07-19, batch 24, Max): ~4.8M/day → A/B-ready ~10M in ~2 days;
 30M ≈ 6 days. At R=0.2 a ~9k-step leg consumes ~10M teacher tokens; launching on ~6.5M
 means ~1.5 epochs of teacher data (acceptable mild repetition — owner's call). Backlog items it implements: *teacher-generated synthetic
