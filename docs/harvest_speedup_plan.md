@@ -46,6 +46,17 @@ applied one step earlier):
    searchsorted and cmp+sum indexing agree exactly). The `topk`/`multinomial`
    segfaults are the only bad ops.
 
+**⚡ BENCHMARKED (2026-07-23, `tools/bench_harvest.py`, gates PASSED at 1.0e-03 nats on
+real-text probes):** A stock+cpu b24 = 116.4 raw tok/s → B +device-sampling = 138.4
+(**+19% — the host-sync tax was real**) → D prealloc b32 = **178.6 (1.53×)**, peak 47.1 GB.
+b40 needs ~58 GB → OOM (caught in-config; incremental-results design worked). Prealloc at
+iso-batch is ~neutral speed but **saves ~6 GB** (36.6 flat vs ~43 grown+transient). Scaling
+b24→b32 near-linear — the launch-bound model confirmed. **Adopted config: `--prealloc-cache
+--batch 30`** (~44.5 GB, ~3.5 GB margin for multi-day runs; ~1.43× ≈ **~70 accepted tok/s**
+vs 49). Bench gotcha discovered: greedy-argmax gates FALSE-FAIL on random-token probes (flat
+distributions → bf16 near-ties; first bench run silently measured the uncached path) — gates
+must probe with REAL text, and benches must ABORT, not fall back, when an engine is off.
+
 **Build status (2026-07-22):** lever 3 (on-XPU sampling) **BUILT** — default on,
 `--cpu-sampling` rollback flag. Lever 2 (prealloc cache) **BUILT + unit-tested**
 (`tools/prealloc_ut_cache.py`, 5 CPU tests green; runtime subclass of the
