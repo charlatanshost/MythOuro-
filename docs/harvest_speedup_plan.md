@@ -84,6 +84,25 @@ overridability spike: ANSWERED — subclassing works; the stock class even ships
 levers await the on-card benchmark** (card busy harvesting): equivalence gate,
 then batch 32/40 sweep vs the 24-baseline.
 
+## Standing directive (owner, 2026-07-23)
+
+> **The harvest should be the fastest and best we can make it — squeeze every
+> lever, when windows allow.** Quality levers may outrank speed levers in
+> scheduling, but no known speed lever is ever "done enough" to delete from
+> this list; they queue for idle card windows.
+
+**Remaining squeeze queue after the 07-23 productionization (104 tok/s live):**
+1. **Seed-prefetch thread** — seeds for the NEXT batch are tokenized between
+   generation cycles while the GPU idles (~5–15 s per ~230 s cycle ≈ 3–6%).
+   Prefetch on a background thread during generation. Trivial, distribution-safe.
+2. **torch.compile the decode step** — +10% on training; launch-bound decode may
+   gain more.
+3. **b32 revisit** — +6–7% over b30, gated on observing long-run fragmentation
+   behaviour at 45.3 GB (a multi-day run that never creeps → the 0.9 GB margin
+   at b32 may be acceptable; or shave `--max-new` to ~704 to buy the margin).
+4. **Speculative decode** — the wildcard (0 to +2×); benchmark-gated as designed.
+5. **Second card** — the hardware multiplier (+~100%/card); see hardware_options.
+
 ## The catalog (ranked by value × safety ÷ effort)
 
 ### 1. Continuous batching — SAFE — **top pick**
