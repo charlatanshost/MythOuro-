@@ -57,6 +57,23 @@ vs 49). Bench gotcha discovered: greedy-argmax gates FALSE-FAIL on random-token 
 distributions → bf16 near-ties; first bench run silently measured the uncached path) — gates
 must probe with REAL text, and benches must ABORT, not fall back, when an engine is off.
 
+**✅ PRODUCTION-VALIDATED (2026-07-23 afternoon): 101 accepted tok/s = 2.06× the old 49 —
+BEATING the bench's 1.43× projection.** Why the bench understated: it timed 128-token
+generations, but the stock cache's `torch.cat` copy cost **grows with sequence length** —
+by token ~700 it's copying ~700-token buffers across all 96 UT-cache entries every step,
+while prealloc's slice-write stays O(1). At the real 768-token workload prealloc's win is
+much larger than at bench length. Lesson for the protocol: **bench throughput levers at the
+production sequence length** (short benches are only honest for memory peaks, and only with
+prealloc). Live config: `--batch 30 --prealloc-cache` + default on-device sampling, 45.3 GB
+resident (~2.7 GB headroom). v2 acceptance note: 67% vs v1's 75% (mid-document random-window
+seeds produce slightly more `low_distinct1` rejects — the price of the boilerplate fix,
+net hugely positive). New rate ≈ **8.7M tok/day**.
+
+**⚠ Manifest bug found (2026-07-23, fixed in code for future sessions):** `MANIFEST.json`
+counters were per-session — each relaunch reset and overwrote, so multi-session corpora
+under-reported (v2 read "2.13M" when 2.84M were on disk). Now the manifest keeps a
+`sessions` list and cumulative totals; rows-on-disk remain the ground truth for old corpora.
+
 **Build status (2026-07-22):** lever 3 (on-XPU sampling) **BUILT** — default on,
 `--cpu-sampling` rollback flag. Lever 2 (prealloc cache) **BUILT + unit-tested**
 (`tools/prealloc_ut_cache.py`, 5 CPU tests green; runtime subclass of the

@@ -233,14 +233,37 @@ def main() -> None:
     reject_reasons: Counter = Counter()
     rows: list[dict] = []
     t0 = time.time()
-    manifest = {
+    # Sessions-aware manifest (2026-07-23): counters used to be per-session and
+    # each relaunch OVERWROTE them, under-reporting multi-session corpora (v2
+    # read "2.13M" while 2.84M sat on disk). Now each session appends a record
+    # and top-level totals sum across sessions. Pre-fix manifests are wrapped
+    # as a single "legacy" session (its numbers may cover only the LAST old
+    # session — rows on disk stay the ground truth for old corpora).
+    manifest_path = out / "MANIFEST.json"
+    manifest = {}
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text())
+        except Exception:                                       # noqa: BLE001
+            manifest = {}
+    if "sessions" not in manifest:
+        legacy = {k: manifest[k] for k in
+                  ("accepted", "rejected", "accepted_tokens", "reject_reasons")
+                  if k in manifest}
+        manifest = {"sessions": ([{"legacy": True, **legacy}] if legacy else [])}
+    session = {
+        "started": time.strftime("%Y-%m-%d %H:%M:%S"),
         "teacher_id": args.teacher_id, "seed_len": args.seed_len,
         "max_new": args.max_new, "temperature": args.temperature,
-        "top_p": args.top_p, "filters": {
+        "top_p": args.top_p, "batch": args.batch,
+        "prealloc_cache": bool(args.prealloc_cache),
+        "cpu_sampling": bool(args.cpu_sampling),
+        "filters": {
             "min_new": args.min_new, "min_distinct1": args.min_distinct1,
             "max_top_share": args.max_top_share},
-        "mix": _MIX_RATIOS, "started": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "mix": _MIX_RATIOS,
     }
+    manifest["sessions"].append(session)
 
     def flush():
         nonlocal rows, shard_idx
@@ -252,11 +275,15 @@ def main() -> None:
                 f.write(json.dumps(r) + "\n")
         rows = []
         shard_idx += 1
-        manifest.update(accepted=accepted_n, rejected=rejected_n,
-                        reject_reasons=dict(reject_reasons),
-                        accepted_tokens=accepted_tok,
-                        updated=time.strftime("%Y-%m-%d %H:%M:%S"))
-        (out / "MANIFEST.json").write_text(json.dumps(manifest, indent=2))
+        session.update(accepted=accepted_n, rejected=rejected_n,
+                       reject_reasons=dict(reject_reasons),
+                       accepted_tokens=accepted_tok,
+                       updated=time.strftime("%Y-%m-%d %H:%M:%S"))
+        manifest["total_accepted"] = sum(
+            x.get("accepted", 0) for x in manifest["sessions"])
+        manifest["total_accepted_tokens"] = sum(
+            x.get("accepted_tokens", 0) for x in manifest["sessions"])
+        manifest_path.write_text(json.dumps(manifest, indent=2))
 
     while accepted_tok < args.target_tokens:
         sources = [keys[torch.multinomial(

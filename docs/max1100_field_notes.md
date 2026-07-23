@@ -78,6 +78,14 @@ costs nearly what a 120-token one does. Consequences, measured:
   at that length, because HF's KV-cache `torch.cat` pattern transiently
   *doubles* the cache each step. Wall-clock per decode step is ~flat in batch
   (launch-bound), so tokens/s scales with batch until memory says stop.
+- **Preallocating the KV cache doubled long-form generation** (measured
+  2026-07-23): the HF dynamic cache's `torch.cat` copy cost grows with sequence
+  length — at 768-token generations it dominates. A preallocated slice-write
+  cache + on-device sampling took the same workload from ~49 to **~101 accepted
+  tok/s (2.06×)** and *reduced* peak memory at iso-batch (no cat transient),
+  letting batch rise 24→30 in the same 48 GB. Caveat for benchmarkers: a
+  128-token micro-bench showed only 1.4× — **cat-cost grows with length, so
+  bench at production length.**
 
 If your workload is single-stream chat inference, this is not your card. If
 it's training or wide batch serving, carry on.
