@@ -360,10 +360,26 @@ GO and gets its own chassis. Decisions:
   devices (FLAT hierarchy), **64 GB each / 128 GB total**; a single tile ≈ a 1100 (64 vs
   56 Xe-cores). Sits alongside — not instead of — more 1100s in the rig plan; slot/power
   budget decides the mix.
+  - **⚠ "ES" status IN QUESTION (2026-07-24, owner + Grok).** The card's SKU code is **QZFU**, which
+    may indicate a qualification/production stepping rather than an engineering sample — if so, the
+    tile-binning lottery below softens to normal retail expectations. **Unconfirmed here:** a Jan-2026
+    web pass tied QZFU to the 1550 but reached no source distinguishing ES/QS/retail QDF steppings, and
+    I won't assert the decode without one. Treat "ES" throughout this doc as *provisional* pending the
+    QDF source Grok used. Card identity itself is confirmed: Intel SKU 232873, PVC/Xe-HPC, 128 Xe-cores,
+    128 GB HBM2e, ~3.28 TB/s, 600 W OAM.
+  - **⚠ VALIDATE ON LINUX ONLY — a Windows result is not a card verdict (2026-07-24).** The card was
+    reportedly showing **Intel Arc / Battlemage** drivers on Windows and looking broken. That is a
+    wrong-environment artefact, not a tile problem: Ponte Vecchio is **Xe-HPC**, Battlemage is **Xe2
+    consumer Arc** — different architecture, different driver stack, and **PVC was never in the consumer
+    Windows Arc driver program at all** (Intel's Windows Arc line is Alchemist/Battlemage-only; everything
+    else is legacy/unsupported). Windows binding a generic Arc driver to a PVC OAM card proves nothing.
+    Authoritative check is our already-validated stack: **Linux, i915/Level Zero/oneAPI, `sycl-ls`/
+    `xpu-smi`**. Discard any Windows-driver "dead card" claim.
   - **On-arrival checklist** (the "before money moves" diligence, now "before it goes in the rig"):
-    1. **Tile-binning — do this FIRST.** ES part: `sycl-ls` must show **BOTH** stacks. A dead-binned
-       tile collapses the whole 128 GB / two-device value back to a single-tile ≈ 1100. This is the
-       load-bearing check; everything below assumes it passes.
+    1. **Tile-binning — do this FIRST, on LINUX.** `sycl-ls` (i915/Level Zero) must show **BOTH** stacks.
+       A genuinely dead-binned tile collapses the 128 GB / two-device value to a single-tile ≈ 1100 — but
+       a *Windows* Arc/Battlemage misdetection (above) is NOT that; rule the OS out before concluding
+       anything about the silicon. Load-bearing check; everything below assumes it passes.
     2. **600 W cooling in a tower** — the hard part (server OAM boards assume front-to-back chassis airflow).
     3. **Adapter wattage rating** ≥ 600 W, and **PSU headroom** on top of the existing 1100(s) + host.
     4. Confirm `ZE_FLAT_DEVICE_HIERARCHY` gives two `xpu:N` devices as expected (vs COMPOSITE/implicit-scaling).
