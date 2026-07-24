@@ -400,10 +400,18 @@ GO and gets its own chassis. Decisions:
        it's on, CPU supports large-BAR), and the seller's Linux box already showed the 128 G BAR assigned
        (signal above). Just confirm it in the target rig's BIOS; a *Windows* ReBAR-Disabled reading (GPU-Z)
        is not the owner's config.
-    2. **Tile-binning, on LINUX — the one check no photo has run yet.** `sycl-ls` (i915/Level Zero) must
-       show **BOTH** stacks as compute devices (lspci "2 Tile" = the ID name, not this). A genuinely
-       dead-binned tile collapses the 128 GB / two-device value to a single-tile ≈ 1100 — but clean PCI
-       enumeration + rev 03 make that less likely; rule OS + BIOS out first.
+    2. **Tile-binning, on LINUX — the one check no photo has run yet, and ONLY the owner's box can run it.**
+       `sycl-ls` (i915/Level Zero) must show **BOTH** stacks as compute devices (lspci "2 Tile" = the ID
+       name, not this). A genuinely dead-binned tile collapses the 128 GB / two-device value to a
+       single-tile ≈ 1100 — but clean PCI enumeration + rev 03 make that less likely.
+       **The seller cannot provide this.** His own lspci shows the card *unclaimed* (`Control: Mem-
+       BusMaster-`, BARs `[disabled]`) — no PVC compute-runtime bound it, which is exactly why his
+       OpenCL-Benchmark attempts went nowhere. So any seller `sycl-ls`/`clinfo`/OpenCL result is
+       meaningless; only the driver-*independent* lspci evidence (128 G BAR, rev 03) survives from his
+       box. **The reassuring part:** the owner's rig already drives a 1100 (also PVC/Xe-HPC) on the
+       validated i915/Level Zero/compute-runtime/`torch.xpu` stack — same silicon family, same driver
+       path — so it IS the correct environment; the seller's "doesn't work" is fully explained by driver
+       absence, not silicon. This check is a first-boot task at home, nothing to source externally.
     3. **600 W cooling in a tower** — the hard part (server OAM boards assume front-to-back chassis airflow).
     4. **Adapter wattage rating** ≥ 600 W, and **PSU headroom** on top of the existing 1100(s) + host.
     5. Confirm `ZE_FLAT_DEVICE_HIERARCHY` gives two `xpu:N` devices as expected (vs COMPOSITE/implicit-scaling).
