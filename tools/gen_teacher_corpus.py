@@ -105,10 +105,28 @@ def _generate_xpu_safe(teacher, input_ids: torch.Tensor, *, max_new: int,
     return seq
 
 
-def _seed_streams(tok, seed_len: int, rng: "random.Random"):
+def _seed_streams(tok, seed_len: int, rng: "random.Random",
+                  *, stream_seed: "int | None" = None,
+                  stream_buffer: int = 1000):
     """
     Per-corpus generators yielding fixed-length token seeds from a RANDOM
     WINDOW of each document.
+
+    **Cross-session traversal (fixed 2026-07-23).** `load_dataset(streaming=True)`
+    iterates from document #1 every time the *process* starts, and `rng` only
+    picks the window *within* a document — so every session re-harvested the
+    same source documents in the same order. Measured on the first 4.28M of v2:
+    **6,038 rows came from only 3,886 distinct seed documents** (1,588 prefixes
+    repeated, every repeat spanning different shards = different sessions;
+    564 documents were used three times). Continuations differ (temperature
+    0.9) so there were no duplicate *texts*, which is why row-level dedup never
+    caught it — the redundancy is one level up, in the source material.
+
+    `stream_seed` fixes it via `.shuffle()`, which reorders the **shards** (all
+    three corpora are many-file) as well as buffering, so a new session begins
+    on a different shard instead of replaying document #1. The seed is bumped
+    per epoch so a stream that exhausts and restarts does not repeat itself
+    either. `stream_seed=None` disables shuffling (rollback path).
 
     Seeding from the document HEAD (the v1 behaviour) is systematically
     biased toward boilerplate: source files open with license headers and
@@ -121,8 +139,13 @@ def _seed_streams(tok, seed_len: int, rng: "random.Random"):
     from datasets import load_dataset
 
     def stream(repo, config, split, field):
+        epoch = 0
         while True:
             ds = load_dataset(repo, name=config, split=split, streaming=True)
+            if stream_seed is not None:
+                ds = ds.shuffle(seed=stream_seed + epoch,
+                                buffer_size=stream_buffer)
+            epoch += 1
             for sample in ds:
                 text = sample.get(field, "")
                 if not text:
@@ -210,8 +233,36 @@ def main() -> None:
                         "separability (harvest_speedup_plan.md lever 1) or to "
                         "predict a filter change's acceptance impact. Cheap: "
                         "~30 short lines per ~143 s generation cycle.")
+    p.add_argument("--stream-seed", type=int, default=None,
+                   help="Seed for shuffling the seed-corpus SHARD ORDER. "
+                        "Default: a fresh random value per session, recorded in "
+                        "the manifest so the run stays reproducible after the "
+                        "fact. Without this every session re-read the corpora "
+                        "from document #1 — measured 2026-07-23: 6,038 v2 rows "
+                        "came from only 3,886 distinct seed documents.")
+    p.add_argument("--stream-buffer", type=int, default=1000,
+                   help="Reservoir size for streaming shuffle. Shard-order "
+                        "shuffling is what prevents cross-session repeats; this "
+                        "adds local mixing. Larger = more mixing but a slower "
+                        "first batch (the buffer must fill before the first "
+                        "yield).")
+    p.add_argument("--no-stream-shuffle", action="store_true",
+                   help="Disable seed-stream shuffling entirely (rollback to "
+                        "the pre-2026-07-23 sequential traversal).")
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
+
+    # Resolved before any expensive work so it can be printed and recorded.
+    stream_seed = None
+    if not args.no_stream_shuffle:
+        stream_seed = (args.stream_seed if args.stream_seed is not None
+                       else random.randrange(2 ** 31))
+        print(f"seed-stream shuffle ON (stream_seed={stream_seed}, "
+              f"buffer={args.stream_buffer})", flush=True)
+    else:
+        print("seed-stream shuffle OFF — sequential traversal; this session "
+              "will re-read the same documents as any other unshuffled run",
+              flush=True)
 
     # Resolve the seed mix BEFORE the teacher load — a typo here should cost a
     # second, not a two-minute model load on an unattended overnight launch.
@@ -276,7 +327,9 @@ def main() -> None:
     existing = sorted(out.glob("shard_*.jsonl"))
     shard_idx = int(existing[-1].stem.split("_")[1]) + 1 if existing else 0
 
-    streams = _seed_streams(tok, args.seed_len, random.Random(args.seed))
+    streams = _seed_streams(tok, args.seed_len, random.Random(args.seed),
+                            stream_seed=stream_seed,
+                            stream_buffer=args.stream_buffer)
     keys = list(seed_mix)
     weights = [seed_mix[k] for k in keys]
     rng = torch.Generator().manual_seed(args.seed)
@@ -317,6 +370,10 @@ def main() -> None:
         # --seed-mix compensates for per-source acceptance/length differences).
         "mix": seed_mix,
         "seed_mix_overridden": bool(args.seed_mix),
+        # Records WHICH documents this session traversed. Sessions sharing a
+        # stream_seed re-read the same source material (see _seed_streams).
+        "stream_seed": stream_seed,
+        "stream_buffer": args.stream_buffer if stream_seed is not None else None,
     }
     manifest["sessions"].append(session)
 

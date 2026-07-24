@@ -83,6 +83,28 @@ lesson (the sibling of the head-seeding lesson above): the seed distribution is 
 distribution — anything downstream of a filter must be measured at the OUTPUT, not assumed
 from the input.**
 
+**⚠ CROSS-SESSION SEED REUSE — every session re-read the same documents (found + fixed 2026-07-23).**
+`load_dataset(streaming=True)` iterates from document #1 each time the *process* starts, and the
+`--seed` RNG only picks the window *within* a document — so session N re-harvested exactly the
+material session N−1 had already used. Measured on the first 4.28M of v2: **6,038 rows came from
+only 3,886 distinct seed documents** — 1,588 seed prefixes repeated, *every* repeat spanning
+different shards (= different sessions), and 564 documents were used **three** times. Because
+sampling is stochastic (T=0.9) the *texts* are all distinct, which is exactly why row-level dedup
+never caught it: **the redundancy sits one level up, in the source material.** Direct proof of the
+mechanism — pulling seeds twice with the old code gives **100% document overlap** on all three
+corpora; with the fix and two different `--stream-seed` values, **0%**.
+**Fix: `.shuffle(seed, buffer_size)` on the streaming dataset**, which reorders the **shards** (all
+three corpora are many-file) so a session starts somewhere else entirely; the seed is bumped per
+epoch so a stream that exhausts and restarts doesn't repeat either. Default is a fresh random
+`stream_seed` per session, **recorded in the manifest** — verified reproducible (same seed → 100%
+overlap), so a session can still be replayed exactly. `--no-stream-shuffle` is the rollback.
+Costs ~100–150 s of one-time startup while the reservoir fills (0.3% of a 15 h run), which drags
+the *first* cumulative tok/s print down to ~60; it climbs to steady state after a few batches.
+**Generalised lesson, and the third instance of the same shape in this pipeline** (after head-seeding
+and mix drift): *every property we care about must be measured on the OUTPUT corpus.* Head-seeding
+was assumed-uniform seeding, mix drift was assumed-uniform acceptance, this was assumed-fresh
+traversal. Row-level checks (duplicate texts, distinct-1) cannot see any of them.
+
 **Harvest v1 running** (2026-07-19, batch 24, Max): ~4.8M/day → A/B-ready ~10M in ~2 days;
 30M ≈ 6 days. At R=0.2 a ~9k-step leg consumes ~10M teacher tokens; launching on ~6.5M
 means ~1.5 epochs of teacher data (acceptable mild repetition — owner's call). Backlog items it implements: *teacher-generated synthetic
