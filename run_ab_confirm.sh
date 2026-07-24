@@ -16,6 +16,6 @@ exec python -m training.distill \
   --use-sandwich-norm --use-depth-aware-init \
   --onpolicy-lambda 0.7 --teacher-mix-alpha 0.5 --rollout-len 64 \
   --rollout-batch 32 --rollout-reuse 2 \
-  --teacher-data-ratio 0.2 --teacher-data-files 'data_teacher_v2/*.jsonl' \
+  --teacher-data-ratio 0.2 --teacher-data-files 'data_teacher_v2/shard_*.jsonl' \
   --ckpt-every-mins 15 --num-workers 0 --trust-remote-code --log-every 5 \
   --ckpt-dir checkpoints_onpolicy_fixed
