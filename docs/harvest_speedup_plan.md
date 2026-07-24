@@ -118,7 +118,9 @@ idle side too.
    (see the re-promotion note in the catalog). Gated on reading a full run's
    `--telemetry` to fix per-source abort thresholds.
 2. **torch.compile the decode step** — +10% on training; launch-bound decode may
-   gain more. The top lever that needs no new measurement.
+   gain more. **VTune-backed (2026-07-24):** ~80% of decode kernel launches are a
+   3.15M-instance tail of tiny 0%-SIMD kernels — exactly what compile fuses, so
+   the ceiling is plausibly above +10% (decode_kernel_optimization.md §1b).
 3. **b32 revisit** — +6–7% over b30, gated on observing long-run fragmentation
    behaviour at 45.3 GB (a multi-day run that never creeps → the 0.9 GB margin
    at b32 may be acceptable; or shave `--max-new` to ~704 to buy the margin).

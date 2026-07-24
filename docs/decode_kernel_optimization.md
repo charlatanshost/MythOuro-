@@ -49,6 +49,55 @@ the cheap optimizations (compile + graph capture) are what keep it *usable* at s
 **ACT halting** (easy tokens exit at 1–2 loops, cutting *average* depth) is the
 architectural mitigation that scales with you.
 
+### 1b. Direct measurement — VTune confirms it's a tiny-kernel flood (2026-07-24)
+
+Profiled the teacher decode loop under **Intel VTune 2026.2 `xpu-offload`**
+(`tools.bench_harvest`, stock cache, batch 30, 128-tok). The launch-bound
+diagnosis above is now measured, not inferred:
+
+- **3,857,911 `zeCommandListAppendLaunchKernel` calls.** Of the GPU work, the
+  `[Others]` bucket alone is **3,148,227 kernel instances at 0% SIMD** — i.e.
+  **~80% of all launches are tiny scalar overhead kernels doing ~no vector
+  work.** That flood of near-empty launches *is* the launch-bound tax.
+- **The single hottest GPU task is `CatArrayBatchedCopy` — above every
+  individual `gemm_kernel`.** That is the HF stock KV-cache `torch.cat` doubling
+  every step. Direct proof of the pathology the prealloc cache exists to kill —
+  and of *why* `--prealloc-cache` gives 2.06× at production length. (We profiled
+  the STOCK path because the prealloc config segfaults under VTune — see below —
+  so this `cat` cost is exactly what production already removes.)
+- **The `gemm_kernel`s are 100% SIMD.** The teacher's real matmul work vectorises
+  fully (XMX engages); the waste is entirely the *overhead around* the GEMMs —
+  the `cat` plus the 3.15M-instance tiny-kernel tail. **That tail is precisely
+  what `torch.compile` fuses**, which promotes §2's compile lever from "~+10%
+  guess" to an evidence-backed target with visible headroom.
+
+**Read counts/ratios, not absolute seconds:** VTune's tracing inflates wall time
+(~464 s vs ~65 s native — tracing 3.86M launches is heavy), so the *structure*
+(what launches, how many, which dominate) is the robust signal, not the timings.
+Also: stock-not-prealloc, and 128-tok not the 768-tok production length (pattern
+holds, counts scale). EU-occupancy/XMX% came back blank — `xpu-offload` traces
+the Level-Zero API, not EU hardware counters; the EU/stall/idle breakdown needs a
+**`gpu-hotspots`** run (which uses the perf sysctls below).
+
+**Repro / gotchas (so future-you doesn't rediscover these):**
+- VTune 2026 renamed the analysis: **`-collect gpu-offload` → `-collect xpu-offload`**.
+- **`xpu-offload` GPU-page-faults on the prealloc-cache path** (`Segmentation
+  fault from GPU ... NotPresent ... PDE Write`, NEO `drm_neo.cpp`). NOT a harvest
+  bug — that config built the whole v2 corpus over many hours; it's profiler
+  instrumentation perturbing the prealloc slice-write buffer. **Profile STOCK
+  targets** (or a stock-only bench) until a lighter collection is found. The
+  GPU recovers clean after the abort (`xpu-smi` → ~22 MiB); no zombie.
+- GPU HW metrics need (sudo, runtime-only, resets on reboot):
+  `sudo sysctl -w dev.i915.perf_stream_paranoid=0 kernel.perf_event_paranoid=1`.
+- Working command:
+  ```bash
+  HF_HUB_OFFLINE=1 /opt/intel/oneapi/vtune/latest/bin64/vtune -collect xpu-offload \
+    -r <fresh_result_dir> -- ../venv-xpu/bin/python -m tools.bench_harvest \
+    --device xpu:0 --trust-remote-code --batches 30
+  ```
+  Finalisation continues (and salvages a usable result) even if the target
+  crashes mid-run.
+
 ## 2. The proportionate fix (≈90% of the win, ≈5% of the effort)
 
 **NOT** mega-kernels. The standard tools capture most of the kernel-overhead win with
