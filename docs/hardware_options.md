@@ -352,15 +352,30 @@ GO and gets its own chassis. Decisions:
 - **Owner's Genoa ES: REJECTED as host** — locked to 3 rare motherboards, and still needs
   DIMMs. Sell/trade candidate. (A 12-channel populate is also overkill for a GPU host —
   4 used RDIMMs suffice — but the board scarcity kills it regardless.)
-- **Max 1550 ES on OAM→PCIe adapter: LIVE OPTION (owner, 2026-07-19)** — the running ES
-  1100 on stock i915/Level Zero retires the driver risk (same silicon family, same driver
-  path), and owner is confident in the adapter route. Unlike Gaudi (below), the 1550's OAM
-  problem is ONLY mechanical — everything above the connector is the already-validated
-  stack. Two tiles enumerate as two xpu devices (FLAT hierarchy) → teacher/student split on
-  one card + 128 GB. Remaining diligence before money moves: 600 W cooling design in a
-  tower (the hard part), PSU headroom, ES tile-binning (seller `sycl-ls` showing BOTH
-  stacks), adapter wattage rating. Sits alongside — not instead of — more 1100s in the
-  rig plan; slot/power budget decides the mix.
+- **✅ Max 1550 OAM: ACQUIRED (owner, 2026-07-24 — good deal).** Was the vetted LIVE
+  OPTION (2026-07-19); money moved. The running ES 1100 on stock i915/Level Zero already
+  retired the driver risk (same silicon family, same driver path), so — unlike Gaudi
+  (below) — the 1550's OAM problem is **ONLY mechanical**: everything above the connector
+  is the already-validated stack, zero porting days. Two tiles enumerate as two xpu
+  devices (FLAT hierarchy), **64 GB each / 128 GB total**; a single tile ≈ a 1100 (64 vs
+  56 Xe-cores). Sits alongside — not instead of — more 1100s in the rig plan; slot/power
+  budget decides the mix.
+  - **On-arrival checklist** (the "before money moves" diligence, now "before it goes in the rig"):
+    1. **Tile-binning — do this FIRST.** ES part: `sycl-ls` must show **BOTH** stacks. A dead-binned
+       tile collapses the whole 128 GB / two-device value back to a single-tile ≈ 1100. This is the
+       load-bearing check; everything below assumes it passes.
+    2. **600 W cooling in a tower** — the hard part (server OAM boards assume front-to-back chassis airflow).
+    3. **Adapter wattage rating** ≥ 600 W, and **PSU headroom** on top of the existing 1100(s) + host.
+    4. Confirm `ZE_FLAT_DEVICE_HIERARCHY` gives two `xpu:N` devices as expected (vs COMPOSITE/implicit-scaling).
+  - **⚡ Two-tile harvest = ~2× corpus, ZERO code (new insight 2026-07-24).** Harvest is teacher-only,
+    launch-bound, and one 1550 tile has *more* headroom than the whole 1100 (64 GB vs the b30 run's
+    45.3 GB). So a **dedicated** harvest window runs **two independent `gen_teacher_corpus` processes**,
+    `--device xpu:0` and `xpu:1`, each at b30+ — doubling throughput before any of the software levers in
+    `harvest_speedup_plan.md` (compile +10%, continuous batching ~1.28×) even apply. The cumulative-target
+    launcher already supports it: point both at the same `data_teacher_v2` (they resume/coordinate via the
+    manifest) or give separate out-dirs and merge. This is distinct from the card-#2 plan's *during-training*
+    harvest (teacher bursts, niced harvest shares idle cycles) — that still holds when a leg owns one tile;
+    the 2× is the between-legs / dedicated-harvest case, which is exactly what tonight's runs were.
 - **Gaudi 2 (suggested externally 2026-07-19): REJECTED** — competent silicon, wrong
   project. It is OAM *plus* an alien stack: SynapseAI/hpu graph-compiler lazy mode, NOT
   oneAPI/Level Zero/torch.xpu — zero transfer of our workarounds/field notes, and our
