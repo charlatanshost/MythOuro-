@@ -367,22 +367,33 @@ GO and gets its own chassis. Decisions:
     I won't assert the decode without one. Treat "ES" throughout this doc as *provisional* pending the
     QDF source Grok used. Card identity itself is confirmed: Intel SKU 232873, PVC/Xe-HPC, 128 Xe-cores,
     128 GB HBM2e, ~3.28 TB/s, 600 W OAM.
-  - **⚠ VALIDATE ON LINUX ONLY — a Windows result is not a card verdict (2026-07-24).** The card was
-    reportedly showing **Intel Arc / Battlemage** drivers on Windows and looking broken. That is a
-    wrong-environment artefact, not a tile problem: Ponte Vecchio is **Xe-HPC**, Battlemage is **Xe2
-    consumer Arc** — different architecture, different driver stack, and **PVC was never in the consumer
-    Windows Arc driver program at all** (Intel's Windows Arc line is Alchemist/Battlemage-only; everything
-    else is legacy/unsupported). Windows binding a generic Arc driver to a PVC OAM card proves nothing.
-    Authoritative check is our already-validated stack: **Linux, i915/Level Zero/oneAPI, `sycl-ls`/
-    `xpu-smi`**. Discard any Windows-driver "dead card" claim.
+  - **⚠ VALIDATE ON LINUX ONLY — a Windows result is not a card verdict (2026-07-24).** The card showed
+    **Intel Arc / Battlemage consumer** drivers on Windows and looked broken. Wrong-environment artefact,
+    not a tile problem: Ponte Vecchio is **Xe-HPC**, Battlemage is **Xe2 consumer Arc** — different
+    architecture, different driver stack, and **PVC was never in the consumer Windows Arc driver program**
+    (that line is Alchemist/Battlemage-only; everything else legacy/unsupported). Authoritative check is
+    our validated stack: **Linux, i915/Level Zero/oneAPI, `sycl-ls`/`xpu-smi`**. Discard any Windows-driver
+    "dead card" claim.
+  - **✅ POSITIVE SIGNAL — seller's GPU-Z confirms the card is ALIVE (2026-07-24).** GPU-Z reads
+    **Device ID 8086:0BD5**, subvendor Intel, and resolves it to "Intel Data Center GPU Max 1550" via
+    Intel's own device-ID→name map — i.e. the silicon answers on PCIe and IDs itself correctly. Driver
+    was **32.0.101.8331 (consumer Arc `101.xxxx` branch, Beta, Win11)** — the wrong-stack cause, now
+    *proven* not inferred. A dead/dead-binned card wouldn't enumerate this far, so "looks broken" was
+    purely the consumer driver. **Odds of a clean Linux first-boot are now good.** Caveats Windows can't
+    resolve: GPU/mem clocks read 0 MHz and mem size N/A (driver attached but never *initialized* — no
+    compute seen yet, enumeration ≠ functional); **and see BIOS/ReBAR in the checklist.**
   - **On-arrival checklist** (the "before money moves" diligence, now "before it goes in the rig"):
-    1. **Tile-binning — do this FIRST, on LINUX.** `sycl-ls` (i915/Level Zero) must show **BOTH** stacks.
-       A genuinely dead-binned tile collapses the 128 GB / two-device value to a single-tile ≈ 1100 — but
-       a *Windows* Arc/Battlemage misdetection (above) is NOT that; rule the OS out before concluding
-       anything about the silicon. Load-bearing check; everything below assumes it passes.
-    2. **600 W cooling in a tower** — the hard part (server OAM boards assume front-to-back chassis airflow).
-    3. **Adapter wattage rating** ≥ 600 W, and **PSU headroom** on top of the existing 1100(s) + host.
-    4. Confirm `ZE_FLAT_DEVICE_HIERARCHY` gives two `xpu:N` devices as expected (vs COMPOSITE/implicit-scaling).
+    1. **BIOS FIRST: enable Above 4G Decoding + Resizable BAR (large BAR).** PVC maps its HBM through a
+       large BAR; GPU-Z showed **ReBAR Disabled** on the seller rig, which can by itself block init
+       (plausibly why mem read N/A there). Load-bearing for first-boot, not just performance — set this
+       before the Linux boot below.
+    2. **Tile-binning, on LINUX.** `sycl-ls` (i915/Level Zero) must show **BOTH** stacks. A genuinely
+       dead-binned tile collapses the 128 GB / two-device value to a single-tile ≈ 1100 — but a *Windows*
+       Arc/Battlemage misdetection (above) is NOT that, and the alive-enumeration signal makes a dead tile
+       less likely; rule OS + BIOS out before concluding anything about the silicon.
+    3. **600 W cooling in a tower** — the hard part (server OAM boards assume front-to-back chassis airflow).
+    4. **Adapter wattage rating** ≥ 600 W, and **PSU headroom** on top of the existing 1100(s) + host.
+    5. Confirm `ZE_FLAT_DEVICE_HIERARCHY` gives two `xpu:N` devices as expected (vs COMPOSITE/implicit-scaling).
   - **⚡ Two-tile harvest = ~2× corpus, ZERO code (new insight 2026-07-24).** Harvest is teacher-only,
     launch-bound, and one 1550 tile has *more* headroom than the whole 1100 (64 GB vs the b30 run's
     45.3 GB). So a **dedicated** harvest window runs **two independent `gen_teacher_corpus` processes**,
