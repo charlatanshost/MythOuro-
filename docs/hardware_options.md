@@ -366,7 +366,9 @@ GO and gets its own chassis. Decisions:
     web pass tied QZFU to the 1550 but reached no source distinguishing ES/QS/retail QDF steppings, and
     I won't assert the decode without one. Treat "ES" throughout this doc as *provisional* pending the
     QDF source Grok used. Card identity itself is confirmed: Intel SKU 232873, PVC/Xe-HPC, 128 Xe-cores,
-    128 GB HBM2e, ~3.28 TB/s, 600 W OAM.
+    128 GB HBM2e, ~3.28 TB/s, 600 W OAM. **Hardware-side corroboration (2026-07-24): `lspci` reports
+    `Ponte Vecchio XT (2 Tile) ... (rev 03)`** — rev 03 is a late stepping consistent with production
+    silicon, not an early ES. Two independent signals (QZFU + rev 03) now lean "not an early ES."
   - **⚠ VALIDATE ON LINUX ONLY — a Windows result is not a card verdict (2026-07-24).** The card showed
     **Intel Arc / Battlemage consumer** drivers on Windows and looked broken. Wrong-environment artefact,
     not a tile problem: Ponte Vecchio is **Xe-HPC**, Battlemage is **Xe2 consumer Arc** — different
@@ -382,15 +384,26 @@ GO and gets its own chassis. Decisions:
     purely the consumer driver. **Odds of a clean Linux first-boot are now good.** Caveats Windows can't
     resolve: GPU/mem clocks read 0 MHz and mem size N/A (driver attached but never *initialized* — no
     compute seen yet, enumeration ≠ functional); **and see BIOS/ReBAR in the checklist.**
+  - **✅✅ SECOND POSITIVE SIGNAL — Linux `lspci` (seller box): clean enumeration + 128 G BAR mapped
+    (2026-07-24).** `lspci -vv` on Linux shows `Ponte Vecchio XT (2 Tile) [Data Center GPU Max 1550]
+    (rev 03)` and **`Region 2: ... [size=128G]`** at 0x18000000000 — the full HBM is address-mapped, so
+    **Above-4G + large-BAR is working** (checklist item 1, now proven on a reference box, not just
+    assumed). BARs read `[disabled]` and `Control: Mem- BusMaster-` = no compute driver bound yet
+    (i915/Level Zero not loaded at capture) — expected pre-driver state, not a fault. Two open items this
+    photo does NOT close: (a) lspci's "2 Tile" is the pci.ids *name*, not a live per-tile check — real
+    tile-binning is still `sycl-ls`; (b) `Capabilities: <access denied>` — rerun `sudo lspci -vvs <bdf>`
+    to also read negotiated PCIe **link speed/width** (confirms the OAM→PCIe adapter isn't dropping it to
+    x1/Gen1, a real adapter failure mode).
   - **On-arrival checklist** (the "before money moves" diligence, now "before it goes in the rig"):
-    1. **BIOS FIRST: enable Above 4G Decoding + Resizable BAR (large BAR).** PVC maps its HBM through a
-       large BAR; GPU-Z showed **ReBAR Disabled** on the seller rig, which can by itself block init
-       (plausibly why mem read N/A there). Load-bearing for first-boot, not just performance — set this
-       before the Linux boot below.
-    2. **Tile-binning, on LINUX.** `sycl-ls` (i915/Level Zero) must show **BOTH** stacks. A genuinely
-       dead-binned tile collapses the 128 GB / two-device value to a single-tile ≈ 1100 — but a *Windows*
-       Arc/Battlemage misdetection (above) is NOT that, and the alive-enumeration signal makes a dead tile
-       less likely; rule OS + BIOS out before concluding anything about the silicon.
+    1. **BIOS: Above 4G Decoding + Resizable BAR (large BAR).** PVC maps its HBM through a large BAR.
+       **Effectively pre-satisfied on the owner's rig** — the existing 1100 already requires ReBAR (so
+       it's on, CPU supports large-BAR), and the seller's Linux box already showed the 128 G BAR assigned
+       (signal above). Just confirm it in the target rig's BIOS; a *Windows* ReBAR-Disabled reading (GPU-Z)
+       is not the owner's config.
+    2. **Tile-binning, on LINUX — the one check no photo has run yet.** `sycl-ls` (i915/Level Zero) must
+       show **BOTH** stacks as compute devices (lspci "2 Tile" = the ID name, not this). A genuinely
+       dead-binned tile collapses the 128 GB / two-device value to a single-tile ≈ 1100 — but clean PCI
+       enumeration + rev 03 make that less likely; rule OS + BIOS out first.
     3. **600 W cooling in a tower** — the hard part (server OAM boards assume front-to-back chassis airflow).
     4. **Adapter wattage rating** ≥ 600 W, and **PSU headroom** on top of the existing 1100(s) + host.
     5. Confirm `ZE_FLAT_DEVICE_HIERARCHY` gives two `xpu:N` devices as expected (vs COMPOSITE/implicit-scaling).
