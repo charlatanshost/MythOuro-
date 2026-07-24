@@ -158,24 +158,51 @@ builds should skip the hacks and use a front-to-back server chassis.
 ## Software stack status (why EOL isn't doom)
 
 Intel retired the Max GPU line and EOL'd IPEX — but **GPU support was upstreamed
-into PyTorch core first**. `torch.xpu` ships in stock PyTorch wheels, the kernel
-driver is mainline i915, and the whole stack is open and self-patchable. The
-card survives its vendor's pivot. Multi-card: Xe Link bridging works on the
+into PyTorch core first**. `torch.xpu` ships in stock PyTorch wheels, and the whole
+stack is open and self-patchable. **Correction (2026-07-24): the kernel driver is
+NOT mainline/in-tree i915 for Ponte Vecchio** — the Max 1100/1550 need Intel's
+**out-of-tree** i915 kernel module (`intel-i915-dkms`), Intel's own term; the
+in-tree kernel i915 does not fully support PVC. That distinction is the whole
+reason the driver was hard to find — see the note below. The card survives its
+vendor's pivot. Multi-card: Xe Link bridging works on the
 PCIe cards in pair topologies; standard DDP/FSDP backends exist for XPU
 (untested by us so far — single card to date).
 
 **⚠ The ONE genuinely hard install step — sourcing the driver (owner, 2026-07-24).**
-"Mainline i915" above undersells reality: the working config needed a **specific
-Intel i915 LTS release, `2523.x`**, and it was **brutal to find — ~1 week of
-searching.** This is load-bearing for the *entire* XPU stack (no driver → no
-`torch.xpu`, no harvest, no training) and applies identically to the incoming
-1550 (same PVC/Xe-HPC silicon, same driver path) and to the planned dedicated
-multi-card host. **Do not lose this pointer** — a reinstall or new host build
-should not repeat that week.
-- Exact release: Intel i915 **LTS 2523.x** (Data Center GPU / Max-series LTS train).
-- ⏳ **TODO — record the exact source** (download URL / package name / repo) so it's
-  one-click next time. Owner has it; pending capture here. See memory
-  `[[intel-i915-lts-driver]]`.
+The trap: PVC needs the **out-of-tree** i915 module (Intel's term), NOT the in-tree
+mainline kernel driver that newer Intel GPUs use — so a stock Ubuntu kernel does
+*not* fully drive the card, and searching for "i915" leads you to the wrong (in-tree)
+path. The working config is a **specific out-of-tree LTS release, `intel-i915-dkms`
+2523.x**, and it was **brutal to find — ~1 week.** The in-tree-vs-out-of-tree map is
+Intel's supported-hardware page:
+<https://dgpu-docs.intel.com/overview/supported-hardware/i915-driver-gpus.html>
+(PVC = "Out-of-tree" for both initial and full support). Load-bearing for the
+*entire* XPU stack (no driver → no `torch.xpu`, no harvest, no training); applies
+identically to the incoming 1550 (same PVC/Xe-HPC, same out-of-tree path) and the
+planned multi-card host. **Do not lose this pointer.**
+**Source (recorded 2026-07-24):** Intel's official guide —
+<https://dgpu-docs.intel.com/installation-guides/max-and-flex/installation.html>.
+The whole "week to find" collapses to **one token in the apt repo line: `lts/2523`.**
+Supported: Ubuntu 22.04 (5.15) / 24.04 (our host runs 6.8 — works). Verbatim:
+```bash
+# 1. GPG key
+wget -qO - https://repositories.intel.com/gpu/intel-graphics.key \
+  | sudo gpg --yes --dearmor --output /usr/share/keyrings/intel-graphics.gpg
+# 2. Repo — the load-bearing bit is the "lts/2523" component
+. /etc/os-release
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/gpu/ubuntu ${VERSION_CODENAME}/lts/2523 unified" \
+  | sudo tee /etc/apt/sources.list.d/intel-gpu-${VERSION_CODENAME}.list
+sudo apt update
+# 3. Kernel driver (the i915 LTS DKMS) + firmware + xpu-smi
+sudo apt install -y linux-headers-$(uname -r) linux-modules-extra-$(uname -r) \
+  flex bison intel-fw-gpu intel-i915-dkms xpu-smi
+# 4. Compute runtime + Level Zero (what torch.xpu binds to)
+sudo apt install -y intel-opencl-icd libze-intel-gpu1 libze1
+```
+`intel-i915-dkms` from the `lts/2523` component **is** the "i915 LTS 2523.x" driver.
+2523.x supersedes the older 2350.x. Applies identically to the 1550 (same PVC path).
+Full list (dev headers, media libs) in the linked guide. Mirror: memory
+`[[intel-i915-lts-driver]]`.
 
 ## Why third-party benchmarks underreport this card
 
