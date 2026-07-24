@@ -164,6 +164,19 @@ card survives its vendor's pivot. Multi-card: Xe Link bridging works on the
 PCIe cards in pair topologies; standard DDP/FSDP backends exist for XPU
 (untested by us so far — single card to date).
 
+**⚠ The ONE genuinely hard install step — sourcing the driver (owner, 2026-07-24).**
+"Mainline i915" above undersells reality: the working config needed a **specific
+Intel i915 LTS release, `2523.x`**, and it was **brutal to find — ~1 week of
+searching.** This is load-bearing for the *entire* XPU stack (no driver → no
+`torch.xpu`, no harvest, no training) and applies identically to the incoming
+1550 (same PVC/Xe-HPC silicon, same driver path) and to the planned dedicated
+multi-card host. **Do not lose this pointer** — a reinstall or new host build
+should not repeat that week.
+- Exact release: Intel i915 **LTS 2523.x** (Data Center GPU / Max-series LTS train).
+- ⏳ **TODO — record the exact source** (download URL / package name / repo) so it's
+  one-click next time. Owner has it; pending capture here. See memory
+  `[[intel-i915-lts-driver]]`.
+
 ## Why third-party benchmarks underreport this card
 
 Treat published PVC numbers as a floor, not an estimate. Benchmarking the Max
