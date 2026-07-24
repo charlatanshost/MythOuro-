@@ -415,15 +415,25 @@ GO and gets its own chassis. Decisions:
     3. **600 W cooling in a tower** — the hard part (server OAM boards assume front-to-back chassis airflow).
     4. **Adapter wattage rating** ≥ 600 W, and **PSU headroom** on top of the existing 1100(s) + host.
     5. Confirm `ZE_FLAT_DEVICE_HIERARCHY` gives two `xpu:N` devices as expected (vs COMPOSITE/implicit-scaling).
-  - **⚡ Two-tile harvest = ~2× corpus, ZERO code (new insight 2026-07-24).** Harvest is teacher-only,
+  - **⚡ Two-tile harvest = ~2× corpus, near-ZERO code (2026-07-24).** Harvest is teacher-only,
     launch-bound, and one 1550 tile has *more* headroom than the whole 1100 (64 GB vs the b30 run's
     45.3 GB). So a **dedicated** harvest window runs **two independent `gen_teacher_corpus` processes**,
-    `--device xpu:0` and `xpu:1`, each at b30+ — doubling throughput before any of the software levers in
-    `harvest_speedup_plan.md` (compile +10%, continuous batching ~1.28×) even apply. The cumulative-target
-    launcher already supports it: point both at the same `data_teacher_v2` (they resume/coordinate via the
-    manifest) or give separate out-dirs and merge. This is distinct from the card-#2 plan's *during-training*
-    harvest (teacher bursts, niced harvest shares idle cycles) — that still holds when a leg owns one tile;
-    the 2× is the between-legs / dedicated-harvest case, which is exactly what tonight's runs were.
+    one per tile, each at b30+ — doubling throughput before any of the software levers in
+    `harvest_speedup_plan.md` (compile +10%, continuous batching ~1.28×) even apply. Distinct from the
+    card-#2 plan's *during-training* harvest (teacher bursts, niced harvest shares idle cycles); the 2× is
+    the between-legs / dedicated case.
+    **Runbook (⚠ corrected 2026-07-24 — an earlier note here was WRONG):** the two processes must use
+    **SEPARATE out-dirs**, then merge. They must NOT share one dir: both compute the next shard index from
+    `sorted(out.glob("shard_*.jsonl"))` at startup (`gen_teacher_corpus.py`), so concurrent writers on the
+    same dir both write `shard_0006` and clobber each other — there is no manifest coordination between
+    processes. `run_harvest_v2.sh` now takes a `DEVICE` env var for this; split the remaining target in half:
+    ```bash
+    DEVICE=xpu:0 OUT_DIR=data_teacher_v2a CORPUS_TARGET=<half> bash run_harvest_v2.sh &
+    DEVICE=xpu:1 OUT_DIR=data_teacher_v2b CORPUS_TARGET=<half> bash run_harvest_v2.sh &
+    # on completion: renumber+concat shards into one dir, sum the manifests
+    ```
+    (A tiny merge helper — shard renumber + manifest-session concat — is the only code the 2× wants; write
+    it when the 1550 lands. Until then this is a documented runbook, not an automated path.)
 - **Gaudi 2 (suggested externally 2026-07-19): REJECTED** — competent silicon, wrong
   project. It is OAM *plus* an alien stack: SynapseAI/hpu graph-compiler lazy mode, NOT
   oneAPI/Level Zero/torch.xpu — zero transfer of our workarounds/field notes, and our

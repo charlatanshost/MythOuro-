@@ -13,6 +13,11 @@ cd "$(dirname "$0")"
 
 CORPUS_TARGET=${CORPUS_TARGET:-12000000}
 OUT_DIR=${OUT_DIR:-data_teacher_v2}
+# DEVICE selects the XPU. Single card: leave default. Two-tile 1550: launch two
+# copies, DEVICE=xpu:0 and DEVICE=xpu:1, each with its OWN OUT_DIR (concurrent
+# writers on one dir collide on shard numbering — see the two-tile runbook in
+# docs/hardware_options.md), then merge.
+DEVICE=${DEVICE:-xpu:0}
 
 read -r HAVE REMAIN < <(python3 - "$OUT_DIR" "$CORPUS_TARGET" <<'PY'
 import json, sys
@@ -48,6 +53,6 @@ export SYCL_CACHE_PERSISTENT=1 PYTORCH_ALLOC_CONF=expandable_segments:True TRITO
 # weights over-draw code+math so the FULL 12M corpus lands on 40/40/20,
 # compensating for the drift already banked. Recompute them if the target,
 # the filters, or the measured acceptance rates change.
-exec python -u -m tools.gen_teacher_corpus --device xpu:0 --trust-remote-code \
+exec python -u -m tools.gen_teacher_corpus --device "$DEVICE" --trust-remote-code \
   --out-dir "$OUT_DIR" --target-tokens "$REMAIN" --batch 30 --prealloc-cache \
   --seed-mix 'general=0.3211,math=0.4237,code=0.2552' --telemetry
