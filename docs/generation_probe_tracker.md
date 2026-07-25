@@ -757,6 +757,17 @@ rides on**, and it needs the fuller dose to settle.
 **α=0.7 note:** teacher-dominated (least load-bearing) signal; only soft spot is diabetes (range
 to 0.31), within noise. Not a concern.
 
+**📊 CONTEXT — best behavioral run on record, at ⅓ dose.** Aggregate α=0.0 top_share across all
+6 seeds: **0.115** (40,002) vs 0.130 (36,658 baseline) vs the **~0.165 plateau floor** that stood
+since the June regime shift, and below the prior best (8668 "rambling-grammatical English", ~0.16).
+**A project low — and the leg isn't done.** Two honesty caveats: (a) part of the drop is the
+diabetes seed regressing to mean off a noisy-high baseline draw (0.27, range 0.11–0.49) — though
+its range-collapse to 0.06–0.14 is real stabilization, not just a lucky draw; (b) "best aggregate
+behavior" ≠ "code regression fixed" — the fibonacci α=0.0 mean is the one dimension still pending
+dose. **Strategic read:** the three corpus fixes (boilerplate + mix-correction + cross-session
+shuffle) produced the cleanest-behaving run yet — the empirical case that the plateau is a
+data-quality wall → lean in.
+
 **Decision → continue the leg tonight toward ~46k, re-probe near the end for the code verdict.**
 Nothing says stop. Raw: `reports/onpolicy_rollout_probe_40002_xpu_uncached_n5.txt`.
 
