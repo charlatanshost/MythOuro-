@@ -1,0 +1,93 @@
+[probe] loaded checkpoints_onpolicy_fixed/step_0040002.pt (step 40002) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.07 [0.04-0.15] | distinct1 0.68 [0.58-0.77] | distinct2 0.92 [0.85-0.98] | n=5
+    e.g.: ' start building the water that went down, and we had to work on the road.\n\nI\'m afraid this is a very long-term, "big" or not even at the right. But why do you need to go through in that year? I\'m just thinking about how you can\'t make a second-level, or even a "the first step in this system", but that\'s why you\'re going to have a "incoming" at the start.'
+
+  α=0.25 | top_share 0.10 [0.08-0.14] | distinct1 0.60 [0.52-0.68] | distinct2 0.90 [0.80-0.97] | n=5
+    e.g.: ' keep the windows open and went into the air a bit. The people who went under the windows on the way of the train and the water that you had made a huge impact, so they do not want to do it on that of the days. For the day, if you were in the time of the weather, you have to go to the train at the end of the time. However, if there are many of these, there is nothing that you can do until your'
+
+  α=0.5  | top_share 0.11 [0.07-0.16] | distinct1 0.63 [0.54-0.67] | distinct2 0.92 [0.85-0.98] | n=5
+    e.g.: ' go the zoo to visit the penguins, but the next day the weather suddenly changed. On the third point, the temperature fell in half of the first point. The last step of the journey will be in the evening, which is 1205 units away. The next morning, the weather is clear again during the first step of the journey. It was a sunny day before its first time to the last day of the trip. The next day or the next day,'
+
+  α=0.7  | top_share 0.09 [0.06-0.12] | distinct1 0.61 [0.56-0.68] | distinct2 0.91 [0.87-0.97] | n=5
+    e.g.: " go through the sunset of the skyline of the city. When I reached the roof of the Ferris wheel, I can't really take into the beauty, at the time just to look at the back of.\n\nThe building was getting darker as the light of the sunset was going down.\n\nA moment of silence, but suddenly I felt a sound from the left side. Just at that time, if I would have heard a sound I might have been able to"
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.13 [0.07-0.25] | distinct1 0.62 [0.57-0.69] | distinct2 0.92 [0.87-0.97] | n=5
+    e.g.: ' the "high-risk" in the form of the "Hmm" or "no" and "C" as a single-group.\n\n"This suggests that the person who needs the same as the first "unim" that\'s part of our brain, does not work in any other type of treatment, but they are not in the body, so there might be a "discharge"...but the only way that you could really find the following:\n\n'
+
+  α=0.25 | top_share 0.11 [0.06-0.19] | distinct1 0.54 [0.34-0.70] | distinct2 0.86 [0.64-0.97] | n=5
+    e.g.: " antibiotics and other related disorders.\nThis is an entirely unique question, and it's just a question on this list (the most accurate in cases) that needs to be answered for the person who came in the first chapter - when it was an infection, which you may have to be aware that the doctor's mind may want to do more than one of them to get an accurate diagnosis.\nIn the process of finding out the disease, the first thing is the only thing you"
+
+  α=0.5  | top_share 0.11 [0.06-0.27] | distinct1 0.60 [0.48-0.69] | distinct2 0.87 [0.61-0.97] | n=5
+    e.g.: ' antibiotics, which are medications developed to target from a high level. Although the initial treatments are primarily used in the treatment of, say, a major bacterial and fungal, or some other symptoms, the antibiotics that are often used for the case of a type of virus, such as some of the antibiotics in an important type of bacterial and fungal.\n\nIn such a way, the common antibiotic (the most common in a country) is a single of the most commonly used form of'
+
+  α=0.7  | top_share 0.09 [0.06-0.11] | distinct1 0.60 [0.58-0.61] | distinct2 0.89 [0.85-0.94] | n=5
+    e.g.: ' antibiotics. For parasitic infections, anthelmintic is correct. For viral infections, antiviral medications are used. The option C says "Antimicrobial: Antibiotics 敳 Anthelmintic for parasitic cancer 敛 Antiviral in viral ."\n\nQuestion 4: The most common respiratory diseases are \nA. pneumonia.\n\nB.\n\nD. croup.\n\nQuestion 44\n\n- Question 45:'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.11 [0.06-0.14] | distinct1 0.60 [0.56-0.64] | distinct2 0.89 [0.84-0.93] | n=5
+    e.g.: ' the risk of a particular condition.\n\nThe key factor for the second of the symptoms is that the first set is a particular one for that in either cases. This means that the first thing to make the first set is that the first thing that most of the people who are known in this example and you may want to study it as the first one that you are not yet familiar (which is not always in a certain case) by the second, which means that the other'
+
+  α=0.25 | top_share 0.14 [0.05-0.44] | distinct1 0.57 [0.25-0.69] | distinct2 0.85 [0.43-0.98] | n=5
+    e.g.: " increased, urination, and increased and increased, thirst and not only because people are being treated in 80 years old, but many of the patients have 90 years with a full weight-loss, a few years and more-the-year-long effects of the high and high-level.\n\nNow, what are you going to see at the 10 12 days or so before, the first time and there's no information about the day"
+
+  α=0.5  | top_share 0.18 [0.05-0.50] | distinct1 0.53 [0.33-0.69] | distinct2 0.79 [0.58-0.95] | n=5
+    e.g.: ' increased thirst (polydipsia), an important factor for the development of a chronic kidney cancer\n\n\nThe two types of diabetes mellitus are categorized in the following:  \n\n1. **Type 15 diabetes** - 10% - 15% of the patients with moderate infection, with a very strict and incompatibility of the most likely symptom and other symptoms and symptoms. The disease is very rare and it is a great opportunity for both the symptoms like'
+
+  α=0.7  | top_share 0.14 [0.06-0.31] | distinct1 0.54 [0.32-0.68] | distinct2 0.78 [0.55-0.97] | n=5
+    e.g.: ' increased, possibly. What Causes Insulin\n\ninsulin\n\ninsulin\n\ninsulin\n\nsales (and the possibility of using the money to buy more\n\ninsulin\n\ninsulin\n\ninsulin\n\n)\n\ninsulin\n\nto be made from pigs. And, while all the\n\ninsulin\n\ninsulin, insulin was being transported into human\n\ninsumins\n\ninsumins.\n\ninsum'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.09 [0.07-0.14] | distinct1 0.57 [0.38-0.65] | distinct2 0.89 [0.81-0.93] | n=5
+    e.g.: " the H-I (\n\nIs the same as in the patient with a non-bivariate, non-H1, and the other three. The first person is a non-A 96,21,803, and the first. The use of the normal (but possibly an accurate case) is that it's generally a combination of the type of the group of people, or else a single-level.\n\nBut a large number of"
+
+  α=0.25 | top_share 0.09 [0.07-0.11] | distinct1 0.61 [0.57-0.68] | distinct2 0.91 [0.87-0.94] | n=5
+    e.g.: ' the following conditions.\nWhich of the five given conditions does not require a patient to discontin or modify this in such a form, in a common, acute injury in the setting of the patient, and which of these symptoms have been treated in the first instance.\nWhich of these can be used as a part of a disease\nWhich of these are included in the list of symptoms which are likely to be considered for one\n\nQuestion: What is the reason given in the problem'
+
+  α=0.5  | top_share 0.12 [0.08-0.17] | distinct1 0.55 [0.46-0.68] | distinct2 0.85 [0.78-0.95] | n=5
+    e.g.: ' pain, inflammation, and fever. It works by a patient taking a pill as a daily dose for a given number of days. To understand the way to think of an active, non-crystalline medication versus a patient taking a pill which can be used for their health and other reasons.\n\nThere are many ways to treat pain, though. Sometimes a person might not have the energy to take a lot of pain but is a little stronger at the end of the day.'
+
+  α=0.7  | top_share 0.06 [0.05-0.08] | distinct1 0.64 [0.57-0.67] | distinct2 0.89 [0.83-0.93] | n=5
+    e.g.: ' pain and inflammation, but it\'s not used to directly cause weight loss.\n\nE-cigarette\n\nThe e-cigarette was developed as a healthier alternative to a tobacco that\'s a "smokeless" method of consuming an inhaled dose of e-liquid, usually containing nicotine salts. The "smokeless and/or-water vapor-based" method is an attempt to create a healthier alternative to smoking. This method might be the preferred for those transitioning-out'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.17 [0.09-0.28] | distinct1 0.40 [0.27-0.50] | distinct2 0.71 [0.58-0.80] | n=5
+    e.g.: '\n    if n == 855554:\n        if n == 5557:\n            continue\n        if n == 499:\n            # 15467 * 0100000.09\n        else:\n            if n > 1000:\n                # 384892208 - 490000000.000000'
+
+  α=0.25 | top_share 0.07 [0.05-0.09] | distinct1 0.57 [0.50-0.65] | distinct2 0.87 [0.80-0.91] | n=5
+    e.g.: "\n    # We know this is impossible with a base n, but\n    # let's take a bit more than one digit.\n    def getAllPossible(x):\n        newVal_val = str(1 << n)\n        assert len(new_val) == n\n        possible(int(len(t)) != 1))\n        if not is_div(x) and not is_num_less(\n            len(new_val)) and not is_"
+
+  α=0.5  | top_share 0.09 [0.05-0.17] | distinct1 0.53 [0.39-0.68] | distinct2 0.80 [0.71-0.95] | n=5
+    e.g.: '\n    nums = []\n    c,3887\n    if n == 1:\n        return 0\n    if n != 1:\n        nums.append(0)\n    if s < max_num:\n        return []\n    if not valid:\n        nums = next_number\n    else:\n        nums = int(nums)\n    def __add__(self,n):\n        return 0\n    def get_x(self, n):\n        assert(len('
+
+  α=0.7  | top_share 0.07 [0.05-0.09] | distinct1 0.57 [0.52-0.64] | distinct2 0.83 [0.78-0.89] | n=5
+    e.g.: "\n\n    if n <= n1:\n\n        return 0\n\n    elif n == n1 + 1:\n\n        return 1\n\n    else:\n\n        print(len(stack(f_cmp)))\n        return ...\n\nWait, but how do we modify fib to \nWait, maybe we can monkey, the function.\n\nWait, maybe we can make a wrapper function:\n\nWait, let's think differently.\n\nSo, the standard recursive function is"
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.12 [0.08-0.20] | distinct1 0.46 [0.26-0.60] | distinct2 0.77 [0.62-0.96] | n=5
+    e.g.: ' 24.\n\nThe problem is to find the quadratic formula for when we have a cubic square with (1+2)^((1+2)^2 (1+2) + 4(1+2)^(1 + 2) (1+2) ( - + 4) = 5. \n\nThe problem is to find an answer for the problem of solving the equation on a line of an unknown and the equation that has the most'
+
+  α=0.25 | top_share 0.13 [0.08-0.20] | distinct1 0.43 [0.30-0.54] | distinct2 0.75 [0.59-0.86] | n=5
+    e.g.: ' 17x + 3 = -7.\n\nThe solution is given by the equation x = 3 + 1 + 2i + 3x + 13 + 441 = 3 + 27 + 8, which is a multiple of 6.\n\nThe expression is a multiple of x + 3 + 2 + 4 + 2 + 7 + 10 + 32 ='
+
+  α=0.5  | top_share 0.12 [0.06-0.18] | distinct1 0.43 [0.32-0.56] | distinct2 0.74 [0.52-0.86] | n=5
+    e.g.: ' 18\n\n2. A number must be divisible by 18. Solve for the number 18x.\n\nSol1: 7(x + 4) = 12 + (-2(x - 14)) (x has no solution. x(4 - 1))/5 2/32 (1-9)y^2 = -2. Is there no solution for (1-1)= -1'
+
+  α=0.7  | top_share 0.09 [0.08-0.10] | distinct1 0.53 [0.38-0.67] | distinct2 0.83 [0.63-0.96] | n=5
+    e.g.: ' 0. The solutions should start with "Solution is a list of all solutions in the complex plane." and then list the answers in any order. However your first step is to use the quadratic formula.\n\nFirst, identify the relationship between the coefficients and make a guess of one solution. Then, we can use the equation to find the other. To use the formula, you will need to figure the values of a, b, and c.\n\nRemember to use'
+

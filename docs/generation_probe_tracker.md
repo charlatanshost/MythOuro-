@@ -725,6 +725,42 @@ teacher code, the whole plateau is a data-quality story, not a size story (defer
 scale-up pivot). Raw: `reports/onpolicy_rollout_probe_36658_xpu_uncached_n5.txt`.
 
 
+## 2026-07-25 — 🟢 CLEAN-v2 A/B TRIPWIRE @40,002 (~⅓ dose, n=5): healthy, diabetes stabilized, code still dose-limited
+
+The confirming A/B is running: resumed 36,658 on the **clean v2 corpus** (8.65M tok, boilerplate-
+fixed + mix-corrected to 40/40/20 + cross-session-shuffled — the three fixes of 07-23/24) at
+R=0.2 via `run_ab_confirm.sh`. Stopped mid-leg at **40,002** (~3,344 of 9,342 steps) for the
+routine halfway tripwire (catch bugs / divergence before spending the rest of the leg — cf. the
+07-16 cached-decode corruption that a probe caught). n=5 uncached, Max, vs the 36,658 baseline.
+
+**α=0.0 (student-alone — the load-bearing signal), new vs 36,658:**
+| seed | top_share | distinct1 | read |
+|---|---|---|---|
+| weather (prose) | 0.09→**0.07** | 0.59→**0.68** | improved |
+| bacterial (med) | 0.11→0.13 | 0.58→0.62 | flat/better |
+| **diabetes (med)** | **0.27→0.11** | **0.38→0.60** | **big win + range collapsed** (was the noisiest seed) |
+| ibuprofen (med) | 0.10→0.09 | 0.57→0.57 | flat-good |
+| fibonacci (code) | 0.11→**0.17** | 0.41→0.40 | ts up BUT d1 floor 0.11→**0.27** (near-collapse tail gone) |
+| quadratic (math) | 0.10→0.12 | 0.47→0.46 | flat |
+
+**Tripwire = PASS.** Every top_share is well under the ~0.4+ attractor zone; distinct1 healthy
+(0.40–0.68) everywhere; no NaN/degeneration/divergence. Diabetes — the baseline's worst,
+noisiest seed — is now clean and *stable* (range 0.11–0.49 → 0.06–0.14): a real gain, not noise.
+
+**Code is the dose-limited laggard, NOT a regression.** fibonacci α=0.0 mean ts ticked up
+(0.11→0.17) but (a) it's inside the n=5 bands, (b) its distinct1 floor rose 0.11→0.27 (no sample
+near-collapses anymore), (c) at α=0.7 fibonacci *improved* (ts 0.11→0.07, d1 0.45→0.57). Classic
+dose-limited pattern (prose/medical un-collapse first). At ⅓ dose it's stabilizing, not yet
+clearly winning — **the fibonacci α=0.0 mean is THE number the final code-regression verdict
+rides on**, and it needs the fuller dose to settle.
+
+**α=0.7 note:** teacher-dominated (least load-bearing) signal; only soft spot is diabetes (range
+to 0.31), within noise. Not a concern.
+
+**Decision → continue the leg tonight toward ~46k, re-probe near the end for the code verdict.**
+Nothing says stop. Raw: `reports/onpolicy_rollout_probe_40002_xpu_uncached_n5.txt`.
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts
