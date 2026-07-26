@@ -251,6 +251,15 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "weights).")
     p.add_argument("--ckpt-dir", default="checkpoints_distill")
     p.add_argument("--ckpt-every", type=int, default=500)
+    p.add_argument("--keep-last", type=int, default=5,
+                   help="Most-recent checkpoints to retain (fine-grained). "
+                        "Milestones below are kept ON TOP of these.")
+    p.add_argument("--ckpt-milestone-every", type=int, default=2000,
+                   help="Permanently keep every Nth-step checkpoint — never "
+                        "pruned. Preserves the whole trajectory so a mid-leg "
+                        "peak can't be silently rotated away (this lost step "
+                        "8668 and step 40002). 0 = disable (old keep_last-only "
+                        "behaviour).")
     p.add_argument("--ckpt-every-mins", type=float, default=0.0,
                    help="Also checkpoint every N minutes of wall-clock, "
                         "regardless of step count (0=off). Robustness net for "
@@ -697,6 +706,8 @@ def main():
             save_checkpoint(
                 student, optimizer, step, cfg, vocab_size,
                 args.ckpt_dir, ddp=False, master=True,
+                keep_last=args.keep_last,
+                keep_milestone_every=args.ckpt_milestone_every,
             )
             last_ckpt_time = time.perf_counter()
 
@@ -728,6 +739,8 @@ def main():
             save_checkpoint(
                 student, optimizer, step, cfg, vocab_size,
                 args.ckpt_dir, ddp=False, master=True,
+                keep_last=args.keep_last,
+                keep_milestone_every=args.ckpt_milestone_every,
             )
             break
 
@@ -736,6 +749,8 @@ def main():
         save_checkpoint(
             student, optimizer, step, cfg, vocab_size,
             args.ckpt_dir, ddp=False, master=True,
+            keep_last=args.keep_last,
+            keep_milestone_every=args.ckpt_milestone_every,
         )
     if shutdown.requested:
         logger.warning("distill: stopped via signal — resume by re-running.")

@@ -206,6 +206,7 @@ def save_checkpoint(
     ddp: bool,
     master: bool,
     keep_last: int = 3,
+    keep_milestone_every: int = 0,
     scaler=None,
     extra: Optional[dict] = None,
 ) -> None:
@@ -226,6 +227,12 @@ def save_checkpoint(
         ddp         -- True if FSDP path; False for single-GPU / CPU
         master      -- whether this rank writes to disk (rank 0 only)
         keep_last   -- number of most-recent checkpoints to retain
+        keep_milestone_every -- if > 0, checkpoints whose step is a multiple
+                       of this are NEVER pruned (permanent milestones). Preserves
+                       the whole training trajectory so a mid-leg peak can't be
+                       silently rotated away (this ate step 8668 and step 40002 —
+                       long on-policy legs peak mid-leg, and keep_last=3 deletes
+                       it). Set e.g. 2000 for on-policy legs. 0 = old behaviour.
         scaler      -- optional `torch.amp.GradScaler` whose state must
                        round-trip when training with fp16. Ignored if None.
         extra       -- optional dict of arbitrary picklable side-state
@@ -268,7 +275,15 @@ def save_checkpoint(
     torch.save(payload, tmp_path)
     os.replace(tmp_path, final_path)
 
-    for old in list_ckpts(ckpt_dir)[:-keep_last]:
+    prunable = list_ckpts(ckpt_dir)[:-keep_last] if keep_last > 0 else []
+    for old in prunable:
+        if keep_milestone_every > 0:
+            try:
+                old_step = int(os.path.basename(old)[len("step_"):-len(".pt")])
+                if old_step % keep_milestone_every == 0:
+                    continue                      # permanent milestone — keep
+            except ValueError:
+                pass                              # unparseable name → prune as before
         try:
             os.remove(old)
         except OSError as exc:

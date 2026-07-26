@@ -1,0 +1,93 @@
+[probe] loaded checkpoints_onpolicy_fixed/step_0046000.pt (step 46000) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.33 [0.09-0.76] | distinct1 0.41 [0.19-0.58] | distinct2 0.65 [0.26-0.93] | n=5
+    e.g.: ' start building the home when I was on the internet.\n\nIf you want to visit the same page you\'ll be taking a full list of the "big" or "saf" or "good" (i.e. "the" and "s" to be used for the "s" and "s" as a single piece in the "m20-00" example and then use a "long" (in the first four weeks, and'
+
+  α=0.25 | top_share 0.21 [0.07-0.73] | distinct1 0.54 [0.24-0.70] | distinct2 0.80 [0.28-0.97] | n=5
+    e.g.: ' keep the windows open and in the next two steps:\n\n- In the first day of the month, we had 20000000000000000000000000000000000000000000000000000000000000000000000'
+
+  α=0.5  | top_share 0.10 [0.07-0.14] | distinct1 0.56 [0.51-0.62] | distinct2 0.87 [0.80-0.94] | n=5
+    e.g.: " go the zoo to visit the penguins, but we saw the zoo not closed, so we'd need to do some more on the time of the zoo, but not sure.\n  On this 21 June, it was a hot - 35°C. The 21 years (the 21 years, the 21 year is 30°C, the 6 days are 240-h, so we'll do the "
+
+  α=0.7  | top_share 0.08 [0.05-0.10] | distinct1 0.64 [0.53-0.71] | distinct2 0.92 [0.81-0.99] | n=5
+    e.g.: " go to the outskirts of the capital of Berdram\n\nThat's not bad. The rest of the morning has flown into the afternoon. He can get at the time just after his lunch. Maybe, yes a bit.\n\nI can only get up to be at a bit after you. Is, he might be at the same time.\n\nYes, there are many of us. If we get in a little after their day I can\n\nThat's"
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.09 [0.07-0.11] | distinct1 0.58 [0.52-0.62] | distinct2 0.87 [0.74-0.97] | n=5
+    e.g.: " taking the condition of a common source of the initial symptoms. It can be said to be an un-tackable condition. Therefore, any of these individuals are the only type of damage in order to be recognized. Thus, when the human's life may be at ease, the human is able to come to a certain level of time. In the case of the medical disease, a patient's body is a very large amount of health.\n\nWhy is the patient suffering"
+
+  α=0.25 | top_share 0.10 [0.08-0.15] | distinct1 0.62 [0.54-0.70] | distinct2 0.90 [0.81-0.95] | n=5
+    e.g.: ' antibiotics such as a "tetet-leq" or "tet" which is essential for the treatment (the most accurate in cases) and it is a good way to stop and protect the disease.\n\nThe use of an infection can cause chronic, especially the bacterial infection (and the related diseases related to the specific symptoms) and other complications. However, according to the study the first thing to go out with 20% of the bacterial infections present in'
+
+  α=0.5  | top_share 0.09 [0.07-0.10] | distinct1 0.60 [0.54-0.62] | distinct2 0.89 [0.79-0.99] | n=5
+    e.g.: ' antibiotics, which are medications developed to target an unorganized, chemical and genetic. The term bacterial.\nThe treatment was effective because the bacteria grew in an unknown, isolated,\nA bacterial.\nIsolate a bacterial, isolate the.\nBacterial.\n1 / 37 544544544. bacterial.\nBacterial. The.\nBacterial. the same\nThe bacterial infection occurs due to the cause of an environmental factor'
+
+  α=0.7  | top_share 0.14 [0.07-0.27] | distinct1 0.53 [0.36-0.68] | distinct2 0.79 [0.63-0.94] | n=5
+    e.g.: " antibiotics. For parasitic infections, anthelmintic is correct. For viral infections, antiviral medications are used. The most common antiviral medications are for HIV. I'm sure a lot of other types for herpes, hepatitis, and so on. In fact 10 percent of all prescriptions have been filled by antivir-related types. These medications work for a range of diseases, and they're used for prevention. Since this is a common disease-related area, it would"
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.13 [0.06-0.19] | distinct1 0.53 [0.35-0.62] | distinct2 0.84 [0.78-0.89] | n=5
+    e.g.: " the risk of going around a large number of the risk of having a second of the symptoms.\nTreatment and Treatment Factors\nThe 50 percent of the patient is being affected by a chronic or physical health problem. In the most recent year, some of the treatment was affected by another one of the cases described in the study, and the body's health and the risk of causing the cause of this. In a short-term treatment of the patients, the most important factor"
+
+  α=0.25 | top_share 0.12 [0.05-0.29] | distinct1 0.60 [0.45-0.72] | distinct2 0.87 [0.74-0.98] | n=5
+    e.g.: " increased thirst, and excessive or increasing urination.\n\nPICO is used to measure the amount of blood you're going to be losing. In a 50% blood, when it has a lot of food, and you know it is going to come into the situation that is, if you're going to be on the other side of the thing you're going to be getting up to it's not in a single day. The PICO may be less than"
+
+  α=0.5  | top_share 0.08 [0.06-0.12] | distinct1 0.65 [0.60-0.68] | distinct2 0.92 [0.89-0.95] | n=5
+    e.g.: ' increased thirst (polydydydia), or polyuria, and increased aversions a significant reduction at the rate of 5 or more\n\nThese numbers can be more efficient since the risk for a person who is more than 70% and more than their risk of developing type 2 diabetes\n\nType is the most common medical and other serious side of the other parts of the kidney disease that are very very useful.\n\ndiabetes medications mayo clinic for patients'
+
+  α=0.7  | top_share 0.09 [0.07-0.11] | distinct1 0.61 [0.54-0.71] | distinct2 0.88 [0.79-0.99] | n=5
+    e.g.: " increased thirst, or politysis\n\nAnswers\n\nIncreased thirst (\n polyd\nis the name of the disease caused by the pancreas not necessarily making it\nThe most common complication of diabetes that might be the case\nHypogly\nc\nit is an abnormal condition that can occur with diabetes\n\n\nI don't have an answer, but you could do research with the internet or maybe I'm not going to be able to go to school and my teacher will"
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.20 [0.05-0.73] | distinct1 0.51 [0.12-0.67] | distinct2 0.80 [0.29-0.96] | n=5
+    e.g.: " the H-C (i.e., O-2/C, D-0/V, C, B, D. (1) The first and the B/ B is also a good start, which is the second largest non-essential. For the first part (the second one with the second third case), we've done this test for the first 3rd and/e: for the second-third-level (which is the first two), we"
+
+  α=0.25 | top_share 0.09 [0.07-0.10] | distinct1 0.61 [0.50-0.66] | distinct2 0.88 [0.80-0.94] | n=5
+    e.g.: ' the bacteria to reduce the inflammation of the bacteria.\nThe new study by J.J.W. S.S.S. is based on the 3rd and the 3rd and 4th steps.\nThe "3rd and" is the "3rd" part of the "3" model for the model.\nThe next step is to identify which factors are the primary and most likely to cause a single element to be the "g" or'
+
+  α=0.5  | top_share 0.08 [0.06-0.09] | distinct1 0.63 [0.59-0.68] | distinct2 0.90 [0.81-0.95] | n=5
+    e.g.: ' pain, inflammation, and fever. It works by adding a COX inhibitor as a drug.\n\nTo prevent and control diabetes, you need to treat the root cause or the resulting damage. In most cases, it is a combination of proper blood sugar and diet. In other cases, lifestyle modifications of a well-structured diet plan is essential. This may be a good starting point to manage the problem.\n\nWhen you have an underlying condition, it can be helpful to'
+
+  α=0.7  | top_share 0.06 [0.04-0.07] | distinct1 0.70 [0.65-0.72] | distinct2 0.94 [0.89-0.98] | n=5
+    e.g.: " pain and inflammation, but it's not used to directly cause weight loss.\n\nE-cigarette-related lung injury is an inflammation because smoking or the vapor has a lot that's not good for the patient.\n\nF: Corticosteroids are often used in patients with asthma attacks but not usually first line. The goal is to decrease the inflammation and edema in the airways of the people with asthma.\n\nBronchodil? Can lead to tachycardia- increase"
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.31 [0.08-0.98] | distinct1 0.34 [0.03-0.52] | distinct2 0.56 [0.03-0.84] | n=5
+    e.g.: '\n    return n\n\ndef generate_and_add_re_sub_c(n):\n    return (0.6, 1.0, 2.0, 4.0 * (0.00000.0 / 1.0 * (1.0000e-0.0 / 1.0))\n\ndef calc_sub_str(v):\n    return f"~" + str('
+
+  α=0.25 | top_share 0.13 [0.07-0.19] | distinct1 0.51 [0.35-0.65] | distinct2 0.77 [0.58-0.92] | n=5
+    e.g.: '\n    return (x-x for x in range(n)\n    ...\n\nWait, but the original problem says that two different ways to apply a different approach would not get the same result as the original original equation. But I think the problem is actually an example of how a different type of equation for the same problem.\n\nWait, perhaps the question is part of a larger? Maybe the problem statement is not clear. The problem says: "how will you solve'
+
+  α=0.5  | top_share 0.08 [0.04-0.10] | distinct1 0.57 [0.51-0.67] | distinct2 0.84 [0.75-0.96] | n=5
+    e.g.: "\n    nums = 1, 3, 4\n    if n == 1:\n        return 2\n    if n == 2:\n        return 3\n    if len(n) < max_num:\n        return float('inf') * (n + nums[-1])\n    else:\n        return nums[-1] + (min_num + 1)\n    return [a - b]\n\nWait, but that's not a Fib. The last"
+
+  α=0.7  | top_share 0.11 [0.07-0.16] | distinct1 0.48 [0.24-0.69] | distinct2 0.81 [0.73-0.92] | n=5
+    e.g.: '\n\n    if n is not an integer, or n <= n0, or n > n1:\n\n        return a dictionary with the same number of keys as a given integer K (not part of the arguments here)\n\n    else:\n\n        s = [0, 2, 4, 12, 36]\n\n        s[0], list, *_ , s[3]\n\n        return a dictionary with a key in K which satisfies the given conditions\n\n'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.11 [0.07-0.15] | distinct1 0.41 [0.23-0.56] | distinct2 0.71 [0.44-0.86] | n=5
+    e.g.: " 2 (assuming the limit is the right side of this equation).\n\nLet's proceed with a new equation, and then it's a quadratic equation.\n\nWhat will the equation for the first equation (which can be found by having a second equation from the equations of the second equation that is the first two equations):\n\nI think that can be found by using the second equation to solve the last equation. If you want to calculate the equation that was the most"
+
+  α=0.25 | top_share 0.09 [0.07-0.10] | distinct1 0.57 [0.43-0.72] | distinct2 0.85 [0.72-0.97] | n=5
+    e.g.: ' 5x - 7x^2 - 5. Find the sum of the terms of the equation. \n\nTo solve the equation, we need to find two solutions which are the same for every given variable x and we are given an equation and solve the equation given by the equation at a point. \n\nThe expression is a number. \n\nWe are given the system of equations to be found without any values. However, the problem can be approached by finding'
+
+  α=0.5  | top_share 0.10 [0.08-0.12] | distinct1 0.47 [0.42-0.52] | distinct2 0.80 [0.78-0.84] | n=5
+    e.g.: ' 18\n\n2. A number must be divisible by 5. Find the smallest 3 2 in the square root of 16. Write the first number divided by the second term equals the total amount of 5.\n\n3. Find the value of x in the first 4 20 divided by 20. Write the first term of each. Find the value of x.\n\nThe equation x (30x) can be written'
+
+  α=0.7  | top_share 0.07 [0.05-0.08] | distinct1 0.57 [0.50-0.67] | distinct2 0.91 [0.81-0.98] | n=5
+    e.g.: " 0. The solutions should start with 2 or a non-negative number. Then, in the next solution, introduce the possibility of a negative number to a lesser extent. \n\nStep 1: Find the value of y that the student asks.\n\nLet's solve the equation step by step. Since we know that, when solving linear equations, we need to isolate y^2 on the same number. The problem for the two other problems is similar to the"
+

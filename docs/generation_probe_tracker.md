@@ -1,5 +1,25 @@
 # Generation-probe tracker (cross-comparison)
 
+> ## ⚠️ READ FIRST — the metric is a proxy; the TEXT is ground truth.
+> `top_share` / `distinct1` are cheap degeneracy *proxies*, not the thing we
+> care about. **When the number and the output text disagree, the text wins.**
+> This is a standing principle we'd invoked verbally for months but never wrote
+> down until it nearly cost us a wrong call (2026-07-25, the @46,000 verdict):
+> - **top_share is actively MISLEADING on code.** Valid code repeats tokens
+>   (`if`, `return`, `def`, indentation, `0.0`) → *high* top_share. A degenerate
+>   giant-float-literal has all-unique digits → *low* top_share. So the metric
+>   **rewards the garbage and penalises real structure.** At @46,000 fibonacci's
+>   top_share "regressed" 0.11→0.31 while the *text* went from a v1 float-blob to
+>   actual Python `def`/`return`/`if-else` — a **win** the number reported as a loss.
+> - **A high mean with a wide range is variance, not collapse.** n=5 with
+>   `[0.09–0.98]` = one collapsed sample dragging the mean; the typical/`e.g.`
+>   sample usually reads fine. Always read the `e.g.` text before trusting a
+>   mean-top_share jump.
+> - **Procedure:** never call a regression (or a win) from top_share alone.
+>   Pull the `e.g.` outputs for the moved seeds and read them; the metric only
+>   flags *where to look*. (This is the "exposure bias is decoupled from every
+>   formal metric" lesson, made operational.)
+
 **Purpose.** A longitudinal cross-comparison of the generation-time collapse
 diagnostics (`tools/collapse_metrics.py --probe-set all`) across checkpoints and
 prompt categories, cross-referenced against the roadmap's hypotheses. This is the
@@ -770,6 +790,37 @@ data-quality wall → lean in.
 
 **Decision → continue the leg tonight toward ~46k, re-probe near the end for the code verdict.**
 Nothing says stop. Raw: `reports/onpolicy_rollout_probe_40002_xpu_uncached_n5.txt`.
+
+
+## 2026-07-25 — ✅ CLEAN-v2 A/B @46,000 (full dose, n=5): CODE REGRESSION FIXED (read the text, not the metric)
+
+Leg finished at 46,000. **The metric first read as a regression — then the text flipped it to a win.**
+Recorded honestly because the mis-read nearly sent us on a checkpoint-recovery mission.
+
+**What the top_share numbers said (α=0.0 mean):** 0.130 (36,658) → 0.115 (40,002) → **0.195 (46,000)** —
+looked like over-training, with weather/ibuprofen/fibonacci sprouting collapse tails (ranges to
+0.76 / 0.73 / **0.98**). I called "over-trained, peak lost." **Wrong read — see the READ-FIRST banner.**
+
+**What the TEXT said (the fibonacci α=0.0 `e.g.`, the actual code verdict):**
+- **36,658 (dirty v1):** `if n == 855384299668536778086114999946217867630189635.994633…` — a **giant float literal**, zero structure. The v1 code degeneration the 07-21 verdict flagged.
+- **46,000 (clean v2):** `return n` … `def generate_and_add_re_sub_c(n):` … `def calc_sub_str(v): return f"~" + str(` — **real Python: function defs, returns, f-strings.** Nonsense logic, legitimate *structure*.
+
+**Verdict: clean v2 FIXED the code regression** — float-blob → structured code, visible in the text at
+both 40,002 and 46,000. The top_share "regression" on fibonacci is the metric penalising valid keyword
+repetition (see banner); the wide-range seeds are variance (one collapsed sample of five), not systematic
+decay — the typical `e.g.` text at 46,000 reads comparably to 40,002 (ibuprofen ~equal garble, fibonacci
+*more* code-like; weather slightly worse, still readable). **"Over-training" is NOT supported by the text.**
+The user caught this by reading the outputs against the metric — the exact discipline the banner now mandates.
+
+**Strategic read: the data-quality thesis holds — clean v2 produced structured code where dirty v1
+produced float-blobs. Lean in.** (Assisted levels α=0.5/0.7 stayed strong throughout — the student also
+generates well *with* the teacher; the α=0.0-vs-assisted gap is the internalisation signal to keep tracking.)
+
+**Process failure logged:** the 40,002 checkpoint (and the 36,658 baseline) were **rotated away** —
+`save_checkpoint` kept only `keep_last=3`, and a 9,342-step leg checkpointing every 15 min ate the mid-leg
+history. Same bug that lost step 8668. **Fixed** (2026-07-25): `--ckpt-milestone-every` permanently keeps
+every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from the nvme backup if a re-run
+is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
