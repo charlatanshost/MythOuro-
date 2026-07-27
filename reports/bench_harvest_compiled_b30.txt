@@ -1,0 +1,10 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-27 18:12:50.124 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1643 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=xpu:0). Teacher frozen.
+== torch.compile(teacher), default mode — first warm builds it ==
+== stock-cache gate (pins the cached engine for this process) ==
+W0727 18:13:28.539000 51875 torch/_inductor/utils.py:3146] [0/0] get_device_tflops: no Triton fallback available for non-CUDA devices. Returning 0.0; roofline estimates will use memory bandwidth only.
+2026-07-27 18:32:17.614 | INFO     | mythouro.training_utils:_validate_teacher_cache:1921 - teacher KV-cache validation PASSED (8 steps, max KL=3.39e-03 nats) — cached teacher on.
+stock gate: PASSED — cached engine ON
+== prealloc equivalence gate (blocking for prealloc configs) ==
+2026-07-27 18:32:17.614 | WARNING  | tools.prealloc_ut_cache:validate_cache_equivalence:158 - prealloc-cache equivalence FAILED (UniversalTransformerCache not found in torch._dynamo.eval_frame — teacher is not an Ouro UT model; prealloc cache unsupported.); falling back to the stock dynamic cache.
+prealloc gate: FAILED

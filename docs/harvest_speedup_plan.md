@@ -117,10 +117,28 @@ idle side too.
 1. **Continuous batching / reject-lane refill** — **re-promoted 2026-07-23**, ~1.28×
    (see the re-promotion note in the catalog). Gated on reading a full run's
    `--telemetry` to fix per-source abort thresholds.
-2. **torch.compile the decode step** — +10% on training; launch-bound decode may
-   gain more. **VTune-backed (2026-07-24):** ~80% of decode kernel launches are a
-   3.15M-instance tail of tiny 0%-SIMD kernels — exactly what compile fuses, so
-   the ceiling is plausibly above +10% (decode_kernel_optimization.md §1b).
+2. **torch.compile the decode step** — ⚠ **DEMOTED 2026-07-27, scale-dependent.**
+   VTune said the fusable tail is real (~80% of launches are tiny 0%-SIMD kernels),
+   and a **tiny-config probe was spectacular — 2.66× steady, ZERO graph breaks**
+   (b4/32-tok, stock cache). **But it did not survive production shapes:** at
+   b30/128-tok the compile *build* took **19.5 min**, and then **~18 further min
+   produced ZERO completed configs** — configs eager finishes in **23–28 s each**.
+   Killed at that point, so this is "did not complete", not a measured ratio.
+   Most likely **recompile churn**: production varies both batch and the growing
+   decode sequence (48→816 tok), so each new shape can trigger a rebuild — the
+   opposite regime from the fixed-shape training step where +10% was measured.
+   **Do not adopt on this evidence.** If revisited, the build must target the
+   recompile problem directly (`dynamic=True` / `mark_dynamic` on the sequence
+   dim, or compile only the fixed-shape inner block rather than the whole
+   teacher), and be benched at **`--gen-tokens 768`** (production length) —
+   short benches hide the shape explosion. Lesson (third time): **a lever that
+   wins on a toy config can lose at production scale** — cf. the prealloc bench
+   which understated its win at short length, this overstates.
+   *Side win:* found+fixed a real bug en route — `torch.compile`'s
+   `OptimizedModule` wrapper broke the prealloc cache-class introspection, so the
+   prealloc gate FAILED under `--compile` with a misleading "not an Ouro UT
+   model" (commit 5bee906, `_orig_mod` unwrap). That would have blocked compile
+   on the production path regardless.
 3. **b32 revisit** — +6–7% over b30, gated on observing long-run fragmentation
    behaviour at 45.3 GB (a multi-day run that never creeps → the 0.9 GB margin
    at b32 may be acceptable; or shave `--max-new` to ~704 to buy the margin).
