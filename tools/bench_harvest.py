@@ -88,6 +88,13 @@ def main() -> None:
                         "harvest length) — this is what the memory verdict is "
                         "about.")
     p.add_argument("--batches", type=int, nargs="+", default=[24, 32, 40])
+    p.add_argument("--compile", action="store_true",
+                   help="torch.compile the teacher (default mode — NOT "
+                        "max-autotune, which loses on PVC). Probe 2026-07-27: "
+                        "zero graph breaks, 2.66x on a tiny config; this bench "
+                        "measures it at production b30/768. First config's warm "
+                        "eats the one-time compile build. Needs "
+                        "TRITON_DEFAULT_BACKEND=intel + intel-ocloc.")
     args = p.parse_args()
 
     from transformers import AutoTokenizer
@@ -99,6 +106,10 @@ def main() -> None:
         trust_remote_code=args.trust_remote_code)
     if teacher is None:
         raise SystemExit("teacher failed to load")
+    if args.compile:
+        print("== torch.compile(teacher), default mode — first warm builds it ==",
+              flush=True)
+        teacher = torch.compile(teacher)
 
     total_len = args.seed_len + args.full_len + 8
 
