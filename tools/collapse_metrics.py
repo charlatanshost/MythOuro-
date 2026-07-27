@@ -245,7 +245,10 @@ def generation_diagnostic(model, tokenizer, prompt: str, device: str,
         top_probs.append(float(p.max()))               # raw model confidence
         entropies.append(float(-(p * logp).sum()))     # (comparable across temps)
         if temperature and temperature > 0:
-            scaled = last / temperature
+            # topk/multinomial SEGFAULT on XPU (max1100_field_notes.md workaround
+            # list; same reason the harvest sampler avoids them). Sample on CPU —
+            # one vocab-size vector per token, negligible for a diagnostic.
+            scaled = (last / temperature).cpu()
             if top_k and top_k > 0:
                 kth = torch.topk(scaled, min(top_k, scaled.numel())).values[-1]
                 scaled = scaled.masked_fill(scaled < kth, float("-inf"))
