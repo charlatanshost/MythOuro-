@@ -66,8 +66,14 @@ echo "=== LEG+PROBE DONE (pinged) -> $OK ==="
 # [5/5] Don't leave the card idle during the workday: harvest corpus toward
 # HARVEST_TARGET. Data-gen only — cannot over-train the model — and it grows the
 # corpus for longer future legs (the "lean into data" verdict). Uses the fixed
-# harvest (seed-mix + shuffle, cumulative target, resumes). STOP IT WHEN HOME
-# (stop_gpu_jobs.sh); stopping is expected, not a failure — the DONE marker
-# already fired. Bump HARVEST_TARGET if you want a bigger buffer against idle.
-echo "=== [5/5] card would be idle — harvesting toward ${HARVEST_TARGET:-12000000} until stopped ==="
-CORPUS_TARGET=${HARVEST_TARGET:-12000000} bash run_harvest_v2.sh
+# harvest (seed-mix + shuffle, cumulative target, resumes).
+#
+# Target is set HIGH on purpose (16M, vs the 12M plan). Harvest is slow (~93
+# tok/s ≈ 2.7M/workday) but training is fast, so the leg may finish early and
+# leave a LONG idle window — a 12M target would self-complete (~11h) and then
+# idle. 16M can't finish before you're home (~22h from 8.65M), so it runs the
+# whole window. STOP IT WHEN HOME (stop_gpu_jobs.sh) wherever it's got to;
+# stopping is expected, not a failure (the DONE marker already fired), and any
+# corpus past 12M is pure upside (longer legs, less repetition).
+echo "=== [5/5] card would be idle — harvesting toward ${HARVEST_TARGET:-16000000} (stop when home) ==="
+CORPUS_TARGET=${HARVEST_TARGET:-16000000} bash run_harvest_v2.sh
