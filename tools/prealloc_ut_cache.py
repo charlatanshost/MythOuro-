@@ -106,9 +106,24 @@ def _build_prealloc_class(base_cls):
     return PreallocUTCache
 
 
+def _unwrap(teacher):
+    """Strip a `torch.compile` wrapper before introspection.
+
+    `torch.compile(m)` returns an `OptimizedModule` living in
+    `torch._dynamo.eval_frame`, so `type(teacher).__module__` no longer points at
+    the Ouro modeling module and the cache-class lookup below fails with a
+    misleading "teacher is not an Ouro UT model" (measured 2026-07-27: this is
+    what made the prealloc gate FAIL under `--compile`). `_orig_mod` is the
+    original module; unwrap for *introspection* only — the caller keeps using the
+    compiled object for the actual forward passes.
+    """
+    return getattr(teacher, "_orig_mod", teacher)
+
+
 def make_prealloc_cache(teacher, max_len: int):
     """Locate the teacher's own UT cache class and return a preallocated
     instance sized for `max_len` total positions (prompt + generation)."""
+    teacher = _unwrap(teacher)
     mod = sys.modules[type(teacher).__module__]
     base = getattr(mod, "UniversalTransformerCache", None)
     if base is None:
