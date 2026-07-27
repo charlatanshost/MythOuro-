@@ -1,0 +1,148 @@
+loading: checkpoints_onpolicy_fixed/step_0046000.pt
+device:  xpu:0
+step=46000  n_loops=4  sandwich_norm=True  state_noise=0.0
+
+[generation-time mode] greedy decode; locating the degeneration
+
+=== category: chat ===
+
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): '\nThe problem is to find the number of possible solutions to the given problem. The problem is to find the number of possible solutions to the problem. The problem'
+  output dist:  mean_entropy=2.823 nats  final_entropy=3.371  mean_top_prob=0.481  final_top_prob=0.328
+  first steps (top_prob, entropy): (0.74,2.09), (0.10,5.54), (0.10,5.51), (0.45,2.86), (0.16,4.10), (0.34,3.14), (0.63,1.52), (0.19,4.72)
+  rep @final loop:  PROMPT corr=0.127 rank=15.32  |  GENERATED corr=0.199 rank=23.23
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: '<|im_start|>user\nExplain gravity in one sentence.<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): '\nThe following is a list of the following:\n\n- The following is a list of the following:\n\n- The following is a list of the'
+  output dist:  mean_entropy=2.811 nats  final_entropy=2.832  mean_top_prob=0.593  final_top_prob=0.578
+  first steps (top_prob, entropy): (0.76,2.02), (0.11,5.79), (0.07,6.32), (0.27,4.68), (0.68,1.30), (0.08,6.20), (0.98,0.17), (0.29,5.19)
+  rep @final loop:  PROMPT corr=0.147 rank=14.40  |  GENERATED corr=0.274 rank=20.66
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: '<|im_start|>user\nName three primary colors.<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): '\nThe following is a list of the following\n\n```\n\n```\n\n```\n\n```\n\n```\n\n```\n\n```\n\n'
+  output dist:  mean_entropy=2.846 nats  final_entropy=0.526  mean_top_prob=0.565  final_top_prob=0.900
+  first steps (top_prob, entropy): (0.70,2.34), (0.14,5.76), (0.09,6.36), (0.15,5.19), (0.66,1.29), (0.14,5.99), (0.99,0.11), (0.23,5.40)
+  rep @final loop:  PROMPT corr=0.130 rank=13.50  |  GENERATED corr=0.361 rank=17.12
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: code ===
+
+prompt: 'def fibonacci(n):'
+  generated (greedy, 32 tok): '\n    return (n)\n\ndef get_n(n):\n    return (n)\n\ndef n(n):\n    return (n)\n'
+  output dist:  mean_entropy=2.217 nats  final_entropy=0.225  mean_top_prob=0.636  final_top_prob=0.966
+  first steps (top_prob, entropy): (0.60,2.03), (0.33,3.58), (0.12,5.19), (0.21,4.41), (0.25,3.47), (0.76,1.27), (0.91,0.53), (0.51,2.84)
+  rep @final loop:  PROMPT corr=0.129 rank=5.90  |  GENERATED corr=0.200 rank=20.83
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'def is_prime(n):'
+  generated (greedy, 32 tok): '\n    return (n * n)\n\ndef is_prime(n):\n    return (n)\n\ndef is_prime(n):\n    return'
+  output dist:  mean_entropy=1.926 nats  final_entropy=0.483  mean_top_prob=0.658  final_top_prob=0.931
+  first steps (top_prob, entropy): (0.58,1.96), (0.26,3.56), (0.10,5.22), (0.21,4.12), (0.10,3.58), (0.69,1.55), (0.57,2.00), (0.46,2.29)
+  rep @final loop:  PROMPT corr=0.103 rank=6.93  |  GENERATED corr=0.174 rank=21.47
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'import numpy as np\n'
+  generated (greedy, 32 tok): '\ndef main():\n    # 1. Create a list of the input data\n    # 1. Create a list of the input data\n    # 1'
+  output dist:  mean_entropy=2.800 nats  final_entropy=0.357  mean_top_prob=0.536  final_top_prob=0.915
+  first steps (top_prob, entropy): (0.74,1.04), (0.44,2.63), (0.07,6.26), (0.73,0.84), (0.79,0.83), (0.16,4.35), (0.03,6.76), (0.19,4.30)
+  rep @final loop:  PROMPT corr=0.154 rank=4.88  |  GENERATED corr=0.160 rank=23.81
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'class Stack:\n    def __init__(self):'
+  generated (greedy, 32 tok): '\n        self.init_file = os.path.join(self.init_file)\n        self.init_file = os.path.join('
+  output dist:  mean_entropy=1.407 nats  final_entropy=0.023  mean_top_prob=0.738  final_top_prob=0.998
+  first steps (top_prob, entropy): (0.72,0.99), (0.68,1.69), (0.94,0.27), (0.03,7.03), (0.52,1.62), (0.03,6.88), (0.40,1.51), (0.25,3.62)
+  rep @final loop:  PROMPT corr=0.109 rank=9.78  |  GENERATED corr=0.161 rank=24.02
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: math ===
+
+prompt: 'The derivative of x^2 with respect to x is'
+  generated (greedy, 32 tok): ' given by:\n\n\\[ \\frac{x^2}{x^2} \\cdot \\frac{x^2}{x^2} \\'
+  output dist:  mean_entropy=1.143 nats  final_entropy=0.834  mean_top_prob=0.732  final_top_prob=0.771
+  first steps (top_prob, entropy): (0.13,4.04), (0.95,0.30), (0.49,2.29), (0.94,0.44), (0.92,0.46), (0.23,3.47), (0.58,1.79), (0.42,2.15)
+  rep @final loop:  PROMPT corr=0.182 rank=10.33  |  GENERATED corr=0.163 rank=22.58
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The sum of the first 10 positive integers is'
+  generated (greedy, 32 tok): ' 1000000000000000000000000000000'
+  output dist:  mean_entropy=0.397 nats  final_entropy=0.054  mean_top_prob=0.927  final_top_prob=0.994
+  first steps (top_prob, entropy): (0.44,2.93), (0.53,1.62), (0.79,1.01), (0.82,1.02), (0.92,0.52), (0.82,0.95), (0.87,0.72), (0.92,0.48)
+  rep @final loop:  PROMPT corr=0.165 rank=10.57  |  GENERATED corr=0.812 rank=7.01
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'To solve 2x + 3 = 7, subtract 3 from both sides to get'
+  generated (greedy, 32 tok): ' the same value.\n\nThe problem is to find the value of x and the value of x.\n\nThe problem is to find the value of x'
+  output dist:  mean_entropy=2.556 nats  final_entropy=0.725  mean_top_prob=0.505  final_top_prob=0.859
+  first steps (top_prob, entropy): (0.47,2.27), (0.09,5.04), (0.18,4.13), (0.66,1.78), (0.55,2.37), (0.90,0.83), (0.09,4.85), (0.17,4.70)
+  rep @final loop:  PROMPT corr=0.153 rank=18.46  |  GENERATED corr=0.171 rank=23.55
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The area of a circle with radius r is'
+  generated (greedy, 32 tok): ' 12222.\n\nThe area of a circle is 12222.\n\nThe area of a circle is 1'
+  output dist:  mean_entropy=1.675 nats  final_entropy=0.886  mean_top_prob=0.631  final_top_prob=0.777
+  first steps (top_prob, entropy): (0.24,3.50), (0.29,1.97), (0.23,2.53), (0.35,2.36), (0.91,0.56), (0.75,1.20), (0.27,2.70), (0.29,3.23)
+  rep @final loop:  PROMPT corr=0.199 rank=8.54  |  GENERATED corr=0.183 rank=21.23
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: prose ===
+
+prompt: 'The recurrent depth transformer is'
+  generated (greedy, 32 tok): ' a\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n'
+  output dist:  mean_entropy=1.260 nats  final_entropy=0.092  mean_top_prob=0.829  final_top_prob=0.992
+  first steps (top_prob, entropy): (0.21,4.63), (0.03,6.96), (0.48,4.14), (0.19,5.45), (0.08,6.70), (0.85,0.95), (0.65,2.60), (0.86,1.27)
+  rep @final loop:  PROMPT corr=0.197 rank=4.86  |  GENERATED corr=0.526 rank=10.30
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'The history of the Roman Empire began'
+  generated (greedy, 32 tok): ' in the 19th century, and the 19th century, and the 19th century, and the 19th century,'
+  output dist:  mean_entropy=1.857 nats  final_entropy=2.132  mean_top_prob=0.661  final_top_prob=0.492
+  first steps (top_prob, entropy): (0.19,3.57), (0.59,2.49), (0.25,5.19), (0.86,0.54), (0.35,1.97), (0.37,2.09), (0.92,0.47), (0.40,2.09)
+  rep @final loop:  PROMPT corr=0.202 rank=6.73  |  GENERATED corr=0.236 rank=18.57
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Photosynthesis is the process by which'
+  generated (greedy, 32 tok): ' the system is able to perform the same process.\n\nThe system is a system that is not a system that is not a system that is not a system'
+  output dist:  mean_entropy=4.038 nats  final_entropy=2.739  mean_top_prob=0.348  final_top_prob=0.668
+  first steps (top_prob, entropy): (0.42,3.91), (0.03,8.13), (0.41,3.74), (0.05,6.13), (0.99,0.07), (0.08,5.57), (0.32,3.96), (0.15,6.01)
+  rep @final loop:  PROMPT corr=0.130 rank=6.86  |  GENERATED corr=0.247 rank=22.07
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The largest planet in our solar system is'
+  generated (greedy, 32 tok): ' the largest planet. The largest planet in our solar system is the largest planet in our own planet. The largest planet is the largest planet in our planet. The'
+  output dist:  mean_entropy=2.150 nats  final_entropy=2.378  mean_top_prob=0.620  final_top_prob=0.424
+  first steps (top_prob, entropy): (0.43,3.47), (0.18,5.46), (0.52,3.39), (0.43,2.42), (0.24,3.54), (0.22,4.89), (0.70,2.50), (0.47,1.77)
+  rep @final loop:  PROMPT corr=0.159 rank=7.75  |  GENERATED corr=0.296 rank=18.16
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: qa ===
+
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+  generated (greedy, 32 tok): ' The first time that the first time that the first time that the first time that the first time that the first time that the first time that the first time that'
+  output dist:  mean_entropy=4.185 nats  final_entropy=3.116  mean_top_prob=0.306  final_top_prob=0.270
+  first steps (top_prob, entropy): (0.41,3.84), (0.06,7.12), (0.10,6.04), (0.21,3.19), (0.44,3.50), (0.03,7.52), (0.05,6.99), (0.16,3.78)
+  rep @final loop:  PROMPT corr=0.099 rank=14.51  |  GENERATED corr=0.463 rank=10.97
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'Q: What is the capital of France?\nA:'
+  generated (greedy, 32 tok): ' The number of the first two years of the 1st century.\n\nAnswer: The number of the first two years of the 1st century.'
+  output dist:  mean_entropy=2.621 nats  final_entropy=1.342  mean_top_prob=0.549  final_top_prob=0.717
+  first steps (top_prob, entropy): (0.51,2.74), (0.06,6.62), (0.96,0.34), (0.22,5.31), (0.07,6.80), (0.12,5.42), (0.07,6.23), (0.39,2.74)
+  rep @final loop:  PROMPT corr=0.105 rank=11.69  |  GENERATED corr=0.190 rank=24.41
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Q: How many days are in a week?\nA:'
+  generated (greedy, 32 tok): ' How many days are in a week?\nA: How many days are in a week?\nA: How many days are in a week?\nA'
+  output dist:  mean_entropy=0.790 nats  final_entropy=1.628  mean_top_prob=0.837  final_top_prob=0.652
+  first steps (top_prob, entropy): (0.31,3.58), (0.96,0.24), (0.39,1.95), (0.95,0.35), (0.96,0.42), (0.77,0.72), (0.94,0.49), (0.90,0.67)
+  rep @final loop:  PROMPT corr=0.114 rank=12.49  |  GENERATED corr=0.229 rank=15.11
+  -> OUTPUT / exposure-bias path — reps stay healthy, distribution degenerate. -> reverse-KL / GKD
+
+prompt: 'Q: What color is the sky on a clear day?\nA:'
+  generated (greedy, 32 tok): ' The first time you have a day in the first day, and the second day is the first day.\n\nA: The first day is the first day'
+  output dist:  mean_entropy=3.205 nats  final_entropy=1.140  mean_top_prob=0.359  final_top_prob=0.819
+  first steps (top_prob, entropy): (0.36,3.97), (0.04,7.33), (0.13,4.96), (0.28,2.95), (0.15,4.41), (0.31,2.97), (0.03,7.03), (0.19,3.49)
+  rep @final loop:  PROMPT corr=0.096 rank=14.52  |  GENERATED corr=0.238 rank=23.62
+  -> inconclusive / not clearly degenerate at this length
