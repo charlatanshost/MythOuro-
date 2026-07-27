@@ -39,31 +39,73 @@ from inspect_checkpoint import _DEFAULT_PROMPTS, _load_model  # noqa: E402
 from mythouro.tokenizer import MythOuroTokenizer  # noqa: E402
 
 # Categorised probe sets — several prompts per domain so we can watch how each
-# capability learns, instead of inferring from a single prompt (n=1). The original
-# 4 default prompts are kept (one per format) so older reports stay comparable; the
-# rest extend each category. Format matters as much as subject on a distill-only
-# model: prose / code / math are *in-format* for the distill corpus (FineWeb-Edu /
-# codeparrot / open-web-math, the 40/20/40 mix); chat (ChatML) and qa (Q:/A:) are
-# OOD formats until SFT introduces them. Newlines are embedded so the format matches
-# exactly regardless of shell quoting.
+# capability learns, instead of inferring from a single prompt (n=1).
+#
+# DOMAIN-ALIGNED to what we train on + the mission (expanded 2026-07-26):
+#   prose/general, math, code -- *in-format* for the distill corpus (FineWeb-Edu /
+#     open-web-math / codeparrot, the 40/40/20 mix): trained-for NOW.
+#   medical -- the MISSION domain (clean-SFT target). Not distilled-on yet, so this
+#     tracks *generalisation* toward it; includes the onpolicy_rollout_probe seeds
+#     verbatim so the two instruments agree on those points.
+#   science -- chem/physics, a clean-SFT slice; general scientific register.
+#   chat (ChatML) / qa (Q:/A:) -- OOD formats until SFT; expect them rough, don't
+#     read as regression. Kept but NOT part of the trained-for domain read.
+#
+# All original prompts are KEPT (longitudinal anchors — a fixed prompt compared
+# across checkpoints; never seed these from the corpus or the comparison breaks).
+# Newlines embedded so the format matches exactly regardless of shell quoting.
 _PROBE_SETS = {
     "prose": [
+        # general-web / explanatory register (FineWeb-Edu-like)
         "The recurrent depth transformer is",
         "The history of the Roman Empire began",
         "Photosynthesis is the process by which",
         "The largest planet in our solar system is",
+        "One of the most important inventions of the twentieth century was",
+        "The main difference between a virus and a bacterium is that",
+        "In economics, supply and demand describe how",
+        "The water cycle begins when",
     ],
     "code": [
         "def fibonacci(n):",
         "def is_prime(n):",
         "import numpy as np\n",
         "class Stack:\n    def __init__(self):",
+        "def binary_search(arr, target):",
+        "def reverse_string(s):\n    return",
+        "def read_file(path):\n    with open(path) as f:",
+        "# Sort a list of dictionaries by the 'age' key\nsorted(",
     ],
     "math": [
         "The derivative of x^2 with respect to x is",
         "The sum of the first 10 positive integers is",
         "To solve 2x + 3 = 7, subtract 3 from both sides to get",
         "The area of a circle with radius r is",
+        "The Pythagorean theorem states that",
+        "To find the greatest common divisor of 12 and 18, we",
+        "A prime number is a natural number that",
+        "The probability of rolling a 6 on a fair six-sided die is",
+    ],
+    "medical": [
+        # mission domain — 3 rollout-probe seeds verbatim + registers around them
+        "The treatment for a bacterial infection usually involves",
+        "Common symptoms of type 2 diabetes include",
+        "Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat",
+        "A patient presenting with chest pain should first be",
+        "The primary function of the kidneys is to",
+        "Hypertension is generally defined as a blood pressure above",
+        "Antibiotics treat infections by",
+        "The most common cause of a viral sore throat is",
+    ],
+    "science": [
+        "The chemical formula for water is",
+        "In the periodic table, the elements are arranged by",
+        "An atom is made up of protons, neutrons, and",
+        "Oxidation is a chemical reaction in which a substance loses",
+        "Newton's second law of motion states that",
+        "DNA is composed of four nucleotide bases:",
+        "The speed of light in a vacuum is approximately",
+        "A catalyst is a substance that",
     ],
     "chat": [
         "<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n",
@@ -269,6 +311,11 @@ def main() -> None:
                         "capability learn separately.")
     p.add_argument("--qa-probe", action="store_true",
                    help="Back-compat alias for --probe-set qa.")
+    p.add_argument("--max-prompts", type=int, default=0,
+                   help="Cap total prompts run (0 = no cap) to bound runtime. "
+                        "Subsamples EVENLY across the selected categories, so a "
+                        "cap still covers every domain (not just the first). "
+                        "e.g. --probe-set all --max-prompts 20 ≈ 3 per domain.")
     p.add_argument("--n-loops", type=int, default=None,
                    help="Recurrent depth. Default: cfg.max_loop_iters.")
     p.add_argument("--generate", action="store_true",
@@ -317,6 +364,21 @@ def main() -> None:
         selected = [("custom", pr) for pr in args.prompt]
     else:
         selected = [("default", pr) for pr in _DEFAULT_PROMPTS]
+
+    # Cap total prompts, sampled evenly across categories so every domain stays
+    # represented under the cap (round-robin quota, not a flat truncation).
+    if args.max_prompts and len(selected) > args.max_prompts:
+        from collections import OrderedDict
+        bycat: "OrderedDict[str, list]" = OrderedDict()
+        for cat, pr in selected:
+            bycat.setdefault(cat, []).append(pr)
+        n = len(bycat)
+        base, extra = divmod(args.max_prompts, n)
+        selected = []
+        for idx, (cat, lst) in enumerate(bycat.items()):
+            take = base + (1 if idx < extra else 0)
+            selected.extend((cat, pr) for pr in lst[:take])
+
     prompts = [pr for _, pr in selected]
 
     if args.generate:
