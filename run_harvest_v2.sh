@@ -46,13 +46,14 @@ fi
 source ../venv-xpu/bin/activate
 export SYCL_CACHE_PERSISTENT=1 PYTORCH_ALLOC_CONF=expandable_segments:True TRITON_DEFAULT_BACKEND=intel
 
-# --seed-mix: drawing 40/40/20 does NOT yield a 40/40/20 ACCEPTED corpus.
-# Measured 2026-07-23 on the first 4.28M of v2: acceptance is 82.5/58.8/51.6%
-# and mean length 650/766/768, so a code seed returns 396 usable tokens vs a
-# general seed's 536 — the corpus landed at 45.3/38.0/16.7 by token. These
-# weights over-draw code+math so the FULL 12M corpus lands on 40/40/20,
-# compensating for the drift already banked. Recompute them if the target,
-# the filters, or the measured acceptance rates change.
+# --seed-mix: drawing the target ratios does NOT yield those ratios in the
+# ACCEPTED corpus — code accepts at ~half general's rate and its samples are
+# shorter, so a code seed returns 396 usable tokens vs a general seed's 536
+# (measured 2026-07-23). These weights over-draw code+math to compensate.
+# TARGET CHANGED 2026-07-27 to a UNIFORM accepted corpus (was 40/40/20), matching
+# the uniform _MIX_RATIOS — code was the dose-limited laggard (@52k probe), so
+# more code, in both the real mix AND the teacher corpus. Recompute if the
+# target / filters / measured acceptance rates change.
 exec python -u -m tools.gen_teacher_corpus --device "$DEVICE" --trust-remote-code \
   --out-dir "$OUT_DIR" --target-tokens "$REMAIN" --batch 30 --prealloc-cache \
-  --seed-mix 'general=0.3211,math=0.4237,code=0.2552' --telemetry
+  --seed-mix 'general=0.2823,math=0.3361,code=0.3816' --telemetry

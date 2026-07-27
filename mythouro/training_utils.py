@@ -602,10 +602,15 @@ class LoopCurriculum:
 # pretraining run that wants reasonable code+math competence in addition to
 # general web text. Adjust here, not via a flag — these ratios are a strong
 # determinant of what the model can actually do and deserve to be reviewed.
+# 2026-07-27: made UNIFORM (was 0.40/0.40/0.20). The @52k probe showed code is the
+# dose-limited laggard — its α=0.0 is structured-but-repetitive / occasionally
+# number-blobs, while general/math (2× the tokens) are coherent. Code got the
+# fewest tokens (20%), so raise it to ~1/3 to test whether the code weakness is
+# quantity, not difficulty. (Reversible knob; general/math drop 40→33.)
 _MIX_RATIOS = {
-    "general": 0.40,
-    "math":    0.40,
-    "code":    0.20,
+    "general": 0.34,
+    "math":    0.33,
+    "code":    0.33,
 }
 
 
