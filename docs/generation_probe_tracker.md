@@ -823,6 +823,47 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-07-26 — 🔬 @46,000 DOMAIN-ALIGNED SWEEP (collapse_metrics, greedy vs T=0.8): artifact-vs-real split
+
+Broadened the student-only greedy probe to domains that match training + mission: **general / math /
+code / medical / science**, 8 each (40 core) + chat/qa OOD (`--probe-set all`, expanded 2026-07-26).
+Ran it **greedy** and **T=0.8 top_k=40** on 46,000, so greedy-vs-sampled separates decode-artifact
+from real degeneracy. (Bug found + fixed en route: sampled `--generate` on XPU segfaulted — `topk`/
+`multinomial` are on the XPU-segfault list; now samples on CPU. commit 94906d5.)
+
+**Greedy baseline (harsh — argmax loops):** 33/40 core not-degenerate; 7 hard collapses in exactly TWO
+attractors — **`**` markdown** (transformer, chest-pain, Newton) and **giant-number spam `100000…`**
+(sum, probability, speed-of-light, DNA). Code strongest (7/8 valid Python). Dominant non-collapse mode
+is grammatical phrase-looping ("the concept of the concept…").
+
+**Sampled (T=0.8) splits artifact from real:**
+- **`**` + phrase-loops → BREAK** under sampling (chest-pain, Newton, binary_search escape to varied
+  text). ⇒ **decode artifacts; the distribution underneath is healthy.**
+- **Giant-number attractor → PERSISTS** (sum, probability, transformer still fall into digit-spam under
+  sampling). ⇒ **a REAL degeneracy pocket on numeric-answer prompts** — a genuine weakness (candidate for
+  the unlikelihood-training lever / better math data), not something sampling or tokens alone clears.
+
+**New diagnostic — CJK leakage = a diffuseness/undertraining marker (owner's catch).** Sampled runs emit
+occasional Chinese characters (e.g. inside a code docstring: `""" 臰天…`). Mechanism: the Ouro tokenizer
+is **multilingual**, but the student trained **English-only** (FineWeb-Edu / open-web-math / codeparrot /
+English teacher text), so it never learned to *suppress* the CJK tokens — they keep residual probability.
+Greedy never shows them (argmax is always the confident English token); **top-k sampling reaches the tail
+wherever the distribution is flat/uncertain**, so CJK surfaces exactly at the model's least-trained points.
+⇒ Chinese-in-output is a **marker of local distribution diffuseness / undertraining**; it should recede as
+training sharpens the distribution. Weaker domains → flatter → more leakage (the domain-level version of
+"lack of tokens on that subject").
+
+**Medical + science (mission/generalisation, NEW sets):** 7/8 and 6/8 not-collapsed; they **speak the
+domain vocab** (infection, disease, blood pressure / chemical, atoms, elements) but produce **no facts** —
+grammatical themed filler. Correct for domains **not distilled on yet**: vocabulary generalises, facts
+don't. This is the **pre-medical-SFT baseline**; not-collapsing is the win, facts come with the SFT phase.
+
+**Two instruments, and why keep both** (see the READ-FIRST banner): greedy collapse_metrics = harsh
+diagnostic that EXPOSES attractors + the untrained tail; sampled ≈ real use. Greedy-vs-sampled is now the
+standard way to tell an artifact from a real weakness. Raw: `reports/collapse_metrics_46000_xpu_aligned.txt`
+(greedy) + `…_aligned_t08.txt` (sampled).
+
+
 <!-- ===== moved from docs/roadmap.md (2026-06-27 doc reorg) ===== -->
 
 ## Test Prompts
