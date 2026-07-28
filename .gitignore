@@ -451,3 +451,7 @@ flycheck_*.el
 
 # Teacher-generated corpus (tools/gen_teacher_corpus) — large, regenerable
 data_teacher*/
+
+# Transient run-chain markers (run_leg_and_probe.sh) — control files, not results
+reports/leg_*_DONE
+reports/leg_*_FAILED

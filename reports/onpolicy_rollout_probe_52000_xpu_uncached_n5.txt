@@ -1,0 +1,93 @@
+[probe] loaded checkpoints_onpolicy_fixed/step_0052000.pt (step 52000) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.08 [0.04-0.14] | distinct1 0.59 [0.38-0.71] | distinct2 0.90 [0.77-0.98] | n=5
+    e.g.: ' start building the water that I was already having a fire that could be really dangerous.\n"I never had a lot of other people on the whole town in the summer because the very good idea is that each year you need to go to the city of your country. How do you think you can\'t make a bad things with this kind of idea in the region that there is some other kind of fire you should use. It makes it impossible for them to come up with.'
+
+  α=0.25 | top_share 0.08 [0.07-0.10] | distinct1 0.62 [0.53-0.69] | distinct2 0.92 [0.89-0.96] | n=5
+    e.g.: " keep the windows open and in the next two steps: \n\n1. We will try to make the 2nd and 2nd from the second one's original solution to the final step. The next step is to add that and then, in the middle of the 5th step, as it would be \nif we want to find out a few questions then I found a few points on this.\nSo how to do this?\n\nThe next step is"
+
+  α=0.5  | top_share 0.10 [0.07-0.15] | distinct1 0.61 [0.59-0.66] | distinct2 0.89 [0.84-0.94] | n=5
+    e.g.: ' go the zoo to visit the penguins, but the next day the weather suddenly, I could only get through the door to the town and I could feel it all up to the next. \n  This will be true, which is a possible conclusion:\n  A. For both the first day and the second day, we do not know the value of the next month.\n  B. For the first day the last day of the month that will be an even number.\n  C'
+
+  α=0.7  | top_share 0.09 [0.07-0.11] | distinct1 0.65 [0.64-0.68] | distinct2 0.93 [0.92-0.95] | n=5
+    e.g.: ' go to the outskirts of the capital of Berdram, which was the third part of the contest to collect coins. For each of the five consecutive integers, you have to select exactly one to start a sequence. These numbers should be the numbers in the first and third parts. These numbers can be written in a string of length at least 10 characters, with exactly one space between each pair of digits. But in this round, you won’t have to write the'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.15 [0.10-0.25] | distinct1 0.53 [0.41-0.57] | distinct2 0.81 [0.59-0.88] | n=5
+    e.g.: ' the development of a single disease. The presence of the following symptoms may be caused by the following symptoms:\n\n• A single-type (the only one that the disease is still known)\n\nA. C. is a type of a patient with a large blood-\n\n• C. F. may be the problem with the first condition\n\n• C. has a unique\n\nThe most common form of a health problem is the symptoms\n\n• For'
+
+  α=0.25 | top_share 0.09 [0.06-0.10] | distinct1 0.61 [0.56-0.66] | distinct2 0.92 [0.83-0.99] | n=5
+    e.g.: ' antibiotics and other related health care.\n- The role of human factors in the health of a bacterial and/or species affected by the infection of any kind needs to ensure that the patient is being infected by the diseases.\n- The lack of a good antibiotic in the treatment of bacterial substances that are not related to the infection and the risk of the bacteria or other related factors can be influenced by the condition of infectious diseases.\n- In case of the situation where any other health'
+
+  α=0.5  | top_share 0.06 [0.05-0.07] | distinct1 0.67 [0.61-0.73] | distinct2 0.94 [0.91-0.97] | n=5
+    e.g.: " antibiotics, which are medications developed to target an unorganized, and therefore can’t be treated. For the past several days, I had developed an E. coli bacteria, which was a. and that’s why I had to take an antibiotic and now I feel so much more better. It was just an example of how the people who don't look for their own treatment and don’t do the same things as the time they are to do, but, even if"
+
+  α=0.7  | top_share 0.12 [0.08-0.16] | distinct1 0.54 [0.43-0.68] | distinct2 0.82 [0.72-0.96] | n=5
+    e.g.: ' antibiotics. For parasitic infections, anthelmintics or antiparasitic drugs might be used to target a high prevalence in the gut.\n\nThe question is whether a patient with a parasitic infection or a bacterial infection would be at the same stage 1 and stage 1 would have a higher prevalence due to a 1-year follow-up. Since we cannot distinguish an initial stage from a subsequent stage, this leads to a problem-outcome-associated outcome'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.09 [0.07-0.10] | distinct1 0.61 [0.58-0.65] | distinct2 0.91 [0.88-0.94] | n=5
+    e.g.: ' the risk of developing a high-quality medical practice, leading to a low-risk and even risk of a high-risk, or any new disease and new treatment.\n\nThere are a variety of medications that are designed to reduce the degree of health risks during the treatment and for more than three factors. The overall focus is to make sure that the health of the disease is the same as the health and lifestyle of the patient who gets a proper, but no information about the'
+
+  α=0.25 | top_share 0.12 [0.05-0.27] | distinct1 0.59 [0.44-0.69] | distinct2 0.86 [0.66-0.98] | n=5
+    e.g.: ' increased thirst, and excessive pain and tingling feelings.\n\nSwe are given to the patients, which are not necessarily related to many of the patients who are at least 20% of the same number of people with diabetes, for example, people with diabetes are more likely to experience severe symptoms to treat type 23.5.\n\nThe first step would be to check their blood sugar levels so that we can reduce the risk of the disease that can occur.'
+
+  α=0.5  | top_share 0.08 [0.05-0.14] | distinct1 0.60 [0.43-0.71] | distinct2 0.88 [0.74-0.97] | n=5
+    e.g.: " increased thirst (polpolad-rra or p-polodra) and a significant decrease in the rate of symptoms in the upper\n\nQuestion: What are the symptoms of non-insulin-dependent diabetes? Answer: Symptoms include the accumulation of the excess of the body's health issues, including a decrease in the likelihood of serious health issues.\n\nQuestion: Which two types of diabetes are used for a specific purpose? Answer: The number of severe symptoms in"
+
+  α=0.7  | top_share 0.19 [0.06-0.46] | distinct1 0.50 [0.33-0.62] | distinct2 0.77 [0.58-0.87] | n=5
+    e.g.: ' increased thirst, or politysis\n\nBut how about the actual number of symptoms?\n\nI need to recall the typical list.\n\nFor type 2 diabetes:\n\nThe main symptoms are similar to symptoms of the metabolic syndrome:\n\nWeight gain, not loss.\n\nWhat about polyuria and related, that is, needing to pee a lot.\n\nI can think that these are common symptoms that most common with both.\n\nBut if'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.21 [0.06-0.58] | distinct1 0.53 [0.14-0.75] | distinct2 0.80 [0.39-0.99] | n=5
+    e.g.: " the underlying and non-toxic. For example, we have the patient with low-pressure and small, well-treated, non-movable, or not – the high-density high-quality, high-risk, disease, and non-finally-in-patient (the most important aspect to do so) - we've done what they would ideally (if you have already taken the same- or else-to-divid)\n\nQuestion: What are"
+
+  α=0.25 | top_share 0.10 [0.04-0.14] | distinct1 0.60 [0.49-0.68] | distinct2 0.89 [0.78-0.97] | n=5
+    e.g.: ' the following conditions.\nWhich of the following is a risk for heart-related risks of chronic or long-duration.\nWhich of the following is a risk of having severe symptoms of severe, often in a person with mild or severe pain like a severe or excessive problems, or the type of symptoms and symptoms of a disease.\nWhich of the following are true regarding acetaminophen-induced disease and the risk of liver damage.\nTo diagnose which of the following is a major problem'
+
+  α=0.5  | top_share 0.08 [0.06-0.12] | distinct1 0.62 [0.55-0.67] | distinct2 0.91 [0.86-0.95] | n=5
+    e.g.: ' pain, inflammation, and fever. It works by adding a combination of different types of blood-fibrin-coagulation inhibitors, and the way to think of it is that it makes it more difficult for fibrin-based, which can be used to reduce the activity of the clotting. The blood-facial function of the cell-memt-lone-reversing. It can be used to treat and prevent fever or cough, or other issues in the'
+
+  α=0.7  | top_share 0.07 [0.05-0.11] | distinct1 0.64 [0.54-0.74] | distinct2 0.91 [0.85-0.97] | n=5
+    e.g.: ' pain and inflammation, but it\'s not used to directly cause weight loss.\n\nE-cigarette\n\nThe e-cigarette was developed as a healthier alternative to a tobacco that\'s a "smokeless" method of consuming an inhaled dose of e-liquid, usually over nicotine salts. The e-liquid "smoke\'s" contain a lot of propylene-glycol and sometimes some flavorings.\n\nThe aim might be the reduction of harmful nicotine-based'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.12 [0.06-0.27] | distinct1 0.41 [0.16-0.60] | distinct2 0.72 [0.32-0.88] | n=5
+    e.g.: '\n    return n - 855344292668534778006114499946217467630189635.99463327821174989888489220845560478606.000000'
+
+  α=0.25 | top_share 0.12 [0.05-0.30] | distinct1 0.52 [0.40-0.58] | distinct2 0.82 [0.69-0.87] | n=5
+    e.g.: '\n    return (x-x for x in enumerate(a)\n    ...\n\nWait, but the original problem says that two different ways to apply a different approach would be to apply a method that can be used for all functions. So, in the first step, after adding a new `m` for the original problem, the first step is to create a new type of function and create a list of functions that can be transformed with this new function.\n\nWait,'
+
+  α=0.5  | top_share 0.10 [0.04-0.12] | distinct1 0.49 [0.38-0.64] | distinct2 0.75 [0.57-0.94] | n=5
+    e.g.: '\n    nums = []\n    for i in range(n):\n        n = 1136569\n\n    return nums\n\nresult = 1\nprint(celsius_to_num)\nprint(1//3)\nprint(div(5,150))\nprint(fib(2*3, 2, False))\nprint(div(a, b))\n\nprint(1%1)\nprint(5 *'
+
+  α=0.7  | top_share 0.08 [0.06-0.11] | distinct1 0.55 [0.45-0.60] | distinct2 0.83 [0.74-0.92] | n=5
+    e.g.: "\n\n    if n is not an integer, or n <=0, return, perhaps, if not even.\n\n    else, when the function gets x, where x is not 1 or 0, you split them to smaller, but recursively.\n\nIf you think about that step, you have to decide whether the first argument is correct and what is the second step, or if you think about this in terms of a function, perhaps there's a standard way to represent"
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.18 [0.07-0.46] | distinct1 0.44 [0.31-0.62] | distinct2 0.71 [0.49-0.91] | n=5
+    e.g.: ' 2 (1 + 1 + 1) (x squared) when x = 2, x + 1, and y = 2 + 1 + 9. \n\nIn terms of the general form, we make a second derivative for the equation of the 2 + 4. The next step is going to take the solution to that. The key is that we can move the initial value when you want to calculate the value of f (the'
+
+  α=0.25 | top_share 0.14 [0.08-0.20] | distinct1 0.45 [0.19-0.67] | distinct2 0.73 [0.48-0.92] | n=5
+    e.g.: ' 17x + 3 = -7.\n\nThe solution is given by the equation x = 1 + 1 + 2 + 4 + 8 = 3 + 441 = 3 + 2 + 4 + 59 = 2 + 1, -10 + 3.\n\nQuestion 1 Answer: The problem is to find the solution of the equation y^2 + 3xy –'
+
+  α=0.5  | top_share 0.11 [0.08-0.14] | distinct1 0.47 [0.35-0.59] | distinct2 0.80 [0.67-0.93] | n=5
+    e.g.: ' 18\n\n2. A number must be divisible by 5 and 27. Find this value in terms of the 6th root of 9.\n\n2. Find the number that must be added to 5^6 to get the sixth value of -6.\n\nAnswers:\n\n1. x  = 62 (1-9) x^5 +22.675 x (30x) +4.'
+
+  α=0.7  | top_share 0.09 [0.05-0.11] | distinct1 0.50 [0.28-0.64] | distinct2 0.81 [0.63-0.91] | n=5
+    e.g.: ' 0. The solutions should start with "Solution is a list of all solutions in the complex plane." and then list the answers in any order. However your first step is to use the quadratic formula.\n\nFirst, identify the relationship between the coefficients and make a guess of one solution. Then, rewrite the equation: 0 = 168x + 0.0063x + 9. The first step is to factor your "ac.'
+
