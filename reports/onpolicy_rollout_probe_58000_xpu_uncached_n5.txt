@@ -1,0 +1,93 @@
+[probe] loaded checkpoints_onpolicy_fixed/step_0058000.pt (step 58000) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.11 [0.10-0.14] | distinct1 0.62 [0.46-0.69] | distinct2 0.90 [0.85-0.95] | n=5
+    e.g.: " start building the water that I was supposed to be in the winter. This might be better if we go to the upper level and then on the whole to the same or the other side? Or can the second option be the same thing which he was really interested in the best for him as you can't see. On the opposite of the one that is the only way in this case the other side will require something different. The first thing is that there have been some of these"
+
+  α=0.25 | top_share 0.12 [0.08-0.17] | distinct1 0.56 [0.53-0.60] | distinct2 0.87 [0.84-0.92] | n=5
+    e.g.: " keep the windows open and in the next two steps: 1. What is the temperature at the bottom of the surface of the sand with the second layer's heat and the first place they do? 2. At 5 am, if there is a heat transfer of the first in the base case, and 3 the third to 3. (If the first row shows a 3rd line, then the third part would change).\n\nThe next part is"
+
+  α=0.5  | top_share 0.11 [0.07-0.19] | distinct1 0.59 [0.49-0.67] | distinct2 0.88 [0.76-0.97] | n=5
+    e.g.: " go the zoo to the water, and we'll take a picnic to take it to the garden. We'll also check on the time of the zoo, to not miss the feeding for this 2 pm in the park. Let's just do my homework and also, I don't really know if you want to know what's the time difference between your city. So, it's also possible that I have a lot of time to look for a little or we can also take"
+
+  α=0.7  | top_share 0.10 [0.08-0.11] | distinct1 0.60 [0.45-0.68] | distinct2 0.88 [0.73-0.94] | n=5
+    e.g.: ' go to the outskirts of the capital of Berdram\n\n.\n\nThere was, at the time, a little money. Our money was exhausted, so the people had to look for the simplest, but a bit risky.\n\nOur only chance was to find a solution for the first problem in the same contest, but the third one.\n\nSo, there were many problems at the same time, and we thought that we should not take\n\nany of'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.13 [0.07-0.25] | distinct1 0.54 [0.46-0.66] | distinct2 0.83 [0.71-0.93] | n=5
+    e.g.: ' the treatment of a common medical condition.\n\nThe following are the key steps to ensure that the medication is effectively\nin an unassu(s)\nin the following steps are:\n\nA. C. B.\nA. A. B.\nF\n1. C. F. C.\n2.\n\nI\n\n[L\n\nG\n\nT\n\n1. A. A.\n\nA\n\na\n\n'
+
+  α=0.25 | top_share 0.10 [0.05-0.16] | distinct1 0.58 [0.49-0.66] | distinct2 0.89 [0.78-0.96] | n=5
+    e.g.: " antibiotics and can increase the patient's health-related health and potentially reduce hospitalizations. It is not essential for the immediate treatment of the disease in cases of severe illness and if the risk of a severe infection is lower than the cost of a full antibiotic with the antibiotic in the treatment of the affected patient, but if it is possible to use more than one of them to eliminate these symptoms. Another study on the cause of severe infections, which is linked to the presence of any other type"
+
+  α=0.5  | top_share 0.07 [0.05-0.10] | distinct1 0.62 [0.55-0.70] | distinct2 0.90 [0.83-0.97] | n=5
+    e.g.: ' antibiotics, which are medications that are not antiv- or, they are either taken in a common.\nSo, while using "antib-related" means that it would help with the infection, and that\'s a big deal of the time.\n\nQuestion: What are some common antibiotics used in an antibiotic? Answer: Sulfaa, which is commonly used in an antibiotic-related antibiotic, and the same is true in the body.\n\nQuestion: What is the'
+
+  α=0.7  | top_share 0.09 [0.05-0.11] | distinct1 0.62 [0.45-0.70] | distinct2 0.89 [0.68-0.98] | n=5
+    e.g.: " antibiotics. For parasitic infections, anthelmintics or antimal, parasites are usually treated with specific antiparasitic, and antiviral medications.\n\nAlso, in the list, the other types for infection have specific drugs.\n\nSo in the 1950s, antibiotics used to be prescribed for a bacterial infection, and that is why doctors prescribed antibiotics for bacterial, and they didn't do anything for the other treatment, but they also can't, because"
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.21 [0.07-0.58] | distinct1 0.47 [0.10-0.61] | distinct2 0.73 [0.17-0.92] | n=5
+    e.g.: ' the risk of causing this condition.\n\nQuestion: Can the current situation of the symptoms of some conditions or disease or other disease or any of the disease of the disease, like the same thing or the disease that most could be of the type that most commonly referred to as a disease in the disease and thus the type of disease, and the occurrence of a number of other conditions causing the cause of this disease.\n\nIn the past of the current treatment, the person with'
+
+  α=0.25 | top_share 0.14 [0.06-0.31] | distinct1 0.54 [0.38-0.67] | distinct2 0.80 [0.54-0.97] | n=5
+    e.g.: ' increased thirst blood glucose.\nDave, and others are more likely to be able to cope with the treatment of such as the condition of the acute muscle disease of the disease. Although several patients with type 23, there are less than one, less likely to have serious health problems, these are not mentioned in the recent article. However, many adults who are unable to provide 128 or more more of the most common and most often used the risk of a'
+
+  α=0.5  | top_share 0.07 [0.05-0.11] | distinct1 0.62 [0.47-0.71] | distinct2 0.91 [0.78-0.97] | n=5
+    e.g.: ": \n\n- Inability-dependent Insulin or Oral TKAs \n\nWhat does the primary difference between a specific test case and a general test or procedure? \n\nWhich of the following is a benefit of adding a more appropriate testing option?\n\nWhat is the meaning of the word 'nomenclature of clinical items and incompatibility of substances' after the number? \n\nIn a case that is not a specific case, how does the number '2.0"
+
+  α=0.7  | top_share 0.18 [0.06-0.48] | distinct1 0.53 [0.32-0.62] | distinct2 0.78 [0.59-0.91] | n=5
+    e.g.: " increased consumption of sugary foods and beverages\n\nB: A person's diet is high in the same foods that promote the disease\n\nC: Type 2\n\nD: It's not a healthy diet, but the person has never had a problem with their blood, or that it's hard to explain\n\n\n\n\nQuestion 7\n\nC\n\nQuestion 84\n\nC: A person's\n\nQuestion 7\n\nC: The"
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.21 [0.07-0.53] | distinct1 0.42 [0.12-0.65] | distinct2 0.70 [0.23-0.96] | n=5
+    e.g.: ' the H-like (i.e., O-2/C, DOC or MOL) and other forms of the OPS163003. But also the GIFF is not found, but the P3/V3322500. (but possibly an additional case of an "ind)\n\nPossibly the N-3/S are less or else-derived) but the P851000'
+
+  α=0.25 | top_share 0.09 [0.06-0.12] | distinct1 0.59 [0.53-0.67] | distinct2 0.88 [0.82-0.95] | n=5
+    e.g.: " the bacteria to reduce the inflammation of the body.\n\nThere is a possibility that the patient has to be aware of the inflammation in the body, but it's always the body of the body.\n\nThese symptoms have been caused by the risk of the heart problems, but the type will not be to prevent blood pressure.\n\nBut it has to be considered too hard to maintain the body so you have to lower than normal blood, so it is important to be responsible"
+
+  α=0.5  | top_share 0.09 [0.06-0.20] | distinct1 0.55 [0.33-0.69] | distinct2 0.85 [0.64-0.95] | n=5
+    e.g.: " pain, inflammation, and fever. It works by adding a combination of different types of blood-fibrinolytic and in addition, and the blood's blood is an active ingredient.\n\n\n#\n\nThe patient-treated, which can be used to reduce the risk of development of heart disease in patients who are at risk of developing high blood pressure after treatment with the other symptoms of heart attacks,\n\n# but how does it work atenol or other issues in the"
+
+  α=0.7  | top_share 0.08 [0.05-0.17] | distinct1 0.69 [0.61-0.72] | distinct2 0.94 [0.89-0.98] | n=5
+    e.g.: " pain and inflammation, but it's not used to directly cause weight loss.\n\nEI: This is the exchange index, a measure used for the amount of body water that can be exchanged by the kidneys.\n\nF: The F-value is the number of units of a compound, usually a protein or enzyme, that can be produced by a particular method.\n\nG: The G-factor is a value that changes the appearance of cells.\n- This"
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.10 [0.09-0.11] | distinct1 0.44 [0.27-0.66] | distinct2 0.78 [0.60-0.91] | n=5
+    e.g.: '\n    return n + 85534429 + 685347 + 7863144999 + 115467 * (-1183635.994633278211749898884892208 - (1/((20)^(2) + something) - 2.'
+
+  α=0.25 | top_share 0.13 [0.07-0.23] | distinct1 0.48 [0.41-0.52] | distinct2 0.78 [0.66-0.89] | n=5
+    e.g.: '\n    return (x-x for x, _ x < n\n    ...\n\nFuFu (x) - (y) | | - x **\n\n\n[f(x) - (f(y) - 1) / (x ** 2) * 2, for the original problem.\n\nWait, I think I\'m making a mistake in the initial problem statement.\n\nThe original problem statement for the second "f" is'
+
+  α=0.5  | top_share 0.11 [0.06-0.15] | distinct1 0.46 [0.34-0.60] | distinct2 0.76 [0.72-0.82] | n=5
+    e.g.: '\n    nums = 1, 2, 3\n    if n == 1:\n        return nums[2]\n    elif n == 2:\n        return nums[3]\n    s = max(0, n - 3)\n    k = 1 + s % l\n    k2 = 1 + 1 + 1 + 14 * (1 + k) - 4\n    b = -1\n    n_ = 0\n    m'
+
+  α=0.7  | top_share 0.12 [0.08-0.18] | distinct1 0.54 [0.42-0.65] | distinct2 0.83 [0.71-0.91] | n=5
+    e.g.: '\n\n    if n <= 0:\n\n        return []  # Or, if n is supposed to be positive, maybe just write the code assuming one call.\n\n        # But better: the standard "fibonacci sequence" is usually considered starting at 1 and 2 - 1, 1 or similar. Maybe the problem expects starting 1 and 2, so for n=1, it is [0], but if the problem\'s examples.\n\n    # Wait, the'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.12 [0.08-0.16] | distinct1 0.44 [0.32-0.57] | distinct2 0.73 [0.62-0.87] | n=5
+    e.g.: ' 24.\n\nThe roots of the first line are:\n\nThe roots of the first line (for example, given from y = 1, y + 9), where the first line (2) is replaced by 1 (since 3 is less than 1 + 4).\n\nAnother example is:\n\nLet’s consider three different pairs of terms. For example, a + (2x * 5) — (1'
+
+  α=0.25 | top_share 0.11 [0.06-0.12] | distinct1 0.50 [0.34-0.62] | distinct2 0.81 [0.69-0.88] | n=5
+    e.g.: ' - 7/2 - 10 x^2. Find the sum of two or more integers, and when.\n\nSolution.\n\nWe can write two solutions which are the same.\n\nFor the expression we are given, we can solve the equation by isolating the second highest power of these and then by using either a number.\n\nWe can also find the number where the equation is true, and solve the expression using the factor of the quadratic equation'
+
+  α=0.5  | top_share 0.10 [0.08-0.16] | distinct1 0.46 [0.23-0.60] | distinct2 0.78 [0.61-0.94] | n=5
+    e.g.: ' 18\n\n2. A number must satisfy the three conditions: the number is a 3 1/2.\n\nSolve: 7(x + 4) - 12 + (-2(x - 14), (x + -6), x(4 - 1))/5\n\nSolve: (1-sin(y))^2 - 2x + 3 ( (1-1)^2 +'
+
+  α=0.7  | top_share 0.10 [0.07-0.14] | distinct1 0.48 [0.27-0.57] | distinct2 0.77 [0.60-0.85] | n=5
+    e.g.: ' 0. The solutions should start with "Solution is a list of all solutions in the complex plane." and then list the answers in any order. However your first step is to use the quadratic formula.\n\nFirst, identify the coefficients:\n\nThe quadratic equation given is x^2 - 5x + 6 = 0 or 8x + 0x^2 + 0x^2 + 1x = 0.\n\n**'
+
