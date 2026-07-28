@@ -78,7 +78,12 @@ uncorrected this starves exactly the slice the 07-21 A/B flagged as still regres
 training `MixedDataset`** (`training/distill.py`) and must never be moved for harvest reasons —
 hence a separate flag. Weights `general=0.3211, math=0.4237, code=0.2552` over-draw code+math
 so the **full 12M corpus** lands on 40/40/20, compensating for the drift already banked.
-Recompute if the target, the filters, or the measured acceptance rates change. **Generalised
+**⬆ TARGET CHANGED 2026-07-27 → UNIFORM.** The @52k probe showed code is the dose-limited
+laggard, so both mixes moved to ~1/3 each: `_MIX_RATIOS` is now 0.34/0.33/0.33, and the
+harvest seed-mix was recomputed to `general=0.2823, math=0.3361, code=0.3816` for a *uniform
+accepted* corpus. The existing 8.65M stays at its as-harvested ~45/38/17 blend (it shifts
+uniform as new sessions land). Recompute if the target, the filters, or the measured
+acceptance rates change. **Generalised
 lesson (the sibling of the head-seeding lesson above): the seed distribution is not the corpus
 distribution — anything downstream of a filter must be measured at the OUTPUT, not assumed
 from the input.**

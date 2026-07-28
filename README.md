@@ -45,7 +45,7 @@ hybrid that draws on three distinct lineages but is identical to none of them:
 - A single-card consumer-hardware training recipe (8-bit Adam, staged seq-len, growth-based scaling)
 - A pre-registered **MoE-vs-dense ablation** at matched active compute, and the measured depth/calibration findings feeding the MoDr direction — [`docs/roadmap.md`](docs/roadmap.md)
 
-**Current state (updated 2026-07-21):** the long-standing blocker — **free-running
+**Current state (updated 2026-07-27):** the long-standing blocker — **free-running
 generation degeneration** at small scale — was broken in stages. It
 was diagnosed as **exposure bias** (a learned repetition attractor; *not* a
 recurrent/hidden-state collapse — the recurrent representations stay healthy,
@@ -86,10 +86,37 @@ throughput problem.
    lifecycle ladder: [`docs/teacher_corpus_plan.md`](docs/teacher_corpus_plan.md)
    · [`docs/teacher_data_curriculum.md`](docs/teacher_data_curriculum.md).
 
-**Where that leaves it:** fluency is solved; *meaning* is now a **data-quality**
-problem being attacked with teacher-generated data, with a measured go/no-go
-(does teacher data keep paying off → lean in; does it plateau too → grow the
-model). Full record:
+5. **The confirming A/B — the go/no-go came back POSITIVE (2026-07-25/27).** The
+   first teacher-data result was a *lower bound*: it trained on a v1 corpus later
+   found to be ~10% license boilerplate (a head-seeding bug) and code-starved, and
+   code seeds *regressed*. Three corpus fixes followed — random-window seeding +
+   a boilerplate filter, an **accepted-mix correction** (drawing 40/40/20 does not
+   *yield* 40/40/20 once per-source acceptance and length differ), and **shuffled
+   cross-session seeding** (every harvest session had been re-reading the same
+   source documents: 6,038 rows came from only 3,886 distinct seeds). Re-running
+   the A/B on that clean corpus **fixed the code regression**: the unaided
+   `def fibonacci(n):` probe went from a v1 **giant-float-literal blob** to real
+   Python — `def` / `return` / f-strings / control flow. Aggregate degeneracy also
+   recovered below the plateau floor. **Verdict: the plateau is a data-quality
+   wall — lean in.**
+
+**Where that leaves it:** fluency is solved, and the data-quality thesis is now
+*confirmed*, not hypothesised — clean teacher data produced structured code where
+dirty data produced blobs. The open frontier is **which** data: the current
+experiment makes the training mix **uniform** (code 20% → 33%) to test whether the
+remaining code weakness is simply *dose* — code had been the least-fed domain and
+is the one that still degrades unaided. Beyond that: more seed domains
+(medical, the mission domain), then the measured student↔teacher parity gate that
+decides *grow the student* vs *graduate the teacher*
+([`docs/teacher_data_curriculum.md`](docs/teacher_data_curriculum.md)).
+
+> ⚠ **Reading the probes:** degeneracy metrics (`top_share`, `distinct1`) are
+> *proxies* and invert on structured output — valid code repeats keywords, so it
+> scores *worse* than a degenerate unique-digit blob. **When the metric and the
+> text disagree, the text wins.** See the READ-FIRST banner in
+> [`docs/generation_probe_tracker.md`](docs/generation_probe_tracker.md).
+
+Full record:
 [`docs/training_runs.md`](docs/training_runs.md) ·
 [`docs/generation_probe_tracker.md`](docs/generation_probe_tracker.md) ·
 [`docs/onpolicy_plan.md`](docs/onpolicy_plan.md).
@@ -148,7 +175,13 @@ rig is native Ubuntu with a single **48 GB Intel Max 1100** (`torch.xpu`) carryi
 teacher **and** student on one card — the current-generation training environment —
 hosted on a **Xeon Platinum 8480+ (Sapphire Rapids, 56C/112T, QYFS sample)**, an
 all-Intel-datacenter-sample build on stock drivers (the CPU provides the card's
-PCIe Gen5 x16). Both GPUs are validated end-to-end.
+PCIe Gen5 x16). Both GPUs are validated end-to-end. **Incoming (acquired
+2026-07-24, not yet installed):** a **Max 1550 OAM** (2 tiles × 64 GB = 128 GB,
+same Ponte Vecchio / Xe-HPC silicon and driver path, on an OAM→PCIe adapter) — it
+enumerates as two independent `xpu:N` devices, which ends the current
+*harvest-**or**-train* contention on one card and roughly doubles harvest via two
+parallel processes. Arrival checklist (tile-binning via `sycl-ls`, 600 W cooling,
+ReBAR) in [`docs/hardware_options.md`](docs/hardware_options.md).
 
 Beyond the GPUs, several other configs were **benchmarked/smoke-tested but not
 adopted** as the training path (all recorded in

@@ -69,6 +69,18 @@ resident (~2.7 GB headroom). v2 acceptance note: 67% vs v1's 75% (mid-document r
 seeds produce slightly more `low_distinct1` rejects — the price of the boilerplate fix,
 net hugely positive). New rate ≈ **8.7M tok/day**.
 
+**📉 SUPERSEDED — plan with 93 tok/s, not 101 (measured 2026-07-24).** The 101 above was an
+instantaneous read on the pre-fix config. The true sustained figure, from a **13-hour
+production session** (4,371,207 accepted tok / 46,860 s): **93.3 accepted tok/s ≈ 8.06M
+tok/day.** The ~7% shortfall is entirely **acceptance rate** (64.7% vs ~67%), not decode
+speed — the two quality fixes deliberately draw harder seeds: the accepted-mix correction
+over-draws code (which rejects most), and cross-session shuffling pulls fresh mid-document
+content (more `low_distinct1`, and boilerplate reappears at ~131/session). **That is the
+measured price of the three corpus-quality fixes: ~7% throughput, all of it in acceptance.**
+Worth it — those fixes are what made the confirming A/B land. **Use 93 tok/s for scheduling.**
+(The uniform-mix change of 2026-07-27 over-draws code further, so expect a further small
+acceptance dip on the next harvest.)
+
 **⚠ Manifest bug found (2026-07-23, fixed in code for future sessions):** `MANIFEST.json`
 counters were per-session — each relaunch reset and overwrote, so multi-session corpora
 under-reported (v2 read "2.13M" when 2.84M were on disk). Now the manifest keeps a

@@ -23,6 +23,16 @@ the README "Acknowledgements" and "Licensing & data provenance" sections.
 **Full research credits:** every paper, dataset, and tool that informed the design
 is catalogued in `docs/references.md` (with how each was used).
 
+**⏱ LATEST (2026-07-27) — the data-quality thesis is CONFIRMED; now testing dose.** The
+confirming R=0.2 A/B on the **clean v2 corpus** (boilerplate-fixed + accepted-mix-corrected +
+cross-session-shuffled) **fixed the code regression**: unaided `def fibonacci(n):` went from a
+v1 giant-float-literal blob to real Python (`def`/`return`/f-strings). Aggregate α=0.0
+degeneracy recovered back under the ~0.165 plateau floor after a mid-leg spike (the
+breakthrough-then-recover pattern). **Decision: lean in.** Current experiment — the training
+mix is now **uniform** (code 20%→33%) to test whether the residual code weakness is simply
+*dose*, since code was the least-fed domain. Detail: `docs/generation_probe_tracker.md`
+(07-25/27 entries). Everything below is the standing longer-form record.
+
 **Current status (2026-06-17, updated 2026-07-21):** the generation-degeneration investigation is
 complete — it is **exposure bias** (a learned repetition attractor), **not**
 recurrent/hidden-state collapse (reps are healthy; verified with
