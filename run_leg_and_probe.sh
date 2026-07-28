@@ -36,27 +36,50 @@ python -u -m training.distill \
   --teacher-data-ratio 0.2 --teacher-data-files 'data_teacher_v2/shard_*.jsonl' \
   --ckpt-every-mins 15 --ckpt-milestone-every 2000 --keep-last 5 \
   --num-workers 0 --trust-remote-code --log-every 5 \
-  --ckpt-dir "$CKPT_DIR" || exit 1
+  --ckpt-dir "$CKPT_DIR" || true      # exit code is NOT trusted — see below
 
+# Verify by ARTIFACT, not exit code. torch/XPU can crash during interpreter
+# teardown ("Fatal Python error: PyGILState_Release ... finalizing") AFTER the
+# run has completed and saved — exit 1 on a fully successful leg. That happened
+# 2026-07-28: step_0058000.pt was written at 15:54:21, the chain died 15:54:22,
+# and the probe never ran. So: did we reach the target checkpoint?
 FINAL=$(ls -t "$CKPT_DIR"/step_*.pt | head -1)
 STEP=$(basename "$FINAL" | sed 's/step_0*//; s/\.pt//')
-echo "=== training done at step $STEP ($FINAL) ==="
+if [ "$STEP" -lt "$TARGET" ]; then
+  echo "=== training stopped EARLY at $STEP (< $TARGET) — not probing ==="
+  echo "stopped early at $STEP (target $TARGET) $(date)" > "$FAIL"
+  exit 1
+fi
+echo "=== training done at step $STEP ($FINAL) — target reached ==="
+
+# Each probe is likewise checked by ARTIFACT (did it write a plausible report?),
+# not by exit code — `pipefail` + a teardown crash would otherwise abort the chain
+# after the work was already done and written.
+check_report() {                      # $1 = path, $2 = min lines expected
+  if [ ! -s "$1" ] || [ "$(wc -l < "$1")" -lt "$2" ]; then
+    echo "=== probe produced no usable output: $1 — stopping ==="
+    echo "probe failed: $1 $(date)" > "$FAIL"; exit 1
+  fi
+}
 
 echo "=== [2/5] rollout probe (α-ladder, uncached n=5) ==="
 python -u -m tools.onpolicy_rollout_probe \
   --ckpt-dir "$CKPT_DIR" --student-device xpu:0 --teacher-device xpu:0 \
   --teacher-id "$TEACHER" --trust-remote-code --no-kv-cache --samples 5 \
-  | tee "reports/onpolicy_rollout_probe_${STEP}_xpu_uncached_n5.txt" || exit 1
+  | tee "reports/onpolicy_rollout_probe_${STEP}_xpu_uncached_n5.txt" || true
+check_report "reports/onpolicy_rollout_probe_${STEP}_xpu_uncached_n5.txt" 20
 
 echo "=== [3/5] aligned sweep — greedy ==="
 python -u tools/collapse_metrics.py -c "$FINAL" --device xpu:0 --generate \
   --probe-set all \
-  | tee "reports/collapse_metrics_${STEP}_xpu_aligned.txt" || exit 1
+  | tee "reports/collapse_metrics_${STEP}_xpu_aligned.txt" || true
+check_report "reports/collapse_metrics_${STEP}_xpu_aligned.txt" 20
 
 echo "=== [4/5] aligned sweep — sampled T=0.8 ==="
 python -u tools/collapse_metrics.py -c "$FINAL" --device xpu:0 --generate \
   --probe-set all --temperature 0.8 --top-k 40 \
-  | tee "reports/collapse_metrics_${STEP}_xpu_aligned_t08.txt" || exit 1
+  | tee "reports/collapse_metrics_${STEP}_xpu_aligned_t08.txt" || true
+check_report "reports/collapse_metrics_${STEP}_xpu_aligned_t08.txt" 20
 
 # Leg + probe are the result — mark DONE now so the watcher pings and the probe
 # gets read WHILE the harvest below runs. Everything past here is bonus.
