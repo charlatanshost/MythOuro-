@@ -119,6 +119,35 @@ it scales a recipe that's already debugged and measured, so the money isn't
 wasted. The cheap discipline now is *what makes the expensive run later pay
 off.*
 
+**📉 The token-efficiency thesis — where we actually stand (2026-07-27).** The bet is
+*coherence at far fewer tokens/params than convention says*. Current position: **~200M
+lifetime tokens on a 278M model ≈ 1/28th of Chinchilla-optimal** (20 tok/param → ~5.6B), and
+modern practice trains well past Chinchilla, so the real gap is wider. At that budget we
+produce grammatical English, **structured Python**, and coherent math-register prose. That is
+the evidence the thesis is working.
+
+It is not luck — **four deliberate choices are each token-efficiency bets**, three now
+empirically validated:
+| lever | why it buys capability per token | status |
+|---|---|---|
+| **Distillation** (soft logits) | a full distribution per token ≫ a one-hot label | working |
+| **On-policy / GKD** | learns from its *own* errors — fixed what raw tokens could not | ✅ the collapse cure |
+| **Teacher-generated clean data** | quality substituted for quantity where web tokens had stalled | ✅ the R=0.2 A/B verdict |
+| **RDT + ACT** | more *compute* per token instead of more tokens | the core architecture bet, unproven at scale |
+
+**⚠ The boundary — hold this calibration.** Per the Parametric Compression-Coverage
+Hypothesis (ideas.md, VibeThinker): **reasoning compresses into a small parameter core;
+knowledge needs coverage.** Our probes show exactly that split — medical and science
+**speak the domain vocabulary fluently but produce no facts** (@46k/52k aligned sweeps).
+So the honest claim is:
+- **Coherence / fluency / reasoning at low tokens+params — YES**, evidence is real, we are close.
+- **Knowledge at low tokens — NO**, and no training recipe fixes it. That is an architecture
+  split (→ retrieval / MemPalace), not a data problem. Vocabulary-without-facts in an
+  untrained domain is the EXPECTED result, not a regression.
+- **Code straddles both:** code *reasoning* (control flow, structure) compresses like math and
+  is already visible; code *knowledge* (APIs, library idioms) is coverage and will stay thin
+  at small scale regardless of diet. Know which half a probe is testing.
+
 **The three differentiators — and they COMPOUND with scale, they're not a
 small-model consolation:**
 1. **Calibrated honesty.** Most small local models hallucinate with total

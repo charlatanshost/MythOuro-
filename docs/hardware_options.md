@@ -442,6 +442,57 @@ GO and gets its own chassis. Decisions:
   worse than the Max's (SynapseAI is proprietary; Falcon Shores canceled; no upstream
   lifeboat like torch.xpu). A second 1100/1550 delivers the same practical scale step with
   zero porting days. Don't re-litigate without a SynapseAI-upstreaming event.
+
+### 🧭 Why hardware choice matters LESS than it feels — the architecture tax (2026-07-27)
+
+Settled after a full "should we have bought NVIDIA?" review. **Our friction is mostly
+architecture-driven and therefore PORTABLE — it follows us to any silicon.** Sorting every
+snag by root cause:
+
+**Architecture-driven (identical on any vendor):**
+- **Custom UT cache** — no library ships a preallocated Universal-Transformer cache, so we
+  hand-built `tools/prealloc_ut_cache.py` + a KL gate. Same work on CUDA.
+- **ACT / dynamic depth breaks graph compilers** — `torch.compile`, CUDA Graphs and
+  SynapseAI all choke on data-dependent control flow.
+- **Launch-bound decode** — the recurrent loop *is* millions of tiny kernels (VTune: 3.15M
+  at 0% SIMD). Lower launch overhead on CUDA, but the workload shape is unchanged.
+- **Teacher-in-loop rollouts** — an unusual training shape that makes decode dominate.
+
+**Silicon-driven (varies by card, and cheap):** XPU `SDPA`/`topk`/`multinomial` segfaults →
+manual fallbacks. CUDA: **FA2 unsupported on `cuda_cc (12,0)`** (Blackwell 5070 → we run the
+SDPA fallback *there too*), bitsandbytes version mismatch → `_configure_bnb_cuda_version()`.
+
+**The cost asymmetry is the point.** Silicon workarounds were **hours each**. The
+architecture work was the expensive part — the prealloc cache needed a spike + subclassing +
+a gate, and the cached-decode distribution bug (~1 nat KL skew) **cost a week** and corrupted
+steps 9780→12000. The dominant bill is hardware-independent, so **choose hardware on
+memory-per-dollar and availability** (which is what we did) and stop agonising. The real
+pattern is not vendor but *how new/unusual the silicon is*: Blackwell consumer was ahead of
+the library ecosystem; PVC is a niche datacenter part. Both charged a modest, one-time,
+now-paid bill.
+
+**⚖️ "Would an A100 (or Blackwell) actually help?" — ANSWERED: not much, and not for the
+reason people assume.**
+- **Raw compute:** measured 1100 = **224 TFLOPS bf16** (~56% of A100 bf16, but 48 GB vs 40);
+  a single 1550 tile *matched* an A100 on the ESIMD CFD kernels. Two 1550 tiles ≈ or beat one
+  A100, at a fraction of the price with 128 GB.
+- **The tempting argument — "CUDA Graphs would fix our launch-bound decode" — is WRONG for
+  us.** Graph capture needs static shapes *and* static control flow; **ACT early-exit has
+  neither**. It fails for exactly the reason Gaudi was rejected above; it doesn't become fine
+  because it's NVIDIA's compiler. (Partial exception: the *teacher* decode runs a fixed 4 UT
+  loops with no ACT, so graph capture is plausible for **harvest** — aim it there if ever
+  revisited; prealloc already provides the fixed-buffer substrate. Genuinely hostile for
+  on-policy training.)
+- **CUDA is not friction-free either** (see FA2/bnb above) — the "everything just works"
+  premise is false on the hardware we actually own.
+- **Verdict unchanged:** local Max hardware for daily recipe work; **rent** CUDA for a single
+  scale-up run when the token curve justifies it. Our code is already CUDA-portable (5070
+  benchmarks, `venv-cuda`, `--device cuda:0` paths, backends A/B-validated ≤0.03 nats), so
+  the scarcity of Intel-Max *rental* capacity costs us nothing — and cheap Gaudi rental hours
+  are the same false economy as buying one. **Diligence when renting: rent ONE hour first**,
+  run the suite + a short leg, and confirm the `_Capabilities` attention cascade lands where
+  expected — newest datacenter silicon carries the highest library-support risk, exactly what
+  bit us on the 5070.
 - **Cards: batch-buy 1100 ES while gray-market stock exists** (EOL supply risk, checklist #4
   above stands). Bridged pairs (Xe Link, adjacent slots); front-to-back server-chassis
   airflow retires the per-card 40 mm-fan hack; 1,600 W+ PSU (4×300 W + host); budget PVC

@@ -111,6 +111,43 @@ means ~1.5 epochs of teacher data (acceptable mild repetition — owner's call).
 data* + *sequence-level KD* (ideas.md — one build, two entries). Attacks the #1
 bottleneck (token SUPPLY), feeds main-thread #2 (the token curve).
 
+## ⚠ The RDT-teacher tax — why so much tooling fights us (documented 2026-07-27)
+
+Distilling **from another RDT** (Ouro-2.6B-Thinking, custom `modeling_ouro.py` via
+`trust_remote_code`) is a deliberate trade with a real, recurring cost. Written down because
+the symptoms keep reappearing in unrelated places and look like separate bugs.
+
+**The causal chain — one root, four hops, and it produced a live bug:**
+`RDT teacher` → ships custom modeling code → **`trust_remote_code`** → the
+`UniversalTransformerCache` class exists **only at runtime**, cannot be imported statically →
+`make_prealloc_cache` must introspect `sys.modules[type(teacher).__module__]` →
+**`torch.compile` wraps the model in `OptimizedModule`** → introspection looks in
+`torch._dynamo.eval_frame` → **the prealloc gate FAILED** with a misleading "teacher is not an
+Ouro UT model" (2026-07-27; fixed by an `_orig_mod` unwrap, commit 5bee906).
+
+**Other taxes tracing to the same root:**
+- **`transformers<5` pin** — Ouro breaks on 5.x, so the whole dependency tree is frozen by
+  the teacher.
+- **HF `generate()` segfaults** on XPU with it → we hand-wrote `_generate_xpu_safe`.
+- **`_validate_teacher_cache`** — a KL gate exists because the teacher's own caching could not
+  simply be trusted.
+- **🔴 Throughput: the teacher runs 4 UT loops per token**, so every harvested token costs
+  ~4× a dense 2.6B. **This is the primary reason harvest sits at ~93 accepted tok/s** — a
+  dense teacher of the same parameter count would harvest several times faster. Factor this
+  into any future harvest-speed expectation: most of the "slowness" is the teacher's
+  recurrence, not our pipeline.
+
+**Why we pay it anyway (do not re-litigate without new information):** Ouro is **vocab-matched**
+(49152), which is what makes clean logit KD possible at all — losing that is the expensive
+Rung-3 problem in `teacher_data_curriculum.md` (tokenizer graduation). And an RDT teacher
+teaches recurrent-depth behaviour natively, which a dense teacher cannot. We bought a signal
+that matches the architecture and paid in tooling friction.
+
+**Generalised lesson:** the layers compound — RDT student ← RDT teacher ← custom remote code ←
+niche silicon ← teacher-in-loop rollouts. Each is individually defensible; together they mean
+**every ecosystem convenience path (`generate`, standard cache, graph capture, compile) will
+fail at least once.** Expect to hand-build, and gate what you build.
+
 ## Why one build
 
 Sequence-level KD (Kim & Rush 2016) = train the student on teacher-generated
