@@ -105,10 +105,20 @@ _SFT_DATASET_SPECS = [
 # MEDICAL model, breaching both the clean-data constraint that makes this project
 # distributable and an explicit ToS restriction. Its 0.07 is redistributed to the
 # two clean medical/science sources so domain coverage is preserved.
+# NuminaMath-CoT REMOVED 2026-07-28 — its constituent sources include
+# **orca_math (153k of ~860k, ~18%)**, and Orca-Math-200K's card states "all
+# answers ... generated using Azure GPT4-Turbo". So `clean_numina` carried
+# GPT-4-Turbo solutions, putting ~2.2% OpenAI-derived data into the mix. The
+# 2026-06-11 entry's "filtered to exclude proprietary API generation" was card-
+# derived and false — the third such case after MIRIAD and Tulu-3.
+# (`synthetic_math`, another 167k ~19%, is also undisclosed, so the contaminated
+# fraction may be larger.) Its 0.12 goes to clean_math (OpenMathInstruct-2 —
+# Llama-3.1-405B, provenance-verified), keeping math coverage from a trusted
+# source. Subset-filtering was the alternative; a clean drop was preferred
+# because this is the FIRST SFT of the from-scratch clean rebuild.
 _CLEAN_MIX_RATIOS = {
     "clean_general":  0.30,
-    "clean_math":     0.18,
-    "clean_numina":   0.12,
+    "clean_math":     0.30,   # was 0.18 (+0.12 from dropped NuminaMath)
     "clean_code":     0.20,
     "clean_pubmedqa": 0.09,   # was 0.05 (+0.04 of MIRIAD's share)
     "clean_chem":     0.11,   # was 0.08 (+0.03)
@@ -124,8 +134,7 @@ _CLEAN_MIX_RATIOS = {
 _CLEAN_CHAT_MIX_RATIOS = {
     "clean_general":  0.60,   # Tulu-3: diverse chat / FLAN / converted OASST
     "clean_code":     0.20,   # moderately diverse
-    "clean_math":     0.05,
-    "clean_numina":   0.05,
+    "clean_math":     0.10,   # was 0.05 (+0.05 from dropped NuminaMath)
     "clean_pubmedqa": 0.04,   # was 0.02 (+0.02 of MIRIAD's dropped share)
     "clean_chem":     0.06,   # was 0.04 (+0.02)
 }
@@ -133,7 +142,10 @@ _CLEAN_CHAT_MIX_RATIOS = {
 _CLEAN_DATASET_SPECS = [
     ("clean_general",  "allenai/tulu-3-sft-mixture", None,             "train", 300_000),
     ("clean_math",     "nvidia/OpenMathInstruct-2",  None,             "train", 250_000),
-    ("clean_numina",   "AI-MO/NuminaMath-CoT",       None,             "train", 150_000),
+    # ("clean_numina", "AI-MO/NuminaMath-CoT", ...) REMOVED 2026-07-28 —
+    # contains orca_math (~18%), whose answers are GPT-4-Turbo generated.
+    # See the note on _CLEAN_MIX_RATIOS. Do NOT re-add without subset-filtering
+    # orca_math AND resolving synthetic_math's undisclosed provenance.
     ("clean_code",     "nvidia/OpenCodeInstruct",    None,             "train", 200_000),
     # ("clean_miriad", "miriad/miriad-4.4M", ...) REMOVED 2026-07-28 —
     # OpenAI-generated + ToS ban on medical-diagnosis use. See the note on
@@ -386,7 +398,7 @@ _ADAPTERS = {
     # Clean mix (docs/clean_sft_datasets.md)
     "clean_general":  _to_messages_tulu,      # passthrough + OpenAI-subset filter
     "clean_math":     _to_messages_openmath,
-    "clean_numina":   _to_messages_passthrough,
+    # "clean_numina" REMOVED 2026-07-28 (orca_math = GPT-4-Turbo); see specs note.
     "clean_code":     _to_messages_opencode,
     "clean_miriad":   _to_messages_miriad,
     "clean_pubmedqa": _to_messages_pubmedqa,

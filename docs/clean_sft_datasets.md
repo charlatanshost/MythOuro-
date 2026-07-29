@@ -18,12 +18,23 @@ a lead, not a verdict.
 | **Tulu-3** (`clean_general`, 30%) | **CARD-VERIFIED CONTAMINATED.** The 18 subsets include **"WildChat GPT-4" — 100,000 samples (~10.6% of 939,344)**. The 06-11 entry's "generated strictly via open-weight models" is **FALSE**. Unfiltered, this put ~3.2% OpenAI data into the SFT mix. Card also notes "some portions ... are non-commercial" (ODC-BY-1.0). | ⚠️ **FILTER IMPLEMENTED** — `_to_messages_tulu` drops `wildchat` + `evol` subsets at ingestion (`mythouro/sft_data.py`). |
 | **OpenCodeInstruct** (`clean_code`, 20%) | **CLEARED — paper-verified** (arXiv 2504.04030): instructions by **Qwen2.5-32B-Instruct**; solutions by **Qwen2.5-Coder-32B-Instruct / Qwen2.5-32B-Instruct / QwQ-32B-Preview**; quality-judging + unit-test generation by Qwen2.5-32B. **No OpenAI models at any stage.** | ✅ **use** |
 | **ChemData700K** (`clean_chem`, 11%) | **LIKELY CLEAN, NOT CONFIRMED.** Described as **template-based construction** transforming structured chemical data (SMILES, molecular properties, compound DBs) into dialogue — i.e. rule-based, no LLM generation implied. MIT. The paper PDF would not parse and the README omits methodology, so this is *not* a positive verification. GPT-4 appears only as an **evaluation** comparator. | ⚠️ **use, flagged** — re-verify if a stricter provenance bar is ever needed |
-| **NuminaMath-CoT** (`clean_numina`, 12%) | **NOT RE-CHECKED 2026-07-28.** 06-20 flagged "generator undisclosed; broader NuminaMath used GPT-4o → suspect". The 06-11 entry claims "filtered to exclude proprietary API generation" — card-level, same class of evidence that failed for MIRIAD/Tulu-3. **Also note NuminaMath-TIR appears INSIDE Tulu-3** as a separate subset. | ⚠️ **STILL OPEN** — the last unverified source |
+| **NuminaMath-CoT** (`clean_numina`) | ❌ **CONTAMINATED — REMOVED.** Its constituent sources include **`orca_math` (153k of ~860k, ~18%)**, and Orca-Math-200K's card states *"all answers … generated using **Azure GPT4-Turbo**"*. The 06-11 entry's "filtered to exclude proprietary API generation" is **FALSE**. `synthetic_math` (167k, ~19%) is *also* undisclosed, so the tainted fraction may be larger. At 12% of the mix this was ~2.2% OpenAI-derived data. **Note NuminaMath-TIR also appears INSIDE Tulu-3** as a subset. | ❌ **DROPPED 2026-07-28** — 0.12 reassigned to `clean_math` (OpenMathInstruct-2, verified) |
 
-**Bottom line:** of the clean mix, `clean_math` + `clean_pubmedqa` + `clean_code` are
-provenance-verified (47%), `clean_general` is contaminated-but-now-filtered (30%),
-`clean_chem` is likely-clean-unconfirmed (11%), and **`clean_numina` (12%) remains
-the one genuinely open item.**
+**Bottom line after the 07-28 pass — the clean mix is now provenance-verified end to end:**
+
+| source | weight | provenance |
+|---|---|---|
+| `clean_general` (Tulu-3) | 0.30 | ⚠️ contaminated, **filtered** (`wildchat`/`evol` subsets dropped at ingestion) |
+| `clean_math` (OpenMathInstruct-2) | 0.30 | ✅ Llama-3.1-405B |
+| `clean_code` (OpenCodeInstruct) | 0.20 | ✅ Qwen2.5 family, paper-verified |
+| `clean_pubmedqa` | 0.09 | ✅ rule-based, pre-GPT |
+| `clean_chem` (ChemData700K) | 0.11 | ⚠️ likely clean (template-based), **unconfirmed** |
+
+**Three for three: every 06-11 card-derived claim that was independently checked
+turned out wrong** (MIRIAD, Tulu-3, NuminaMath-CoT). Treat dataset-card provenance
+statements as leads requiring verification, never as verdicts — especially for any
+source feeding the first SFT of the from-scratch clean rebuild. The one remaining
+soft spot is `clean_chem`'s unconfirmed methodology.
 
 ## ⚠️ Provenance verification (2026-06-20)
 
