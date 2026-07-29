@@ -116,6 +116,54 @@ means ~1.5 epochs of teacher data (acceptable mild repetition — owner's call).
 data* + *sequence-level KD* (ideas.md — one build, two entries). Attacks the #1
 bottleneck (token SUPPLY), feeds main-thread #2 (the token curve).
 
+## 🩺 MEDICAL corpus — Rung 1 begins, and it harvests FASTER than the base mix (2026-07-29)
+
+**Why:** medical is the mission domain but had **zero** training signal, and the
+uniform-mix change cut its only incidental tributary (fineweb-edu, 40%→34%) while
+raising code (zero medical content) 20%→33%. The @52k/@58k probes showed the cost:
+fluent medical vocabulary, no facts, and degradation under sampling.
+
+**The key asymmetry — the harvest does NOT have the SFT dataset problem.** The SFT
+medical sources all failed provenance (MIRIAD, and the wider 4-for-4 in
+`clean_sft_datasets.md`) because *instruction datasets are LLM-generated*. The
+harvest seeds from **raw human-written text** and has Ouro write the continuations,
+so PubMed abstracts are clean by construction. Source: **`MedRAG/pubmed`** — flat
+`content` field, single train split, streamable, ~2.2M rows of NLM abstracts.
+Added as a **harvest-only** spec: deliberately absent from `_MIX_RATIOS`, so
+`MixedDataset` skips it (`ratios.get(key,0) <= 0`) and the real training mix is
+untouched.
+
+**⚡ Measured: medical harvests ~26% FASTER than the general mix.**
+| | general/math/code | medical (PubMed) |
+|---|---|---|
+| rate | 93 tok/s | **117 tok/s** |
+| acceptance | 64.7% | **83.5%** |
+
+Decode speed is identical — the entire gain is **acceptance**. PubMed abstracts are
+dense well-formed prose, so continuations clear the `distinct-1` filter far more
+often than code (naturally repetitive) or math. Only 391 `low_distinct1` rejects
+and **3 boilerplate** across ~2,400 samples. ⇒ *The mission domain is the cheapest
+thing we can harvest* — a useful inversion when budgeting card time.
+
+**Banked 2026-07-29: 3,609,837 tok / 5,023 rows** in `data_teacher_med/`, a
+**separate out-dir on purpose** so the blend stays a *training-time* decision
+(`--teacher-data-files` takes comma-separated globs) rather than being baked
+irreversibly into `data_teacher_v2`. Combined pool 12.26M → **medical 29.4%**,
+i.e. ~5.9% of training tokens at R=0.2 — chosen to make medical a co-equal fourth
+domain rather than dominate.
+
+**Two loader bugs this exposed (fixed, commit 64b0b67) — both silent:**
+1. `--teacher-data-files` took a SINGLE glob. The obvious `data_teacher_*/` would
+   have swept in the **retired v1 (boilerplate-contaminated)** and
+   `data_teacher_clean`. Now comma-separated, each corpus named explicitly.
+2. **The dangerous one:** streaming reads shards **in order**, and
+   `data_teacher_med/*` sorts *before* `data_teacher_v2/*` — so a blended leg would
+   have trained on a solid block of **pure medical first** and might never have
+   reached the rest. Temporal segregation, not a blend; it would have quietly
+   wrecked the very experiment the corpus exists to run. Now the combined shard
+   list is shuffled. *Same family as the cross-session seed reuse: order-of-data
+   bugs that masquerade as model behaviour.*
+
 ## ⚠ The RDT-teacher tax — why so much tooling fights us (documented 2026-07-27)
 
 Distilling **from another RDT** (Ouro-2.6B-Thinking, custom `modeling_ouro.py` via

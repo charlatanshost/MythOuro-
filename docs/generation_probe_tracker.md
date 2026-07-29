@@ -823,6 +823,57 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-07-29 — 🟢 MEDICAL-BLEND TRIPWIRE @60,154 (~⅓ dose, n=5): healthy, and α=0.25 is an ALL-TIME LOW
+
+First leg with medical in the teacher stream (blend: 8.65M general/math/code +
+3.61M medical = **29.4% medical**, ~5.9% of training tokens at R=0.2). Stopped at
+60,154 of the 64,000 target for the routine mid-leg tripwire.
+
+**α=0.25 hit the lowest top_share on record** — 0.102, beating the previous best
+(40,002's 0.107) across the entire history back to 30,000, with `distinct1` holding
+at 0.55 (not bought by going repetitive). Every seed improved or held.
+
+| α | 58,000 → 60,154 |
+|---|---|
+| 0.0 | 0.147 → 0.142 (flat) |
+| **0.25** | 0.115 → **0.102 ← all-time low** |
+| 0.5 | 0.092 → 0.118 (worse — likely noise; both neighbours improved) |
+| 0.7 | 0.112 → 0.092 |
+
+**The α-SHAPE is the finding, not the α=0.0 number.** A *quarter* of teacher
+steering now reaches near the model's best; going to 0.5 adds little. That is the
+precise form of "needs less help": **not** that α=0.0 caught up (the α=0.0-vs-α=0.7
+gap is still ~+0.04 and NOT closing), but that the required nudge shrank.
+
+**selfrep resolved a metric disagreement.** The new `tools/relevance_probe.py`
+showed mean 4-gram self-repetition RISING (52k 0.000 → 58k 0.017 → 60k 0.063),
+apparently contradicting the α=0.25 record. Per-seed breakdown settles it — it is
+**one seed**: diabetes 0.246, everything else ≤0.043. And the looping *moved*
+seeds (58k it was quadratic at 0.087; now quadratic is clean at 0.036 and diabetes
+broke). So: five of six seeds clean, one acute marker-spam failure.
+
+**Trained domains look structurally richer in text despite flat metrics:**
+- **fibonacci:** 58k = one arithmetic blob → 60k emits a `return`, a `# comment`,
+  a *second* `def f(n)`, a markdown fence, and explanatory prose.
+- **quadratic:** 58k's confused "roots of the first line" → 60k produces real
+  algebra (`4x^2 - 6x + 6 = ...`) plus process language ("first step in simplifying").
+
+**Medical unchanged at this dose** — still fluent vocabulary with no facts, and
+diabetes actively degraded. Expected: ~1.2M medical tokens had been seen. The
+medical question needs the full leg.
+
+**Method note — a reading correction worth keeping.** The weather α=0.0 output was
+scored three different ways in one session: "better (on topic)", then "worse (mere
+prompt echo)", then finally the owner's reading — **it performs the deliberative
+function the prompt asks for** (propose → compare → justify → reconsider: *"This
+might be better than… but you have to… because… But no, if…"*). The prompt is
+*"we decided to___"*, so weather words are incidental; doing decision-work is the
+signal. ⇒ **The right unit of analysis is DISCOURSE FUNCTION, not topic keywords
+and not degeneracy metrics.** Also: "the text wins over the metric" is NOT
+unconditional — it holds where the metric is structurally blind (valid code
+repeats keywords), but not when the metric is measuring the very thing that is
+wrong (repetition). Raw: `reports/onpolicy_rollout_probe_60154_xpu_uncached_n5.txt`.
+
 ## 2026-07-29 — 🧪 TEACHER-EXHAUSTION GAUGE, first real series (46k→58k): rises, but CONFOUNDED
 
 `tools/kd_exhaustion.py` measures the curriculum's most direct Rung-3 gate — soft-KL

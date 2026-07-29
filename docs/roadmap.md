@@ -158,6 +158,55 @@ So the honest claim is:
   is already visible; code *knowledge* (APIs, library idioms) is coverage and will stay thin
   at small scale regardless of diet. Know which half a probe is testing.
 
+**📐 TOKEN BUDGET & CAPACITY — what "a few billion tokens" actually costs (2026-07-29).**
+Worked through because it changes what the scale-up plan *is*.
+
+**There is no token ceiling — returns diminish, they don't stop.**
+| framing | at 278M | what it means |
+|---|---|---|
+| Chinchilla-optimal (20 tok/param) | **5.6B** | NOT capacity — the point past which a *bigger* model uses the same compute better |
+| modern practice (Llama-3 8B ≈ 1,875 tok/param) | **~520B** | trained ~94× past Chinchilla, still improving |
+| **memorisation capacity** (~2–4 bits/param) | **~90–170M tok** | ⚠ the number that bounds **FACTS** |
+
+**⚠ Chinchilla is the WRONG yardstick for us.** It measures *from-scratch pretraining
+on raw text with hard labels* (MassiveText). We distil: a teacher's full distribution
+over 49k vocab carries vastly more signal per token than a one-hot label. Our own
+state is the evidence — **~0.7 tok/param (1/28th of Chinchilla) already yields
+grammatical English, structured Python and math-register prose**, which hard-label
+pretraining would not deliver at that budget. Distillation's cost is a **ceiling**:
+we cannot distil past Ouro-2.6B. So the binding constraint may become *teacher
+capability*, not token count — which is exactly what the α-gap and soft-KL gauges
+are for.
+
+**Skills are cheap, facts are expensive — and this is an ARCHITECTURE fact.** At
+~90–170M tokens' worth of memorisable capacity, a 278M model **cannot hold clinical
+knowledge at any token budget.** Grammar/structure/syntax are compressible patterns
+that generalise; facts are incompressible specifics that consume capacity. This is
+why every probe shows the model articulate about medicine and knowing nothing about
+it — not a training failure, and the strongest quantitative case for the **retrieval**
+tier (MemPalace). Medical *reasoning* compresses; drug interactions and guidelines
+must live outside the weights.
+
+**Schedule — the constraint is TIME, not data.** Real corpora are unlimited and
+streamed; measured training throughput is **1,584 tok/s ≈ 91M tok/day** at the
+owner's ~16h/day usable window (see `dual-boot rig` scheduling):
+| target | more tokens | at 16h/day |
+|---|---|---|
+| 1B | 800M | ~9 days |
+| 3B | 2.8B | **~31 days** |
+| 5.6B | 5.4B | ~59 days |
+
+**🔴 The real bottleneck is TEACHER data, not tokens.** At R=0.2 training *consumes*
+**27M teacher tok/day** while harvest *produces* **8–10M/day** (one tile) — ~3×
+oversubscribed. The entire 12.26M pool is ~11 hours of training. So a multi-billion
+run forces a choice: (a) accept heavy teacher-corpus repetition (~45 epochs at 3B —
+far past the ~1.5-epoch band), (b) **drop R to ~0.06**, the rate harvest sustains
+unaided, or (c) **harvest in parallel on the 1550's second tile** (~16–20M/day),
+making R≈0.12–0.15 sustainable. This is the 1550's real value for scale-up: not
+"2× harvest" but *letting harvest and training coexist*. **Cheap de-risking test
+before committing a month: R=0.2 vs R=0.06 over ~2,000 steps** — does the
+teacher-data benefit survive at a sixth of the dose?
+
 **The three differentiators — and they COMPOUND with scale, they're not a
 small-model consolation:**
 1. **Calibrated honesty.** Most small local models hallucinate with total
