@@ -1,0 +1,348 @@
+loading: checkpoints_onpolicy_fixed/step_0058000.pt
+device:  xpu:0
+step=58000  n_loops=4  sandwich_norm=True  state_noise=0.0
+
+[generation-time mode] greedy decode; locating the degeneration
+
+=== category: chat ===
+
+prompt: '<|im_start|>user\nWhat is 2+2?<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): '\nThe problem is to find the number of distinct pairs of 2-digit numbers in the given list of integers. The problem is to find the number of'
+  output dist:  mean_entropy=3.240 nats  final_entropy=0.200  mean_top_prob=0.397  final_top_prob=0.976
+  first steps (top_prob, entropy): (0.66,2.57), (0.10,5.79), (0.10,6.08), (0.44,2.77), (0.38,2.85), (0.30,3.60), (0.70,1.39), (0.10,4.97)
+  rep @final loop:  PROMPT corr=0.123 rank=15.39  |  GENERATED corr=0.182 rank=25.64
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: '<|im_start|>user\nExplain gravity in one sentence.<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): '\nThe following is a list of the following:\n\n- The following is a list of the following:\n- The following is a list of the following'
+  output dist:  mean_entropy=3.077 nats  final_entropy=0.841  mean_top_prob=0.545  final_top_prob=0.912
+  first steps (top_prob, entropy): (0.61,3.15), (0.09,5.99), (0.04,7.36), (0.22,5.13), (0.54,1.64), (0.12,6.03), (0.99,0.10), (0.15,6.13)
+  rep @final loop:  PROMPT corr=0.154 rank=14.45  |  GENERATED corr=0.261 rank=21.03
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: '<|im_start|>user\nName three primary colors.<|im_end|>\n<|im_start|>assistant\n'
+  generated (greedy, 32 tok): '\nThe following is a list of the following:\n\n- The following is a list of the following:\n\n- The following is a list of the'
+  output dist:  mean_entropy=3.361 nats  final_entropy=4.156  mean_top_prob=0.498  final_top_prob=0.378
+  first steps (top_prob, entropy): (0.25,4.98), (0.07,6.45), (0.06,7.09), (0.19,5.33), (0.52,1.72), (0.17,5.85), (0.99,0.12), (0.15,6.09)
+  rep @final loop:  PROMPT corr=0.141 rank=13.51  |  GENERATED corr=0.262 rank=20.78
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: code ===
+
+prompt: 'def fibonacci(n):'
+  generated (greedy, 32 tok): '\n    return n * n * (n - n)\n\n#\n#\n#\n#\n#\n#\n#\n#\n#\n#'
+  output dist:  mean_entropy=1.793 nats  final_entropy=0.251  mean_top_prob=0.643  final_top_prob=0.951
+  first steps (top_prob, entropy): (0.58,2.02), (0.31,3.47), (0.13,5.11), (0.23,3.12), (0.58,1.78), (0.38,2.35), (0.32,2.35), (0.37,3.10)
+  rep @final loop:  PROMPT corr=0.142 rank=5.90  |  GENERATED corr=0.282 rank=16.82
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'def is_prime(n):'
+  generated (greedy, 32 tok): '\n    return n\n\ndef is_prime(n):\n    return n\n\ndef is_prime(n):\n    return n\n\ndef is_'
+  output dist:  mean_entropy=1.182 nats  final_entropy=0.033  mean_top_prob=0.803  final_top_prob=0.998
+  first steps (top_prob, entropy): (0.66,1.60), (0.35,3.10), (0.11,5.33), (0.25,3.02), (0.92,0.42), (0.38,3.14), (0.16,5.67), (0.99,0.13)
+  rep @final loop:  PROMPT corr=0.108 rank=6.92  |  GENERATED corr=0.196 rank=18.54
+  -> OUTPUT / exposure-bias path — reps stay healthy, distribution degenerate. -> reverse-KL / GKD
+
+prompt: 'import numpy as np\n'
+  generated (greedy, 32 tok): '\ndef get_data_from_data_file(data_file):\n    """\n    This function takes a list of data and returns the data_file'
+  output dist:  mean_entropy=3.251 nats  final_entropy=2.873  mean_top_prob=0.415  final_top_prob=0.600
+  first steps (top_prob, entropy): (0.62,1.18), (0.24,4.08), (0.05,6.41), (0.67,2.82), (0.02,7.04), (0.49,1.14), (0.08,6.30), (0.98,0.14)
+  rep @final loop:  PROMPT corr=0.189 rank=4.82  |  GENERATED corr=0.157 rank=27.58
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'class Stack:\n    def __init__(self):'
+  generated (greedy, 32 tok): "\n        self.name = 'My_name'\n        self.name = 'My_name'\n        self.name = 'My_name'\n        self"
+  output dist:  mean_entropy=1.902 nats  final_entropy=0.098  mean_top_prob=0.721  final_top_prob=0.990
+  first steps (top_prob, entropy): (0.93,0.50), (0.72,1.40), (0.91,0.41), (0.03,7.28), (0.96,0.26), (0.43,2.39), (0.01,7.44), (0.13,7.07)
+  rep @final loop:  PROMPT corr=0.103 rank=9.80  |  GENERATED corr=0.199 rank=20.02
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'def binary_search(arr, target):'
+  generated (greedy, 32 tok): '\n    if not isinstance(val, str):\n        return False\n    return False\n\ndef get_value(value, value):\n    if not isinstance(val'
+  output dist:  mean_entropy=2.384 nats  final_entropy=0.325  mean_top_prob=0.541  final_top_prob=0.942
+  first steps (top_prob, entropy): (0.71,1.46), (0.20,3.49), (0.32,3.81), (0.18,5.02), (1.00,0.03), (0.03,5.96), (0.96,0.26), (0.22,3.69)
+  rep @final loop:  PROMPT corr=0.171 rank=8.70  |  GENERATED corr=0.142 rank=26.31
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'def reverse_string(s):\n    return'
+  generated (greedy, 32 tok): ' str(s)\n\ndef get_string_from_string(s):\n    return str(s)\n\ndef get_string_from_'
+  output dist:  mean_entropy=1.714 nats  final_entropy=0.012  mean_top_prob=0.705  final_top_prob=0.999
+  first steps (top_prob, entropy): (0.08,5.42), (0.89,0.68), (0.85,1.21), (0.49,1.80), (0.66,1.48), (0.86,0.65), (0.42,2.88), (0.06,5.84)
+  rep @final loop:  PROMPT corr=0.133 rank=8.82  |  GENERATED corr=0.151 rank=23.98
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'def read_file(path):\n    with open(path) as f:'
+  generated (greedy, 32 tok): '\n        file_path = file_path.split(f)\n        file_path = file_path.split(f)\n        file_path = file'
+  output dist:  mean_entropy=1.220 nats  final_entropy=0.721  mean_top_prob=0.762  final_top_prob=0.895
+  first steps (top_prob, entropy): (0.95,0.29), (0.22,4.12), (0.88,0.80), (0.17,4.81), (0.95,0.31), (0.24,3.06), (0.98,0.12), (0.83,1.23)
+  rep @final loop:  PROMPT corr=0.137 rank=15.03  |  GENERATED corr=0.244 rank=19.98
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: "# Sort a list of dictionaries by the 'age' key\nsorted("
+  generated (greedy, 32 tok): 'list(list(list(list(list(list(list(list(list(list(list(list(list(list(list(list('
+  output dist:  mean_entropy=1.189 nats  final_entropy=0.072  mean_top_prob=0.834  final_top_prob=0.993
+  first steps (top_prob, entropy): (0.12,5.60), (0.66,1.62), (0.20,4.95), (0.86,0.91), (0.28,4.80), (0.87,0.84), (0.60,3.05), (0.89,0.75)
+  rep @final loop:  PROMPT corr=0.163 rank=14.36  |  GENERATED corr=0.586 rank=7.32
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+=== category: math ===
+
+prompt: 'The derivative of x^2 with respect to x is'
+  generated (greedy, 32 tok): ' 2.\n\nThe derivative of the derivative of x is 2.\n\nThe derivative of the derivative of x is 2.\n\nThe'
+  output dist:  mean_entropy=1.160 nats  final_entropy=1.589  mean_top_prob=0.770  final_top_prob=0.774
+  first steps (top_prob, entropy): (0.14,4.12), (0.38,1.80), (0.29,3.09), (0.47,2.62), (0.96,0.35), (0.21,3.92), (0.45,3.83), (0.91,0.48)
+  rep @final loop:  PROMPT corr=0.163 rank=10.40  |  GENERATED corr=0.228 rank=19.54
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The sum of the first 10 positive integers is'
+  generated (greedy, 32 tok): ' 1000000000000000000000000000000'
+  output dist:  mean_entropy=0.394 nats  final_entropy=0.090  mean_top_prob=0.929  final_top_prob=0.990
+  first steps (top_prob, entropy): (0.53,2.67), (0.64,1.44), (0.66,1.36), (0.66,1.62), (0.89,0.65), (0.89,0.63), (0.94,0.39), (0.95,0.34)
+  rep @final loop:  PROMPT corr=0.177 rank=10.56  |  GENERATED corr=0.819 rank=6.54
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'To solve 2x + 3 = 7, subtract 3 from both sides to get'
+  generated (greedy, 32 tok): ' 2x + 2.\n\nThe problem is to find the value of x and y, which is 10000000'
+  output dist:  mean_entropy=2.045 nats  final_entropy=0.999  mean_top_prob=0.542  final_top_prob=0.828
+  first steps (top_prob, entropy): (0.62,1.54), (0.24,2.04), (0.88,0.81), (0.59,1.99), (0.99,0.05), (0.31,1.82), (0.34,2.83), (0.54,2.16)
+  rep @final loop:  PROMPT corr=0.169 rank=18.40  |  GENERATED corr=0.161 rank=25.60
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The area of a circle with radius r is'
+  generated (greedy, 32 tok): ' 2222222222222222222222222222222'
+  output dist:  mean_entropy=1.337 nats  final_entropy=0.745  mean_top_prob=0.672  final_top_prob=0.842
+  first steps (top_prob, entropy): (0.27,3.58), (0.27,2.07), (0.24,2.41), (0.44,2.02), (0.66,1.52), (0.79,1.05), (0.75,1.19), (0.28,2.42)
+  rep @final loop:  PROMPT corr=0.206 rank=8.57  |  GENERATED corr=0.824 rank=7.83
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'The Pythagorean theorem states that'
+  generated (greedy, 32 tok): ' the number of distinct integers in the given set of integers is equal to the number of distinct integers.\n\nThe number of distinct integers is the number of distinct'
+  output dist:  mean_entropy=2.812 nats  final_entropy=3.765  mean_top_prob=0.490  final_top_prob=0.327
+  first steps (top_prob, entropy): (0.66,1.95), (0.08,6.40), (0.54,2.15), (0.14,5.79), (0.13,5.41), (0.17,3.70), (0.82,1.10), (0.08,5.72)
+  rep @final loop:  PROMPT corr=0.175 rank=4.88  |  GENERATED corr=0.247 rank=23.52
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'To find the greatest common divisor of 12 and 18, we'
+  generated (greedy, 32 tok): ' can use the following formula:\n\n\\[\n\\begin{array}{cc}\n\\begin{array}{cc}\n\\begin{array}{'
+  output dist:  mean_entropy=1.327 nats  final_entropy=0.109  mean_top_prob=0.728  final_top_prob=0.978
+  first steps (top_prob, entropy): (0.65,1.63), (0.35,3.31), (0.77,1.41), (0.09,5.72), (0.24,4.53), (0.85,0.67), (0.66,1.52), (0.81,1.15)
+  rep @final loop:  PROMPT corr=0.160 rank=15.86  |  GENERATED corr=0.167 rank=22.52
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'A prime number is a natural number that'
+  generated (greedy, 32 tok): ' is not a prime number.\n\n**Example 2**\n\n**Example 2**\n\n**Example 2**\n\n**Example '
+  output dist:  mean_entropy=1.853 nats  final_entropy=0.190  mean_top_prob=0.651  final_top_prob=0.974
+  first steps (top_prob, entropy): (0.42,2.36), (0.35,4.04), (0.63,2.32), (0.28,4.47), (0.43,2.48), (0.60,1.91), (0.39,3.01), (0.95,0.42)
+  rep @final loop:  PROMPT corr=0.227 rank=7.43  |  GENERATED corr=0.212 rank=21.23
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The probability of rolling a 6 on a fair six-sided die is'
+  generated (greedy, 32 tok): ' 1000000000000000000000000000000'
+  output dist:  mean_entropy=0.727 nats  final_entropy=0.130  mean_top_prob=0.844  final_top_prob=0.986
+  first steps (top_prob, entropy): (0.55,2.79), (0.42,1.92), (0.27,2.48), (0.34,2.61), (0.52,2.07), (0.46,2.06), (0.76,1.24), (0.62,1.62)
+  rep @final loop:  PROMPT corr=0.170 rank=14.07  |  GENERATED corr=0.798 rank=6.67
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+=== category: medical ===
+
+prompt: 'The treatment for a bacterial infection usually involves'
+  generated (greedy, 32 tok): ' the following:\n\n- The following:\n\n- The following:\n\n- The treatment for the following:\n\n- The following:\n\n'
+  output dist:  mean_entropy=2.251 nats  final_entropy=0.123  mean_top_prob=0.661  final_top_prob=0.978
+  first steps (top_prob, entropy): (0.37,3.41), (0.08,6.13), (0.78,1.49), (0.74,1.19), (0.79,1.06), (0.17,4.62), (0.19,5.87), (0.06,6.99)
+  rep @final loop:  PROMPT corr=0.164 rank=7.72  |  GENERATED corr=0.318 rank=18.34
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Common symptoms of type 2 diabetes include'
+  generated (greedy, 32 tok): ':\n\n- The symptoms of the same type of\n\n- The symptoms of the same type of\n\n- The symptoms of the same type of\n'
+  output dist:  mean_entropy=3.186 nats  final_entropy=1.055  mean_top_prob=0.547  final_top_prob=0.895
+  first steps (top_prob, entropy): (0.39,4.16), (0.66,1.68), (0.76,1.14), (0.16,5.09), (0.11,6.47), (0.23,5.76), (0.61,2.07), (0.22,5.30)
+  rep @final loop:  PROMPT corr=0.227 rank=7.69  |  GENERATED corr=0.298 rank=19.84
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'
+  generated (greedy, 32 tok): ' the same type of the other types of the other types of the other types of the other types of the other types of the type of the type of the type'
+  output dist:  mean_entropy=4.072 nats  final_entropy=3.885  mean_top_prob=0.444  final_top_prob=0.506
+  first steps (top_prob, entropy): (0.28,4.80), (0.03,7.44), (0.13,5.82), (0.98,0.18), (0.02,7.41), (0.02,7.61), (0.06,6.65), (0.86,0.87)
+  rep @final loop:  PROMPT corr=0.202 rank=13.02  |  GENERATED corr=0.496 rank=14.09
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'A patient presenting with chest pain should first be'
+  generated (greedy, 32 tok): " in the\n\nQuestion: What is the main reason for the first and second stages of the patient's treatment? Answer: The main reason for the patient's"
+  output dist:  mean_entropy=3.697 nats  final_entropy=3.403  mean_top_prob=0.444  final_top_prob=0.341
+  first steps (top_prob, entropy): (0.10,5.64), (0.70,1.91), (0.09,6.67), (0.45,4.69), (0.12,6.68), (0.74,1.34), (0.59,1.87), (0.66,1.52)
+  rep @final loop:  PROMPT corr=0.194 rank=8.61  |  GENERATED corr=0.121 rank=28.61
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The primary function of the kidneys is to'
+  generated (greedy, 32 tok): " be able to control the body's body. The body is also a part of the body's body's body's body. The body's body is also a"
+  output dist:  mean_entropy=2.883 nats  final_entropy=1.879  mean_top_prob=0.497  final_top_prob=0.649
+  first steps (top_prob, entropy): (0.09,5.25), (0.08,6.23), (1.00,0.02), (0.05,5.84), (0.77,1.66), (0.12,6.79), (0.63,1.88), (0.22,5.67)
+  rep @final loop:  PROMPT corr=0.117 rank=7.85  |  GENERATED corr=0.293 rank=21.16
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Hypertension is generally defined as a blood pressure above'
+  generated (greedy, 32 tok): ' the body.\n\nThe body is a body that is not a body of the body, but the body is a body that is not a body.\n'
+  output dist:  mean_entropy=3.456 nats  final_entropy=2.571  mean_top_prob=0.395  final_top_prob=0.409
+  first steps (top_prob, entropy): (0.77,1.46), (0.05,7.19), (0.33,2.33), (0.27,3.84), (0.94,0.58), (0.17,5.00), (0.02,7.53), (0.41,2.47)
+  rep @final loop:  PROMPT corr=0.170 rank=9.62  |  GENERATED corr=0.277 rank=23.14
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Antibiotics treat infections by'
+  generated (greedy, 32 tok): ' the\n\nQuestion: What is the main reason for the lack of a healthy diet? Answer: The main reason for the lack of a healthy diet is the'
+  output dist:  mean_entropy=2.810 nats  final_entropy=3.114  mean_top_prob=0.587  final_top_prob=0.327
+  first steps (top_prob, entropy): (0.16,6.13), (0.10,7.94), (0.55,3.94), (0.15,6.19), (0.97,0.21), (0.50,2.08), (0.66,1.31), (0.93,0.60)
+  rep @final loop:  PROMPT corr=0.236 rank=4.86  |  GENERATED corr=0.133 rank=27.71
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The most common cause of a viral sore throat is'
+  generated (greedy, 32 tok): ' the most common in the middle of the skin. The most common is the most common in the middle of the skin. The most common is the most common in'
+  output dist:  mean_entropy=3.714 nats  final_entropy=3.533  mean_top_prob=0.442  final_top_prob=0.257
+  first steps (top_prob, entropy): (0.43,3.63), (0.03,7.31), (0.76,1.63), (0.15,4.91), (0.61,2.84), (0.04,7.06), (0.46,2.71), (0.82,1.06)
+  rep @final loop:  PROMPT corr=0.251 rank=9.32  |  GENERATED corr=0.354 rank=19.12
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: prose ===
+
+prompt: 'The recurrent depth transformer is'
+  generated (greedy, 32 tok): ' the same as the original model.\n\nThe model is a model of the model. The model is a model of the model. The model is a model'
+  output dist:  mean_entropy=3.075 nats  final_entropy=2.383  mean_top_prob=0.498  final_top_prob=0.715
+  first steps (top_prob, entropy): (0.15,4.61), (0.11,6.58), (0.73,1.31), (0.78,1.33), (0.10,6.50), (0.07,6.08), (0.63,1.87), (0.46,2.42)
+  rep @final loop:  PROMPT corr=0.187 rank=4.86  |  GENERATED corr=0.260 rank=21.43
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The history of the Roman Empire began'
+  generated (greedy, 32 tok): ' to make the new and new new, but the new and new, new, new, new, new, new, new, new, new, new,'
+  output dist:  mean_entropy=2.799 nats  final_entropy=0.302  mean_top_prob=0.564  final_top_prob=0.956
+  first steps (top_prob, entropy): (0.18,3.80), (0.04,6.14), (0.44,3.17), (0.03,7.24), (0.07,6.91), (0.24,4.40), (0.08,6.74), (0.07,6.75)
+  rep @final loop:  PROMPT corr=0.187 rank=6.73  |  GENERATED corr=0.433 rank=15.31
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Photosynthesis is the process by which'
+  generated (greedy, 32 tok): ' the user is able to use the same method.\n\nThe user is using the following code:\n\n```\n\n```\n\n```\n\n```'
+  output dist:  mean_entropy=3.528 nats  final_entropy=2.635  mean_top_prob=0.428  final_top_prob=0.591
+  first steps (top_prob, entropy): (0.47,3.38), (0.02,8.03), (0.21,4.41), (0.06,5.73), (1.00,0.04), (0.04,5.55), (0.49,3.27), (0.07,7.18)
+  rep @final loop:  PROMPT corr=0.113 rank=6.87  |  GENERATED corr=0.198 rank=24.48
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The largest planet in our solar system is'
+  generated (greedy, 32 tok): " the Earth's largest planet.\n\nThe Earth's largest planet is the Earth's largest planet. The Earth's largest planet is the Earth's largest planet."
+  output dist:  mean_entropy=2.199 nats  final_entropy=1.196  mean_top_prob=0.624  final_top_prob=0.708
+  first steps (top_prob, entropy): (0.22,4.63), (0.04,6.55), (0.62,1.87), (0.12,5.80), (0.17,4.67), (0.42,2.22), (0.27,3.19), (0.94,0.56)
+  rep @final loop:  PROMPT corr=0.159 rank=7.75  |  GENERATED corr=0.304 rank=18.41
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'One of the most important inventions of the twentieth century was'
+  generated (greedy, 32 tok): ' the first of the first of the first of the first of the first of the first of the first of the first of the first of the first of the first'
+  output dist:  mean_entropy=2.648 nats  final_entropy=0.677  mean_top_prob=0.602  final_top_prob=0.865
+  first steps (top_prob, entropy): (0.65,2.73), (0.11,6.63), (0.15,5.81), (0.69,2.01), (0.08,6.19), (0.10,5.97), (0.76,1.71), (0.10,6.15)
+  rep @final loop:  PROMPT corr=0.156 rank=10.54  |  GENERATED corr=0.508 rank=9.96
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'The main difference between a virus and a bacterium is that'
+  generated (greedy, 32 tok): ' the same as the other two types of the same as the same as the other types of the same as the same as the same as the other types of the'
+  output dist:  mean_entropy=2.912 nats  final_entropy=0.716  mean_top_prob=0.548  final_top_prob=0.909
+  first steps (top_prob, entropy): (0.44,2.77), (0.02,7.49), (0.20,5.37), (0.62,2.08), (0.06,6.80), (0.15,5.53), (0.11,6.00), (0.94,0.39)
+  rep @final loop:  PROMPT corr=0.120 rank=10.45  |  GENERATED corr=0.437 rank=16.05
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'In economics, supply and demand describe how'
+  generated (greedy, 32 tok): ' the system is structured.\n\nThe concept of the system is a fundamental concept of the system, and the concept of the system is a fundamental concept of the'
+  output dist:  mean_entropy=3.323 nats  final_entropy=1.461  mean_top_prob=0.439  final_top_prob=0.814
+  first steps (top_prob, entropy): (0.23,4.96), (0.02,7.31), (0.22,3.56), (0.14,5.17), (0.37,2.02), (0.43,2.79), (0.96,0.39), (0.20,4.35)
+  rep @final loop:  PROMPT corr=0.162 rank=7.75  |  GENERATED corr=0.218 rank=24.20
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'The water cycle begins when'
+  generated (greedy, 32 tok): ' the water is in the water. The water is not in the water. The water is not in the water cycle. The water is not in the water.'
+  output dist:  mean_entropy=2.891 nats  final_entropy=1.062  mean_top_prob=0.538  final_top_prob=0.792
+  first steps (top_prob, entropy): (0.68,2.29), (0.12,7.20), (0.68,2.49), (0.09,5.74), (0.78,1.43), (0.10,6.23), (0.19,4.44), (0.34,3.09)
+  rep @final loop:  PROMPT corr=0.133 rank=4.91  |  GENERATED corr=0.300 rank=17.92
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: qa ===
+
+prompt: 'Q: Roughly what year was the Roman Empire founded?\nA:'
+  generated (greedy, 32 tok): ' The first of the 19th century, the first of the 19th century, the first of the 19th century, the first'
+  output dist:  mean_entropy=2.441 nats  final_entropy=3.324  mean_top_prob=0.563  final_top_prob=0.347
+  first steps (top_prob, entropy): (0.21,4.32), (0.08,7.01), (0.08,5.62), (0.74,1.53), (0.09,5.74), (0.49,1.60), (0.14,2.34), (0.19,2.34)
+  rep @final loop:  PROMPT corr=0.099 rank=14.55  |  GENERATED corr=0.263 rank=19.56
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Q: What is the capital of France?\nA:'
+  generated (greedy, 32 tok): ' The 19th century, the 19th century, the 19th century, the 19th century, the 19'
+  output dist:  mean_entropy=1.552 nats  final_entropy=0.351  mean_top_prob=0.710  final_top_prob=0.941
+  first steps (top_prob, entropy): (0.41,3.39), (0.05,7.03), (0.45,1.55), (0.19,2.33), (0.45,1.94), (0.56,1.94), (0.24,3.88), (0.14,5.04)
+  rep @final loop:  PROMPT corr=0.094 rank=11.74  |  GENERATED corr=0.277 rank=16.31
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Q: How many days are in a week?\nA:'
+  generated (greedy, 32 tok): ' 1000000000000000000000000000000'
+  output dist:  mean_entropy=0.655 nats  final_entropy=0.057  mean_top_prob=0.865  final_top_prob=0.994
+  first steps (top_prob, entropy): (0.50,3.07), (0.49,1.69), (0.29,2.19), (0.64,1.93), (0.49,2.46), (0.47,2.58), (0.60,1.89), (0.63,1.74)
+  rep @final loop:  PROMPT corr=0.127 rank=12.55  |  GENERATED corr=0.783 rank=6.83
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'Q: What color is the sky on a clear day?\nA:'
+  generated (greedy, 32 tok): " The sun is the sun's sun.\n\nQuestion: What is the main reason for the sun's temperature and the sun's temperature? Answer: The sun"
+  output dist:  mean_entropy=3.161 nats  final_entropy=6.160  mean_top_prob=0.460  final_top_prob=0.136
+  first steps (top_prob, entropy): (0.20,4.48), (0.04,7.36), (0.76,1.40), (0.14,4.69), (0.64,2.60), (0.20,3.08), (0.04,6.65), (0.23,2.70)
+  rep @final loop:  PROMPT corr=0.103 rank=14.52  |  GENERATED corr=0.179 rank=26.06
+  -> inconclusive / not clearly degenerate at this length
+
+=== category: science ===
+
+prompt: 'The chemical formula for water is'
+  generated (greedy, 32 tok): ':\n\n\\[\n\\text{(1)}\\]\n\n\\[\n\\text{(1)}\\]\n\n\\[\n'
+  output dist:  mean_entropy=1.436 nats  final_entropy=0.062  mean_top_prob=0.735  final_top_prob=0.993
+  first steps (top_prob, entropy): (0.38,3.46), (0.74,1.38), (0.91,0.59), (0.24,3.87), (0.74,1.29), (0.81,0.92), (0.88,0.45), (0.37,1.97)
+  rep @final loop:  PROMPT corr=0.144 rank=5.87  |  GENERATED corr=0.212 rank=22.18
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'In the periodic table, the elements are arranged by'
+  generated (greedy, 32 tok): ' the first and second, and the second is the first and second.\n\nThe first and second are the first and second.\n\nThe second and third'
+  output dist:  mean_entropy=3.003 nats  final_entropy=0.864  mean_top_prob=0.469  final_top_prob=0.765
+  first steps (top_prob, entropy): (0.57,2.52), (0.06,6.23), (0.22,4.09), (0.55,1.75), (0.06,5.61), (0.47,2.66), (0.62,2.16), (0.14,5.31)
+  rep @final loop:  PROMPT corr=0.142 rank=9.73  |  GENERATED corr=0.301 rank=21.81
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'An atom is made up of protons, neutrons, and'
+  generated (greedy, 32 tok): ' other other other other other.\n\nThe electron is a single-dimensional object, and the electron is a single-dimensional object. The electron is a single'
+  output dist:  mean_entropy=3.885 nats  final_entropy=5.200  mean_top_prob=0.347  final_top_prob=0.246
+  first steps (top_prob, entropy): (0.19,4.81), (0.08,5.65), (0.09,5.59), (0.31,4.48), (0.36,3.98), (0.22,4.65), (0.36,3.53), (0.93,0.62)
+  rep @final loop:  PROMPT corr=0.226 rank=10.07  |  GENERATED corr=0.225 rank=22.35
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: 'Oxidation is a chemical reaction in which a substance loses'
+  generated (greedy, 32 tok): ' a certain amount of the substance.\n\nThe chemical reaction is a chemical reaction that is not a chemical reaction. The reaction is a chemical reaction that is not'
+  output dist:  mean_entropy=3.503 nats  final_entropy=3.267  mean_top_prob=0.394  final_top_prob=0.303
+  first steps (top_prob, entropy): (0.27,3.57), (0.17,5.63), (0.41,3.93), (0.93,0.46), (0.15,5.50), (0.06,6.38), (0.25,3.20), (0.31,3.68)
+  rep @final loop:  PROMPT corr=0.200 rank=10.42  |  GENERATED corr=0.251 rank=23.26
+  -> inconclusive / not clearly degenerate at this length
+
+prompt: "Newton's second law of motion states that"
+  generated (greedy, 32 tok): ' the\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n'
+  output dist:  mean_entropy=1.214 nats  final_entropy=0.054  mean_top_prob=0.842  final_top_prob=0.995
+  first steps (top_prob, entropy): (0.56,2.79), (0.10,6.88), (0.64,3.12), (0.14,5.82), (0.12,6.44), (0.78,1.69), (0.43,4.20), (0.81,1.68)
+  rep @final loop:  PROMPT corr=0.209 rank=7.69  |  GENERATED corr=0.555 rank=10.78
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'DNA is composed of four nucleotide bases:'
+  generated (greedy, 32 tok): '\n\n- The 110000000000000000000000000'
+  output dist:  mean_entropy=1.685 nats  final_entropy=0.170  mean_top_prob=0.723  final_top_prob=0.984
+  first steps (top_prob, entropy): (0.30,3.44), (0.77,1.38), (0.15,4.53), (0.21,4.84), (0.04,7.24), (0.32,2.00), (0.22,2.46), (0.13,4.48)
+  rep @final loop:  PROMPT corr=0.195 rank=7.70  |  GENERATED corr=0.580 rank=10.58
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'The speed of light in a vacuum is approximately'
+  generated (greedy, 32 tok): ' 1000000000000000000000000000000'
+  output dist:  mean_entropy=0.677 nats  final_entropy=0.126  mean_top_prob=0.884  final_top_prob=0.987
+  first steps (top_prob, entropy): (0.75,1.47), (0.38,1.90), (0.33,2.27), (0.81,1.23), (0.82,1.29), (0.82,1.31), (0.77,1.66), (0.71,1.92)
+  rep @final loop:  PROMPT corr=0.182 rank=8.49  |  GENERATED corr=0.799 rank=6.46
+  -> FREE-RUNNING rep degradation — generated-token reps collapse
+
+prompt: 'A catalyst is a substance that'
+  generated (greedy, 32 tok): ' is not a chemical substance.\n\nThe chemical and chemical properties of the chemical substance are not necessarily the same as the chemical properties of the chemical substance.\n'
+  output dist:  mean_entropy=3.409 nats  final_entropy=2.319  mean_top_prob=0.423  final_top_prob=0.425
+  first steps (top_prob, entropy): (0.38,3.08), (0.19,4.80), (0.47,3.62), (0.06,6.15), (0.37,3.43), (0.33,2.37), (0.16,3.87), (0.94,0.52)
+  rep @final loop:  PROMPT corr=0.219 rank=5.74  |  GENERATED corr=0.237 rank=24.95
+  -> inconclusive / not clearly degenerate at this length

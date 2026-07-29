@@ -823,6 +823,56 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-07-28 — ✅ @58,000 UNIFORM-MIX DOSE TEST: code improves, and the win is DISTRIBUTIONAL not attractor-removal
+
+Leg 52,000 → 58,000 with `_MIX_RATIOS` made **uniform** (code 20%→33%, general 40→34,
+math 40→33) to test the owner's hypothesis that code was the *dose-limited* laggard.
+
+**Rollout probe (n=5, sampled) — the hypothesis holds, and the split by DIET is the story:**
+| domain group | share of diet | 52k → 58k α=0.0 mean |
+|---|---|---|
+| general / math / code | 100% | **0.127 → 0.110 ✅** |
+| medical | **0%** | 0.150 → **0.183 ❌** |
+
+The headline mean *rose* (0.138 → 0.147) — **entirely dragged by untrained medical.** Split by
+diet and the picture inverts. Standouts: **fibonacci 0.12 → 0.10 with the range collapsing
+[0.06–0.27] → [0.09–0.11]** (the bimodal blow-up tail gone — the number-blob mode stopped
+firing), and **quadratic 0.18 → 0.12 despite LOSING share** (40%→33%).
+
+**⚠ THE KEY REFINEMENT — greedy reconciles it: this is DISTRIBUTIONAL improvement, NOT attractor
+removal.** The greedy sweep at 58k shows the attractors *unchanged*: `sorted(` still collapses to
+`list(list(list(…` byte-identically, hard-collapse totals flat (9 vs 8), fibonacci arguably
+*worse* under greedy (`# # # #` comment spam vs 52k's `def n(n)` repetition). Meanwhile two
+prompts genuinely improved — `import numpy` went `get_num_of_num_of_num…` → **`def
+get_data_from_data_file(data_file):` + a real docstring**, and `binary_search` went
+docstring-only → **`if not isinstance(val, str): return False`** (real control flow).
+**Both readings are true: the extra dose moved probability mass AWAY from degenerate paths
+without deleting the paths.** The model falls in less often; the holes are still in the floor.
+⇒ **More data reduces how often you hit an attractor; it does not remove it.** Removing
+`list(list(` and the giant-number mode needs a *targeted* fix (unlikelihood training) or far
+more scale — not another 6k steps. Do not remember this leg as a bigger win than it was.
+
+**The medical list-marker soup was SAMPLING NOISE, not an attractor.** The alarming bacterial
+α=0.0 output (`A. C. B. / F / 1. C. F. C. / 2. / I / [L / G / T`) has **zero** occurrences under
+greedy — deterministic decode never reproduces it. One unlucky draw of five. *Method note: this
+is exactly what greedy is for — it settles "real attractor vs sampling artifact" definitively,
+and it's why both instruments are kept.*
+
+**Medical degradation — mechanism (owner's read).** Medical has **no dataset at all**; whatever
+ability existed rode in on **fineweb-edu spillover**, and this leg cut general 40%→34% while
+raising code (zero medical content) 20%→33%. The only tributary shrank. Under *greedy* medical is
+comparably bad at both checkpoints (phrase-looping), so this shows in the sampled probe only —
+softening but not refuting the crowding-out read. ⇒ Medical capability **cannot be maintained
+incidentally**; it needs real medical seed data (**curriculum Rung 1**), which is also direct
+mission progress.
+
+**Parity gate (α=0.0 vs α=0.7) — NOT closing.** Across 36,658 / 46,000 / 52,000 / 58,000 the gap
+sits ~+0.03–0.04 with the distinct1 gap persistently negative (teacher-steered stays more
+varied). Per the curriculum asymmetry that is the **capacity-limited** flavour, not exhaustion →
+the teacher still has transferable signal, and growth (Rung 2) is indicated before graduation
+(Rung 3). Raw: `reports/onpolicy_rollout_probe_58000_xpu_uncached_n5.txt` ·
+`reports/collapse_metrics_58000_xpu_aligned.txt`.
+
 ## 2026-07-26 — 🔬 @46,000 DOMAIN-ALIGNED SWEEP (collapse_metrics, greedy vs T=0.8): artifact-vs-real split
 
 Broadened the student-only greedy probe to domains that match training + mission: **general / math /
