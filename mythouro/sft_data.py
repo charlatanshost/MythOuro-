@@ -97,14 +97,21 @@ _SFT_DATASET_SPECS = [
 # test split is MANDATORY for this mix (on by default in MixedSFTDataset).
 # ---------------------------------------------------------------------------
 
+# MIRIAD REMOVED 2026-07-28 — it is ❌ OpenAI-generated (dataset card: S2ORC was
+# "input to OpenAI's language models") and carries an OpenAI-ToS ban on
+# medical-diagnosis use. docs/clean_sft_datasets.md + docs/dataset_selection.md
+# recorded the DROP on 2026-06-20, but the code still wired it in and still gave
+# it mix weight — i.e. an SFT run would have pulled OpenAI-tainted data into a
+# MEDICAL model, breaching both the clean-data constraint that makes this project
+# distributable and an explicit ToS restriction. Its 0.07 is redistributed to the
+# two clean medical/science sources so domain coverage is preserved.
 _CLEAN_MIX_RATIOS = {
     "clean_general":  0.30,
     "clean_math":     0.18,
     "clean_numina":   0.12,
     "clean_code":     0.20,
-    "clean_miriad":   0.07,
-    "clean_pubmedqa": 0.05,
-    "clean_chem":     0.08,
+    "clean_pubmedqa": 0.09,   # was 0.05 (+0.04 of MIRIAD's share)
+    "clean_chem":     0.11,   # was 0.08 (+0.03)
 }
 
 # CHAT-HEAVY clean variant (mix="clean_chat", 2026-06-14). Same clean sources,
@@ -119,9 +126,8 @@ _CLEAN_CHAT_MIX_RATIOS = {
     "clean_code":     0.20,   # moderately diverse
     "clean_math":     0.05,
     "clean_numina":   0.05,
-    "clean_miriad":   0.04,
-    "clean_pubmedqa": 0.02,
-    "clean_chem":     0.04,
+    "clean_pubmedqa": 0.04,   # was 0.02 (+0.02 of MIRIAD's dropped share)
+    "clean_chem":     0.06,   # was 0.04 (+0.02)
 }
 
 _CLEAN_DATASET_SPECS = [
@@ -129,7 +135,9 @@ _CLEAN_DATASET_SPECS = [
     ("clean_math",     "nvidia/OpenMathInstruct-2",  None,             "train", 250_000),
     ("clean_numina",   "AI-MO/NuminaMath-CoT",       None,             "train", 150_000),
     ("clean_code",     "nvidia/OpenCodeInstruct",    None,             "train", 200_000),
-    ("clean_miriad",   "miriad/miriad-4.4M",         None,             "train", 100_000),
+    # ("clean_miriad", "miriad/miriad-4.4M", ...) REMOVED 2026-07-28 —
+    # OpenAI-generated + ToS ban on medical-diagnosis use. See the note on
+    # _CLEAN_MIX_RATIOS above. Do NOT re-add without a fresh provenance check.
     ("clean_pubmedqa", "qiaojin/PubMedQA",           "pqa_artificial", "train", 100_000),
     ("clean_chem",     "AI4Chem/ChemData700K",       None,             "train", 100_000),
 ]
@@ -284,6 +292,13 @@ def _to_messages_pubmedqa(sample: dict) -> Optional[list[dict]]:
 
 def _to_messages_miriad(sample: dict) -> Optional[list[dict]]:
     """
+    ⚠ UNREACHABLE / DO NOT USE (2026-07-28). MIRIAD was removed from
+    `_CLEAN_DATASET_SPECS` and both mix dicts — it is OpenAI-generated and
+    carries an OpenAI-ToS ban on medical-diagnosis use. This adapter is kept
+    only so the existing unit tests keep exercising the schema-adapter contract;
+    nothing can route to it while the spec is absent. Re-adding the spec would
+    silently re-enable it, so do not do that without a fresh provenance check.
+
     MIRIAD-4.4M: (question, answer) medical QA grounded in S2ORC papers.
     Answers are self-contained; the source passage is omitted to keep
     prompts inside the seq budget.
