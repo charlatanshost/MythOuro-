@@ -116,12 +116,24 @@ _SFT_DATASET_SPECS = [
 # Llama-3.1-405B, provenance-verified), keeping math coverage from a trusted
 # source. Subset-filtering was the alternative; a clean drop was preferred
 # because this is the FIRST SFT of the from-scratch clean rebuild.
+# ChemData700K REMOVED 2026-07-28 — paper-verified contaminated (arXiv 2402.06852):
+# "we utilize GPT-4 ... to generate a range of Q&A pairs that ... vary in their
+# expression, creating what we refer to as a diverse template", and GPT-4 also
+# authored the multi-turn dialogue "scripts". The "template-based construction"
+# description was only the SEED step — GPT-4 did the expansion. Fourth
+# card-derived claim to fail verification (after MIRIAD, Tulu-3, NuminaMath).
+#
+# ⚠ CONSEQUENCE: chemistry/hard-science coverage is now ZERO. PubMedQA is the
+# only surviving clean domain source, and it is narrow (yes/no biomedical QA), so
+# it is NOT scaled up to absorb the whole 0.11 — the doc already records that
+# low-diversity structured data drives SFT mode-collapse. The share is spread,
+# with a modest bump to PubMedQA. A clean science/chem replacement is an open
+# TODO (docs/clean_sft_datasets.md).
 _CLEAN_MIX_RATIOS = {
-    "clean_general":  0.30,
-    "clean_math":     0.30,   # was 0.18 (+0.12 from dropped NuminaMath)
-    "clean_code":     0.20,
-    "clean_pubmedqa": 0.09,   # was 0.05 (+0.04 of MIRIAD's share)
-    "clean_chem":     0.11,   # was 0.08 (+0.03)
+    "clean_general":  0.34,   # was 0.30
+    "clean_math":     0.32,   # was 0.30 (0.18 + NuminaMath's 0.12, +0.02 here)
+    "clean_code":     0.22,   # was 0.20
+    "clean_pubmedqa": 0.12,   # was 0.09; kept modest — narrow, mode-collapse risk
 }
 
 # CHAT-HEAVY clean variant (mix="clean_chat", 2026-06-14). Same clean sources,
@@ -132,11 +144,10 @@ _CLEAN_MIX_RATIOS = {
 # chat keeps generation varied (as v4's OpenHermes did, but with zero OpenAI
 # provenance). If this avoids the collapse, it's both the diagnosis AND the fix.
 _CLEAN_CHAT_MIX_RATIOS = {
-    "clean_general":  0.60,   # Tulu-3: diverse chat / FLAN / converted OASST
-    "clean_code":     0.20,   # moderately diverse
+    "clean_general":  0.63,   # was 0.60 — Tulu-3: diverse chat / FLAN / OASST
+    "clean_code":     0.21,   # was 0.20 — moderately diverse
     "clean_math":     0.10,   # was 0.05 (+0.05 from dropped NuminaMath)
-    "clean_pubmedqa": 0.04,   # was 0.02 (+0.02 of MIRIAD's dropped share)
-    "clean_chem":     0.06,   # was 0.04 (+0.02)
+    "clean_pubmedqa": 0.06,   # was 0.02; absorbs part of ChemData's dropped share
 }
 
 _CLEAN_DATASET_SPECS = [
@@ -151,7 +162,10 @@ _CLEAN_DATASET_SPECS = [
     # OpenAI-generated + ToS ban on medical-diagnosis use. See the note on
     # _CLEAN_MIX_RATIOS above. Do NOT re-add without a fresh provenance check.
     ("clean_pubmedqa", "qiaojin/PubMedQA",           "pqa_artificial", "train", 100_000),
-    ("clean_chem",     "AI4Chem/ChemData700K",       None,             "train", 100_000),
+    # ("clean_chem", "AI4Chem/ChemData700K", ...) REMOVED 2026-07-28 —
+    # paper-verified GPT-4 in construction (arXiv 2402.06852). See the note on
+    # _CLEAN_MIX_RATIOS. Chemistry/science coverage is now ZERO — a clean
+    # replacement source is an open TODO.
 ]
 
 
@@ -402,7 +416,7 @@ _ADAPTERS = {
     "clean_code":     _to_messages_opencode,
     "clean_miriad":   _to_messages_miriad,
     "clean_pubmedqa": _to_messages_pubmedqa,
-    "clean_chem":     _to_messages_chemdata,
+    # "clean_chem" REMOVED 2026-07-28 (GPT-4 in construction); see specs note.
 }
 
 
