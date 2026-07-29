@@ -823,6 +823,53 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-07-29 — 🧪 TEACHER-EXHAUSTION GAUGE, first real series (46k→58k): rises, but CONFOUNDED
+
+`tools/kd_exhaustion.py` measures the curriculum's most direct Rung-3 gate — soft-KL
+on a fixed held-out sample — continuously and without the `top_share` inversion problem.
+First real run (every 2000, 8×4×512 = 16,384 held-out tok, cached so the series is comparable):
+
+| step | soft-KL | Δ |
+|---|---|---|
+| 46,000 | 2.2451 | |
+| 48,000 | 2.2180 | −0.0271 |
+| 50,000 | 2.2100 | −0.0080 |
+| **52,000** | **2.2687** | **+0.0587** ← mix change lands here |
+| 54,000 | 2.3165 | +0.0478 |
+| 56,000 | 2.2636 | −0.0529 |
+| 58,000 | 2.3216 | +0.0580 |
+
+mean **2.2634**, half-to-half drift **+0.0682**, step-noise (rms) **0.0460**.
+
+**Reading: soft-KL RISES at ~1.5× the scatter — but that is NOT evidence of teacher
+exhaustion.** Two confounds survive, and both must be cleared before this number
+informs anything:
+1. **Mix change inside the series.** Values *fall* 46k→50k, then jump **+0.0587 at
+   52,000 and stay elevated** — exactly where the uniform mix took effect (code
+   20%→33%, general 40%→34%). The only clearly non-random feature sits on a
+   training-distribution change. **Compare within one mix regime.**
+2. **The on-policy caveat (the important one, unresolved).** At λ=0.7, ~70% of steps
+   train on the student's OWN rollouts, not offline web text — so drifting away from
+   the teacher's *web-text* distribution is EXPECTED, not exhaustion. The gauge may
+   simply be pointed at the wrong distribution for an on-policy run.
+
+**Discriminating test, not yet done:** measure soft-KL over **student rollouts** instead
+of web text. Rollout-KL falling while web-KL rises ⇒ caveat 2 confirmed, re-point the tool.
+
+**Verdict logic corrected in the same pass.** The first version printed a confident
+"FLATTENING → GROW" off two half-series slopes; on this data that fired on scatter plus a
+confound. It now compares half-to-half drift against point-to-point noise, prints
+INCONCLUSIVE when |drift| < noise, and on a rise explicitly demands the two confounds be
+ruled out. *Under-claiming is the right failure mode for a signal feeding a capital
+decision.* **Do not use this alone for grow-vs-graduate** — cross-check the α=0.0 vs α=0.7
+gap, which at 58k is still NOT closing (~+0.03–0.04), the capacity-limited signature and
+currently the more trustworthy of the two. Raw: `reports/kd_exhaustion_46k_58k.txt`.
+
+*(Process note: the run also confirmed the artifact-based orchestration fix — the gauge hit
+the XPU interpreter-teardown crash AFTER writing all seven measurements, and the chained
+medical harvest started anyway. Under the old exit-code check that crash would have
+silently skipped phase 2.)*
+
 ## 2026-07-28 — ✅ @58,000 UNIFORM-MIX DOSE TEST: code improves, and the win is DISTRIBUTIONAL not attractor-removal
 
 Leg 52,000 → 58,000 with `_MIX_RATIOS` made **uniform** (code 20%→33%, general 40→34,

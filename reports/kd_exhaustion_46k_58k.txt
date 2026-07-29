@@ -1,0 +1,28 @@
+measuring 7 checkpoints: 46000, 48000, 50000, 52000, 54000, 56000, 58000
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-07-29 00:21:56.750 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1653 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=xpu:0). Teacher frozen.
+held-out: streaming a fresh sample (one-time; then cached) …
+held-out: cached -> reports/.heldout_s12345_b8x4_L512.pt
+held-out: 8 x 4 x 512 tok (seed 12345, unseen)
+
+    step    soft-KL (nats/tok)   Δ vs prev
+--------------------------------------------
+2026-07-29 00:22:22.132 | WARNING  | mythouro.main:warn_once:85 - GQAttention: using manual SDPA fallback (neither FA2 nor torch SDPA available).
+   46000                2.2451            
+   48000                2.2180     -0.0271
+   50000                2.2100     -0.0080
+   52000                2.2687     +0.0587
+   54000                2.3165     +0.0478
+   56000                2.2636     -0.0529
+   58000                2.3216     +0.0580
+
+  early slope -0.01752/ckpt   late slope +0.01763/ckpt
+  → FLATTENING: the teacher's transferable signal is running out at this capacity.
+    If α=0.0 is still << α=0.7 → capacity-limited → GROW (Rung 2).
+Fatal Python error: PyGILState_Release: thread state 0x7ebc7c004e30 must be current when releasing
+Python runtime state: finalizing (tstate=0x0000000000ba6748)
+
+Thread 0x00007ebff6488300 (most recent call first):
+  <no Python frame>
+
+Extension modules: numpy._core._multiarray_umath, numpy.linalg._umath_linalg, torch._C, torch._C._dynamo.autograd_compiler, torch._C._dynamo.eval_frame, torch._C._dynamo.guards, torch._C._dynamo.utils, torch._C._fft, torch._C._linalg, torch._C._nested, torch._C._nn, torch._C._sparse, torch._C._special, charset_normalizer.md, charset_normalizer.cd, requests.packages.charset_normalizer.md, requests.packages.chardet.md, requests.packages.charset_normalizer.cd, requests.packages.chardet.cd, yaml._yaml, regex._regex, markupsafe._speedups, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._pcg64, numpy.random._generator, numpy.random._mt19937, numpy.random._philox, numpy.random._sfc64, numpy.random.mtrand, pyarrow.lib, _cyutility, pandas._libs._cyutility, pandas._libs.tslibs.ccalendar, pandas._libs.tslibs.np_datetime, pandas._libs.tslibs.dtypes, pandas._libs.tslibs.base, pandas._libs.tslibs.nattype, pandas._libs.tslibs.timezones, pandas._libs.properties, pandas._libs.tslibs.fields, pandas._libs.tslibs.timedeltas, pandas._libs.tslibs.tzconversion, pandas._libs.tslibs.timestamps, pandas._libs.tslibs.offsets, pandas._libs.tslibs.strptime, pandas._libs.tslibs.parsing, pandas._libs.tslibs.conversion, pandas._libs.tslibs.period, pandas._libs.tslibs.vectorized, pandas._libs.ops_dispatch, pandas._libs.missing, pandas._libs.hashtable, pandas._libs.algos, pandas._libs.interval, pandas._libs.lib, pyarrow._compute, pandas._libs.ops, pandas._libs.hashing, pandas._libs.arrays, pandas._libs.tslib, pandas._libs.sparse, pandas._libs.internals, pandas._libs.indexing, pandas._libs.index, pandas._libs.writers, pandas._libs.join, pandas._libs.window.aggregations, pandas._libs.window.indexers, pandas._libs.reshape, pandas._libs.groupby, pandas._libs.json, pandas._libs.parsers, pandas._libs.testing, pyarrow._acero, pyarrow._fs, pyarrow._csv, pyarrow._json, pyarrow._substrait, pyarrow._dataset, pyarrow._dataset_orc, pyarrow._parquet, pyarrow._azurefs, pyarrow._hdfs, pyarrow._gcsfs, pyarrow._s3fs, pyarrow._parquet_encryption, pyarrow._dataset_parquet_encryption, pyarrow._dataset_parquet, multidict._multidict, yarl._quoting_c, propcache._helpers_c, aiohttp._http_writer, aiohttp._http_parser, aiohttp._websocket.mask, aiohttp._websocket.reader_c, frozenlist._frozenlist, xxhash._xxhash (total: 99)

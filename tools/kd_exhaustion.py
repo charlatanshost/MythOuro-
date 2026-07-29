@@ -24,30 +24,37 @@ The α-gap half comes from `tools/onpolicy_rollout_probe.py`; this supplies the
 continuous half. Both are needed — the asymmetry in the curriculum doc (gap
 closed vs progress stalled) is what separates "grow" from "graduate".
 
-⚠ STATUS 2026-07-28: MECHANICALLY VALIDATED, INTERPRETATION NOT.
-A 2-checkpoint smoke run completes cleanly and produces numbers (48,000 → 1.5632;
-54,000 → 1.7110), so checkpoint loading, the forward signatures, the KL math and
-the cache all work. But soft-KL went **UP**, which is the opposite of the
-expected direction, and three explanations are still unseparated:
+⚠ STATUS 2026-07-29: WORKS AND IS STABLE — BUT ITS READING IS CONFOUNDED.
+First real series, 46k→58k every 2000, 8x4x512 = 16,384 held-out tokens:
 
-  1. SAMPLE TOO SMALL — the smoke used 2x2x256 = 1,024 tokens. That is noise.
-     Use the defaults (8x4x512) or larger before reading anything into a value.
-  2. MIX CHANGED MID-SERIES — 48k trained under 40/40/20, 54k under the uniform
-     mix (2026-07-27). The held-out sample is drawn with the CURRENT ratios, so
-     checkpoints either side of a mix change are not judged on the distribution
-     they trained on. Prefer comparing checkpoints within one mix regime.
-  3. ⚠ THE DESIGN CAVEAT — at `--onpolicy-lambda 0.7`, ~70% of training steps are
-     ON-POLICY rollouts, not offline distillation on web text. The student's
-     distribution is therefore moving toward "what the teacher says about
-     STUDENT-GENERATED text", so offline soft-KL on held-out WEB text can
-     legitimately RISE while the model genuinely improves. If that is what's
-     happening, this gauge is pointed at the wrong distribution for an on-policy
-     run and should be re-pointed at soft-KL over student rollouts.
+    46000 2.2451 | 48000 2.2180 | 50000 2.2100 | 52000 2.2687
+    54000 2.3165 | 56000 2.2636 | 58000 2.3216
+    mean 2.2634   half-to-half drift +0.0682   step-noise (rms) 0.0460
 
-Discriminating test: run the full series (46k→58k every 2000) at a real sample
-size. Jagged/no trend => (1) noise. Monotone rise => (3) is real and the tool
-needs re-pointing. **Do not use this to make a grow-vs-graduate call until that
-is settled.**
+So soft-KL **RISES** ~1.5x the point-to-point scatter. Sample size (hypothesis 1
+from the 07-28 smoke) is no longer the explanation — but the rise is NOT
+attributable to teacher exhaustion, because two confounds survive:
+
+  * MIX CHANGE INSIDE THE SERIES. The values FALL through 46k→50k, then jump
+    +0.0587 at **52,000 and stay elevated** — and 52,000 is exactly where the
+    uniform mix took effect (code 20%→33%, general 40%→34%). The one clearly
+    non-random feature in the series sits on a training-distribution change.
+    **Compare checkpoints within a single mix regime.**
+  * THE ON-POLICY CAVEAT (unresolved, and the important one). At
+    `--onpolicy-lambda 0.7` ~70% of steps train on the student's OWN rollouts,
+    not offline web text. Drifting away from the teacher's web-text distribution
+    is then EXPECTED, not evidence of exhaustion — this gauge may simply be
+    pointed at the wrong distribution for an on-policy run.
+
+DISCRIMINATING TEST (not yet done): measure soft-KL over **student rollouts**
+instead of web text. If rollout-KL falls while web-KL rises, the on-policy caveat
+is confirmed and this tool should be re-pointed. That is a code change, not a
+re-run.
+
+**Still do NOT use this alone for a grow-vs-graduate call.** Cross-check against
+the α=0.0 vs α=0.7 gap (`onpolicy_rollout_probe`), which as of 58k is NOT closing
+(~+0.03-0.04) — that is the capacity-limited signature, and it is the more
+trustworthy of the two right now.
 
 Usage
 -----
@@ -193,20 +200,42 @@ def main() -> None:
         del student
 
     if len(rows) >= 3:
-        first_half = rows[: len(rows) // 2]
-        second_half = rows[len(rows) // 2:]
-        r1 = (first_half[-1][1] - first_half[0][1]) / max(len(first_half) - 1, 1)
-        r2 = (second_half[-1][1] - second_half[0][1]) / max(len(second_half) - 1, 1)
-        print(f"\n  early slope {r1:+.5f}/ckpt   late slope {r2:+.5f}/ckpt")
-        if r2 > -0.001 and r1 < -0.001:
-            print("  → FLATTENING: the teacher's transferable signal is running out at "
-                  "this capacity.\n    If α=0.0 is still << α=0.7 → capacity-limited → GROW (Rung 2).")
-        elif r2 <= -0.001:
-            print("  → STILL FALLING: transferable signal remains — keep pouring tokens "
-                  "at this size.")
+        vals = [v for _, v in rows]
+        n = len(vals)
+        mean = sum(vals) / n
+        # Point-to-point scatter is the honest noise floor here: adjacent
+        # checkpoints are ~2000 steps apart, so a real trend should dwarf it.
+        deltas = [vals[i + 1] - vals[i] for i in range(n - 1)]
+        noise = (sum(d * d for d in deltas) / len(deltas)) ** 0.5
+        drift = (sum(vals[n // 2:]) / len(vals[n // 2:])
+                 - sum(vals[: n // 2]) / len(vals[: n // 2]))
+        sign_flips = sum(1 for i in range(len(deltas) - 1)
+                         if deltas[i] * deltas[i + 1] < 0)
+
+        print(f"\n  mean {mean:.4f}   half-to-half drift {drift:+.4f}   "
+              f"step-noise (rms) {noise:.4f}   sign-flips {sign_flips}/{len(deltas)-1}")
+
+        # Only claim a trend when it clears the scatter. Earlier versions printed
+        # a confident FLATTENING/GROW verdict off two half-series slopes, which
+        # on the first real run (46k→58k, 2026-07-29) fired on what was plainly
+        # noise + a mix-change confound. Under-claiming is the right failure mode
+        # for something feeding a capital decision.
+        if abs(drift) < noise:
+            print("  → INCONCLUSIVE: |drift| < step-noise. This series cannot "
+                  "distinguish\n    exhaustion from scatter. Do NOT read a "
+                  "grow-vs-graduate decision from it.")
+        elif drift < 0:
+            print("  → FALLING beyond the noise: transferable signal remains at "
+                  "this capacity —\n    keep pouring tokens before spending on growth.")
         else:
-            print("  → flat/rising throughout: check the run is healthy before reading "
-                  "this as exhaustion.")
+            print("  → RISING beyond the noise: the student is moving AWAY from the "
+                  "teacher on\n    this text. Before reading that as exhaustion, rule "
+                  "out (a) a training-mix\n    change inside the series, and (b) the "
+                  "on-policy caveat in the module docstring\n    (at high "
+                  "--onpolicy-lambda the student trains on its OWN rollouts, so "
+                  "drifting\n    from the teacher's web-text distribution is expected).")
+        print("  ⚠ Cross-check any reading against the α=0.0 vs α=0.7 gap from "
+              "onpolicy_rollout_probe;\n    neither signal is sufficient alone.")
 
 
 if __name__ == "__main__":
