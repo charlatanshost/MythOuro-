@@ -619,6 +619,16 @@ _DATASET_SPECS = [
     ("general", "HuggingFaceFW/fineweb-edu",    "sample-10BT", "train", "text"),
     ("math",    "open-web-math/open-web-math",  None,          "train", "text"),
     ("code",    "codeparrot/codeparrot-clean",  None,          "train", "content"),
+    # HARVEST-ONLY seed source (added 2026-07-28). Deliberately absent from
+    # _MIX_RATIOS, so MixedDataset SKIPS it (see the `ratios.get(key, 0) <= 0`
+    # guard) and the real training mix is unchanged — it exists so the teacher
+    # corpus can be seeded on medical text via `gen_teacher_corpus --seed-mix`.
+    # Rationale: medical is the mission domain but gets ZERO training signal
+    # (@52k/@58k probes), and its only incidental tributary — fineweb-edu — was
+    # cut 40%->34% by the uniform-mix change. Raw human-written abstracts have
+    # none of the LLM-provenance problems that disqualified the SFT medical
+    # sources: MedRAG/pubmed is flat-fielded PubMed abstracts (NLM), ~2.2M rows.
+    ("medical", "MedRAG/pubmed",                None,          "train", "content"),
 ]
 
 

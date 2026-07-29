@@ -266,6 +266,11 @@ def main() -> None:
 
     # Resolve the seed mix BEFORE the teacher load — a typo here should cost a
     # second, not a two-minute model load on an unattended overnight launch.
+    # Valid seed sources are everything in _DATASET_SPECS — NOT just the keys of
+    # _MIX_RATIOS. Some specs are harvest-only (e.g. "medical"), deliberately
+    # absent from _MIX_RATIOS so MixedDataset skips them and the training mix is
+    # untouched; they must still be selectable here.
+    _spec_keys = {k for k, *_ in _DATASET_SPECS}
     seed_mix = dict(_MIX_RATIOS)
     if args.seed_mix:
         override = {}
@@ -275,10 +280,10 @@ def main() -> None:
             if not sep:
                 raise SystemExit(
                     f"--seed-mix: expected 'source=weight', got {part!r}")
-            if k not in _MIX_RATIOS:
+            if k not in _spec_keys:
                 raise SystemExit(
                     f"--seed-mix: unknown source {k!r}; "
-                    f"expected one of {sorted(_MIX_RATIOS)}")
+                    f"expected one of {sorted(_spec_keys)}")
             try:
                 override[k] = float(v)
             except ValueError:
@@ -286,11 +291,14 @@ def main() -> None:
                     f"--seed-mix: weight for {k!r} is not a number: {v!r}")
             if override[k] < 0:
                 raise SystemExit(f"--seed-mix: negative weight for {k!r}")
-        if set(override) != set(_MIX_RATIOS):
-            missing = sorted(set(_MIX_RATIOS) - set(override))
-            raise SystemExit(
-                f"--seed-mix must name every source {sorted(_MIX_RATIOS)}; "
-                f"missing {missing}")
+        # --seed-mix FULLY specifies the draw distribution: whatever is named is
+        # what gets sampled (weights are normalised below), and anything omitted
+        # is simply not drawn. A subset is therefore legal and meaningful —
+        # `--seed-mix medical=1.0` is a pure medical harvest. (It used to require
+        # naming every _MIX_RATIOS key, which made harvest-only sources like
+        # "medical" unusable.)
+        if not override:
+            raise SystemExit("--seed-mix named no sources")
         total = sum(override.values())
         if total <= 0:
             raise SystemExit("--seed-mix weights must sum to > 0")
