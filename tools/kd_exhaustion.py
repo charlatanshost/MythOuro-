@@ -24,6 +24,31 @@ The α-gap half comes from `tools/onpolicy_rollout_probe.py`; this supplies the
 continuous half. Both are needed — the asymmetry in the curriculum doc (gap
 closed vs progress stalled) is what separates "grow" from "graduate".
 
+⚠ STATUS 2026-07-28: MECHANICALLY VALIDATED, INTERPRETATION NOT.
+A 2-checkpoint smoke run completes cleanly and produces numbers (48,000 → 1.5632;
+54,000 → 1.7110), so checkpoint loading, the forward signatures, the KL math and
+the cache all work. But soft-KL went **UP**, which is the opposite of the
+expected direction, and three explanations are still unseparated:
+
+  1. SAMPLE TOO SMALL — the smoke used 2x2x256 = 1,024 tokens. That is noise.
+     Use the defaults (8x4x512) or larger before reading anything into a value.
+  2. MIX CHANGED MID-SERIES — 48k trained under 40/40/20, 54k under the uniform
+     mix (2026-07-27). The held-out sample is drawn with the CURRENT ratios, so
+     checkpoints either side of a mix change are not judged on the distribution
+     they trained on. Prefer comparing checkpoints within one mix regime.
+  3. ⚠ THE DESIGN CAVEAT — at `--onpolicy-lambda 0.7`, ~70% of training steps are
+     ON-POLICY rollouts, not offline distillation on web text. The student's
+     distribution is therefore moving toward "what the teacher says about
+     STUDENT-GENERATED text", so offline soft-KL on held-out WEB text can
+     legitimately RISE while the model genuinely improves. If that is what's
+     happening, this gauge is pointed at the wrong distribution for an on-policy
+     run and should be re-pointed at soft-KL over student rollouts.
+
+Discriminating test: run the full series (46k→58k every 2000) at a real sample
+size. Jagged/no trend => (1) noise. Monotone rise => (3) is real and the tool
+needs re-pointing. **Do not use this to make a grow-vs-graduate call until that
+is settled.**
+
 Usage
 -----
     python -m tools.kd_exhaustion --ckpt-dir checkpoints_onpolicy_fixed \\
@@ -144,7 +169,8 @@ def main() -> None:
         it = iter(ds)
         batches, buf = [], []
         while len(batches) < args.batches:
-            buf.append(torch.tensor(next(it)["input_ids"]))
+            x, _y = next(it)          # MixedDataset yields (inputs, targets) tensors
+            buf.append(x)
             if len(buf) == args.batch_size:
                 batches.append(torch.stack(buf)); buf = []
         cache.parent.mkdir(parents=True, exist_ok=True)
