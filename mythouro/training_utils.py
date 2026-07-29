@@ -733,6 +733,18 @@ class MixedDataset(IterableDataset):
                         f"MixedDataset: no files match {repo!r}; skipping source"
                     )
                     return None
+                # Log what actually resolved. Previously success was SILENT (only
+                # the no-match case warned), so a blend that quietly picked up the
+                # wrong corpora — or only one of them — was invisible until the
+                # probe looked strange 17 hours later.
+                import os as _os
+                from collections import Counter as _Counter
+                _by_dir = _Counter(_os.path.dirname(f) or "." for f in files)
+                logger.info(
+                    "MixedDataset: teacher corpus = {} files — {}",
+                    len(files),
+                    ", ".join(f"{d}: {n}" for d, n in sorted(_by_dir.items())),
+                )
                 ds = load_dataset(
                     "json", data_files=files, split="train", streaming=True,
                 )
