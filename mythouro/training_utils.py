@@ -719,7 +719,15 @@ class MixedDataset(IterableDataset):
         try:
             if repo.startswith("json:"):
                 import glob as _glob
-                files = sorted(_glob.glob(repo[len("json:"):]))
+                # COMMA-SEPARATED globs (2026-07-29): a blended teacher corpus
+                # lives in several dirs — e.g. the general/math/code corpus plus
+                # the medical one. A single wildcard like `data_teacher_*/` would
+                # wrongly sweep in the retired v1 (boilerplate-contaminated) and
+                # data_teacher_clean, so each corpus is named explicitly.
+                pattern = repo[len("json:"):]
+                files = sorted(
+                    f for p in pattern.split(",") for f in _glob.glob(p.strip())
+                )
                 if not files:
                     logger.warning(
                         f"MixedDataset: no files match {repo!r}; skipping source"
@@ -728,6 +736,13 @@ class MixedDataset(IterableDataset):
                 ds = load_dataset(
                     "json", data_files=files, split="train", streaming=True,
                 )
+                # ⚠ MUST shuffle: streaming reads shards IN ORDER, so a blend of
+                # two corpora would otherwise be served as one solid block then
+                # the other (`data_teacher_med/*` sorts before
+                # `data_teacher_v2/*`, so a leg would train on pure medical first
+                # and might never reach the rest). Shuffling reorders the shards
+                # AND buffer-mixes rows, giving an actual blend.
+                ds = ds.shuffle(seed=self.seed, buffer_size=2000)
             else:
                 ds = load_dataset(
                     repo, name=config, split=split, streaming=True,
