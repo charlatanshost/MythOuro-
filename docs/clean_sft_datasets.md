@@ -5,6 +5,26 @@ licensing gate in the roadmap ("Licensing & data provenance"). The *legacy* SFT
 mix (OpenHermes / Magicoder / MetaMathQA) contains OpenAI-generated data, which
 constrains distribution — but **removing those was necessary, NOT sufficient.**
 
+## ✅ Provenance follow-up (2026-07-28) — the 06-20 "verify via paper" items, closed
+
+The 2026-06-20 table below is **AUTHORITATIVE over the 2026-06-11 entries further
+down.** Evidence: the entries were compiled largely from dataset cards, and cards
+under-disclose — **MIRIAD** looked fine at 06-11 and the 06-20 pass caught it as
+OpenAI-generated; **Tulu-3** likewise (see below). Treat any 06-11 description as
+a lead, not a verdict.
+
+| dataset | 2026-07-28 finding | status |
+|---|---|---|
+| **Tulu-3** (`clean_general`, 30%) | **CARD-VERIFIED CONTAMINATED.** The 18 subsets include **"WildChat GPT-4" — 100,000 samples (~10.6% of 939,344)**. The 06-11 entry's "generated strictly via open-weight models" is **FALSE**. Unfiltered, this put ~3.2% OpenAI data into the SFT mix. Card also notes "some portions ... are non-commercial" (ODC-BY-1.0). | ⚠️ **FILTER IMPLEMENTED** — `_to_messages_tulu` drops `wildchat` + `evol` subsets at ingestion (`mythouro/sft_data.py`). |
+| **OpenCodeInstruct** (`clean_code`, 20%) | **CLEARED — paper-verified** (arXiv 2504.04030): instructions by **Qwen2.5-32B-Instruct**; solutions by **Qwen2.5-Coder-32B-Instruct / Qwen2.5-32B-Instruct / QwQ-32B-Preview**; quality-judging + unit-test generation by Qwen2.5-32B. **No OpenAI models at any stage.** | ✅ **use** |
+| **ChemData700K** (`clean_chem`, 11%) | **LIKELY CLEAN, NOT CONFIRMED.** Described as **template-based construction** transforming structured chemical data (SMILES, molecular properties, compound DBs) into dialogue — i.e. rule-based, no LLM generation implied. MIT. The paper PDF would not parse and the README omits methodology, so this is *not* a positive verification. GPT-4 appears only as an **evaluation** comparator. | ⚠️ **use, flagged** — re-verify if a stricter provenance bar is ever needed |
+| **NuminaMath-CoT** (`clean_numina`, 12%) | **NOT RE-CHECKED 2026-07-28.** 06-20 flagged "generator undisclosed; broader NuminaMath used GPT-4o → suspect". The 06-11 entry claims "filtered to exclude proprietary API generation" — card-level, same class of evidence that failed for MIRIAD/Tulu-3. **Also note NuminaMath-TIR appears INSIDE Tulu-3** as a separate subset. | ⚠️ **STILL OPEN** — the last unverified source |
+
+**Bottom line:** of the clean mix, `clean_math` + `clean_pubmedqa` + `clean_code` are
+provenance-verified (47%), `clean_general` is contaminated-but-now-filtered (30%),
+`clean_chem` is likely-clean-unconfirmed (11%), and **`clean_numina` (12%) remains
+the one genuinely open item.**
+
 ## ⚠️ Provenance verification (2026-06-20)
 
 Per-dataset **card checks** (not just the 2026-06-11 schema/id probes) found OpenAI

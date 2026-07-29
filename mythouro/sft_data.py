@@ -201,6 +201,44 @@ def _to_messages_metamath(sample: dict) -> Optional[list[dict]]:
     ]
 
 
+# Tulu-3 subsets excluded at ingestion for OpenAI provenance (2026-07-28).
+# VERIFIED against the dataset card: the mixture's 18 subsets include
+# **"WildChat GPT-4" (100,000 samples, ~10.6% of 939,344)**. The 2026-06-11
+# registry entry claimed Tulu-3 was "generated strictly via open-weight models"
+# — that is FALSE, and the 2026-06-20 provenance table ("contains WildChat-GPT-4
+# ... subset-filter only") is the authoritative read. Without this filter,
+# Tulu-3 at 30% of the clean mix put ~3.2% OpenAI-generated data into an
+# SFT run, breaching the clean-data constraint the project is defined by.
+#
+# Matching is substring-on-lowercase so subset-name variants still get caught;
+# prefer over-matching to letting GPT data through.
+_TULU_EXCLUDED_SOURCES = (
+    "wildchat",        # WildChat GPT-4 — confirmed OpenAI-generated
+    "evol",            # Evol-CodeAlpaca: Evol-Instruct/Alpaca lineage traces to
+                       # GPT-3.5/text-davinci-003. Not individually confirmed for
+                       # Tulu's copy; excluded on the precautionary principle
+                       # because the lineage prior is strong. Revisit with a
+                       # source-level provenance check if the data is wanted.
+)
+
+
+def _to_messages_tulu(sample: dict) -> Optional[list[dict]]:
+    """
+    Tulu-3 SFT mixture, with OpenAI-derived subsets dropped.
+
+    Tulu-3 ships a per-sample `source` (or `dataset`) field naming which of the
+    18 constituent subsets a row came from; returning None here routes into the
+    existing skip path, so excluded subsets never reach training. Everything
+    else delegates to the passthrough adapter unchanged.
+
+    See `_TULU_EXCLUDED_SOURCES` for what is dropped and why.
+    """
+    src = str(sample.get("source") or sample.get("dataset") or "").lower()
+    if any(bad in src for bad in _TULU_EXCLUDED_SOURCES):
+        return None
+    return _to_messages_passthrough(sample)
+
+
 def _to_messages_passthrough(sample: dict) -> Optional[list[dict]]:
     """
     For sources shipping a ready `messages` list of {"role", "content"}
@@ -346,7 +384,7 @@ _ADAPTERS = {
     "code":    _to_messages_magicoder,
     "math":    _to_messages_metamath,
     # Clean mix (docs/clean_sft_datasets.md)
-    "clean_general":  _to_messages_passthrough,
+    "clean_general":  _to_messages_tulu,      # passthrough + OpenAI-subset filter
     "clean_math":     _to_messages_openmath,
     "clean_numina":   _to_messages_passthrough,
     "clean_code":     _to_messages_opencode,
