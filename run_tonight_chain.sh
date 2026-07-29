@@ -28,24 +28,30 @@ OK=reports/chain_DONE; FAIL=reports/chain_FAILED
 rm -f "$OK" "$FAIL"
 trap '[ -f "$OK" ] || echo "incomplete exit=$? $(date)" > "$FAIL"' EXIT
 
-common_args() {                       # shared so the two legs differ ONLY in λ
-  echo "--student-variant mythouro_distill_tiny \
-    --student-device xpu:0 --teacher-device xpu:0 --teacher-id $TEACHER \
-    --seq-len 1024 --micro-batch 8 --grad-accum 2 \
-    --warmup-steps 500 --lr 1e-4 --min-lr 3e-5 \
-    --depth-reg-coeff 0.3 --divergence rev_kl \
-    --use-sandwich-norm --use-depth-aware-init \
-    --teacher-mix-alpha 0.5 --rollout-len 64 --rollout-batch 32 --rollout-reuse 2 \
-    --teacher-data-ratio 0.2 --teacher-data-files $FILES \
-    --ckpt-every-mins 15 --ckpt-milestone-every 2000 --keep-last 5 \
-    --num-workers 0 --trust-remote-code --log-every 5"
-}
+# ARRAY, not a string: `$(fn)` unquoted would word-split AND glob-expand. The
+# teacher-data pattern only survives that today because the comma makes it match
+# no file — drop the comma and bash would expand it into filenames and silently
+# mangle the command line. An array passes each argument through verbatim.
+# Shared so the two legs differ ONLY in --onpolicy-lambda, which is the point of
+# a control.
+COMMON=(
+  --student-variant mythouro_distill_tiny
+  --student-device xpu:0 --teacher-device xpu:0 --teacher-id "$TEACHER"
+  --seq-len 1024 --micro-batch 8 --grad-accum 2
+  --warmup-steps 500 --lr 1e-4 --min-lr 3e-5
+  --depth-reg-coeff 0.3 --divergence rev_kl
+  --use-sandwich-norm --use-depth-aware-init
+  --teacher-mix-alpha 0.5 --rollout-len 64 --rollout-batch 32 --rollout-reuse 2
+  --teacher-data-ratio 0.2 --teacher-data-files "$FILES"
+  --ckpt-every-mins 15 --ckpt-milestone-every 2000 --keep-last 5
+  --num-workers 0 --trust-remote-code --log-every 5
+)
 
 step_of() { basename "$1" | sed 's/step_0*//; s/\.pt//'; }
 latest()  { ls -t "$1"/step_*.pt 2>/dev/null | head -1; }
 
 echo "=== [1/4] medical leg -> 64,000 (λ=0.7) ==="
-python -u -m training.distill $(common_args) \
+python -u -m training.distill "${COMMON[@]}" \
   --onpolicy-lambda 0.7 --total-steps 64000 --ckpt-dir "$MAIN" || true
 
 # Verify by ARTIFACT — torch/XPU can crash on teardown AFTER succeeding.
@@ -71,7 +77,7 @@ cp -n "$MAIN/step_0064000.pt" "$BRANCH/" 2>/dev/null || true
 ls "$BRANCH"/step_0064000.pt >/dev/null || {
   echo "branch seed missing"; echo "no 64000 ckpt to branch $(date)" > "$FAIL"; exit 1; }
 
-python -u -m training.distill $(common_args) \
+python -u -m training.distill "${COMMON[@]}" \
   --onpolicy-lambda 0.7 --total-steps 66000 --ckpt-dir "$BRANCH" || true
 
 SB=$(step_of "$(latest $BRANCH)")
