@@ -453,5 +453,5 @@ flycheck_*.el
 data_teacher*/
 
 # Transient run-chain markers (run_leg_and_probe.sh) — control files, not results
-reports/leg_*_DONE
-reports/leg_*_FAILED
+reports/*_DONE
+reports/*_FAILED
