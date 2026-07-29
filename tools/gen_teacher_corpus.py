@@ -23,6 +23,7 @@ import argparse
 import json
 import random
 import re
+import signal
 import sys
 import time
 from collections import Counter
@@ -410,7 +411,30 @@ def main() -> None:
             x.get("accepted_tokens", 0) for x in manifest["sessions"])
         manifest_path.write_text(json.dumps(manifest, indent=2))
 
-    while accepted_tok < args.target_tokens:
+    # Graceful stop: flush the in-memory rows before exiting on Ctrl-C / SIGTERM.
+    # Without this, interrupting mid-shard silently discarded up to
+    # ROWS_PER_SHARD-1 accepted rows — ~700k tokens (≈1.7 h of GPU work) were
+    # about to be lost stopping the 2026-07-29 medical harvest, and the same gap
+    # cost rows in the power outage. Harvests are meant to be stopped whenever
+    # the card is wanted, so stopping must never destroy completed work.
+    # We only set a flag here: flushing from inside a signal handler could
+    # interleave with the writer in `flush()`. The loop checks it and exits
+    # cleanly at the next batch boundary.
+    stop_requested = {"v": False}
+
+    def _request_stop(signum, _frame):
+        if stop_requested["v"]:            # second Ctrl-C = impatient user
+            print("\nsecond signal — exiting immediately (buffer LOST)", flush=True)
+            raise SystemExit(130)
+        stop_requested["v"] = True
+        print(f"\nsignal {signum} — finishing this batch, then flushing "
+              f"{len(rows)} buffered rows. Ctrl-C again to abandon them.",
+              flush=True)
+
+    for _sig in (signal.SIGINT, signal.SIGTERM):
+        signal.signal(_sig, _request_stop)
+
+    while accepted_tok < args.target_tokens and not stop_requested["v"]:
         sources = [keys[torch.multinomial(
             torch.tensor(weights, dtype=torch.float), 1, generator=rng).item()]
             for _ in range(args.batch)]
@@ -472,9 +496,13 @@ def main() -> None:
               f"rejected {rejected_n} [{rj}] | {accepted_tok/max(el,1):.0f} tok/s",
               flush=True)
 
-    flush()
+    flush()                      # catches the buffer on BOTH exit paths
     if tele is not None:
         tele.close()
+    if stop_requested["v"]:
+        print(f"stopped by signal — flushed cleanly, nothing lost. "
+              f"Re-run to resume (the launcher's cumulative target picks up "
+              f"from the manifest).", flush=True)
     print(f"done: {accepted_tok/1e6:.2f}M accepted tokens in "
           f"{(time.time()-t0)/3600:.2f} h → {out}")
 
