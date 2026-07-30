@@ -1,0 +1,93 @@
+[probe] loaded checkpoints_lambda07/step_0066000.pt (step 66000) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.08 [0.05-0.10] | distinct1 0.65 [0.59-0.72] | distinct2 0.92 [0.87-0.95] | n=5
+    e.g.: " start building the weather at once once, and we had to work on the road until we have three hours in the previous three hours from this time.\n\nAfter that, the question is not sure. But we still need to go through the problem of a given number of days. For the second week, we need to find all the time for the days starting.\n\nWe don't know about the time because we are looking at the current year and at times, and"
+
+  α=0.25 | top_share 0.10 [0.07-0.12] | distinct1 0.61 [0.51-0.66] | distinct2 0.91 [0.86-0.95] | n=5
+    e.g.: " keep the windows open and in the next two weeks: 450–4636, which I had a total number of days, but this will also be the final result. The next month is also 586 days in the middle of the season. But in order to see this effect on the next two months, I don't need to say I found a simple way to start at the end of the last few days of that day, but when"
+
+  α=0.5  | top_share 0.09 [0.06-0.10] | distinct1 0.61 [0.52-0.70] | distinct2 0.88 [0.80-0.98] | n=5
+    e.g.: ' go the zoo to visit the penguins, but we saw a row of a $$$N$ or $$$\\mathit{P}($$ the penguins, but not an infinite sequence as this will be impossible to solve.\n\nAt each point of the $$$1$$ $th order in the first round (in other words, on the end of the 1st row), to the $N$ penguin, and then again at the same time from the start point to'
+
+  α=0.7  | top_share 0.08 [0.06-0.12] | distinct1 0.59 [0.51-0.66] | distinct2 0.90 [0.86-0.94] | n=5
+    e.g.: " go in the lake of which was very close by.\n\nThat's not bad. The game doesn't look too bad. Maybe I can be convinced to at the least buy the collector's edition for a good amount of art.\n\nIf you're going to be buying a game like this, be sure to check for a price. I know that some people can live on this, and others will need to keep it.\n\nIf I were to be able to"
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.12 [0.07-0.15] | distinct1 0.54 [0.26-0.69] | distinct2 0.82 [0.62-0.96] | n=5
+    e.g.: ' the treatment of a treatment of a few of the symptoms. It can be said to be an example of a different type of an infection that usually consists of the same type of an occurrence of a person. In the case of the present, one of the best possible forms of a new treatment is to use the most recent test cases of a more complex condition."\n\nThis approach has a unique strategy and is a very good way of seeing a certain number of people. The most'
+
+  α=0.25 | top_share 0.09 [0.06-0.12] | distinct1 0.60 [0.53-0.67] | distinct2 0.87 [0.78-0.94] | n=5
+    e.g.: ' antibiotics and other products like the first and second line of defense.\n\nQuestion: How is the study of anatomy (the main purpose of the chapter) of the text? Answer: The text is a summary of the basic concepts that are used to describe the effects of radiation and the following concepts are used to describe how different types of radiation affect the performance of these materials.\n\nQuestion: The first thing to do is to test the results of the study by analyzing the concepts'
+
+  α=0.5  | top_share 0.08 [0.05-0.10] | distinct1 0.65 [0.60-0.68] | distinct2 0.91 [0.86-0.96] | n=5
+    e.g.: " antibiotics, which are medications that are used for a high-frequency chemical treatment. The best method to combat the symptoms while using antibiotics is a simple approach to use it right.\n\nIn the study that we have to think of the time to use and the best way to get to the best method? Well, there can be many people who don't look for their own treatment. But when you do the same things you're using, you should have an answer for that."
+
+  α=0.7  | top_share 0.13 [0.06-0.24] | distinct1 0.57 [0.41-0.73] | distinct2 0.87 [0.77-0.96] | n=5
+    e.g.: " antibiotics. For parasitic infections, you might have things like the antimal, which is also a class of antibiotics. The most common symptoms are joint pain and the skin is the one that gives you a rash or a fever, and often the symptoms in the skin are a rash or a number of conditions. The most common symptoms are most common and most often you can think of a few things. Some of those do not have a clear treatment, but if you can't think of"
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.10 [0.05-0.14] | distinct1 0.55 [0.48-0.62] | distinct2 0.84 [0.74-0.92] | n=5
+    e.g.: ' the risk of developing this condition.\n\nQuestion 1: Which type of medicine has been found in the early clinical diagnostic procedures or any new treatment treatment treatment treatment based on a standard treatment procedure or the treatment options that could be done in the form of a medication that can cause for conditions in the treatment. The type of study is used to improve the health of the disease. As the result of this study, a patient with various types of the effects of the different types of'
+
+  α=0.25 | top_share 0.10 [0.07-0.15] | distinct1 0.60 [0.54-0.71] | distinct2 0.89 [0.82-0.96] | n=5
+    e.g.: ' increased thirst blood glucose.\nDairy products include:\nSaturated fats are usually solid. These are the most common types of fats. You usually find them by\nthe "mildie".\nG. For a diet that you see here, it is recommended to use high-fat\nThe use of high-protein.\nSo how many protein products are required for example 12 to 1400?\nIt is recommended that the daily protein intake'
+
+  α=0.5  | top_share 0.09 [0.05-0.11] | distinct1 0.63 [0.58-0.67] | distinct2 0.90 [0.82-0.96] | n=5
+    e.g.: ': \n\n- Increased thirst-based thirst or anxiety\n\n- The feeling of a significant decrease in the amount of sugar in the blood\n\n- Increased thirst or hunger\n\n- This is a dangerous symptom of diabetes and should be treated with caution as soon as it occurs. Some people may also go through a type II in their medical and other lifestyle.\n\n- In any case, this is a very good practice.\n\n- This is an important way for'
+
+  α=0.7  | top_share 0.08 [0.06-0.10] | distinct1 0.67 [0.62-0.73] | distinct2 0.91 [0.85-0.97] | n=5
+    e.g.: ' increased thirst, or pol-ysis\n[2898333\n26/04/2022 · 17. It is commonly found in the gastrointestinal mucosa. The condition in which this organism, Lactobacillus acidophilus, becomes an abnormal inhabitant of the gastrointestinal tract causes what? A 2011 study found that taking probiotic with specific strains can reduce the risk of antibiotic-associated diarrhea by increasing their overall immune system by helping'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.18 [0.06-0.58] | distinct1 0.56 [0.34-0.64] | distinct2 0.81 [0.42-0.93] | n=5
+    e.g.: ' the underlying and non-toxic. For example, we have the patient with low blood or low blood, but we have some conditions.\n\nBut in the case where high blood blood pressure was not good, the amount of the blood and blood pressure would not have the ability to treat the.\n\nIn other ways.\n\nOne of the most important factors involved in your mind is the following:\n\n- The blood pressure increases by decreasing blood levels of the system.'
+
+  α=0.25 | top_share 0.11 [0.06-0.17] | distinct1 0.59 [0.50-0.65] | distinct2 0.88 [0.78-0.96] | n=5
+    e.g.: ' the following conditions.\nWhich of the following is a risk for heart disease?\nWhat is the name of the immune response to the first two different types of the three types of blood sugar, and which are the most common types of the two-week-old and three-week-old.\nWhat is the difference between the two.\nThe next step is to identify which factors are the most common causes of disease.\nThe most commonly known causes of chronic fatigue syndrome'
+
+  α=0.5  | top_share 0.09 [0.05-0.16] | distinct1 0.52 [0.36-0.68] | distinct2 0.82 [0.67-0.95] | n=5
+    e.g.: ' pain, inflammation, and fever. It works by adding a combination of different types of blood-thinning factors to prevent the formation of clotting factors, thereby reducing the amount of time it takes to form a clot. \n\nThe key concept of aspirin for reducing blood clots is the inhibition of platelet aggregation. Aspirin interferes with the function of platelets. \n\nThe reason why aspirin has to be reduced in cases of bleeding, and the other two are to be considered based on the'
+
+  α=0.7  | top_share 0.06 [0.04-0.08] | distinct1 0.67 [0.59-0.74] | distinct2 0.93 [0.89-0.96] | n=5
+    e.g.: " pain and inflammation, but it's not used to directly cause weight loss.\n\nE-cigarette use is related to high school students because smoking or the nicotine vapor in cigarettes that come from e-cigarettes is harmful. People who have been using e-cigarettes to cut their chances of smoking may not have a higher risk of being obese, but it is harmful to the lungs, blood pressure, and may cause a reduction in the condition.\n\nWhile it will be a possible"
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.14 [0.09-0.21] | distinct1 0.36 [0.26-0.49] | distinct2 0.67 [0.56-0.80] | n=5
+    e.g.: '\n    return n - 85534429 + 68534778006114499946217467 * (-1111135.994633278211749895884892208 - (1/(((((((())) + 1))% (927'
+
+  α=0.25 | top_share 0.10 [0.07-0.17] | distinct1 0.47 [0.30-0.54] | distinct2 0.73 [0.47-0.85] | n=5
+    e.g.: '\n    return (x-x for x in enumerate(fib_x[1:]) if x+1 > n) -1)\n    print(fib_x[2])\n    print(x+1)\n    if len(p) > 0:\n        print(pow(x-1))\n        print(pow(x+1))\n    return x-1\n\n# We can only get the nth Fib with this for\n\np = n\n\n'
+
+  α=0.5  | top_share 0.16 [0.07-0.38] | distinct1 0.36 [0.26-0.45] | distinct2 0.62 [0.45-0.77] | n=5
+    e.g.: '\n    nums = []\n    for i in range(n-1, 0):\n        nums = find_fibonacci(i)\n        if nums == 0 and i == 1:\n            max_num = max_num + n * nums + 1 + n % l\n        else:\n            nums = int(n * nums + 1)\n        while i < 5 and i < i & max_num:\n            if sum_num != 0'
+
+  α=0.7  | top_share 0.08 [0.05-0.11] | distinct1 0.51 [0.35-0.62] | distinct2 0.77 [0.56-0.92] | n=5
+    e.g.: "\n\n    if n is not an integer, or n <=0, return, perhaps, if not even this isn't, but the problem with integers is that they can be negative. So that's going to be a big problem, but that's actually a problem in the way that we're modeling. So when we're thinking the actual number of nodes or the number of children, there is a way of trying to model this with the same number of children that we have a negative"
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.10 [0.07-0.11] | distinct1 0.45 [0.29-0.50] | distinct2 0.79 [0.71-0.86] | n=5
+    e.g.: ' 24.\n\nThe roots of the first line are:\n\nThe roots of the first line (for example, it\'s a quadratic equation)\n\nThe roots of the first line are A - 1x, but 1st. The first line of the second line is the same as in the second set.\n\nThe solution is that the three groups of equations are "100" and the same.\n\nThe answer of the first'
+
+  α=0.25 | top_share 0.12 [0.06-0.18] | distinct1 0.40 [0.19-0.54] | distinct2 0.68 [0.44-0.82] | n=5
+    e.g.: ' 17, and apply the given solutions x^2 = 3. The solution is a linear equation with variable.\n\nThe solution provided here is a linear equation x^2 - (a^2 - 1) + 2 - (a^2 - 1) = 6. The solution provided is a linear equation.\n\nThe answer to the problem involves finding the equation and solving the equation. However, the solution can be written as a'
+
+  α=0.5  | top_share 0.14 [0.08-0.21] | distinct1 0.41 [0.35-0.51] | distinct2 0.71 [0.59-0.80] | n=5
+    e.g.: ' 18\n\n2. A number must be divisible by 12. Solve for the variables 12x^2 + 16x^2 + 20x^2 +24.\n\nThe first is a system of equations for any of three systems. 4x + 27y 29 = 2, and each of them has a unique solution. \n\nThe equation x + (2x) = 1'
+
+  α=0.7  | top_share 0.13 [0.06-0.17] | distinct1 0.42 [0.30-0.60] | distinct2 0.72 [0.51-0.93] | n=5
+    e.g.: ' 0. The solutions should start with "Solution is a list of all solutions in the given interval." and then list the answers.\n\nIn this equation, there is no explicit interval given in the equation. The task does not specify the interval either. Please specify the interval with respect to which you need to find the solutions to this problem or consider it as "all real numbers, R" if no interval is given. The interval was not specified.\n\nFor example'
+

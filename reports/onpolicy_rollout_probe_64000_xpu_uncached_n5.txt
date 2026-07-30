@@ -1,0 +1,93 @@
+[probe] loaded checkpoints_onpolicy_fixed/step_0064000.pt (step 64000) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.19 [0.06-0.67] | distinct1 0.57 [0.26-0.70] | distinct2 0.81 [0.36-0.99] | n=5
+    e.g.: ' start building the water that went on, and we had to work on this with some kind of light source in the environment, not from this old, "big, or not even at the right time. But no new, to go to that same system that will be seen for the use of some local material. On the other hand, the idea is simple if the system has to get a good understanding of what they are doing. If you look at the world, how is'
+
+  α=0.25 | top_share 0.08 [0.06-0.09] | distinct1 0.63 [0.57-0.70] | distinct2 0.93 [0.87-0.97] | n=5
+    e.g.: " keep the windows open and in the year the day will be cool.\n\n79996, 160001\n\nYes! So, it will be more impressive if we put something like that, and as if we go to the second floor, the first thing that comes to mind is that the people who do this kind of time, say I found a bit of life there, that's how, in the second time, and a lot of"
+
+  α=0.5  | top_share 0.09 [0.07-0.11] | distinct1 0.63 [0.53-0.75] | distinct2 0.92 [0.87-0.98] | n=5
+    e.g.: ' go the zoo to the water, and we will take a rowboat to get to the island. We knew that if you have time, the boat will start up to 4. \n  This will be true for the following two parts of my presentation. \n\nThe 20th century, in which we are not aware of the fact that our current model of the universe is the closest to the last century. \n\nWhen we start this journey we will be able'
+
+  α=0.7  | top_share 0.07 [0.06-0.07] | distinct1 0.61 [0.58-0.65] | distinct2 0.90 [0.85-0.94] | n=5
+    e.g.: " go in the lake of which was very close by.\n\nThat's not bad. The game doesn't look at the entire time, just the same as you, but just like other players. Maybe a good start for that.\n\nIf you're going to be a game developer, you might be better off of having a game. The game's about a game, no. Just like a game with a good story.\n\nIf I were to be a game"
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.11 [0.08-0.15] | distinct1 0.58 [0.55-0.62] | distinct2 0.87 [0.82-0.92] | n=5
+    e.g.: ' the treatment of a single sub-mox, and is a common type of the type of pathogen-based antibiotic. This is the most common type of cancer that the author has used in the case of the C. In my view, I think that may be one of the better treatment in case you have done in this case. A more complex solution is to apply the following types of treatment:\n\n# 1. A.A.A.\n\n"How'
+
+  α=0.25 | top_share 0.11 [0.07-0.16] | distinct1 0.59 [0.45-0.67] | distinct2 0.87 [0.74-0.94] | n=5
+    e.g.: " antibiotics and an increase in the body. Most people should be careful about the use of this medicine. People in the development area have been in the area of the development of the body's production and the development of the treatment for a bacterial infection.\n\nThe effects of these effects and the use of medicine and other related treatments are being more efficient and easier to manage. If you use a different type of medicine for the treatment, you can use a more effective method to treat a"
+
+  α=0.5  | top_share 0.08 [0.05-0.11] | distinct1 0.62 [0.56-0.71] | distinct2 0.91 [0.80-0.99] | n=5
+    e.g.: ' antibiotics, which are medications that can kill or have a inhibitory treatment. The choice of a common treatment depends on the kind, so how bacteria can spread and the results would help. For instance, antibiotics that prevent the infection will also help prevent the type and the effect of the most common antibiotics used in people who have a bacterial and fungal infections.\n\nIn the event of the common cold and flu-in-the-system infection, the treatment is often used for treating and'
+
+  α=0.7  | top_share 0.13 [0.07-0.22] | distinct1 0.57 [0.48-0.74] | distinct2 0.83 [0.73-0.98] | n=5
+    e.g.: " antibiotics. For parasitic infections, you might have things like antiparasus, and for viral infections, there are antivirals, and the same for fungi. I'm sure a lot of people believe that antibiotics works against viruses and parasites, but in fact, this is just not a simple as someone who thinks that it's a different class of medications.\n\nThese are the ways an infection can be treated after someone is diagnosed. So, before coming to such a conclusion,"
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.09 [0.06-0.12] | distinct1 0.56 [0.48-0.69] | distinct2 0.84 [0.73-0.94] | n=5
+    e.g.: ' the risk of causing this condition.\n\nQuestion 1: Which type of blood blood blood-related health issue is a disease or any type of disease?\n\nQuestion 2: What are the most common types of the symptoms of the heart and body problems?\n- What are the main factors that affect the type of disease?\n\nQuestion 2: What is the main cause of this disease?\n\nIn the past few years, the most common type of'
+
+  α=0.25 | top_share 0.29 [0.08-0.55] | distinct1 0.35 [0.04-0.54] | distinct2 0.58 [0.06-0.84] | n=5
+    e.g.: ' increased thirst blood blood blood sugar and a high-fat-fat fat diet of 10000–50000. In a 1000-30-min, a few days and more-the-day-long are to use high-fat\nThe use of met-ins. The number of times a small number of people will not be able to be able to carry the most effective and efficient form of the new. In'
+
+  α=0.5  | top_share 0.09 [0.06-0.11] | distinct1 0.64 [0.58-0.70] | distinct2 0.90 [0.81-0.97] | n=5
+    e.g.: ': \n\n- Increased thirst-based inflammation or infection.\n\n- Frequent urination.\n\n- Fatigue and sleep symptoms.\n\nThis is a non-naturally-controlled blood and the most effective health condition.\n\nThe effect of insulin as the most effective and the most effective of diabetes can have a higher incidence in the same way as the other people.\n\nThe study was based on the results of how it is taken over the same results from the patients'
+
+  α=0.7  | top_share 0.11 [0.08-0.15] | distinct1 0.60 [0.56-0.64] | distinct2 0.86 [0.79-0.91] | n=5
+    e.g.: " increased consumption of sugary foods and beverages\n\nB: A person's diet is high in the same foods that promote the disease\n\nC: Type 2\n\nD: It's a low-carbohydrate and ketogenic\n\nE: The best solution is an immediate switch to a low-carbohydrate diet\n\nWhat is the main cause of type 2 diabetes?\n\nA: High blood sugar, also known as hyper-glycemia, is an obvious"
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.15 [0.06-0.43] | distinct1 0.54 [0.14-0.70] | distinct2 0.84 [0.48-0.99] | n=5
+    e.g.: ' the H-I (i.e., O-2/C, A, or MAA, B, B, B.\n\nBut the original question didn\'t come to the question, maybe it\'s the type of the type I\'m not sure about. The user mentioned the original problem with the original question\'s mention: "The reason for the combination of these two forms is that the same- or else-if-the answer is being carried out by an un'
+
+  α=0.25 | top_share 0.10 [0.05-0.16] | distinct1 0.54 [0.40-0.67] | distinct2 0.81 [0.67-0.97] | n=5
+    e.g.: ' the following conditions.\nWhich of the following is a risk for heart-related risks of chronic or long-term complications of inflammation?\nWhich of the following is linked to the common cause of gastrointestinal bleeding?\nA) Asp.\nB) a.\nC) A and B will not be present\nA) A) A.B.\nWhich of the following is associated with the following?\nA.\nA) B:\nSome patients have some type'
+
+  α=0.5  | top_share 0.12 [0.05-0.21] | distinct1 0.63 [0.47-0.73] | distinct2 0.91 [0.72-0.98] | n=5
+    e.g.: ' pain, inflammation, and fever. It works by adding a combination of different types of drug molecules for a given type of pain. This can be found in the following types of pain:\n\n\n#\n\nThe patient-treated, which is the most common treatment. In the treatment of other pain types, it is commonly used as a prescription. This may be a good chance to get a medical evaluation.\n\nWhen you have an underlying condition, it can be helpful to'
+
+  α=0.7  | top_share 0.08 [0.05-0.12] | distinct1 0.64 [0.50-0.74] | distinct2 0.88 [0.68-0.98] | n=5
+    e.g.: ' pain and inflammation, but it\'s not used to directly cause weight loss.\n\nE-cigarette\n\nThe e-cigarette was developed as a healthier alternative to a tobacco that\'s a "smokeless" method of consuming an inhaled dose of e-liquid, usually containing nicotine salts and flavoring, instead of inhaling smoke from burning tobacco leaves.\n\nHijan: A 4-dimensional body which\'s body moves in four spatial dimensions to interact with a five'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.11 [0.07-0.14] | distinct1 0.42 [0.19-0.61] | distinct2 0.81 [0.67-0.92] | n=5
+    e.g.: '\n    return n - 855344292668534778086114499946217467130181135.09463327821174989888489220845590478601.0909\n```'
+
+  α=0.25 | top_share 0.10 [0.06-0.14] | distinct1 0.51 [0.35-0.67] | distinct2 0.80 [0.69-0.94] | n=5
+    e.g.: '\n\t# if this is a base, we just return the list of integers between 0 and 10000000000\n\t# So the number we want to run is going to do the number of fib_n_of(numbers)\n\t#  for the n-dimensional binary number, like in the n-dimensional matrix\n\t# We can only have the nth_1-n-1-3-1'
+
+  α=0.5  | top_share 0.11 [0.06-0.14] | distinct1 0.44 [0.30-0.55] | distinct2 0.76 [0.63-0.87] | n=5
+    e.g.: '\n  nums = []\n  for i in range(n):\n    n = []\n  p3p\nn = [\n    ["a", 1, "a", 1, 1],\n    ["a", "a", "a", "a", 5]\n]\n  \n\n\n\'\'\'\n\n\' \'\n\n\'\'\'\n\n[1]\nn(3)\n# \'4\'\n\n\'abc\', \'bcd\', \'b\','
+
+  α=0.7  | top_share 0.11 [0.08-0.15] | distinct1 0.46 [0.34-0.55] | distinct2 0.75 [0.61-0.88] | n=5
+    e.g.: "\n\n    if n <= n1:\n\n        return 0\n\n    elif n == n1 + 1:\n\n        return 1\n\n    return fib_recurs(n, n1)\n\nWait, but how to handle the recursive recursion.\n\nIf the function is allowed to have a parameter n, the function signature would be:\n```python\ndef fib_recurs(n, n):\n```\nBut in Python, that's not allowed to have"
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.11 [0.07-0.14] | distinct1 0.52 [0.47-0.59] | distinct2 0.83 [0.68-0.92] | n=5
+    e.g.: ' 24.\n\nThe roots of the first line are given by the following equation: \na + h = 24.\nIn the problem, we will find the values of the second and third and the second and third, by subtracting the first and second number, but that is the first and second one. \n\nOne of the equations is an equation with a = 1; and 5 is the same. Let the equation of the first and'
+
+  α=0.25 | top_share 0.14 [0.11-0.21] | distinct1 0.35 [0.24-0.45] | distinct2 0.67 [0.45-0.85] | n=5
+    e.g.: ' 17x + 3 = -7.\n\nThe solution is given by the equation x = 1.\n\nThe solution is given by the equation x + 13x - 41 = 3.\n\nThe solution is given by the following equation:\n\nSolving the equation by the square of 4.\n\nThe solution is given by the equation 2x + 7(9-x + 3).\n'
+
+  α=0.5  | top_share 0.09 [0.07-0.12] | distinct1 0.51 [0.45-0.58] | distinct2 0.83 [0.77-0.87] | n=5
+    e.g.: ' 18\n\n2. A number must be divisible by 12. Solve for the blank 12_square_5616. Write correct digit number in the blank.\n\n12. A number 52614, what will be the number after reordering?\n\n2. Find the two 2d and 3d figures of the first three letters of the alphabet. Each figure has a different number, such that the number of'
+
+  α=0.7  | top_share 0.09 [0.06-0.10] | distinct1 0.51 [0.35-0.58] | distinct2 0.82 [0.61-0.91] | n=5
+    e.g.: ' 0. The solutions should start with 2 or a non-negative number. Then, in the next solution, introduce the solution. Make sure that your code will not return a negative integer or a decimal number.\n\nGiven that the numbers are non-negative, and we want to know if we can find a 2,  or 2.\n\nOriginal problem:\nThe user asked for a solution to solve for the two 2, but then asked'
+

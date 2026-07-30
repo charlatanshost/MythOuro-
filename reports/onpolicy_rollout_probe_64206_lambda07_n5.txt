@@ -1,0 +1,93 @@
+[probe] loaded checkpoints_lambda07/step_0064206.pt (step 64206) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.07 [0.06-0.09] | distinct1 0.67 [0.64-0.72] | distinct2 0.93 [0.91-0.95] | n=5
+    e.g.: " start building the water that I was already having in the middle of being really dangerous.\n\nI'm looking at this, and from this to go to a few points that I'm still saying that the second year of the air in which he was really interested in the day was actually the first time I was taking a lot of people who were going to give this.\n\nI don't think about doing something because I am looking at the other two main elements. It's"
+
+  α=0.25 | top_share 0.23 [0.07-0.64] | distinct1 0.50 [0.22-0.62] | distinct2 0.77 [0.29-0.94] | n=5
+    e.g.: ' keep the windows open and in the year the house will be cool.\n\n79996, 1600000000000, 16000000000000000000000000000000000, 800000000000, 18000000'
+
+  α=0.5  | top_share 0.09 [0.05-0.12] | distinct1 0.66 [0.59-0.73] | distinct2 0.92 [0.85-0.99] | n=5
+    e.g.: " go the zoo to the water, and we will take a rowboat to get to the night when the other two were on the dock. We decided to leave early since the boat was leaving 200 miles away. We were able to take the rest of the day, and we didn't find any animals during the first day of the day. It was a big day before it became a normal day. I was excited to see the house, which we decided to take"
+
+  α=0.7  | top_share 0.11 [0.06-0.19] | distinct1 0.56 [0.46-0.68] | distinct2 0.85 [0.76-0.96] | n=5
+    e.g.: ' go to the outskirts of the capital of Berdram\n\n.\n\nThere was, at the time, a little money in the capital, in the amount of\n\n, and some wheat for ourselves.\n\nThe distance was from Berdram, and we went to the outskirts of\n\n, and the price of wheat was in that\n\n.\n\nIn this book, we will read of our travels.\n\nIf I did\n\nnot,'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.11 [0.08-0.14] | distinct1 0.60 [0.54-0.67] | distinct2 0.90 [0.81-0.95] | n=5
+    e.g.: " the treatment of a common medical condition like the most common is a common type of the type of pathogen, and it may be an un-stored and non-deff, and if a person can't get any of the other type, it may be too large as a new treatment. But if the person in this case was in the first condition, then the following could affect the risk of some of the damage of other organs. If the virus is infected, the patient"
+
+  α=0.25 | top_share 0.14 [0.08-0.23] | distinct1 0.60 [0.55-0.66] | distinct2 0.87 [0.83-0.91] | n=5
+    e.g.: ' antibiotics and other infections, particularly when the human is not infected.\n\nQuestion: How is the study of diseases (the most accurate in cases of severe illness and disease-related disease).\n\nAnswer: The use of a method (the most accurate in case of a group of cases) is a comprehensive evaluation. Therefore, the more efficient and systematic approach to the treatment is to choose a group of primary infectious diseases (especially in the case of cases of bacterial infection, which'
+
+  α=0.5  | top_share 0.10 [0.07-0.16] | distinct1 0.61 [0.55-0.70] | distinct2 0.90 [0.82-0.96] | n=5
+    e.g.: ' antibiotics, which are medications that can kill or keep up the treatment of the infection. Antibiotics can help in the treatment of most bacterial and then the infection is mild, but some things are so. There are some things to think about the time to use and do so, so that it is a good method to use this treatment and avoid side-effects. The main way to get the best effects of antibiotics from a bacterial infection is to take care of the prescription. This medication is'
+
+  α=0.7  | top_share 0.12 [0.05-0.21] | distinct1 0.61 [0.50-0.69] | distinct2 0.89 [0.74-0.96] | n=5
+    e.g.: " antibiotics. For parasitic infections, you might have things like antiparasus, and for viral infections, there are antivirals, and the same for fungi. I'm sure a lot of people are familiar with a medication, like in the case of HIV, called antiretrov. But as someone who would work in a hospital, like an EMT or a nurse or a physician, it's really a job requirement for you to keep in mind.\n\nDifferent Types of"
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.11 [0.08-0.17] | distinct1 0.60 [0.50-0.64] | distinct2 0.91 [0.86-0.95] | n=5
+    e.g.: ' for a variety of non-dynamog-in-the-b-c-l-sides-not-p-f-s and so long-term-is a significant factor in the presence of the other symptoms of stress.\n\nIs that the most potent in-person and thus the most important thing to know why are they a number of doctors and their own family, including those who are on the same sort of the people who are not in the'
+
+  α=0.25 | top_share 0.18 [0.05-0.62] | distinct1 0.53 [0.07-0.66] | distinct2 0.78 [0.14-0.96] | n=5
+    e.g.: ' increased, urination and excessive thirst and a serious complication in the elderly. For example, if you have an older person who has been diagnosed with the condition of 9000, when it has a high-quality, and more-the-risk of your body and the body is still able to use a very effective medical management. This means that a small enough and a person with type of illness or other more serious symptoms of all-the-life, you may have'
+
+  α=0.5  | top_share 0.11 [0.05-0.23] | distinct1 0.65 [0.60-0.69] | distinct2 0.93 [0.86-0.99] | n=5
+    e.g.: ': \n\n- Inability-dependent inflammation or infection \n\nThe main purpose of the study is to evaluate a specific topic in the field of medical health technology, which involves the presence of risk variables and the health status of the population. The study and the methodology are conducted and the effects are obtained, with a focus on the importance of medical health and the role of different variables (e.g. health-related studies). \n\nA study was conducted with the goal of'
+
+  α=0.7  | top_share 0.10 [0.07-0.20] | distinct1 0.59 [0.53-0.66] | distinct2 0.87 [0.77-0.93] | n=5
+    e.g.: " increased consumption of sugary foods and beverages\n\nB: A person's diet is high in the same foods that promote health\n\nC: A person's weight loss efforts\n\nD: A person's weight gain efforts\n\nE: Your weight\n\nF: Your lifestyle choices\n\nG: Your weight gain\n\nWhat is the main risk factor for type 2 diabetes? Who can reduce the risk? How much\n?\n\nA. Your weight\n\n"
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.10 [0.09-0.12] | distinct1 0.57 [0.51-0.67] | distinct2 0.89 [0.82-0.96] | n=5
+    e.g.: " the underlying and underlying (i.e., it's a common example of a non-toxic, non-hyp.t.m167.03.629. 9682178030100. The use of the CHA with the use of a common type of a high-yield, non-gobn/SNA- or high-risk. The same type of the a-d."
+
+  α=0.25 | top_share 0.08 [0.06-0.09] | distinct1 0.61 [0.55-0.71] | distinct2 0.91 [0.85-0.99] | n=5
+    e.g.: ' the following conditions.\nWhich of the following is a risk for heart-related risks of severe bleeding-associated diseases such as inflammation in the affected, acute injury-related or infectious, and the following are symptoms of the following types of the risk of complications.\nE-type and type-based and other conditions are the biggest ones are with the following:\nThis is a rare disease type\nThe following is one of the primary symptoms of:\nSome patients have some symptoms'
+
+  α=0.5  | top_share 0.10 [0.05-0.17] | distinct1 0.62 [0.53-0.70] | distinct2 0.89 [0.77-0.95] | n=5
+    e.g.: " pain, inflammation, and fever. It works by adding a combination of different types of blood-fibrin-coagulation inhibitors, and the way to think of it is that it makes it more effective than aspirin.\n\nThe answer is aspirin. But in 2013, a non-aspirin drug came from Bayer-\n\nThis was a result of the European Union's efforts to establish stricter but more efficient standards for drug safety, and the potential of"
+
+  α=0.7  | top_share 0.05 [0.04-0.06] | distinct1 0.68 [0.56-0.73] | distinct2 0.92 [0.83-0.96] | n=5
+    e.g.: ' pain and inflammation, but it\'s not used to directly cause weight loss.\n\nEspres in the context of high-performance sports is different from the drug called "ep" or "spres."\n\nThe correct answer is the "weight loss medication, such as Xenadrine, " which can be used as a weight-free "X" as an abbreviation for the "excl", which can be used to create a weight reduction in patients with a low'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.13 [0.09-0.21] | distinct1 0.39 [0.26-0.48] | distinct2 0.72 [0.62-0.80] | n=5
+    e.g.: '\n    return n - 85555429 + 685557 + 0.6114499946215467 * (-0.01135.09413327821)^b(e) + 384892208 - (0.011)^b(e) * (0.01'
+
+  α=0.25 | top_share 0.11 [0.04-0.24] | distinct1 0.59 [0.41-0.75] | distinct2 0.85 [0.66-0.95] | n=5
+    e.g.: '\n    return (x-x for x in range(int(n**4)) if x*2 > 0) != (0,)\n    * #\n\nThe function can be written in both the original equation and the solution.\n\n## A\n\nA(a(10,1,1))=1\n\nA(10,0) is called a binary-specific 1-letter integer with no decimal\n\nIn this example,'
+
+  α=0.5  | top_share 0.10 [0.07-0.11] | distinct1 0.49 [0.38-0.65] | distinct2 0.80 [0.63-0.94] | n=5
+    e.g.: "\n    nums = _1103887\n    return [num, *(3)*((n - (num)) - (int(1.0) // (((num)/2.0 -1) % (3) * (int(1.0 % (num)) - (len(\n            'n')) + 10)))/100**(num -1) & (((((1 << n) + (n%1"
+
+  α=0.7  | top_share 0.09 [0.05-0.11] | distinct1 0.50 [0.32-0.71] | distinct2 0.77 [0.58-0.98] | n=5
+    e.g.: '\n\n    if isinstance(n,1965):\n\n        return 4*1100*f(n-1) + x(n-1)*f(n-1) -2166*f(n-1)*f(n-4) +1200*f(n-2) *2\n\n    if isinstance(n,1966):\n\n        return ..."\n\n    \n\n    if not isinstance(...\n       10'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.17 [0.08-0.23] | distinct1 0.32 [0.11-0.55] | distinct2 0.53 [0.23-0.76] | n=5
+    e.g.: ' 24.\n\nThe problem is to find the equation y^2 - 5x + 5x = 24.\n\nThe problem is to find the equation for the first non-negative integer x, which is a real number.\n\nThe problem also comes from the fact that in the following set B, there is a problem that involves three different types of terms. The last step is to find the value of the smallest integer of the given'
+
+  α=0.25 | top_share 0.16 [0.11-0.25] | distinct1 0.37 [0.17-0.50] | distinct2 0.66 [0.40-0.78] | n=5
+    e.g.: ' 17, and apply the given solutions x^2 = 7, and use the equation x = 1 + x^2 + x + C, and solve for x.\n\nThe solution simplifies to the expression x + y, where x + 3 = 2y^2 - 3y = 7, and then solve for x x + y. The problem is then solved without any of the following, using the factor of x, x'
+
+  α=0.5  | top_share 0.12 [0.07-0.15] | distinct1 0.46 [0.31-0.59] | distinct2 0.78 [0.65-0.86] | n=5
+    e.g.: ' 18\n\n2. A number x, is three times the square of the same number with 1 subtract 7, 60 less than 90 times the number 18x2 - 29 = 614, what will be the value of x if one of the variables is the number 2?\n\nFirst, solve each of the equations:\n\nequations:\n1. ( ( (x) ) + ...'
+
+  α=0.7  | top_share 0.10 [0.07-0.12] | distinct1 0.44 [0.31-0.62] | distinct2 0.72 [0.51-0.94] | n=5
+    e.g.: ' 0. The solutions should be returned to 5 decimal places and the solutions should be sorted in ascending and descending  order.\nIn addition to the initial request, the next question is:\nIs the solution a real and distinct solution to the equation? Please provide a detailed explanation.\n\nThe output is given: 2, 3. To solve this problem, you will need to use the quadratic formula. The quadratic formula for an equation of the form  ax'
+

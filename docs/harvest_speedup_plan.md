@@ -129,6 +129,24 @@ idle side too.
 1. **Continuous batching / reject-lane refill** — **re-promoted 2026-07-23**, ~1.28×
    (see the re-promotion note in the catalog). Gated on reading a full run's
    `--telemetry` to fix per-source abort thresholds.
+1b. **TRAINING-side throughput (2026-07-30)** — distinct from harvest, and newly relevant
+   because the token-budget analysis makes training time the binding constraint on a
+   multi-billion-token run (roadmap). **λ was tested and is NOT a lever: ~4%, not the
+   predicted 45%** (see the tracker's λ-sweep entry). Generation cost is decoupled from
+   λ because the rollout buffer refills on a *step schedule*, and checkpoint I/O
+   (3.3 GB / 15 min) is λ-independent too. **The untested levers that WOULD work:**
+   - **`--rollout-reuse`** (currently 2): each generated rollout batch is reused this
+     many times. Raising it to 4 directly halves generation work. Quality risk is
+     staleness — `RolloutBuffer` is documented as tolerating it by design, but the
+     amount has never been measured.
+   - **`--ckpt-every-mins`** (currently 15): 3.3 GB per write. At ~6 steps/min that is
+     a write every ~90 steps. Milestone checkpoints already protect against loss, so a
+     longer interval is cheap to try.
+   ⚠ **Measure with steps/min from checkpoint timestamps, NOT the logged `k tok/s`** —
+   that figure is instantaneous 5-step throughput and reads ~50% high (it excludes
+   buffer refills and checkpoint writes). This trap produced three wrong speedup
+   numbers during the λ sweep.
+
 2. **torch.compile the decode step** — ⚠ **DEMOTED 2026-07-27, scale-dependent.**
    VTune said the fusable tail is real (~80% of launches are tiny 0%-SIMD kernels),
    and a **tiny-config probe was spectacular — 2.66× steady, ZERO graph breaks**

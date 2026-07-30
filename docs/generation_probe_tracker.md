@@ -823,6 +823,77 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-07-30 — 🩺 MEDICAL VERDICT @64,000 (full dose): buys FLUENCY, not FACTS — as the capacity math predicted
+
+Full 6,000-step leg with medical in the teacher stream (29.4% of the pool, ~5.9% of
+training tokens). **The mirror image of the 58k leg:**
+
+| domain group | 58k → 64k (α=0.0) |
+|---|---|
+| **medical** | 0.210 → **0.120** ⬇ big improvement |
+| trained (general/math/code) | 0.110 → **0.137** ⬆ worse |
+| mean α=0.0 | 0.147 → **0.127** ⬇ |
+| mean α=0.25 | 0.115 → **0.137** ⬆ (the 60,154 record of 0.102 did NOT hold) |
+
+**Structure improved on every medical seed** — the degenerate modes are gone:
+- bacterial: 58k letter-soup (`A. C. B. / F / 1. C. F. C.`) → grammatical prose with
+  real register: *"a common type of **pathogen-based antibiotic** … may be one of the
+  better treatment"*
+- diabetes: 58k `disease…disease…disease` loop → structured numbered questions
+- ibuprofen: still opens with invented chemical IDs, then drifts to meta-commentary
+
+**But facts are absent, and confidently wrong where present.** Bacterial says *"the most
+common type of **cancer**"* for an infection prompt. Diabetes **asks questions** instead
+of listing symptoms (the prompt is "symptoms include___"). Ibuprofen never states what
+it treats.
+
+**⇒ VERDICT: medical data removed the medical degeneracy modes; it did not add medical
+knowledge.** This is the empirical confirmation of the capacity analysis (roadmap): at
+278M the memorisation bound is ~90–170M tokens' worth, against ~3–4M medical tokens
+actually seen. **Facts do not fit in these weights at any token budget** — that is an
+architecture fact, and it is the quantitative case for the retrieval tier. Further
+medical harvest buys diminishing returns versus spending the tokens elsewhere.
+
+Caveat: the domain-level swap (medical up, trained down) mirrors the 58k leg in the
+opposite direction, which at n=5 with ±0.01–0.02 scatter is partly noise rather than a
+real trade-off. Raw: `reports/onpolicy_rollout_probe_64000_xpu_uncached_n5.txt` ·
+`reports/collapse_metrics_64000_xpu_aligned.txt`.
+
+## 2026-07-30 — ❌ λ SWEEP: λ is NOT a throughput lever (~4%, not the predicted 45%)
+
+Ran λ=0.7 (control, complete 64,000→66,000) vs λ=0.4 (test, stopped at 64,454) from an
+identical 64,000 branch point, differing only in `--onpolicy-lambda`.
+
+**Premise was wrong.** The hypothesis: offline steps run ~4.7× faster than on-policy
+ones, so lowering λ should buy throughput (predicted λ=0.4 → 1.45×, cutting a 3B run
+from 31 to 21 days). **Measured: ~4%** (5.90 → 6.16 steps/min over comparable
+training-only windows, seed-copy checkpoints excluded).
+
+**Why the model was wrong — two mechanisms, both λ-independent:**
+1. **The rollout buffer refills on a STEP SCHEDULE** (`rollout_buffer.needs_refill(step)`),
+   not per-λ-draw. λ gates which *loss* a step uses; it does not gate the expensive
+   generation, which keeps running at its own cadence.
+2. **Checkpoint I/O**: 3.3 GB written every 15 minutes, entirely independent of λ.
+
+**⚠ AND A MEASUREMENT TRAP WORTH KEEPING — the logged `k tok/s` is NOT wall-clock
+progress.** It is computed as `micro_batch*grad_accum*seq_len*log_every / dt` over the
+**last 5 steps only** — instantaneous stepping throughput, excluding buffer refills and
+checkpoint writes. It therefore reads ~50% high. Under λ=0.4 the log looks *much*
+better (steady 2.5–2.8k vs λ=0.7's swinging 1.0–4.7k) because the slow on-policy dips
+disappear — but total progress barely moves. **Compare arms by steps/min from
+checkpoint timestamps, never by the logged tok/s.** (Three wrong speedup figures were
+produced before this: 1.45× from the bad model, then 1.01× and 1.21× from bad
+measurement windows — one using only the last two checkpoints, one including the
+*copied* seed checkpoint whose mtime is the `cp` time, not a training time.)
+
+**⇒ Do not lower λ for throughput.** 4% does not justify trading away on-policy dose,
+which is what cured the exposure bias. **The real, untested throughput levers are
+`--rollout-reuse`** (currently 2 — raising it directly halves generation work) **and
+`--ckpt-every-mins`** (3.3 GB every 15 min). Both are λ-independent.
+
+*Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
+probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
+
 ## 2026-07-29 — 🟢 MEDICAL-BLEND TRIPWIRE @60,154 (~⅓ dose, n=5): healthy, and α=0.25 is an ALL-TIME LOW
 
 First leg with medical in the teacher stream (blend: 8.65M general/math/code +
