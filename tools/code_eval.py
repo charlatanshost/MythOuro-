@@ -269,6 +269,13 @@ def main() -> None:
                         "does the repetition attractor hide real capability? Sweep "
                         "1.0/1.15/1.3 — too high destroys code, which is itself a "
                         "result worth recording.")
+    p.add_argument("--seed", type=int, default=None,
+                   help="Seed the sampler so RE-MEASURING A CHECKPOINT IS "
+                        "REPRODUCIBLE. Added 2026-07-31 after an unseeded rerun "
+                        "of the SAME weights gave task-level L3+ 4/10 then 7/10 "
+                        "and a training run was stopped over the difference. "
+                        "Use the same seed to compare checkpoints; VARY it (or "
+                        "omit) to measure the instrument's own spread.")
     p.add_argument("--json", default=None, help="Also write results here.")
     args = p.parse_args()
 
@@ -277,8 +284,11 @@ def main() -> None:
     tok = enc.tokenizer
     model, _cfg, step = _load_model(args.checkpoint, args.device)
     model.eval()
+    if args.seed is not None:
+        torch.manual_seed(args.seed)        # sampling is on CPU, so this is enough
     print(f"checkpoint step {step} | {args.samples} samples/task | "
-          f"T={args.temperature} | rep_penalty={args.repetition_penalty}\n")
+          f"T={args.temperature} | rep_penalty={args.repetition_penalty} | "
+          f"seed={args.seed}\n")
 
     names = {0: "L0 nothing", 1: "L1 syntax", 2: "L2 defines",
              3: "L3 runs", 4: "L4 correct"}
@@ -308,9 +318,25 @@ def main() -> None:
         bar = "#" * hist[k]
         print(f"    {names[k]:12} {hist[k]:>2}/{n}  {bar}")
     reach = lambda r: sum(v for k, v in hist.items() if k >= r)
-    print(f"\n  reached L2+ (defines fn): {reach(2)}/{n}"
-          f"   L3+ (runs): {reach(3)}/{n}   L4 (CORRECT): {reach(4)}/{n}")
+    # ── PRIMARY NUMBER: per-sample L3+ over ALL generations ──
+    # Task-level best-of-k over 10 tasks is a COARSE, high-variance statistic:
+    # two unseeded runs of the SAME 66,000 checkpoint gave 4/10 and 7/10, and a
+    # training run was stopped over that difference (2026-07-31). The per-sample
+    # rate uses samples*10 observations instead of 10 and is what actually
+    # separated the reuse=8 trajectory (21% -> 42% -> 54%) from its control.
+    # Quote THIS with its interval; task-level L3+ is context, not the headline.
+    tot_s = len(all_samples)
+    k_l3 = sum(1 for s in all_samples if s["rung"] >= 3)
+    p_l3 = k_l3 / tot_s if tot_s else 0.0
+    ci95 = 1.96 * (p_l3 * (1 - p_l3) / tot_s) ** 0.5 if tot_s else 0.0
+    print(f"\n  ** per-sample L3+ : {k_l3}/{tot_s} = {100 * p_l3:.1f}% "
+          f"±{100 * ci95:.1f} (95% CI) **   <- PRIMARY, quote this")
+    print(f"  task-level (best-of-{args.samples}, n=10 — coarse, high variance):"
+          f" L2+ {reach(2)}/{n}  L3+ {reach(3)}/{n}  L4 {reach(4)}/{n}")
     print("  ⚠ L1 alone is weak — `def f(n): return 8553.99` parses. Track L2+.")
+    if args.seed is None:
+        print("  ⚠ UNSEEDED — a rerun draws fresh samples. Pass --seed to compare "
+              "checkpoints reproducibly.")
 
     # Repetition diagnostics: is a rising L3 real progress, or just cleaner
     # stubs salvaged out of looping generations? `looped_in_L3` is the number to
@@ -321,6 +347,7 @@ def main() -> None:
     l3_looped = sum(1 for s in l3s if s["max_line_repeat"] >= 3)
     med_rep = sorted(s["max_line_repeat"] for s in all_samples)[tot // 2]
     diag = {"samples_total": tot, "looped": looped,
+            "per_sample_l3plus": round(p_l3, 4), "per_sample_l3plus_ci95": round(ci95, 4),
             "looped_frac": round(looped / tot, 3) if tot else 0.0,
             "median_max_line_repeat": med_rep,
             "l3_samples": len(l3s), "l3_looped": l3_looped,
@@ -335,6 +362,7 @@ def main() -> None:
         Path(args.json).write_text(json.dumps(
             {"step": step, "temperature": args.temperature,
              "repetition_penalty": args.repetition_penalty,
+             "seed": args.seed,
              "samples": args.samples, "tasks": rows,
              "reached": {f"L{r}+": reach(r) for r in (1, 2, 3, 4)},
              "diagnostics": diag}, indent=2))
