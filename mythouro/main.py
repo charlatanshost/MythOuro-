@@ -45,9 +45,30 @@ class _Capabilities:
     def __init__(self):
         self.has_flash_attn_import: bool = _HAS_FLASH_ATTN_IMPORT
         self.is_xpu: bool = self._probe_xpu()
-        # XPU: Intel's SDPA kernel segfaults even with manual KV expansion.
-        # Disable it entirely so we fall through to the pure-PyTorch manual path.
-        self.has_sdpa: bool = hasattr(F, "scaled_dot_product_attention") and not self.is_xpu
+        # XPU SDPA — RE-ENABLED 2026-07-30 for GQA, still off for MLA.
+        #
+        # The old blanket disable ("Intel's SDPA kernel segfaults even with
+        # manual KV expansion") was correct when written but is obsolete on
+        # torch 2.13.0+xpu, which has native XPU support and needs no IPEX.
+        # Re-probed on a Max 1100, i915 LTS 2523.x, every path the model
+        # actually takes — including the exact enable_gqa=True call below with
+        # UNEXPANDED K/V (16 q-heads vs 4 kv-heads), which is a different kernel
+        # from the expanded one and the likely original culprit:
+        #
+        #   native enable_gqa  B8  T1024   0.72 ms vs 10.07 manual   14.0x
+        #   native enable_gqa  B32 T80     0.27 ms vs  2.16 manual    8.0x
+        #   pre-expanded K/V   B8  T1024   0.73 ms vs 10.25 manual   14.0x
+        #   decode shapes      B32 T16/48/80          7.8-14.3x
+        # No segfault, no exception, max rel err 0.0040 (bf16 tolerance).
+        #
+        # MLA STAYS ON MANUAL — not for safety but for SPEED: with the K/V
+        # head-dim mismatch (Dk=80, Dv=48) SDPA loses its fused path and
+        # measured 25.40 ms vs 9.08 ms manual at B8 T1024, i.e. 0.36x — nearly
+        # 3x SLOWER. It wins only at short decode lengths (1.40x at T80). If a
+        # variant ever runs attn_type="mla" on XPU, re-measure before flipping.
+        self.has_sdpa: bool = hasattr(F, "scaled_dot_product_attention")
+        # Separate gate so the MLA cascade can opt out without disabling GQA.
+        self.sdpa_ok_for_mla: bool = self.has_sdpa and not self.is_xpu
         self.cuda_cc: "tuple[int, int] | None" = self._probe_cuda_cc()
         self.fa2_usable: bool = self._fa2_usable()
         self._warned: set[str] = set()
@@ -669,7 +690,12 @@ class MLAttention(nn.Module):
         v = v.transpose(1, 2).contiguous()  # (B, H, S, v_dim)
 
         dropout_p = self.attn_drop.p if self.training else 0.0
-        if CAPABILITIES.has_sdpa:
+        if CAPABILITIES.sdpa_ok_for_mla:
+            # `sdpa_ok_for_mla`, not `has_sdpa`: on XPU the head-dim mismatch
+            # costs SDPA its fused path and it measured ~3x SLOWER than the
+            # manual matmul at B8 T1024 (0.36x). GQA keeps SDPA; MLA does not.
+            # See the capability comment for the numbers.
+            #
             # SDPA handles the K/V head-dim mismatch (Q,K share q_head_dim,
             # V has its own v_head_dim) and applies the causal mask via
             # its own kernel when `is_causal=True`. The per-call cost is
