@@ -50,7 +50,7 @@ import argparse
 import math
 import os
 import time
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 
 import torch
 import torch.nn as nn
@@ -240,6 +240,19 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                    help="Escape hatch: inline per-micro-step rollout "
                         "generation with full O(L^2) recompute (the "
                         "pre-buffer, pre-KV-cache behaviour).")
+    p.add_argument("--profile-steps", type=int, default=0,
+                   help="DIAGNOSTIC, NOT TRAINING. Profile this many steps after "
+                        "--profile-warmup, print a per-component wall-clock "
+                        "breakdown, then EXIT WITHOUT SAVING. Answers 'is the "
+                        "teacher forward the bottleneck?' — which decides whether "
+                        "teacher-logit caching (and with it, λ as a real "
+                        "throughput lever) is worth building. Syncs the device "
+                        "around each region, so read the SHARES, not the tok/s.")
+    p.add_argument("--profile-warmup", type=int, default=5,
+                   help="Steps to run before profiling starts. Must be >0: the "
+                        "first steps carry torch.compile, allocator growth and "
+                        "SYCL kernel-cache misses that would swamp the real "
+                        "shares.")
     p.add_argument("--use-sandwich-norm", action="store_true",
                    help="Huginn sandwich norm (extra post-sublayer RMSNorm in "
                         "every TransformerBlock) — recurrent hidden-state-collapse "
@@ -311,6 +324,109 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "the teacher needs the bigger card. The teacher logits "
                         "are transferred to the student device each step.")
     return p.parse_args(argv)
+
+
+# ---------------------------------------------------------------------------
+# Step profiler — where does the time actually go?
+# ---------------------------------------------------------------------------
+
+
+class _StepProfiler:
+    """Per-component wall-clock breakdown of one training step.
+
+    WHY THIS EXISTS. The λ sweep (2026-07-30) cut on-policy steps 0.7 -> 0.4 and
+    moved throughput ~4%, against a predicted 45%. The explanation is visible in
+    the loop but had never been measured: `teacher_logits(...)` runs on EVERY
+    micro-step, outside the on-policy/offline branch, and the teacher is
+    Ouro-2.6B against a 278M student on the SAME card. If the teacher forward
+    dominates, then λ *cannot* be a throughput lever and neither can
+    --rollout-reuse, because both only touch rollout generation.
+
+    That reasoning has been wrong twice. Hence: measure, don't deduce. The number
+    that matters is the teacher share — it decides whether caching top-K teacher
+    logits for the offline path (which would also RESURRECT λ as a lever, since
+    offline steps would stop paying teacher cost) is worth building.
+
+    ACCURACY NOTE: XPU/CUDA kernel launches are ASYNC, so timing without a
+    synchronize measures enqueue time, not execution — every region would look
+    instant and the totals would be nonsense. We sync on entry and exit of each
+    region. That perturbs absolute throughput slightly (real pipelining is
+    suppressed), so read the SHARES, not the tok/s, from a profiled run.
+    """
+
+    def __init__(self, device: str, enabled: bool):
+        self.enabled = enabled
+        self.device = device
+        self.totals: dict[str, float] = {}
+        self.counts: dict[str, int] = {}
+        self._open: dict[str, float] = {}
+        self.steps = 0
+
+    def _sync(self) -> None:
+        if self.device.startswith("xpu") and hasattr(torch, "xpu"):
+            torch.xpu.synchronize()
+        elif self.device.startswith("cuda"):
+            torch.cuda.synchronize()
+
+    @contextmanager
+    def region(self, name: str):
+        if not self.enabled:
+            yield
+            return
+        self.start(name)
+        try:
+            yield
+        finally:
+            self.stop(name)
+
+    # Explicit start/stop for regions whose body is too long to re-indent under a
+    # `with` without producing a large, review-hostile diff (the rollout block).
+    # A dropped `stop` on an exception is acceptable here: this is a diagnostic
+    # mode that exits without saving, and an exception aborts the run anyway.
+    def start(self, name: str) -> None:
+        if not self.enabled:
+            return
+        self._sync()
+        self._open[name] = time.perf_counter()
+
+    def stop(self, name: str) -> None:
+        if not self.enabled or name not in self._open:
+            return
+        self._sync()
+        dt = time.perf_counter() - self._open.pop(name)
+        self.totals[name] = self.totals.get(name, 0.0) + dt
+        self.counts[name] = self.counts.get(name, 0) + 1
+
+    def reset(self) -> None:
+        self.totals.clear()
+        self.counts.clear()
+        self.steps = 0
+
+    def report(self) -> None:
+        if not self.enabled or not self.totals:
+            return
+        total = sum(self.totals.values())
+        logger.info("=" * 68)
+        logger.info(f"STEP PROFILE over {self.steps} steps "
+                    f"({total / max(self.steps, 1) * 1e3:.1f} ms/step measured)")
+        logger.info(f"  {'region':<18} {'ms/step':>9} {'share':>7}  {'calls/step':>10}")
+        for name, t in sorted(self.totals.items(), key=lambda kv: -kv[1]):
+            logger.info(f"  {name:<18} {t / self.steps * 1e3:>9.1f} "
+                        f"{100 * t / total:>6.1f}% {self.counts[name] / self.steps:>10.1f}")
+        logger.info("=" * 68)
+        teacher = self.totals.get("teacher_fwd", 0.0)
+        share = 100 * teacher / total if total else 0.0
+        logger.info(f"TEACHER SHARE: {share:.1f}%")
+        if share >= 45:
+            logger.info("  => Teacher forward DOMINATES. Caching top-K teacher logits for "
+                        "the offline path is the lever; it also makes λ a real lever again.")
+        elif share >= 25:
+            logger.info("  => Teacher forward is significant but not dominant. Caching helps "
+                        "the offline fraction only — weigh against the build cost.")
+        else:
+            logger.info("  => Teacher forward is NOT the bottleneck. Do not build the logit "
+                        "cache; the top region above is where the time is.")
+        logger.info("=" * 68)
 
 
 # ---------------------------------------------------------------------------
@@ -499,7 +615,21 @@ def main():
     last_ckpt_time = time.perf_counter()
     log_every = args.log_every
 
+    prof = _StepProfiler(str(device), enabled=args.profile_steps > 0)
+    if prof.enabled:
+        logger.info(f"PROFILING MODE: {args.profile_warmup} warmup steps, then "
+                    f"{args.profile_steps} profiled steps, then exit WITHOUT saving.")
+        profile_stop = step + args.profile_warmup + args.profile_steps
+        profile_start = step + args.profile_warmup
+
     while step < args.total_steps:
+        if prof.enabled:
+            if step == profile_start:
+                prof.reset()            # discard warmup: compile + allocator growth
+            if step >= profile_stop:
+                prof.report()
+                logger.info("profiling complete — exiting without saving a checkpoint")
+                return
         cur_lr = _cosine_lr(step, args.warmup_steps, args.total_steps,
                              args.lr,
                              args.min_lr if args.min_lr is not None
@@ -520,14 +650,15 @@ def main():
         accum_expert_counts: dict = {}
 
         for micro_step in range(args.grad_accum):
-            try:
-                x, y = next(data_iter)
-            except StopIteration:
-                data_iter = iter(loader)
-                x, y = next(data_iter)
+            with prof.region("data"):
+                try:
+                    x, y = next(data_iter)
+                except StopIteration:
+                    data_iter = iter(loader)
+                    x, y = next(data_iter)
 
-            x = x.to(device, non_blocking=True)
-            y = y.to(device, non_blocking=True)
+                x = x.to(device, non_blocking=True)
+                y = y.to(device, non_blocking=True)
 
             # ── On-policy / GKD: with prob λ, train on a STUDENT-generated
             #    rollout instead of the corpus batch. The student continues a
@@ -539,6 +670,7 @@ def main():
                 and onpolicy_rng.random() < args.onpolicy_lambda
             )
             if is_onpolicy:
+                prof.start("rollout")     # paired with prof.stop below
                 seed_len = max(8, args.rollout_len // 4)
                 if rollout_buffer is None:
                     # Legacy escape hatch: inline per-micro-step generation.
@@ -595,16 +727,21 @@ def main():
                 # makes distillation_loss drop the hard-CE term).
                 distill_targets = None
                 op_accum += 1
+                prof.stop("rollout")
             else:
                 x_in, y_in = x, y
                 distill_targets = y
 
             with amp_ctx:
                 # ── Teacher forward (no grad, no autograd graph) ──
-                t_logits = teacher_logits(teacher, x_in).to(device)
+                # NOTE: this runs on EVERY micro-step, on-policy or offline. It is
+                # the prime suspect for the λ null result — see _StepProfiler.
+                with prof.region("teacher_fwd"):
+                    t_logits = teacher_logits(teacher, x_in).to(device)
 
                 # ── Student forward ──
-                s_logits, unc = student(x_in, n_loops=n_loops)
+                with prof.region("student_fwd"):
+                    s_logits, unc = student(x_in, n_loops=n_loops)
 
                 # ── Distillation (+ CE blend on the offline path) ──
                 distill_total, distill_metrics = distillation_loss(
@@ -654,7 +791,8 @@ def main():
                 )
                 loss = loss / args.grad_accum
 
-            loss.backward()
+            with prof.region("backward"):
+                loss.backward()
             loss_accum   += loss.item()
             soft_accum   += distill_metrics["soft"] / args.grad_accum
             hard_accum   += distill_metrics["hard"] / args.grad_accum
@@ -668,8 +806,9 @@ def main():
                     accum_expert_counts.get(name, 0) + counts
                 )
 
-        grad_norm = nn.utils.clip_grad_norm_(student.parameters(), max_norm=1.0)
-        optimizer.step()
+        with prof.region("optimizer"):
+            grad_norm = nn.utils.clip_grad_norm_(student.parameters(), max_norm=1.0)
+            optimizer.step()
 
         # Aux-loss-free router bias update (DeepSeek-V3 style).
         util_stats = update_router_bias_from_counts(
@@ -677,6 +816,8 @@ def main():
             bias_lr=cfg.router_bias_lr, ddp=False,
         )
         step += 1
+        if prof.enabled and step > profile_start:
+            prof.steps += 1
 
         if step % log_every == 0:
             dt = time.perf_counter() - t0
