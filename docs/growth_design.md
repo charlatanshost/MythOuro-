@@ -582,6 +582,39 @@ Note it cannot be tested cheaply on a model at 0% L4 — a halting signal derive
 from task loss needs a task the model can sometimes get right — so it queues
 BEHIND the corrected-data pour.
 
+### The dependency order for the recurrent machinery (owner's framing, 2026-07-31)
+
+The depth question is easy to ask wrongly. "Is 8 better than 4?" is answered —
+no, on average, by both the Ouro paper and our own sweep. But **that was never
+the design intent.** Deeper loops plausibly help on *some* topics and not
+others, and ACT / early-exit / the halting head exist precisely so the model
+spends depth WHEN NEEDED rather than uniformly. You do not choose a depth; you
+provide a BUDGET and let the gates allocate it.
+
+Two consequences follow, and they fix the ordering of everything else:
+
+- A larger budget is **harmless when halting works** — the model simply declines
+  the extra passes, which is what our sweep observed.
+- A larger budget is **worthless when halting does not work** — and ours does
+  not discriminate: the 3rd pass of 4 on math, the same on prose, unchanged when
+  forced to 8.
+
+So the recurrent work is a SEQUENCE, not a menu:
+
+  1. **Data.** Nothing downstream is diagnosable while three domains are
+     mis-shaped (medical/math/code, fixed 2026-07-31, first pour pending).
+  2. **Halting supervision.** Adopt Ouro's per-step exit-weighted loss so the
+     gates are trained by the TASK loss and learn when depth *pays*, not merely
+     when the hidden state stops moving. Cannot be tested at 0% L4 — a
+     task-derived halting signal needs a task the model sometimes gets right.
+  3. **Then a larger budget becomes meaningful,** and `tools/grow_depth.py`
+     applies. It was built before steps 1 and 2, which is why it sits unused.
+
+Caveat carried from the paper: Ouro hit loss spikes and gradient oscillations
+training at 8. The safe form of step 3 is a budget the model RARELY takes, which
+is only safe once the gates are trustworthy — i.e. step 2 is load-bearing for
+step 3, not optional polish.
+
 ### Status: deliberate-enough, but an open optimisation
 
 We did not consciously reject Ouro's per-step weighted loss — we simply solved
