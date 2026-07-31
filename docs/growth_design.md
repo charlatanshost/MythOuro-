@@ -549,6 +549,39 @@ entropy regularisation. Their exit gates are trained *by the task loss itself*;
 ours are shaped *only* by the regulariser. We adopted Ouro's entropy-reg half
 (faithfully) but not its per-step-weighted-supervision half.
 
+### 2026-07-31 — MEASUREMENT that promotes this from stylistic to explanatory
+
+Two findings from the @70,500 depth sweep bear directly on this section.
+
+**1. The paper's "tried 8, dropped to 4" is a warning we nearly walked into.**
+`tools/grow_depth.py` was built this afternoon to take the student 4→8, before
+re-reading this section. Ouro's authors ran that experiment and abandoned it for
+loss spikes and gradient oscillations. Our own null result agrees from the other
+direction — a `--n-loops` sweep at 2/4/6/8, each with and without
+`--force-full-depth`, was flat in all eight arms (L4 0.0%, median rel_err 0.400)
+— so depth is not a lever at current capability. **grow_depth is SHELVED, not
+deleted**: the sweep ran against a 0% floor, which cannot distinguish "depth
+does not help" from "nothing helps yet". Revisit only after capability exists,
+and expect instability if going past 4.
+
+**2. The exit gates have never been told what "correct" means — and it shows.**
+The measured behaviour: the model halts at the 3rd pass of 4, on every domain
+tested, while emitting `12 + 7 = 12`. Forcing all 8 passes changes nothing. That
+is exactly what the divergence in the table above predicts. Ouro trains its exit
+gates BY the task loss (`L = Σ_t pφ(t|x) · L^(t)`), so a gate that exits early on
+a wrong answer is penalised. Ours are shaped ONLY by the depth regulariser, which
+rewards a spread halt distribution and is indifferent to whether the output is
+right. The head is therefore well-calibrated for what it was trained on —
+*convergence* — and has no signal that convergence and correctness are different
+things.
+
+⇒ This is no longer "an optimisation to consider". It is the leading mechanistic
+explanation for a confident-but-wrong halting head, and it makes Ouro's per-step
+exit-weighted loss the highest-value untried change to the recurrent machinery.
+Note it cannot be tested cheaply on a model at 0% L4 — a halting signal derived
+from task loss needs a task the model can sometimes get right — so it queues
+BEHIND the corrected-data pour.
+
 ### Status: deliberate-enough, but an open optimisation
 
 We did not consciously reject Ouro's per-step weighted loss — we simply solved

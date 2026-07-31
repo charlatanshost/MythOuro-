@@ -12,6 +12,14 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
 
 - **OpenMythos** — kyegomez. github.com/kyegomez/OpenMythos. *The fork MythOuro
   started from.*
+- **Scaling Latent Reasoning via Looped Language Models** — Zhu et al. 2025.
+  arXiv **2510.25741**. *The Ouro paper. Two results MythOuro depends on:
+  (a) loop count is FIXED at 4 in training — they tried 8 and dropped back after
+  loss spikes / gradient oscillations, which is why `max_loop_iters=4` is a sound
+  inherited default and why growing past it is a warned-against path; (b) the
+  loss is supervised at EVERY recurrent step, weighted by exit probability, so
+  Ouro's exit gates are trained by the task loss while ours are shaped only by
+  the depth regulariser. See docs/growth_design.md "loop-loss supervision".*
 - **Ouro-2.6B-Thinking** — ByteDance. huggingface.co/ByteDance/Ouro-2.6B-Thinking.
   *The distillation teacher; a recurrent-depth model itself. MythOuro's student is
   vocab-aligned to it (logit-level KD requires shared vocabulary).*
