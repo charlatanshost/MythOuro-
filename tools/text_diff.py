@@ -24,8 +24,29 @@ against the actual prompt are what text is for, and they are read, not measured.
 An earlier attempt at this problem — `tools/relevance_probe.py` — responded to
 "the numbers miss it" by adding three more numbers, only one of which validated.
 So this tool scores NOTHING on purpose. It lays the seed beside what each
-checkpoint produced from it and gets out of the way. If you find yourself adding
-a metric here, you are rebuilding relevance_probe.
+checkpoint produced from it and gets out of the way.
+
+⚠ BUT DO NOT READ THIS AS "METRICS ARE UNRELIABLE" — that is an overcorrection,
+and it was made here first. The two kinds of instrument catch each other's
+failures, demonstrated in a single afternoon (2026-07-31):
+
+  * READING caught a metric blind spot: `self.get_value(self.get_value(...` and
+    a 95-zero run both scored max_line_repeat=1, i.e. perfectly clean. Hence
+    `_lrs_frac` in code_eval.
+  * The METRIC then caught a reading error: from those two examples the
+    conclusion drawn was "degeneracy moved but didn't decrease". Computing the
+    distribution showed the opposite — file framing genuinely is cleaner
+    (median lrs_frac 0.528 -> 0.312, 57/80 -> 34/80 degenerate). Two vivid
+    cases had misled a human read; only the numbers found it.
+  * The METRICS carried the trend that mattered: per-sample L3+ 21% -> 42% ->
+    54% over three checkpoints is what validated --rollout-reuse 8. Reading five
+    generations could not have established that.
+  * READING carried what no aggregate reported: the "the risk of..." opener
+    persisting across steps 46k/52k/58k/64k and then breaking.
+
+And metrics are what make 21 probe reports COMPARABLE at all — nobody eyeballs
+21 probes. The numbers index the history and say where to look; the text says
+what changed there. Use both; distrust either one alone.
 
 Usage
 -----
