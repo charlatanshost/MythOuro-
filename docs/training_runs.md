@@ -570,11 +570,21 @@ robust degeneration signal.
 ## Confirmed priorities
 
 - **Training fix (real cure):** on-policy / GKD (learn to not spiral) + reverse-KL /
-  mode-seeking + unlikelihood (anti-repetition on the output distribution). All
+  mode-seeking + ~~unlikelihood (anti-repetition on the output distribution)~~. All
   target exposure bias directly.
-- **Cheap inference band-aid:** early entropy is HIGH → greedy locks the spiral →
-  sampling (temp/top-p) + repetition penalty taps the available diversity (validates
-  the temperature-diversity intuition). Mitigation, not cure.
+  - **⚠ SUPERSEDED 2026-07-30 — unlikelihood is OFF the queue.** The code eval
+    settled it: a count-scaled repetition penalty at *inference* drives looping from
+    51/80 samples to 1/80 and more than doubles runnable output, **and L4 (correct
+    code) stays at 0/80 at every penalty setting** — 240 generations with the loop
+    provably removed, zero correct. Anti-repetition training would fix looping and
+    buy nothing for correctness, which inference already gets for free. The wall is
+    capacity, not the attractor. See `generation_probe_tracker.md` 2026-07-30 code
+    eval entry.
+- **Cheap inference band-aid → PROMOTED to standard eval setting.** Early entropy is
+  HIGH → greedy locks the spiral → sampling (temp/top-p) + repetition penalty taps
+  the available diversity (validates the temperature-diversity intuition). Now known
+  to be a *complete* fix for degeneracy and a *non*-fix for correctness, so report
+  both: penalty 1.15 = capability number, penalty 1.0 = degeneracy number.
 - **Underneath:** still token-starved — exposure bias is what undertrained small
   models do; more tokens + on-policy is the deep fix.
 - OFF-TARGET (confirmed): Huginn recipe / MeSH / recurrent_state_noise.

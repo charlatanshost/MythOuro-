@@ -823,6 +823,88 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-07-30 — 🧪 CODE EVAL, FIRST CAPABILITY SERIES (46k→66k): the attractor hid STRUCTURE, not CORRECTNESS
+
+**The headline: L4 (correct code) is ZERO everywhere, and a repetition penalty proves that is NOT a decoding
+artifact.** New instrument `tools/code_eval.py` — generate a function, RUN it, check the answer. No judge
+model, no interpretation. Graded ladder L0 nothing / L1 syntax / L2 defines / L3 runs-but-wrong / L4 correct,
+scored best-of-n per task (pass@k semantics). Raw: `reports/code_eval_*.json`.
+
+**⚠ Instrument correction: L1 and L2 are the same rung by construction.** L1+ equalled L2+ at all 11
+checkpoints, and again at n=8 — per-sample L1 was literally **0/80**. Cause is structural, not behavioural:
+the *prompt* supplies the `def fname(...):` line, so any parseable prefix already defines the function, while
+a prefix short enough to lose the def line does not parse at all (bare `def f(a):` is a SyntaxError) and
+scores L0. **Read the ladder as L0 / L1-2 / L3 / L4 and track L3 and L4.** Documented in the tool docstring
+rather than silently renumbering, because existing reports use the old labels.
+
+### The trend, and the trap in it
+
+| step | L3+ (n=8) | looped frac | salvage % |
+|---|---|---|---|
+| 46,000 | 3/10 | 0.81 | 100% |
+| 50,000 | 3/10 | 0.89 | 100% |
+| 54,000 | 4/10 | 0.80 | 86% |
+| 58,000 | 10/10 | 0.56 | 62% |
+| 62,000 | 9/10 | 0.70 | 92% |
+| 64,000 | 10/10 | 0.69 | 82% |
+
+**The trap: `_truncate_to_parseable` SALVAGES a runnable stub out of a looping generation.** `if n == 0:` /
+`return 0` repeated forever truncates to a function that defines, executes and returns the wrong answer —
+i.e. scores L3 without the model ever finishing a function. At 64k, **77–87% of all L3 scores were salvage**
+(`max_line_repeat >= 3`), and per-sample **62.5% of generations produced nothing parseable at all**. A first
+reading of the n=3 sweep as "+2.7 L3-points/10k steps, the first positive capability trend" was **wrong in
+kind**: salvage fraction averages 0.87 across the series and only drifts −0.11/10k steps.
+
+**What the series does support:** looping falls (0.81 → 0.69) and salvage falls (1.00 → 0.82), so the L3 climb
+is not purely a truncator artifact. ⇒ **tokens are buying FLUENCY and STRUCTURE; correctness has not moved.**
+Same shape as the medical verdict below — vocabulary/format generalises, facts and logic do not.
+
+### The decisive experiment: repetition penalty @64,000 (n=8, T=0.4)
+
+| penalty | looped | median rep | per-sample L0 | per-sample L3 | **L4** |
+|---|---|---|---|---|---|
+| 1.0 (off) | 51/80 | 5 | 70% | 20% | **0/80** |
+| 1.15 | **1/80** | 1 | 22% | 49% | **0/80** |
+| 1.3 | **0/80** | 1 | 30% | 44% | **0/80** |
+
+The penalty does exactly what it should — looping goes to ~zero, unparseable output drops 70%→22%, runnable
+code more than doubles. **And L4 stays at zero at every setting: 240 generations with the loop provably
+removed, not one correct function.** ⇒ **The capability is not hiding behind decoding. The L4 wall is
+capacity/training, not sampling.**
+
+**The single L4 in the entire study is itself an artifact.** 62k `count_items` — a *looped* generation
+(`return len(items)` ×4, `max_line_repeat=4`) that passes only because `len(items)` happens to be the correct
+answer for that task. Not capability.
+
+### Consequences
+
+- **❌ Unlikelihood training / DiverseKD comes OFF the queue.** It was scheduled to attack the attractor. It
+  would work — and buy nothing for correctness, because a free *inference-time* penalty already removes the
+  looping and L4 does not move. Don't spend training compute there.
+- **✅ Strengthens the token pour AND `grow_width.py`.** L4 is a capacity wall; both queued items attack it.
+- **Eval protocol going forward: report BOTH** — penalty 1.15 as the capability number, penalty 1.0 as the
+  degeneracy number. A penalised score is *not* comparable to the unpenalised 46k→66k series.
+- **NEW observation — chat-template leakage on bare-code prompts.** With looping suppressed, failures look
+  like `if not a:\n\treturn True\nelse:\n\tprint(a)` then `<|im_end|>` and English meta-commentary. The model
+  drifts into *chat mode* on a raw-completion prompt. Harvest-formatting question, cheap to check against the
+  corpus; not yet investigated.
+
+### Instrument notes (method, so the numbers stay readable later)
+
+- **Best-of-3 is too noisy to read checkpoint-to-checkpoint.** Residual sd about the n=3 fit was 1.73 vs 1.55
+  expected from pure task sampling — i.e. the scatter is almost entirely sampling. **A 66,000 reading of L3+
+  3/10 vs 64,000's 7/10 looked like a medical-mix regression and was NOT**: at n=8 the same pair reads 8/10 vs
+  9/10, differing on one task. **The medical mix is exonerated; that hypothesis is withdrawn.** Use n=8.
+- **Repetition penalty is COUNT-SCALED, and penalises generated tokens ONLY.** Plain CTRL (flat divisor,
+  Keskar et al.) measurably fails against a *sustained* loop — verified on a fake model with argmax pinned to
+  one token: it breaks the loop for exactly one step then reverts, because once the alternative is also seen
+  both are divided equally and the attractor still wins. Scaling by occurrence count makes pressure escalate.
+  Penalising the *prompt* would suppress `a`/`b`/`n` — the very tokens a correct body must reuse — and
+  manufacture a failure we would misread as model weakness.
+- **Completions are now saved to the JSON.** The first version kept only the rung and 110 truncated chars, so
+  every new question cost another card run. All re-analysis above was done offline from saved output.
+
+
 ## 2026-07-30 — 🩺 MEDICAL VERDICT @64,000 (full dose): buys FLUENCY, not FACTS — as the capacity math predicted
 
 Full 6,000-step leg with medical in the teacher stream (29.4% of the pool, ~5.9% of

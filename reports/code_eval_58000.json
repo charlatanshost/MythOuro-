@@ -1,0 +1,63 @@
+{
+  "step": 58000,
+  "temperature": 0.4,
+  "samples": 3,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 3,
+      "label": "L3 runs"
+    },
+    {
+      "task": "double_it",
+      "rung": 3,
+      "label": "L3 runs"
+    },
+    {
+      "task": "get_first",
+      "rung": 2,
+      "label": "L2 defines"
+    },
+    {
+      "task": "sum_list",
+      "rung": 0,
+      "label": "L0 nothing"
+    },
+    {
+      "task": "count_items",
+      "rung": 3,
+      "label": "L3 runs"
+    },
+    {
+      "task": "is_even",
+      "rung": 3,
+      "label": "L3 runs"
+    },
+    {
+      "task": "reverse_string",
+      "rung": 0,
+      "label": "L0 nothing"
+    },
+    {
+      "task": "max_of_two",
+      "rung": 0,
+      "label": "L0 nothing"
+    },
+    {
+      "task": "fibonacci",
+      "rung": 3,
+      "label": "L3 runs"
+    },
+    {
+      "task": "is_prime",
+      "rung": 3,
+      "label": "L3 runs"
+    }
+  ],
+  "reached": {
+    "L1+": 7,
+    "L2+": 7,
+    "L3+": 6,
+    "L4+": 0
+  }
+}

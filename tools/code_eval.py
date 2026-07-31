@@ -25,6 +25,14 @@ NOTE L1 alone is a weak signal: `def f(n): return 8553.99` parses fine — that 
 why syntactic validity was rejected as a standalone metric (`relevance_probe`).
 The ladder earns its keep from L2/L3/L4.
 
+⚠ L1 AND L2 ARE THE SAME RUNG IN PRACTICE — measured, not theorised. Across the
+46k-66k sweep L1+ equalled L2+ at all 11 checkpoints, and again at n=8. The cause
+is structural: the PROMPT supplies the `def fname(...):` line, so any parseable
+prefix already defines the function, while a prefix short enough to lose the def
+line does not parse at all (a bare `def f(a):` with no body is a SyntaxError) and
+scores L0. So L1-without-L2 is very nearly unreachable by construction. Read the
+ladder as L0 / L1-2 / L3 / L4, and track L3 and L4 — those are the live rungs.
+
 SAFETY: generated code is executed in a subprocess with a timeout, in a temp dir,
 never in-process. It is model output, so treat it as untrusted.
 
@@ -88,8 +96,12 @@ print("OK")
 """
 
 
-def _truncate_to_parseable(src: str) -> "str | None":
-    """Longest prefix of whole lines that parses. Generations end mid-statement."""
+def _truncate_to_parseable(src: str) -> "tuple[str | None, int]":
+    """Longest prefix of whole lines that parses, plus how many lines were DROPPED.
+
+    Generations end mid-statement, so some truncation is normal and meaningless.
+    The count matters for a different reason — see `_max_line_repeat`.
+    """
     lines = src.split("\n")
     for cut in range(len(lines), 0, -1):
         cand = "\n".join(lines[:cut])
@@ -97,28 +109,64 @@ def _truncate_to_parseable(src: str) -> "str | None":
             continue
         try:
             ast.parse(cand)
-            return cand
+            return cand, len(lines) - cut
         except (SyntaxError, ValueError):
             continue
-    return None
+    return None, len(lines)
+
+
+def _max_line_repeat(src: str) -> int:
+    """Largest number of times any single non-blank line appears verbatim.
+
+    THE REPETITION ATTRACTOR, MADE NUMERIC. This exists because of what the
+    46k-66k sweep showed: L3+ rose from 1/10 to 7/10 while L4 stayed at 0/10 in
+    all 110 task-evaluations. But `_truncate_to_parseable` SALVAGES a runnable
+    stub from a looping generation — `if n == 0:\\n    return 0` repeated forever
+    truncates to a function that defines, executes, and returns the wrong answer,
+    i.e. scores L3. So a rising L3 is ambiguous: real progress, or just cleaner
+    stubs to salvage? This number disambiguates. >=3 identical lines means the
+    generation looped, and its L3 was salvage rather than a finished function.
+    """
+    from collections import Counter
+    lines = [ln.strip() for ln in src.split("\n") if ln.strip()]
+    return max(Counter(lines).values(), default=0)
+
+
+def _body_stmts(tree: ast.AST, fname: str) -> int:
+    """Statements in the target function's body — a complete-ness proxy."""
+    for n in ast.walk(tree):
+        if isinstance(n, ast.FunctionDef) and n.name == fname:
+            return len(n.body)
+    return 0
 
 
 def score_sample(prompt: str, completion: str, fname: str,
-                 checks: str, timeout: float = 5.0) -> int:
-    """Return the highest ladder rung (0-4) this generation reaches."""
+                 checks: str, timeout: float = 5.0) -> dict:
+    """Score one generation: ladder rung 0-4 plus repetition diagnostics.
+
+    Returns a dict rather than a bare int so every run records WHY a rung was
+    reached. Re-analysis then costs no card time — the old version kept only the
+    rung and 110 truncated characters, so any new question meant regenerating.
+    """
     raw = (prompt + completion).replace("\\n", "\n").replace("\\t", "\t")
-    code = _truncate_to_parseable(raw)
+    d = {"rung": 0, "max_line_repeat": _max_line_repeat(raw),
+         "lines_dropped": 0, "body_stmts": 0, "completion": completion}
+    code, dropped = _truncate_to_parseable(raw)
+    d["lines_dropped"] = dropped
     if code is None:
-        return 0                                          # L0
+        return d                                          # L0
     rung = 1                                              # L1 syntax
     try:
         tree = ast.parse(code)
     except (SyntaxError, ValueError):
-        return 0
+        return d
+    d["rung"] = rung
     if not any(isinstance(n, ast.FunctionDef) and n.name == fname
                for n in ast.walk(tree)):
-        return rung                                       # stops at L1
+        return d                                          # stops at L1
     rung = 2                                              # L2 defines
+    d["rung"] = rung
+    d["body_stmts"] = _body_stmts(tree, fname)
     # L3/L4 come from ONE execution of the real checks, distinguished by the
     # exception type. An earlier design smoke-called the function with `0` for
     # every argument to test L3 separately — that wrongly failed CORRECT string
@@ -138,24 +186,61 @@ def score_sample(prompt: str, completion: str, fname: str,
             r = subprocess.run([sys.executable, path], capture_output=True,
                                text=True, timeout=timeout, cwd=td)
         except subprocess.TimeoutExpired:
-            return rung                                   # hang = no further credit
+            return d                                      # hang = no further credit
     if r.returncode == 0 and "OK" in r.stdout:
-        return 4                                          # L4 correct
-    if "FAIL:AssertionError" in r.stdout:
-        return 3                                          # L3 ran, wrong answer
-    return rung                                           # L2 defined but errored
+        d["rung"] = 4                                     # L4 correct
+    elif "FAIL:AssertionError" in r.stdout:
+        d["rung"] = 3                                     # L3 ran, wrong answer
+    return d                                              # else stays L2
 
 
 @torch.no_grad()
 def generate(model, tok, prompt: str, device: str, max_new: int,
-             n_loops: int, temperature: float) -> str:
-    ids = torch.tensor([tok.encode(prompt)], device=device)
+             n_loops: int, temperature: float, rep_penalty: float = 1.0) -> str:
+    """Sample a continuation, optionally with a CTRL-style repetition penalty.
+
+    WHY THE PENALTY IS HERE — it is a DIAGNOSTIC, not a scoring aid. At step
+    64,000, 69% of samples loop (median 6 identical lines) and 77% of L3 scores
+    are salvaged out of a loop rather than earned by finished code. That leaves
+    two very different explanations, which this flag separates:
+      penalty lifts L4 off zero -> the model CAN finish a function; the attractor
+                                   is a decoding failure, and the fix is cheap.
+      L4 stays at zero          -> it is a training problem (unlikelihood/DiverseKD),
+                                   and more tokens alone will not get there.
+    Always report the penalty alongside results; a penalised number is not
+    comparable to the unpenalised 46k-66k sweep.
+    """
+    prompt_ids = tok.encode(prompt)
+    ids = torch.tensor([prompt_ids], device=device)
     out = []
     for _ in range(max_new):
         o = model(ids, n_loops=n_loops)
         logits = (o[0] if isinstance(o, (tuple, list)) else o)[0, -1].float()
+        if rep_penalty != 1.0 and out:
+            # Keskar et al. 2019 style, with TWO deliberate deviations:
+            #
+            # (1) COUNT-SCALED, not fixed. Plain CTRL applies one flat divisor per
+            #     distinct seen token, which measurably fails against a SUSTAINED
+            #     loop — the exact thing we are probing. Verified on a fake model
+            #     whose argmax is pinned to one token: a flat penalty breaks the
+            #     loop for a single step and then reverts forever, because once the
+            #     alternative has also been seen both are divided equally and the
+            #     attractor still wins. Scaling by occurrence count makes the
+            #     pressure escalate the longer a token repeats, so it cannot sit in
+            #     a loop indefinitely.
+            # (2) GENERATED TOKENS ONLY, never the prompt. The prompt is
+            #     `def add_two(a, b):` and a correct body must reuse `a` and `b`;
+            #     penalising it would suppress exactly the tokens correct code needs
+            #     and manufacture a failure we would then misread as model weakness.
+            #
+            # Sampling already runs on CPU (topk/multinomial segfault on XPU, see
+            # field notes), so stay on CPU from here.
+            logits = logits.cpu()
+            seen, counts = torch.unique(torch.tensor(out), return_counts=True)
+            scale = rep_penalty ** counts.float()
+            v = logits[seen]
+            logits[seen] = torch.where(v > 0, v / scale, v * scale)
         if temperature > 0:
-            # CPU sampling: topk/multinomial segfault on XPU (field notes).
             probs = (logits / temperature).cpu().softmax(-1)
             nxt = int(torch.multinomial(probs, 1))
         else:
@@ -178,6 +263,12 @@ def main() -> None:
                    help="0 = greedy. A little sampling helps a weak model find a "
                         "working form; report the temperature alongside results.")
     p.add_argument("--n-loops", type=int, default=4)
+    p.add_argument("--repetition-penalty", type=float, default=1.0,
+                   help="1.0 = off (comparable to the 46k-66k sweep). >1 penalises "
+                        "already-GENERATED tokens (never the prompt). Diagnostic: "
+                        "does the repetition attractor hide real capability? Sweep "
+                        "1.0/1.15/1.3 — too high destroys code, which is itself a "
+                        "result worth recording.")
     p.add_argument("--json", default=None, help="Also write results here.")
     args = p.parse_args()
 
@@ -187,22 +278,27 @@ def main() -> None:
     model, _cfg, step = _load_model(args.checkpoint, args.device)
     model.eval()
     print(f"checkpoint step {step} | {args.samples} samples/task | "
-          f"T={args.temperature}\n")
+          f"T={args.temperature} | rep_penalty={args.repetition_penalty}\n")
 
     names = {0: "L0 nothing", 1: "L1 syntax", 2: "L2 defines",
              3: "L3 runs", 4: "L4 correct"}
-    rows, hist = [], {k: 0 for k in names}
+    rows, hist, all_samples = [], {k: 0 for k in names}, []
     for fname, prompt, checks in _TASKS:
-        best, best_txt = 0, ""
+        best, best_txt, samples = 0, "", []
         for _ in range(args.samples):
             comp = generate(model, tok, prompt, args.device, args.max_new,
-                            args.n_loops, args.temperature)
-            s = score_sample(prompt, comp, fname, checks)
-            if s > best:
-                best, best_txt = s, comp
+                            args.n_loops, args.temperature,
+                            args.repetition_penalty)
+            d = score_sample(prompt, comp, fname, checks)
+            samples.append(d)
+            if d["rung"] > best:
+                best, best_txt = d["rung"], comp
         hist[best] += 1
-        rows.append({"task": fname, "rung": best, "label": names[best]})
-        print(f"  {fname:16} {names[best]}")
+        all_samples.extend(samples)
+        looped = sum(1 for s in samples if s["max_line_repeat"] >= 3)
+        rows.append({"task": fname, "rung": best, "label": names[best],
+                     "looped": looped, "samples": samples})
+        print(f"  {fname:16} {names[best]:12} looped {looped}/{len(samples)}")
         if best >= 2:
             print(f"       {best_txt[:110].strip()!r}")
 
@@ -216,11 +312,32 @@ def main() -> None:
           f"   L3+ (runs): {reach(3)}/{n}   L4 (CORRECT): {reach(4)}/{n}")
     print("  ⚠ L1 alone is weak — `def f(n): return 8553.99` parses. Track L2+.")
 
+    # Repetition diagnostics: is a rising L3 real progress, or just cleaner
+    # stubs salvaged out of looping generations? `looped_in_L3` is the number to
+    # watch — if it falls while L3+ holds, the model is finishing functions.
+    tot = len(all_samples)
+    looped = sum(1 for s in all_samples if s["max_line_repeat"] >= 3)
+    l3s = [s for s in all_samples if s["rung"] == 3]
+    l3_looped = sum(1 for s in l3s if s["max_line_repeat"] >= 3)
+    med_rep = sorted(s["max_line_repeat"] for s in all_samples)[tot // 2]
+    diag = {"samples_total": tot, "looped": looped,
+            "looped_frac": round(looped / tot, 3) if tot else 0.0,
+            "median_max_line_repeat": med_rep,
+            "l3_samples": len(l3s), "l3_looped": l3_looped,
+            "l3_looped_frac": round(l3_looped / len(l3s), 3) if l3s else None}
+    print(f"\n  repetition: {looped}/{tot} samples looped (>=3 identical lines), "
+          f"median max-repeat {med_rep}")
+    if l3s:
+        print(f"  of L3 samples, {l3_looped}/{len(l3s)} were SALVAGED from a loop "
+              f"({100 * l3_looped / len(l3s):.0f}%) — the rest were finished code.")
+
     if args.json:
         Path(args.json).write_text(json.dumps(
             {"step": step, "temperature": args.temperature,
+             "repetition_penalty": args.repetition_penalty,
              "samples": args.samples, "tasks": rows,
-             "reached": {f"L{r}+": reach(r) for r in (1, 2, 3, 4)}}, indent=2))
+             "reached": {f"L{r}+": reach(r) for r in (1, 2, 3, 4)},
+             "diagnostics": diag}, indent=2))
         print(f"  wrote {args.json}")
 
 
