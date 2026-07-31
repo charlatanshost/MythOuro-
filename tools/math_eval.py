@@ -102,13 +102,38 @@ def _close(a: float, b: float) -> bool:
 
 
 def score_sample(completion: str, answers: "list[float]", n_expected: int,
-                 kind: str) -> dict:
-    """Ladder rung 0-4 plus diagnostics, for one generation."""
+                 kind: str, prompt: str = "") -> dict:
+    """Ladder rung 0-4 plus diagnostics, for one generation.
+
+    TWO SUB-L4 SIGNALS, because the ladder alone is insensitive at the floor.
+    At step 70,500 the model scores L2 on 97.5% of samples and L4 on 0%, so a
+    comparison against that baseline (e.g. an --n-loops sweep, or the
+    task-shaped mix change) could read flat-at-zero and leave us unable to tell
+    "this did not help" from "there was nothing yet for it to help".
+
+      `copied`  — is the emitted number lifted straight from the prompt?
+                  This measures the MECHANISM found at 70,500: "12 + 7 =" -> 12,
+                  "10% of 250 is" -> 100%, "x^2 - 5x + 6 = 0, x =" -> 0. It is
+                  slot-filling by echo, not arithmetic. A falling copy rate means
+                  computation is starting even while answers stay wrong.
+      `rel_err` — relative error of the CLOSEST emitted number to the answer.
+                  18 and 12 both score L2 for "12 + 7", but 18 is nearly right
+                  and 12 is an echo. Graded, so it moves before the ladder does.
+    """
     comp = completion.replace("\\n", "\n").replace("\\t", "\t")
     nums = extract_numbers(comp)
+    prompt_nums = extract_numbers(prompt) if prompt else []
+    copied = bool(nums) and any(_close(nums[0], p) for p in prompt_nums)
+    rel = None
+    if nums and answers:
+        target = answers[0]
+        denom = abs(target) if abs(target) > 1e-9 else 1.0
+        rel = round(min(abs(v - target) for v in nums) / denom, 4)
     d = {
         "rung": 0,
         "n_numbers": len(nums),
+        "copied_from_prompt": copied,
+        "rel_err": rel,
         "max_line_repeat_completion": _max_line_repeat(comp),
         "lrs_frac": round(_lrs_frac(completion), 4),
         "completion": completion,
@@ -185,7 +210,8 @@ def main() -> None:
             comp = generate(model, tok, prompt, args.device, args.max_new,
                             args.n_loops, args.temperature,
                             args.repetition_penalty)
-            s = score_sample(comp, [float(a) for a in answers], n_exp, kind)
+            s = score_sample(comp, [float(a) for a in answers], n_exp, kind,
+                             prompt=prompt)
             samples.append(s)
             if s["rung"] > best:
                 best, best_txt = s["rung"], comp
@@ -213,6 +239,16 @@ def main() -> None:
     lrs = sorted(s["lrs_frac"] for s in all_samples)
     print(f"  repetition: median lrs_frac {lrs[tot // 2]:.3f}, "
           f"{sum(1 for s in all_samples if s['lrs_frac'] >= 0.35)}/{tot} degenerate")
+    # Sub-L4 signals — these move before the ladder does (see score_sample).
+    copied = sum(1 for s in all_samples if s["copied_from_prompt"])
+    errs = sorted(s["rel_err"] for s in all_samples if s["rel_err"] is not None)
+    med_err = errs[len(errs) // 2] if errs else None
+    near = sum(1 for e in errs if e <= 0.10)
+    print(f"  COPIED from prompt: {copied}/{tot} = {100 * copied / tot:.1f}%  "
+          f"(echo, not arithmetic — falling means computation is starting)")
+    print(f"  rel. error of closest number: median "
+          f"{('%.3f' % med_err) if med_err is not None else 'n/a'}, "
+          f"within 10% on {near}/{len(errs) or 1}")
     if args.seed is None:
         print("  ⚠ UNSEEDED — a rerun draws fresh samples. Pass --seed.")
 
@@ -221,6 +257,9 @@ def main() -> None:
             {"step": step, "temperature": args.temperature, "seed": args.seed,
              "samples": args.samples,
              "repetition_penalty": args.repetition_penalty, "tasks": rows,
+             "copied_from_prompt": copied,
+             "median_rel_err": med_err,
+             "within_10pct": near,
              "per_sample_l4": round(k4 / tot, 4) if tot else 0.0,
              "per_sample_l3plus": round(k3 / tot, 4) if tot else 0.0,
              "reached": {f"L{r}+": reach(r) for r in (1, 2, 3, 4)}}, indent=2))
