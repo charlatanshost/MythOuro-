@@ -609,8 +609,14 @@ class LoopCurriculum:
 # quantity, not difficulty. (Reversible knob; general/math drop 40→33.)
 _MIX_RATIOS = {
     "general": 0.27,
-    "math":    0.26,
-    "code":    0.27,
+    # SHAPE SPLIT, not a domain rebalance (2026-07-31). Each of math and code
+    # keeps its total share and is split half raw-domain-text, half task-shaped.
+    # Deliberately NOT a reweighting between domains: if the evals move we want
+    # to know it was the shape, not extra dose. Was math 0.26 / code 0.27.
+    "math":           0.13,    # open-web-math — discourse
+    "math_instruct":  0.13,    # OpenMathInstruct-2 — problem -> solution -> answer
+    "code":           0.135,   # codeparrot-clean — whole files
+    "code_instruct":  0.135,   # OpenCodeInstruct — instruction -> correct body
     # MEDICAL PROMOTED FROM HARVEST-ONLY TO THE TRAINING MIX (2026-07-31).
     #
     # Until now `medical` sat in _DATASET_SPECS but NOT here, so MedRAG/pubmed
@@ -649,6 +655,32 @@ _DATASET_SPECS = [
     ("general", "HuggingFaceFW/fineweb-edu",    "sample-10BT", "train", "text"),
     ("math",    "open-web-math/open-web-math",  None,          "train", "text"),
     ("code",    "codeparrot/codeparrot-clean",  None,          "train", "content"),
+    # TASK-SHAPED math and code (added 2026-07-31). The two sources above are
+    # real and appropriate but teach the wrong SHAPE: open-web-math is
+    # mathematical DISCOURSE (blog posts, forum threads — 76% carries LaTeX and
+    # 71% has equations, but only 2% ever mark an answer; tools/check_math_data),
+    # and codeparrot-clean is whole GitHub FILES. Neither demonstrates
+    # "problem -> worked solution -> stated answer" or "signature -> correct
+    # body", which is exactly what the evals ask for and what the model cannot
+    # do (@70,500: `The roots of the equation are given:` with no roots; a
+    # persistent code L4 of ~0 that survives file-context framing).
+    #
+    # Both task-shaped sets already existed but were scoped to SFT ONLY, so
+    # distillation never saw them — one structural decision producing the same
+    # symptom in two domains. Provenance was already cleared
+    # (docs/clean_sft_datasets.md): OpenMathInstruct-2 is Llama-3.1-405B/Apache,
+    # OpenCodeInstruct is Qwen2.5-family and paper-verified (arXiv 2504.04030).
+    # No OpenAI lineage in either, which is the constraint this project rebuilt
+    # from scratch to satisfy.
+    #
+    # Tuple fields are joined with a blank line — adjacency IS the supervision,
+    # since raw-continuation distillation has no chat template. OpenMathInstruct
+    # solutions end in \boxed{}, supplying the terminal answer open-web-math
+    # almost never shows.
+    ("math_instruct", "nvidia/OpenMathInstruct-2", None, "train",
+     ("problem", "generated_solution")),
+    ("code_instruct", "nvidia/OpenCodeInstruct",   None, "train",
+     ("input", "output")),
     # Added 2026-07-28 as a HARVEST-ONLY seed source; PROMOTED to the training
     # mix 2026-07-31 (see the "medical" entry in _MIX_RATIOS for why — in short,
     # harvest-only meant the student had never read a real abstract, only the
@@ -799,8 +831,23 @@ class MixedDataset(IterableDataset):
             )
             return None
 
-    def _extract_text(self, sample: dict, field: Optional[str]) -> str:
-        return sample.get(field, "") if field else ""
+    def _extract_text(self, sample: dict, field) -> str:
+        """Text for one row. `field` is a column name, or a TUPLE of them.
+
+        The tuple form joins several columns with a blank line, which is how the
+        task-shaped instruct sets are fed: ("problem", "generated_solution")
+        becomes "problem\\n\\nsolution". That concatenation IS the supervision —
+        raw-continuation distillation has no chat template, so the model learns
+        the shape "a problem is followed by a worked solution ending in an
+        answer" purely from adjacency. `open-web-math` never demonstrates that
+        (only 2% of documents mark an answer at all; see tools/check_math_data).
+        """
+        if not field:
+            return ""
+        if isinstance(field, (tuple, list)):
+            parts = [str(sample.get(f, "") or "").strip() for f in field]
+            return "\n\n".join(p for p in parts if p)
+        return sample.get(field, "") or ""
 
     def __iter__(self):
         worker = get_worker_info()
