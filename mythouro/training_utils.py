@@ -608,9 +608,39 @@ class LoopCurriculum:
 # fewest tokens (20%), so raise it to ~1/3 to test whether the code weakness is
 # quantity, not difficulty. (Reversible knob; general/math drop 40→33.)
 _MIX_RATIOS = {
-    "general": 0.34,
-    "math":    0.33,
-    "code":    0.33,
+    "general": 0.27,
+    "math":    0.26,
+    "code":    0.27,
+    # MEDICAL PROMOTED FROM HARVEST-ONLY TO THE TRAINING MIX (2026-07-31).
+    #
+    # Until now `medical` sat in _DATASET_SPECS but NOT here, so MedRAG/pubmed
+    # was used only to SEED the teacher harvest. Consequence, and it is a big
+    # one for a project whose mission is medical: the student had never trained
+    # on a single real PubMed abstract. Every medical token it ever saw was
+    # Ouro's *continuation* from a PubMed seed.
+    #
+    # That shows up in the outputs. The @70,500 probe gets the register perfect
+    # and the specifics invented — the harvested corpus contains fabricated
+    # trials ("the PAWL study", n=300/n=306, pain deltas to 2dp) with dosages
+    # that are simply wrong (30-mg daily ibuprofen, 15-mg daily naproxen; real
+    # dosing is 200-400mg and 220-550mg). It also captured USMLE-style MCQ
+    # reasoning traces, so medical prompts now collapse into "A. B. C. D."
+    # option-spam at α=0.25. The model learned the SHAPE of medical text from
+    # text whose shape is right and whose content is confabulated.
+    #
+    # Raw abstracts fix all three: real dosages, real study designs, and prose
+    # rather than exam format. MedRAG/pubmed is ~2.2M rows of NLM flat-fielded
+    # abstracts — human-written, pre-LLM, none of the provenance problems that
+    # disqualified the SFT medical sources (docs/clean_sft_datasets.md).
+    #
+    # 0.20 is a starting dose, taken proportionally from the other three rather
+    # than from any one. Rationale for not going higher: we are token-starved,
+    # and medical FACTS are capacity-bound at 278M (the @64,000 verdict), so a
+    # larger share buys fluency we already have. Rationale for not going lower:
+    # the uniform-mix precedent (code 20%->33%) showed dose changes of this size
+    # are what actually move a domain. Revisit after the first probe that has
+    # seen real abstracts.
+    "medical": 0.20,
 }
 
 
@@ -619,10 +649,11 @@ _DATASET_SPECS = [
     ("general", "HuggingFaceFW/fineweb-edu",    "sample-10BT", "train", "text"),
     ("math",    "open-web-math/open-web-math",  None,          "train", "text"),
     ("code",    "codeparrot/codeparrot-clean",  None,          "train", "content"),
-    # HARVEST-ONLY seed source (added 2026-07-28). Deliberately absent from
-    # _MIX_RATIOS, so MixedDataset SKIPS it (see the `ratios.get(key, 0) <= 0`
-    # guard) and the real training mix is unchanged — it exists so the teacher
-    # corpus can be seeded on medical text via `gen_teacher_corpus --seed-mix`.
+    # Added 2026-07-28 as a HARVEST-ONLY seed source; PROMOTED to the training
+    # mix 2026-07-31 (see the "medical" entry in _MIX_RATIOS for why — in short,
+    # harvest-only meant the student had never read a real abstract, only the
+    # teacher's confabulated imitations of them). Still also serves as the
+    # `gen_teacher_corpus --seed-mix` seed source; the two uses are independent.
     # Rationale: medical is the mission domain but gets ZERO training signal
     # (@52k/@58k probes), and its only incidental tributary — fineweb-edu — was
     # cut 40%->34% by the uniform-mix change. Raw human-written abstracts have
