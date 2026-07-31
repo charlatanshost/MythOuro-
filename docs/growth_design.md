@@ -582,6 +582,42 @@ Note it cannot be tested cheaply on a model at 0% L4 — a halting signal derive
 from task loss needs a task the model can sometimes get right — so it queues
 BEHIND the corrected-data pour.
 
+### 2026-07-31 — uncertainty-argmin selects for ECHOING, not just for loop 0
+
+The P0.5 audit rejected uncertainty-argmin as MoDr's best-exit target for a
+NARROW reason: loop 0 is miscalibrated (ECE 0.17-0.22, error understated by
+~0.2), so the argmin would over-select it. The mitigation was `min_loops=2`.
+
+Measured today with `BestOfTrajectoryGenerator` on `math_eval` @70,500 — the
+first time that selector has been scored against TASK CORRECTNESS rather than
+held-out CE. With loop 0 already excluded, over 3,161 emitted tokens:
+
+  loop 1  55.8%      loop 2  42.5%      loop 3  1.7%      loops 4-7  never
+
+  vs ACT baseline:  L4 0.0% -> 0.0% | L3+ 1.2% -> 6.2% |
+                    copied 41.2% -> **50.0%** | rel_err 0.400 -> 0.400
+
+**The copy rate going UP is the finding.** Selecting the lowest-uncertainty loop
+picks the one most likely to ECHO THE PROMPT, because copying a token just seen
+is the most confident prediction a weak model can make. Argmin-over-uncertainty
+is, in effect, an echo-seeking objective. It also explains the shallow
+preference: deeper loops transform more, which raises entropy, which the
+selector reads as worse — and why loops 4-7 were never chosen even when scored.
+
+⇒ The pathology is NOT confined to loop 0, so `min_loops=2` treats a symptom.
+Confidence and correctness are different quantities at every depth, and nothing
+in training has ever tied them together.
+
+⇒ TWO INDEPENDENT SELECTORS, SAME FAILURE. ACT's cumulative-probability halt and
+the uncertainty argmin are different consumers of the same head; both settle
+shallow while answers stay wrong. That localises the defect to the SIGNAL, not
+to how it is consumed — which is exactly what per-loop CE against the teacher
+fixes, and what `tools/per_loop_calibration.py` already prints as its verdict:
+"use per-loop CE, not uncertainty-argmin, as the MoDr best-exit target."
+
+The teacher supplies correctness: run the trajectory, score each loop's loss
+against the teacher's distribution, and the lowest-loss loop IS the label.
+
 ### The dependency order for the recurrent machinery (owner's framing, 2026-07-31)
 
 The depth question is easy to ask wrongly. "Is 8 better than 4?" is answered —
