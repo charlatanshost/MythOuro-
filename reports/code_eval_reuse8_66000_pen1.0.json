@@ -1,0 +1,663 @@
+{
+  "step": 66000,
+  "temperature": 0.4,
+  "repetition_penalty": 1.0,
+  "samples": 8,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 6,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 12,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\tif a == 0:\n\t\tif a == 0:\n\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t# Find the number of possible ways to sum from 1 to 200000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "lines_dropped": 8,
+          "body_stmts": 1,
+          "completion": "\treturn (a, b)\n\tif not isinstance(a, list):\n\t\tif len(a) > 100:\n\t\tif len(a) > 100:\n\t\tif len(a) > 100:\n\t\tif len(a) > 100:\n\t\t\tif len(a) > 100:\n\t\t\t\tif len(a) > 100:\n\t\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 13,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\tif not a:\n\t\tif a == b:\n\t\t\tif a == b:\n\t\t\tif a == b:\n\t\t\tif a == b:\n\t\t\t\tif a == b:\n\t\t\t\tif a == b:\n\t\t\t\tif a == b:\n\t\t\t\tif a == b:\n\t\t\t\tif a == b:\n\t\t\t\tif a == b:\n\t\t\t\tif a == b:\n\t\t\t\tif a == b:\n\t\t\t\tif a == b:"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 9,
+          "lines_dropped": 19,
+          "body_stmts": 0,
+          "completion": "\ndef add_two(a, b):\n\ndef add_two(a, b):\n\ndef add_two(a, b):\n\ndef add_two(a, b):\n\ndef add_two(a, b):\n\ndef add_two(a, b):\n\ndef add_two(a, b):\n\ndef add_two(a, b):\n\ndef add_two(a,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 11,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\tif not a:\n\t\tif a == 0:\n\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif a == 0:\n\t\t\t\tif"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 8,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tif not is_one(a, b):\n\t\tif not is_one(a, b):\n\t\t\tif not is_one(a, b):\n\t\t\tif not is_one(a, b):\n\t\t\t\tif not is_one(a, b):\n\t\t\t\t\tif not is_one(a, b):\n\t\t\t\t\tif not is_one(a, b):\n\t\t\t\t\tif not is_one(a, b):\n\t\t\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 4,
+          "body_stmts": 0,
+          "completion": "\tif (a == b and b != b):\n\t\tif (a == b and b != b and b == b):\n\t\t\tif b == b and b == b and b == b and b == b and b == b and b == b and b == b and b == b and b == b and b == b and b == b and b == b and b == b and b == b == b and b == b and b == b and"
+        }
+      ]
+    },
+    {
+      "task": "double_it",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 5,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 8,
+          "lines_dropped": 23,
+          "body_stmts": 0,
+          "completion": "\ndef _get_n(n):\n\ndef _get_n(n):\n\ndef get_n(n):\n\ndef get_n(n):\n\ndef get_n(n):\n\ndef get_n(n):\n\ndef get_n(n):\n\ndef get_n(n):\n\ndef get_n(n):\n\ndef get_n(n):\n\ndef get_"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 3,
+          "body_stmts": 0,
+          "completion": "\n# Check if the number of times the number is greater than 1000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 13,
+          "lines_dropped": 29,
+          "body_stmts": 0,
+          "completion": "\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "lines_dropped": 3,
+          "body_stmts": 1,
+          "completion": "\treturn n * n * n + n * n + n + n * n + n + n * n + n + n * n + n + n * n + n + n * n + n + n * n + n + n * n + n + n * n + n + n + n * n + n\n\tif n == n:\n\t\tif n == n:\n\t\treturn n + n * n + n + n *"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 13,
+          "lines_dropped": 29,
+          "body_stmts": 0,
+          "completion": "\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n):\n\ndef f(n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 6,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\ndef get_num_of_elements(n):\n\ndef get_num_of_elements(n):\n\ndef get_num_of_elements(n):\n\ndef get_num_of_elements(n):\n\ndef get_num_of_elements(n):\n\ndef get_num_elements(n):\n\ndef get_num_of_elements(n):\n\ndef get_num_of"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "lines_dropped": 6,
+          "body_stmts": 0,
+          "completion": "\n# 1. The function is a function that takes a list of integers that can be represented as a list of integers.\n# 1. The function is a function that takes a list of integers that can be represented as a list of integers.\n# 1. The function is a function that takes a list of integers that is a function of the same number.\n# 1. The function is a function that takes a list of integers that is a"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 11,
+          "lines_dropped": 11,
+          "body_stmts": 1,
+          "completion": "\tif n == 1:\n\t\treturn n\n\tif n == 1:\n\t\tif n == 1:\n\t\tif n == 1:\n\t\tif n == 1:\n\t\tif n == 1:\n\t\tif n == 1:\n\t\tif n == 1:\n\t\tif n == 1:\n\t\tif n == 1:\n\t\tif n == 1:\n\t\tif n =="
+        }
+      ]
+    },
+    {
+      "task": "get_first",
+      "rung": 2,
+      "label": "L2 defines",
+      "looped": 8,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 3,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\treturn list(sorted(sorted(items))\n\tfor i in range(len(items)):\n\t\tif len(list) > len(items):\n\t\t\tif len(list) > len(list):\n\t\t\t\tif len(list) > len(list):\n\t\t\t\tprint(list)\n\t\t\tif len(list) > len(list):\n\t\t\t\tif len(list) < len(list):\n\t\t\t\tif len(list) > len"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 6,
+          "lines_dropped": 8,
+          "body_stmts": 1,
+          "completion": "\tif not isinstance(keys, list):\n\t\treturn sorted(list)\n\t\tif isinstance(keys, list):\n\t\t\tif len(keys) > 1:\n\t\t\t\tif len(keys) > 1:\n\t\t\t\tif len(keys) > 1:\n\t\t\t\tif len(keys) > 1:\n\t\t\t\tif len(keys) > 1:\n\t\t\t\tif len(keys) > 1:\n\t\t\t\tif len("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 6,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tif not isinstance(item, list):\n\t\tif len(items) > 1:\n\t\t\tif len(items) > 1:\n\t\t\t\tif len(items) > 1:\n\t\t\t\tif len(items) > 1:\n\t\t\t\tif len(items) > 1:\n\t\t\t\tif len(values) > 1:\n\t\t\t\tif len(items) > 1:\n\t\t\t\tif len(items) > 1"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 5,
+          "lines_dropped": 1,
+          "body_stmts": 5,
+          "completion": "\treturn get_first(items)\n\tif not get_first(items):\n\t\treturn get_first(items)\n\tif not get_first(items):\n\t\treturn get_first(items)\n\tif not get_first(items):\n\t\treturn get_first(items)\n\tif get_first(items):\n\t\treturn get_first(items)\n\tif get_first(items) and get_first"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 3,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tif not isinstance(list, dict):\n\t\tif isinstance(list, dict):\n\t\tif not isinstance(list, dict):\n\t\tif not isinstance(list, dict):\n\t\tif isinstance(list, dict):\n\t\tif isinstance(list, dict):\n\t\tif list[0] == list[0][0]:\n\t\tif not isinstance(list[0][0], list[0][0]):\n\t\tif isinstance(list, dict"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 5,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\tif len(all_list) > 1:\n\t\tif len(all_list) > 1:\n\t\t\tif len(all_list) > 1:\n\t\t\t\tif len(all_list) == 1:\n\t\t\t\tif len(all_list) == 0:\n\t\t\t\tif len(all_list) > 1:\n\t\t\t\tif len(all_list) > 1:\n\t\t\t\tif len(all"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 4,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tif len(list) > 0:\n\t\t# check if the list is valid\n\t\tif len(list) > 1:\n\t\t\tfor i in range(len(list)):\n\t\t\tif len(list) > 1:\n\t\t\t\tif len(list) > 1:\n\t\t\t\tif len(list) > 1:\n\t\t\t\tif len(list) > 2:\n\t\t\t\tif len(list) > 2:"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 16,
+          "lines_dropped": 18,
+          "body_stmts": 0,
+          "completion": "\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t\tif not all:\n\t"
+        }
+      ]
+    },
+    {
+      "task": "sum_list",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 4,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\tprint(f\"{0} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 8,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tif len(list) == 0:\n\t\tif len(list) == 0:\n\t\tif len(list) == 0:\n\t\tif len(list) == 0:\n\t\tif len(list) == 0:\n\t\tif len(list) == 0:\n\t\tif len(list) == 0:\n\t\tif len(list) == 0:\n\t\tif len(list) == "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 5,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\tfor i in range(len_list):\n\t\tif not list_list[i]:\n\t\t\tif len_list[i] == 0:\n\t\t\tif len_list[i] == 0:\n\t\t\tif len_list[i] == 0:\n\t\t\tif len_list[i] == 0:\n\t\t\tif len_list[i] == 0:\n\t\t\tif len_list[i] == "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\tnumbers = [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ [ ["
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 4,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tif len(list) != 1:\n\t\tfor i in range(0, len(list)):\n\t\tif len(list) != 1:\n\t\t\tif len(list) != 1:\n\t\t\t\tif len(list) == 1:\n\t\t\t\tif len(list) == 1:\n\t\t\t\tif len(list) == 1:\n\t\t\t\tif len(list) != 1:\n\t\t\t\tif len(list)"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "lines_dropped": 6,
+          "body_stmts": 0,
+          "completion": "\tfor i in range(len(nums)):\n\t\tif len(nums) > len(nums):\n\t\tfor i in range(len(len(nums)):\n\t\t\tfor i in range(len(len(nums)):\n\t\t\t\tif len(num) == len(len(len(len(len(len(len(len(len(len(len(len(len(len(len(len(len(len(len(len("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 3,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tresult = list(sorted(sorted(nums))\n\tif len(list) > len(list) and len(list) > len(list):\n\t\tif len(list) > len(list):\n\t\t\tif len(list) > len(list):\n\t\t\t# print(list)\n\t\t\t# print(list)\n\t\t\t# print(list)\n\t\t\tfor i in range(len(list)):\n\t\t\tif len(list)"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 3,
+          "body_stmts": 0,
+          "completion": "\tfor i in range(len, len):\n\t\tif len > 10000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "task": "count_items",
+      "rung": 2,
+      "label": "L2 defines",
+      "looped": 5,
+      "samples": [
+        {
+          "rung": 2,
+          "max_line_repeat": 3,
+          "lines_dropped": 9,
+          "body_stmts": 1,
+          "completion": "\treturn sorted(list, list(items))\n\tfor i in range(len(items)):\n\t\tif len(items) > 0:\n\t\t\tif len(items) == 0:\n\t\t\tif len(items) == 0:\n\t\t\tprint(sorted(items))\n\t\t\tif len(items) == 0:\n\t\t\t\tprint(items)\n\t\t\tfor i in range(len(items)):\n\t\t\t\tif len(items"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 9,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\tfor i in range(len_items):\n\t\tif len_items(items):\n\t\t\tif len_items(items):\n\t\t\t\tif len_items(items):\n\t\t\t\tif len_items(items):\n\t\t\t\tif len_items(items):\n\t\t\t\tif len_items(items):\n\t\t\t\tif len_items(items):\n\t\t\t\tif len_items(items):\n\t\t\t\tif len_items(items):\n\t\t\t\tif len_"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 3,
+          "body_stmts": 0,
+          "completion": "\tfor item in sorted(sorted(items)):\n\t\tfor item in range(1, 1000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 8,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tif len(items) > len(items):\n\t\tif len(items) > len(items):\n\t\tif len(items) > len(items):\n\t\tif len(items) > len(items):\n\t\tif len(items) > len(items):\n\t\tif len(items) > len(items):\n\t\tif len(items) > len(items):\n\t\tif len(items) > len(items):\n\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\tfor each_item in sorted(list_list):\n\t\tfor each_item in sorted_item.items():\n\t\t\tfor each_item in sorted_item.items():\n\t\t\t\tif len(list_list) > 0:\n\t\t\t\tif len(list_list) > 0:\n\t\t\t\tif len(list_list) > 1:\n\t\t\t\tif len(list_list) > 1:\n\t\t\t\tif len(list"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\tif len(items) > 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 8,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tif len(items) == 0:\n\t\tif len(items) == 0:\n\t\t\tif len(items) == 0:\n\t\t\tif len(items) == 0:\n\t\t\tif len(items) == 0:\n\t\t\tif len(items) == 0:\n\t\t\tif len(items) == 0:\n\t\t\tif len(items) == 0:\n\t\t\t\tif len(items) == "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 6,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\tif len(items) > 1:\n\t\tif len(items) > 1:\n\t\t\tif len(items) > 1:\n\t\t\t\tif len(items) > 1:\n\t\t\t\tif len(items) > 1:\n\t\t\t\tif len(items) > 1:\n\t\t\t\tprint(f\"{len(items)} {number} {len(items)} {number} {number} {len(items)} {number"
+        }
+      ]
+    },
+    {
+      "task": "is_even",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 6,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 11,
+          "lines_dropped": 23,
+          "body_stmts": 0,
+          "completion": "\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 11,
+          "lines_dropped": 23,
+          "body_stmts": 0,
+          "completion": "\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 11,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\tif n > 1:\n\t\tif n < 1:\n\t\t\tif n < 1:\n\t\t\t\tif n < 1:\n\t\t\t\tif n < 1:\n\t\t\t\tif n < 1:\n\t\t\t\tif n < 1:\n\t\t\t\tif n < 1:\n\t\t\t\tif n < 1:\n\t\t\t\tif n < 1:\n\t\t\t\tif n < 1:\n\t\t\t\tif n < 1:\n\t\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 11,
+          "lines_dropped": 23,
+          "body_stmts": 0,
+          "completion": "\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even(n):\n\ndef is_even("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 3,
+          "body_stmts": 0,
+          "completion": "\tif n == 0:\n\t\tif n < 10000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 12,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\tif n > 0:\n\t\tif n > 0:\n\t\t\tif n > 0:\n\t\t\t\tif n > 0:\n\t\t\t\tif n > 0:\n\t\t\t\tif n > 0:\n\t\t\t\tif n > 0:\n\t\t\t\tif n > 0:\n\t\t\t\tif n > 0:\n\t\t\t\tif n > 0:\n\t\t\t\tif n > 0:\n\t\t\t\tif n > 0:\n\t\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\tif n < 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 7,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\tif n == 0:\n\t\tif n < 100:\n\t\t\tif n < 100:\n\t\t\tif n < 100:\n\t\t\t\tif n < 100:\n\t\t\t\tif n > 100:\n\t\t\t\tif n < 100:\n\t\t\t\tif n < 100:\n\t\t\t\tif n < 100:\n\t\t\t\tif n < 100"
+        }
+      ]
+    },
+    {
+      "task": "reverse_string",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 6,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 3,
+          "body_stmts": 0,
+          "completion": "\t# Make sure the characters are not in the same position (i.e., in the first case)\n\t# Use the same number of characters in the first 1000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 19,
+          "lines_dropped": 18,
+          "body_stmts": 2,
+          "completion": "\ts = []\n\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\ts = []\n\t\t"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 12,
+          "lines_dropped": 0,
+          "body_stmts": 12,
+          "completion": "\ts = s.split()\n\ts = s.split()\n\ts = s.split()\n\ts = s.split()\n\ts = s.split()\n\ts = s.split()\n\ts = s.split()\n\ts = s.split()\n\ts = s.split()\n\ts = s.split()\n\ts = s.split()\n\ts = s.split()\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 7,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\tif s:\n\t\tif s:\n\t\tif s:\n\t\t\ts = s.split(' ')\n\t\tif s:\n\t\t\tif s:\n\t\t\tif s:\n\t\t\ts = s.split(' ')\n\t\tif s:\n\t\t\ts = s.split(' ')[1]\n\t\ts = s.split(' ')[1]\n\t\ts = s.split(' ')[1]\n\t\ts = s.split('"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 7,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tif len(s) == 0:\n\t\tif len(s) == 10:\n\t\tif len(s) == 0:\n\t\t\tif len(s) == 0:\n\t\t\tif len(s) == 0:\n\t\t\tif len(s) == 0:\n\t\t\tif len(s) == 0:\n\t\t\tif len(s) == 0:\n\t\t\tif len(s) =="
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 3,
+          "body_stmts": 0,
+          "completion": "\tif not s.is_string(s):\n\t\tif s.is_string(s.is_string(s.is_string(s.is_string(s.is_string(s.is_string(s.is_string(s.is_string(s.is_string(s.is_string(s.is_string(s.is_string(s.is_string(s.is_"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "lines_dropped": 5,
+          "body_stmts": 3,
+          "completion": "\treturn str(s)\n\tif len(s) > 0:\n\t\treturn str(s)\n\tif len(s) > 0:\n\t\treturn str(s)\n\tif len(s) > 0:\n\t\tif len(s) > 0:\n\t\tif len(s) > 0:\n\t\tif len(s) > 0:\n\t\treturn str(s) > 0"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 7,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tfor i in range(1,n):\n\t\tif s[0] == 'n':\n\t\tif s[0] == 'n':\n\t\tif s[0] == 'n':\n\t\tif s[0] == 'n':\n\t\tif s[0] == 'n':\n\t\t\tif s[0] == 'n':\n\t\t\tif s[0] == 'n':\n\t\t\tif s[0] == '"
+        }
+      ]
+    },
+    {
+      "task": "max_of_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 5,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 4,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\tif not is_one_in_list(a, b):\n\t\tif not is_one_in_list(a, b):\n\t\t\tif not is_one_in_list(a, a):\n\t\t\tif not is_one_in_list(a):\n\t\t\tif not is_one_in_list(a, b):\n\t\t\tif not is_one_in_list(a, b):\n\t\t\tif"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 8,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\ndef max_of_two(a, b):\n\ndef max_of_two(a, b):\n\ndef max_of_two(a, b):\n\ndef max_of_two(a, b):\n\ndef max_of_two(a, b):\n\ndef max_of_two(a, b):\n\ndef max_of_two(a, b):\n\ndef max_of"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 9,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\tfor each in range(1, a):\n\t\tif sum(a) > 1:\n\t\t\tif a > 1:\n\t\t\t\tif a > 1:\n\t\t\t\tif a > 1:\n\t\t\t\tif a > 1:\n\t\t\t\tif a > 1:\n\t\t\t\tif a > 1:\n\t\t\t\tif a > 1:\n\t\t\t\tif a > 1:\n\t\t\t\tif a > 1:\n\t\t\t\tif"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\tif a == 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\tif not a.count > max_of_two(a.num) and a.max_of_two(a.num) > max_of_two(a.max_of_two(a.max_two(a.num)) > max_of_two(a.max_of_two(a.max_two(a.num)) > max_of_two(a.max_of_two(a"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\tif not a == 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 5,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\ndef max_of_one(a, b):\n\ndef max_of_one(a, b):\n\ndef max_of_one(a):\n\ndef max_of_one(a, b):\n\ndef max_of_one(a, b):\n\ndef max_of_one(a, b):\n\ndef max_of_one(a):\n\ndef max_of_one(a"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 8,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\tif maxof_two(a, b):\n\t\tif maxof_two(a, b):\n\t\t\tif maxof_two(a, b):\n\t\t\tif maxof_two(a, b):\n\t\t\tif maxof_two(a, b):\n\t\t\tif maxof_two(a, b):\n\t\t\tif maxof_two(a, b):\n\t\t\tif maxof_two(a, b):\n\t\t\t"
+        }
+      ]
+    },
+    {
+      "task": "fibonacci",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 3,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 10,
+          "lines_dropped": 23,
+          "body_stmts": 0,
+          "completion": "\ndef f_def(n):\n\ndef f_def(n):\n\ndef f_def(n):\n\ndef f_def(n):\n\ndef f_def(n):\n\ndef f_def(n):\n\ndef f_def(n):\n\ndef f_def(n):\n\ndef f_def(n):\n\ndef f_def(n):\n\ndef f_def("
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tif n > 20:\n\t\tif n > 10:\n\t\t\treturn 100000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 5,
+          "body_stmts": 0,
+          "completion": "\ndef sum_sum_sum_sum(n):\n\ndef sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum_sum"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\tif n > 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\tif n == 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 10,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\tif n == 0:\n\t\t# \t\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\tif n =="
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 3,
+          "body_stmts": 0,
+          "completion": "\tif n == 0:\n\t\t# We need to find the smallest number in the range 0.0000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 16,
+          "lines_dropped": 0,
+          "body_stmts": 16,
+          "completion": "\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n"
+        }
+      ]
+    },
+    {
+      "task": "is_prime",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 7,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 13,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\tif not n:\n\t\tif n == n:\n\t\tif n == n:\n\t\t\tif n == n:\n\t\t\tif n == n:\n\t\t\tif n == n:\n\t\t\t\tif n == n:\n\t\t\t\tif n == n:\n\t\t\t\tif n == n:\n\t\t\t\tif n == n:\n\t\t\t\tif n == n:\n\t\t\t\tif n == n:\n\t\t\t\tif n == n:\n\t\t\t\tif n == n:"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 12,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\tif n == 0:\n\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 12,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 12,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 3,
+          "body_stmts": 0,
+          "completion": "\tif n == 0:\n\t\tn = 0.001 * n * n + 1.001 * n * n * n + 1.001 * n + 1.001 * n + 1.001 * n + 1.001 * n + 1.001 * n + 1.001 * n + 1.001 *"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 11,
+          "lines_dropped": 23,
+          "body_stmts": 0,
+          "completion": "\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 12,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\tif n == 0:\n\t\tif n == 0:\n\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t\tif n == 0:\n\t\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 11,
+          "lines_dropped": 23,
+          "body_stmts": 0,
+          "completion": "\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime(n):\n\ndef is_prime("
+        }
+      ]
+    }
+  ],
+  "reached": {
+    "L1+": 6,
+    "L2+": 6,
+    "L3+": 4,
+    "L4+": 0
+  },
+  "diagnostics": {
+    "samples_total": 80,
+    "looped": 55,
+    "looped_frac": 0.688,
+    "median_max_line_repeat": 6,
+    "l3_samples": 7,
+    "l3_looped": 5,
+    "l3_looped_frac": 0.714
+  }
+}

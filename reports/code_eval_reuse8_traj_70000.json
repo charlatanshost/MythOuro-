@@ -1,0 +1,663 @@
+{
+  "step": 70000,
+  "temperature": 0.4,
+  "repetition_penalty": 1.0,
+  "samples": 8,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 3,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn (a + b + 2) + (a + b + 2) - a + b + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 +"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn a\n\t# This is the first step.\n\t# The first part of the problem is to find the maximum number of possible values of the first and second elements.\n\t# The first element is the first element, so we need to add the first 1000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn a + b + 2 * a + b + 2 * a + b + 2 * a + b + 2 * a + b + 2 * a + 2 * a + b + 2 * a + 2 * a + b + 2 * b + 2 * a + 2 * a + b + 2 * a + 2 * a + b + 2 * a + b + 2"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn a + 2 + 2 + 2 * a + 2 + 2 * a + 2 * a + 2 * a + 2 * a + 2 * a + 2 * a + 2 * a + 2 * a + 2 * a + 2 * a + 2 * a + 2 * a + 2 * a + 2 * a + 2 * a + 2 *"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tif not (a < 2):\n\t\treturn 10000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 6,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\t# Make a list of the same number as the first one\n\t# \tif the first three are not equal to the first \n\t\t# \tif the first \n\t\t# \tif the first \n\t\t# \tif the last \n\t\t# \tif the second \n\t\t# \tif the \n\t\t# \n\t\t# \n\t\t# \n\t\t# \n\t\t# \n\t\t#"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 4,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tif not a:\n\t\treturn 0\n\t# if the input is not a valid string, return the string as a string\n\t# return the string if it's a string, return the string as a string, then return the string as a string\n\t# return the string as a string\n\t# return the string as a string\n\t# return the string as a string\n\t# return the string as a string\n\t# return the string"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 7,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn a\n\t# print(a, b)\n\t# print(a, b)\n\t# print(a)\n\t# print(a, b)\n\t# print(a, b)\n\t# print(a, b)\n\t# print(a, a)\n\t# print(a, b)\n\t# print(a, b)\n\t# print(a)\n\t# print(a,"
+        }
+      ]
+    },
+    {
+      "task": "double_it",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 3,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t# 200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\t# This is a very simple way to get the nth number.\n\t# The first step is to find the number of the first 20000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0\n\t# 1.2.2.2.2.1.1.3.1.2.0.1.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0."
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tif n < 0:\n\t\tif n < 1:\n\t\t\treturn 0\n\t\tif n < 0:\n\t\t\treturn 0\n\t\t# 10000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 8,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\ndef invert_it(n):\n\treturn n\n\ndef get_max(n):\n\treturn n\n\ndef get_max(n):\n\treturn n\n\ndef get_max(n):\n\treturn n\n\ndef get_max(n):\n\treturn n\n\ndef get_max(n):\n\treturn n\n\ndef get_max(n):\n\treturn n\n\n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 16,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tif n < 2:\n\t\treturn 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# 2\n\t# "
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\t# To avoid the problem with a single number of iterations, we can use the following:\n\t# The code is not the same as the previous one.\n\t# The code is not a function, but the code is not a function.\n\t# The code is not a function, but it is not a function.\n\t# The code is not a function.\n\t# The code is not a function.\n\t# The"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 8,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\ndef n_s(n):\n\treturn n\n\ndef n_s(n):\n\treturn n\n\ndef n_s(n):\n\tif n > 0:\n\t\treturn n\n\treturn n\n\ndef n_s(n):\n\treturn n\n\ndef n_s(n):\n\treturn n\n\ndef n_s(n):\n\treturn n\n\ndef"
+        }
+      ]
+    },
+    {
+      "task": "get_first",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 6,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 7,
+          "lines_dropped": 22,
+          "body_stmts": 2,
+          "completion": "\treturn\n\treturn\n\n\tdef get_value(self):\n\treturn self.value\n\n\treturn\n\tdef get_value(self):\n\treturn self.value\n\n\treturn self.value\n\n\ndef get_value(self):\n\treturn self.value\n\n\tdef get_value(self):\n\treturn self.value\n\n\tdef get_value(self):\n\treturn self.value\n\n\treturn self.value\n\n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 4,
+          "lines_dropped": 5,
+          "body_stmts": 1,
+          "completion": "\treturn (len(items) - len(items))\n\treturn (len(items)) - len(items) - len(items))\n\treturn (len(items)) - len(items) - len(items))\n\treturn (len(items)) - len(items) - len(items))\n\treturn (len(items)) - len(items) - len(items))\n\treturn (len(items)) - len(items"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 5,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\t# Get the first element in the list of the first element in the list\n\t# Get the first element in the list of the first element in the list\n\t# Get the first element in the list\n\t# Get the first element in the list\n\t# Get the first element in the list\n\t# Get the last element in the list\n\t# Get the first element in the list\n\t# Get the first element in the list\n\t#"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 5,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn list(list(items))\n\ndef get_all_items():\n\treturn list(list(items))\n\ndef get_all_items():\n\treturn list(list(items))\n\ndef get_all_items():\n\treturn list(list(items))\n\ndef get_all_items():\n\treturn list(list(items))\n\ndef get_all_items():\n\treturn list(items)"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 3,
+          "lines_dropped": 1,
+          "body_stmts": 3,
+          "completion": "\treturn list_set(list_first)\n\treturn list_first(list_first)\n\treturn list_first(list_first)\n\ndef get_last(self):\n\treturn self.get_last()\n\ndef get_last(self):\n\treturn self.get_last(self)\n\ndef get_last(self):\n\treturn self.get_last(self)\n\ndef get_last"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 3,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn sorted(list(list(list(items))).split())\n\ndef get_first(item):\n\treturn list(list(list(list(items))).split())\n\ndef get_first(item):\n\treturn list(list(list(list(items))).split())\n\ndef get_first(item):\n\treturn list(list(list(list(items))).split())\n\ndef get_first"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 2,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn list(sorted(list))\n\ndef get_total_items(self):\n\t\"\"\"\n\tReturns the number of the given list.\n\t\"\"\"\n\treturn self.get_list_of_items(list)\n\t# return the list of the list\n\t# return the list of the list of the list of list of list\n\t# return the list of the list of list of list of list\n\t# return the list"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn list_to_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_of_list_"
+        }
+      ]
+    },
+    {
+      "task": "sum_list",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 8,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 5,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\t# Get the total number of unique elements in the list\n\t# Get the number of unique elements in the list\n\t# Get the number of unique elements in the list\n\t# Get the number of unique elements in the list\n\t# Get the number of unique elements in the list\n\t# Get the number of elements in the list\n\t# Get the number of elements in the list\n\t# Get the number of unique elements in the list\n\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 3,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\t# Remove the first element in the list\n\t# The first element in the list is the first element in the list.\n\t# The second element in the list is the first element in the list.\n\t# The first element in the list is the first element in the list.\n\t# The first element in the list is the first element in the list.\n\t# The second element in the list is the first element in the list.\n\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 9,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\t# print(list_list)\n\t# print(list_list)\n\t# print(list_list)\n\t# print(list_list)\n\t# print(list_list)\n\t# print(list_list)\n\t# print(len(list_list))\n\t# print(list_list)\n\t# print(list_list)\n\t# print(list_list)\n\t# print("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 9,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\t# print(list_list)\n\t# print(len(nums))\n\t# print(list_list)\n\t# print(list_list)\n\t# print(list_list)\n\t# print(list_list)\n\t# print(list_list)\n\t# print(list_list)\n\t# print(list_list)\n\t# print(list_list)\n\t# print(list_"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 12,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\t# print(len(list))\n\t# print(list)\n\t# print(list)\n\t# print(list)\n\t# print(list)\n\t# print(list)\n\t# print(list)\n\t# print(list)\n\t# print(list)\n\t# print(list)\n\t# print(list)\n\t# print(list)\n\t# print(list)\n\t# print"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 3,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\tfor i in range(len(nums)):\n\t\tfor i in range(len(len(nums)):\n\t\t\tfor i in range(len(nums)):\n\t\t\tfor i in range(len(len(nums)):\n\t\t\t\tfor i in range(len(len(nums)):\n\t\t\t\t\tif i == 0:\n\t\t\t\t\tif i == 0:\n\t\t\t\t\tif i == 0:\n\t\t\t\t\t# print(len(nums))\n\t\t\t\t#"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 3,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\tfor i in range(len(nums)):\n\t\tfor i in range(len(len(nums)):\n\t\t\tfor i in range(len(nums)):\n\t\t\t\tfor i in range(len(len(nums)):\n\t\t\t\tif i in range(len(len(nums)):\n\t\t\t\tfor i in range(len(nums)):\n\t\t\t\tif i == 0:\n\t\t\t\tif i == 0:\n\t\t\t\tif i != 0:\n\t\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 7,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\tfor i in range(len(nums)):\n\t\tfor i in range(len(nums)):\n\t\tif i == 0:\n\t\t\t# print(len(nums))\n\t\t\t# print(len(nums))\n\t\t\t# print(len(nums))\n\t\t\t# print(len(nums))\n\t\t\t# print(len(nums))\n\t\t\t# print(len(nums))\n\t\t\t# print(len(nums))\n\t\t\t# print"
+        }
+      ]
+    },
+    {
+      "task": "count_items",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 6,
+      "samples": [
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_list_"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "lines_dropped": 0,
+          "body_stmts": 5,
+          "completion": "\treturn list(items)\n\treturn list(items)\n\treturn list(items)\n\treturn list(items)\n\treturn list(items)\n\ndef get_all_items(self):\n\t\"\"\"\n\tReturn the list of the list of items that are in the list.\n\t\"\"\"\n\treturn list(items)\n\t# Get the list of the list of items\n\t# Get the list of items\n\t#"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 5,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"\n\tThis is a list of dictionaries.\n\tThe first one is the list of dictionaries.\n\tThe first two keys are the key to the list, so the first 100000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 4,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\t\"\"\"\n\tReturns the list of the given items in the list\n\tReturns the list of the given items in the list.\n\tReturns the list of the given items in the list.\n\tReturns the list of the given items in the list.\n\tReturns the list of the given items in the list.\n\t\"\"\"\n\t# Get the list of the items in the list.\n\t# Get the list of the list of items in the list"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 5,
+          "lines_dropped": 0,
+          "body_stmts": 3,
+          "completion": "\treturn list(items)\n\treturn list(items)\n\treturn list(items)\n\n# 1. Update the list of keys\n\t# 2. Update the list of keys\n\t# 2. Update the list of keys\n\t# 2. Update the list of keys\n\t# 2. Update the list of keys\n\t# 2. Update the list of keys\n\t# 2. Update the list of"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 6,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\t# print(len(items))\n\t# print(items[0])\n\t# print(len(items))\n\t# print(items[0])\n\t# print(len(items))\n\t# print(items[0])\n\t# print(sorted_items)\n\t# print(items[0])\n\t# print(items[0])\n\t# print(items[0])\n\t# print(items["
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 7,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\t# Get the list of all the items in the list\n\t# Get the list of all the items in the list\n\t# Get the list of all the items in the list\n\t# Get the list of all the items in the list\n\t# Get the list of all the items in the list\n\t# Get the list of all the items in the list\n\t# Get the list of all the items in the list\n\t# Get the list"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 6,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\t# Get the list of all the unique keys that are not in the list\n\t# Get the list of all the items in the list\n\t# Get the list of all the items in the list\n\t# Get the list of all the items in the list\n\t# Get the list of all the items in the list\n\t# Get the list of all the items in the list\n\t# Get the list of all the items in the list\n\t"
+        }
+      ]
+    },
+    {
+      "task": "is_even",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 3,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "lines_dropped": 1,
+          "body_stmts": 2,
+          "completion": "\treturn (1 + n) * n\n\treturn (1 + n) * n\n\ndef is_n(n):\n\treturn (n)\n\treturn (n)\n\ndef is_n(n):\n\treturn (n)\n\ndef is_n(n):\n\treturn (n)\n\ndef is_n(n):\n\treturn (n)\n\treturn (n)\n\ndef is_"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 9,
+          "lines_dropped": 1,
+          "body_stmts": 6,
+          "completion": "\tif not is_even(n):\n\t\treturn False\n\tif not is_even(n):\n\t\treturn False\n\treturn False\n\tif not is_even(n):\n\t\treturn False\n\treturn False\n\treturn False\n\ndef is_even(n):\n\treturn False\n\ndef is_even(n):\n\treturn False\n\ndef is_even(n):\n\treturn False\n\ndef is"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\t# Check if the number is divisible by the number of the given number\n\t# Check if there's an integer greater than 20000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\t# if the number is not divisible by the number of the first element, then the number is not divisible by the number of the first element, but the number is not divisible by the number of the number of the number of the number of the number of the number of the number of the number of the number of the number of the number of the number of the number of the number of the number of the number of the number of the number of the"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 10,
+          "lines_dropped": 3,
+          "body_stmts": 7,
+          "completion": "\tif not is_even(n):\n\t\treturn False\n\tif not is_even(n):\n\t\treturn False\n\treturn False\n\tif not is_even(n):\n\t\treturn False\n\treturn False\n\treturn False\n\treturn False\n\ndef is_even(n):\n\t\treturn False\n\treturn False\n\treturn False\n\t# 1.2.2.1.0.5.1."
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tif n == 0:\n\t\treturn 0\n\t# Remove the last 20000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\t# This is a function that takes a list of integers and a list of integers, and returns the number of the first and second element of the list.\n\t# The function is called with the function `f` and the function `f` with the `f` and the `f` and the `f` and `f` and the `f` and `f` and `f`\n\t# The function is called with the"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 2,
+          "lines_dropped": 0,
+          "body_stmts": 2,
+          "completion": "\tif not is_even(n):\n\t\treturn False\n\tif not is_even(n):\n\t\treturn False\n\t# Check if the number of elements is equal to the number of elements in the number of elements in the list, but not the number of elements in the list.\n\t\t# For the first case, the first element is the number of elements in the first \n\t\t# number of elements in the number of elements in the list"
+        }
+      ]
+    },
+    {
+      "task": "reverse_string",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 2,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "lines_dropped": 6,
+          "body_stmts": 0,
+          "completion": "\t# Remove the entire string and remove the last character of the string\n\t# If the first character of the string is not a valid string, return the first character of the string\n\t# If the first character of the string is not a string, then return the first character of the string.\n\t# If the first character of the string is not a string, then return the first character of the string.\n\t# If the first character of the string is"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn s.replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \").replace(\"\", \" \", \"\").replace"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "lines_dropped": 1,
+          "body_stmts": 4,
+          "completion": "\treturn s.strip()\n\treturn s.strip()\n\treturn s.strip()\n\treturn s\n\ndef print_string(s):\n\treturn s\n\ndef print_string(s):\n\treturn s\n\ndef print_string(s):\n\treturn s\n\ndef print_string(s):\n\treturn s\n\ndef print_string(s):\n\treturn s\n\ndef print_string("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\t# Remove the string and remove the string and remove the string\n\t# If the string is not a string, then the string is not a string, and the string is not a string, and the string is not a string.\n\t# Return the string.\n\t# The string is not a string.\n\t# The string is not a string, but the string is not a string.\n\t# The string is not a string.\n\t#"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 6,
+          "body_stmts": 0,
+          "completion": "\t# Remove the string and the string to be the same as the string itself.\n\t# Remove the string and the string to be the same as the string to be the same as the string.\n\t# For example, if the string is not a string, then the string is not a string, and the string is not a string.\n\t# If the string is not a string, then the string is not a string.\n\t# The string is"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\t# Convert to the string of the string.\n\tif len(s) > 0:\n\t\treturn \"\"\n\t# Get the string of the string.\n\t# Convert to the string.\n\t# Remove the string.\n\t# Remove the string of the string.\n\t# This is the case where the string is not a string.\n\t# The input is not a string.\n\t# The input is not a string.\n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tif not s:\n\t\treturn s\n\n\t# Remove all the possible characters in the string.\n\t# If the string is not a string, then return the string.\n\t# If the string is not empty, return the string.\n\t# If the string is not a string, print the string as a string.\n\t# If the string is not a string, then return the string as a string.\n\t# If the string is not"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 3,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\t# Convert the string to a string that is not a string\n\t# Convert the string to a string that is not a string\n\t# The string is not a string, but it's a string that is not a string.\n\t# The string can be a string, but it's not a string.\n\t# The string is not a string.\n\t# The string is not a string.\n\t# The string is not a string.\n"
+        }
+      ]
+    },
+    {
+      "task": "max_of_two",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 6,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 7,
+          "body_stmts": 0,
+          "completion": "\t# The value of the first element is the first element of the first element.\n\t# The first element is the first element of the first element.\n\t# The first element is the second element.\n\t# The second element of the first element is the first element of the second element.\n\t# The second element of the first element is the first element.\n\t# The second element of the first element of the first element is the first element of"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 12,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tdef __init__(self, n, n):\n\t\tself.n = n\n\t\tself.n = n\n\t\tself.n = n\n\t\tself.n = n\n\t\tself.n = n\n\t\tself.n = n\n\t\tself.n = n\n\t\tself.n = n\n\t\tself.n = n\n\t\tself.n = n\n\t\tself.n = n\n\t\tself.n = n\n\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 10,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"\n\tA: 2000\n\tA: 2000\n\tA: 2000\n\tA: 2000\n\tA: 2000\n\tA: 2000\n\tA: 2000\n\tA: 2000\n\tA: 2000\n\tA: 2000\n\tA:"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 12,
+          "lines_dropped": 0,
+          "body_stmts": 12,
+          "completion": "\treturn (a, b)\n\treturn (a, b)\n\treturn (a, b)\n\treturn (a, b)\n\treturn (a, b)\n\treturn (a, b)\n\treturn (a, b)\n\treturn (a, b)\n\treturn (a, b)\n\treturn (a, b)\n\treturn (a, b)\n\treturn (a, b)\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 3,
+          "lines_dropped": 6,
+          "body_stmts": 0,
+          "completion": "\t# Remove the non-empty list, which is not a list of the same as the first one.\n\t# If the first element is not a list, then it's a list of the first element.\n\t# If the first element is not a list, then it's a list of the first element.\n\t# If the first element is not a list, then it's a list of the first element.\n\t# If the first element is"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tif not a:\n\t\treturn 0\n\t#\t\tif not a:\n\t\treturn 0\n\t\t#\t\tif a == 0:\n\t\t#\t\tif a == 0:\n\t\t#\t\treturn 0\n\t\t#\t\treturn 0\n\t\t#\t\tif a == 0:\n\t\t#\t\treturn 0\n\t\t#\t\tif a == 0\n\t\t#\t\t"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 10,
+          "lines_dropped": 0,
+          "body_stmts": 8,
+          "completion": "\treturn a + a + b\n\treturn a + b\n\treturn a + b\n\treturn a + b\n\treturn a + b\n\treturn a + b\n\treturn a + b\n\treturn a + b\n\ndef get_single_row(a, b):\n\treturn a + b\n\treturn a + b\n\ndef get_single_row(a, b):\n\treturn a + b\n\treturn"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn (a * a) + a * a * a * a * a * a * a * a + b * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a * a *"
+        }
+      ]
+    },
+    {
+      "task": "fibonacci",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 7,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 13,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 5,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn (n)\n\ndef get_num_of_n(n):\n\treturn (n)\n\ndef get_num_of_n(n):\n\treturn (n)\n\ndef get_num_of_n(n):\n\treturn (n)\n\ndef get_num_of_n(n):\n\treturn (n)\n\ndef get_num_of_n(n):\n\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t# Print the number of decimal numbers in the first 200000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 9,
+          "lines_dropped": 0,
+          "body_stmts": 2,
+          "completion": "\t\"\"\"\n\tReturns the number of the given number.\n\t\"\"\"\n\treturn (1 - n)\n\t# 1 - n\n\t# 2 - n\n\t# 2 - n\n\t# 2 - n\n\t# 2 - n\n\t# 2 - n\n\t# 2 - n\n\t# 2 - n\n\t# 2 - n\n\t# 2 - n\n\t#"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 13,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\n# print(n)\n# print(n)\n\n# print(n)\n\n# print(n)\n# print(n)\n# print(n)\n\n# print("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 13,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n)\n\t# print(n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 31,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\t#\n\t#\n\t#\n\t#\n\t#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#\n\n#"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 12,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0\n\n# Test the function\n# Test the function\n# print(int(n))\n# print(n)\n# print(n)\n# print(n)\n# print(n)\n# print(n)\n# print(n)\n# print(n)\n# print(n)\n# print(n)\n# print(n)\n# print(n)\n# print(n)\n"
+        }
+      ]
+    },
+    {
+      "task": "is_prime",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 5,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 7,
+          "lines_dropped": 21,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\tif n == 0:\n\treturn 0\n\treturn n\n\ndef is_n(n):\n\treturn n\n\ndef is_n(n):\n\treturn n\n\ndef is_n(n):\n\treturn n\n\ndef is_n(n):\n\treturn n\n\ndef is_n(n):\n\treturn n\n\ndef is_n(n):\n\t"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 11,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tdef __init__(self):\n\t\tself.n = 0\n\t\tself.n = 0\n\t\tself.n = 0\n\t\tself.n = 0\n\t\tself.n = 0\n\t\tself.n = 0\n\t\tself.n = 0\n\t\tself.n = 0\n\t\tself.n = 0\n\t\tself.n = 0\n\t\tself.n = 0\n\t"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 8,
+          "lines_dropped": 15,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\tdef is_prime(n):\n\treturn n\n\tdef is_prime(n):\n\treturn n\n\tdef is_prime(n):\n\treturn n\n\tdef is_prime(n):\n\treturn n\n\tdef is_prime(n):\n\treturn n\n\tdef is_prime(n):\n\treturn n\n\tdef is_prime(n):\n\treturn n\n\t"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 11,
+          "lines_dropped": 1,
+          "body_stmts": 4,
+          "completion": "\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\ndef is_prime(n):\n\treturn (n)\n\treturn (n)\n\ndef is_prime(n):\n\treturn (n)\n\ndef is_prime(n):\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\treturn (n)\n\tdef is"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn (0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 10,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\t# A = 1000\n\t# 1000\n\t# 1000\n\t# 1000\n\t# 1000\n\t# 1000\n\t# 1000\n\t# 1000\n\t# 1000\n\t# 1000\n\t# 1000\n\t#"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tn = n\n\t# If it is not a valid, then we can use the same number of digits to get the number.\n\t# We can use the same number as the number of digits in the number.\n\t# We can use the same number as the number of digits in the number.\n\t# The number of digits in the number is the number of digits in the number.\n\t# The number of digits is the number of the number"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "lines_dropped": 10,
+          "body_stmts": 1,
+          "completion": "\treturn n\n\tfor i in range(n):\n\tif i < n:\n\t\treturn n\n\tif n < 2:\n\t\treturn n + 1\n\tif n < 2:\n\t\treturn n + 2\n\treturn n + 2\n\t# Make sure that the number is not a prime\n\t# The code for the first two elements is not the first one, but the first two elements are not the"
+        }
+      ]
+    }
+  ],
+  "reached": {
+    "L1+": 9,
+    "L2+": 9,
+    "L3+": 9,
+    "L4+": 0
+  },
+  "diagnostics": {
+    "samples_total": 80,
+    "looped": 49,
+    "looped_frac": 0.613,
+    "median_max_line_repeat": 4,
+    "l3_samples": 43,
+    "l3_looped": 28,
+    "l3_looped_frac": 0.651
+  }
+}

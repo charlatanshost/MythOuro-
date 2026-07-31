@@ -1,0 +1,747 @@
+{
+  "step": 70500,
+  "temperature": 0.4,
+  "repetition_penalty": 1.0,
+  "seed": 1234,
+  "framing": "file",
+  "samples": 8,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 6,
+      "samples": [
+        {
+          "rung": 1,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Return the first element of the first element of the `str`\n\tif not isinstance(a, list) and not isinstance(a, str):\n\t\treturn None\n\ndef _int_to_int(a, a):\n    return None\n\ndef _int_to_float(a, b):\n\treturn None\n\ndef _int_to_int(a, b):\n\treturn None\n\ndef _int_"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Returns a value of the given value. If a value is a non-zero integer, then it will be the value of the original value.\n\ndef _l(a, b):\n    return a[0]\n\ndef _l(a, a):\n    return a[0]\n\ndef _l(a):\n    return a[0]\n\ndef _l(a):\n    return a[0]\n\ndef _l"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 7,
+          "lines_dropped": 21,
+          "body_stmts": 0,
+          "completion": "\"\"\"\n    Returns a list of integers.\n    \"\"\"\n\ndef _sum(a):\n    \"\"\"\n    Returns a list of integers, with the same value as the first\n    \"\"\"\n    return 0\n\ndef _check_num(a):\n    \"\"\"\n    Returns a list of integers with the same number as the number of the\n    \"\"\"\n    return a.to_string(a)\n\n\ndef _get_num(value):\n    \"\"\"\n    Returns a string with"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Returns the value of the first element of the first element of the first element of the second element of the first element of the second element of the list of the first element of the second element of the second element of the second element of the list of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Return the value of the given value.\n\ndef _check_and_return_value(a, b):\n    \"\"\"Return the value of the given value.\n    \"\"\"\n    return (0, 0, 0)\n\n\ndef _check_and_value(value):\n    \"\"\"\n    Returns the value of the given value.\n    \"\"\"\n    return (0, 0, 0)\n\n\ndef _check_and_value(value"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Returns the number of the first element in the list of the first and the second element of the first element of the first element of the list of the first element of the list of the first element of the first element of the first element of the first element of the list of the first element of the first element of the list of the first element of the list of the first element of the list of the first element of the first element of the first element of the first"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lines_dropped": 19,
+          "body_stmts": 0,
+          "completion": "\"\"\"Returns a list of all the values of the given input.\n\"\"\"\ndef get_one(a):\n    \"\"\"\n    Returns a list of all the values of the given value.\n    \"\"\"\n    if not isinstance(a, int):\n        return 0\n    else:\n        return [0, 0]\n\ndef get_one(a):\n    \"\"\"\n    Return a a\n    \"\"\"\n    return [0, 0]\n\ndef is_prime("
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\t\"\"\"Returns the number of elements in the list of integers in the list of all elements in the list of integers.\n\t\"\"\"\n\ndef _b(a):\n    return (a.lower() + 1)\n\ndef _b(a):\n    return (a.lower() + 1)\n\ndef _b(a):\n    return (a.lower() + 1)\n\ndef _b(a):\n    \"\"\"Return the"
+        }
+      ]
+    },
+    {
+      "task": "double_it",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 3,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0.0\n\ndef _k(n):\n    \"\"\"\n        Returns the value of the function.\n    \"\"\"\n    return (1, 1)\n\n\ndef _l(n):\n    \"\"\"\n    Return a value of the given value.\n    \"\"\"\n    return (1, 1)\n\n\ndef _l(n):\n    \"\"\"\n    The function that takes the first value of the function.\n\n    \"\"\"\n    return (1, 2)\n\n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn 0.001\n\ndef _l(x):\n    return 0.001\n\ndef _l(x):\n    return 0.001\n\ndef _l(x):\n    return 0.001\n\ndef _l(x):\n    return 0.001\n\ndef _l(x):\n    return 0.001\n\ndef _l(x):"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Return the number of elements in the list of integers.\n\ndef _l(n):\n    return int(int(low))\n\ndef _l(n):\n    \"\"\"Return the number of elements in the list of integers.\n    \"\"\"\n    return int(int(low, 0.01) + 0.01)\n\n\ndef _l(n):\n    \"\"\"Return the value of the given low-level (or the first"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Returns the number of the given number. 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "task": "get_first",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 5,
+      "samples": [
+        {
+          "rung": 1,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Return the values of the given list of integers.\n\ndef _get_values(value):\n    \"\"\"Returns the list of all the values of the given number of the given number.\n    \"\"\"\n\ndef get_first(value):\n    \"\"\"Return the value of the given number.\n    \"\"\"\n    return \"the number of the given number\"\n\ndef get_values(value):\n    \"\"\"Return the value of the given number.\n    \"\"\"\n    return"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Returns the first value of the first element of the given list of integers.\n\ndef _get_value(value):\n    \"\"\"Returns the value of the given value.\n    \"\"\"\n    return [0, 0, 0]\n\ndef _get_first_value(value):\n    \"\"\"\n    Returns the value of the given value.\n    \"\"\"\n    return [0, 0, 0]\n\ndef _get_value(value):"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Return the first value of the first element of the first element of the first element of the first element of the second element of the first element of the first element of the second element of the first element of the second element of the second element of the first element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn [0, 1]\n\ndef get_first(value):\n\treturn [0, 1]\n\ndef get_first(x):\n\treturn [0, 1]\n\ndef get_first(value):\n\treturn [0, 1]\n\ndef get_first(value):\n\treturn [0, 1]\n\ndef get_first(value):\n\treturn [0, "
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\t\"\"\"Returns the value of the given list of integers.\n\"\"\"\n\ndef _get_first(values):\n    \"\"\"Return the value of the given list of integers.\n    \"\"\"\n\ndef _get_first(self):\n    return self.first_value(value)\n\n\ndef _get_first(values):\n    \"\"\"Return the value of the given list of integers.\n    \"\"\"\n\ndef _get_first(value):\n    \"\"\"Return the"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn [0, 1, 2, 3, 2, 3]\n\ndef get_first(self, low, max, high):\n\tif not self.is_empty():\n\t\treturn None\n\ndef get_value(value):\n    return [0, 0]\n\ndef get_first(value):\n    \"\"\"Returns the value of the given value.\n    \"\"\"\n    return [0, 1]\n\n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 3,
+          "body_stmts": 1,
+          "completion": "\treturn [0, 1, 2, 3, 0]\n\ndef get_max(min, max_val):\n    \"\"\"\n    Returns the value of the maximum value in the range [0, 1]\n    \"\"\"\n    return [0, 1, 1]\n\ndef get_max(value):\n    return 1\n\ndef get_max(value, max_val):\n    \"\"\"\n    Return the value of the"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Return the value of the first element of the list of all the possible values.\n\ndef _check_value(value):\n    \"\"\"Return the first element of the list of all the elements of the given list of all the values of the\n    `low` and the first element of the list of all the values of the given list of all the\n    \"\"\"\n\ndef _check_value(value):\n    \"\"\"Return the value of the first element of the"
+        }
+      ]
+    },
+    {
+      "task": "sum_list",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 2,
+      "samples": [
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 4,
+          "body_stmts": 1,
+          "completion": "\tif not isinstance(value, list):\n\t\treturn list(list)\n\ndef _list(value):\n    \"\"\"Returns a list of integers.\n\n    :param int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int int"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t# \uc790 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn [0, 1, 2, 1]\n\n\ndef _get_list(self):\n    \"\"\"Returns the list of all the possible values for the given value.\n    \"\"\"\n    # Return the list of all the values in the list of all the values of the\n    # values of the list of all the values of the list.\n    # The value of the list of all the possible values for the given value.\n    # The value of the"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\ta = [0, 0]\n\ndef _a(a, b):\n    return [0, 0]\n\ndef _l(a, b):\n    return [0, 0]\n\ndef _l(a):\n    return [0, 0, 0]\n\ndef _l(a):\n    return [0]\n\ndef _l(a, b):\n    return [0, 0, "
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lines_dropped": 7,
+          "body_stmts": 1,
+          "completion": "\tif isinstance(value, list):\n\t\treturn [list, list]\n\n\ndef _list(x):\n    \"\"\"\n    Returns the list of all the elements of the given list.\n    \"\"\"\n    return [int(x) for i in range(len(value)) if not isinstance(value, str) else []\n\ndef _list(x):\n    \"\"\"\n    Return the list of all the values of the given list.\n    \"\"\"\n    return [int"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 4,
+          "body_stmts": 1,
+          "completion": "\t\"\"\"Returns a list of tuples of the given list of integers.\n\t\"\"\"\n\ndef _list_all(value):\n    \"\"\"\n    Return the list of all the possible values that are not in the list of all the elements of the list.\n    \"\"\"\n    return [int(x) for for for x in range(len(x))]\n\ndef is_empty(val):\n    \"\"\"Returns all the possible values for the given list of lists of"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t# 1.0:1.0:1.0:1.0:0.0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 3,
+          "body_stmts": 0,
+          "completion": "\tdef _get_max(self, x):\n\t# return 0.000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "task": "count_items",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 2,
+      "samples": [
+        {
+          "rung": 2,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\tif len(value) == 0:\n\t\treturn 0\n\ndef get_value(value):\n\treturn 0\n\ndef get_min(value):\n\treturn [low, high]\n\ndef get_min(value):\n\treturn 0\n\ndef get_value(value):\n\treturn [value]\n\ndef get_max(value):\n\treturn 0\n\ndef get_max("
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 5,
+          "body_stmts": 0,
+          "completion": "\tfor i in range(len(list_list)):\n\t\tfor i in range(len(values))):\n\t\tif not isinstance(values, list):\n\t\t\treturn 0.00000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 5,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Returns the number of the number of the smallest possible value. The number of the number of the first element of the list of all the elements of the given list. The number of the first element of the list of all the following:\n\t\"The number of the first element of the list of all the first element of the list of all the following:\n\t\"The number of the first element of list of all the following:\n\t\"The first element"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 6,
+          "body_stmts": 1,
+          "completion": "\treturn list(sorted(list_of_list_of_list))\n\n\ndef _list_of_list(value):\n    \"\"\"\n    Returns the list of the first element of the list of all the items in the list of all the\n    items in the list of the list of the first element of the list of all the\n    items in the list of all the the the the list of the list of all the\n    items in the list of all the the"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn [0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\t\"\"\"Return the list of all the possible values of the given type.\n\t\"\"\"\n\ndef _check_dict(self, key):\n    \"\"\"Return the value of the given type. This is a method of the `self.get_value` and `self.get_value`\n    \"\"\"\n\ndef _get_value(self, key):\n    \"\"\"Return the value of the given type of the given type.\n    \"\"\"\n    return self.get"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Returns the number of elements in the list of all the possible values in the list of all the possible values.\n\ndef get_value(value):\n    \"\"\"Returns the value of the first element of the given string.\n    \"\"\"\n    return [low, high]\n\ndef get_value(value):\n    \"\"\"Returns the the value of the first element of the first element of the given string.\n    \"\"\"\n    return [low, high high high high]"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 7,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Returns the number of the first element in the list of all the possible values.\n\ndef _get_all_values(self):\n    \"\"\"Returns a list of all the values of the given list of all the possible values.\n    \"\"\"\n    return [self.get_all_values(self.get_all_values(self.get_all_values(self.get_all_values(self.get_all_values(self."
+        }
+      ]
+    },
+    {
+      "task": "is_even",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 4,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 3,
+          "body_stmts": 1,
+          "completion": " \"\"\"Returns the number of elements in the range [0, 1]\n \"\"\"\ndef _val(n):\n    return (2, 2)\n\ndef check_max(max_val):\n    \"\"\"Returns the number of elements of the given value.\n\n    \"\"\"\n    return (2, 2)\n\ndef _val(val):\n    return (2, 2)\n\ndef _cl_max(val):\n    \"\"\"\n    Return ("
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lines_dropped": 4,
+          "body_stmts": 1,
+          "completion": "\tif not isinstance(value, int):\n\t\treturn float(int(int(0)) == 0)\n\ndef _rec_to_zero(num):\n    return float(int(value))\n\ndef _l_int(num):\n    return float(int(value))\n\ndef _l_int(num):\n    return float(int(value) - float(int(value))\n\ndef _l_int(num"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn (1.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\t\"\"\"Returns the number of the maximum possible value of the number of the maximum of the given number of elements in the list of integers.\n\ndef _l_to_num(n):\n    return 0.0\n\ndef _l_to_num(n):\n    return 0.0\n\ndef _l_to_num(n):\n    return 0.0\n\ndef _l_to_num(n):\n    \"\"\""
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\"\"\"Returns the value of the function of the `n`\n\ndef is_positive(self):\n    \"\"\"Returns the value of the `n` value of the `0`\n\ndef is_zero(self):\n    \"\"\"Returns the value of the `n` value of the `n`\n\ndef is_zero(self):\n    \"\"\"Returns the value of the `n` value of the `n`\n\ndef is_zero(self):"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lines_dropped": 10,
+          "body_stmts": 1,
+          "completion": "\treturn (1, 1)\n\ndef is_zero(n):\n    return (1, 1)\n\ndef is_zero(low, min(value, high, 1):\n    return (1, 1)\n\ndef is_zero(low, 1):\n    return (1, 1)\n\ndef is_zero(self):\n    return (1, 1)\n\ndef is_zero(low"
+        }
+      ]
+    },
+    {
+      "task": "reverse_string",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 5,
+      "samples": [
+        {
+          "rung": 1,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lines_dropped": 19,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Return the value of the given string.\n\ndef _t_to_t(x):\n    return (1, 2)\n\ndef _f(x):\n    return (1, 2)\n\ndef _l(x):\n    return (1, 2)\n\ndef _l(x):\n    return (1, 2)\n\ndef _l(x):\n    return (1, 2)\n\n"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 7,
+          "lines_dropped": 25,
+          "body_stmts": 0,
+          "completion": "\"\"\"\ndef _l(x):\n    return \"x\"\n\ndef _l(x):\n    return \"x\"\n\ndef _l(x):\n    return \"x\"\n\ndef _l(x):\n    return \"x\"\n\ndef _l(x):\n    return \"x\"\n\ndef _l(x):\n    return \"x\"\n\ndef _l(x):\n    \"\"\"\n    \"\"\"\n    return \"x\"\n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn str(s)\n\ndef _check_string(self, value):\n\treturn self.default_value(0)\n\ndef _get_value(value):\n    return self.default_value(s)\n\ndef _get_value(self, value):\n\treturn self.default_value(self.value)\n\ndef _get_value(self, value):\n\treturn self.default_value(value"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn [0, 0]\n\ndef _get_value(x):\n    \"\"\"Return the value of the given string.\n    \"\"\"\n    return (0, 0)\n\ndef _get_value(self, value):\n    \"\"\"Return the value of the given value.\n    \"\"\"\n    return [0, 0]\n\ndef _get_value(value):\n    \"\"\"Return the value of the given value.\n    \"\"\"\n    return (0"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0\n\ndef _l_1(value):\n    return 0\n\ndef _l_1(value):\n    return 0\n\ndef _l_1(a):\n    if not isinstance(l_1, int):\n        return 0\n    else:\n        return 0\n\ndef _l_1(l_1, low):\n    return 0\n\ndef _l_1(a):\n    return a\n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\t\"\"\"Returns the value of the given string.\n\t\"\"\"\ndef get_value(self, value):\n    \"\"\"Returns the value of the given string.\"\"\"\n    return self.get_value(self.get_value(self.get_value(self.get_value(self.get_value(self.get_value(self.get_value(self.get_value(self.get_value(self.get_value(self"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\"\"\"\ndef _add_to_string(s):\n    \"\"\"\n    Returns the value of the given string.\n    \"\"\"\n    return \".\" + str(low) + \" \" + str(low)\n\ndef _str_to_string(self, value):\n    \"\"\"\n    \"\"\"\n    return self.str_to_string(self.value)\n\ndef _str_to_string(self, value):\n    \"\"\"\n    Return the string of the"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 4,
+          "body_stmts": 0,
+          "completion": "\ndef _check_s(x):\n    return 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "task": "max_of_two",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 3,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\tif not isinstance(a, int):\n\t\treturn max(a, 1)\n\n\ndef _get_max_value(a, b):\n    return 0.0\n\n\ndef _c_to_float(a, b):\n    \"\"\"Returns a value of the function that returns the value of the function from the\n    \"\"\"\n    return a.b.to_float(a, b)\n\ndef _c_to_float("
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\"\"\"Returns a value of the same type as the first element of the range.\n\"\"\"\ndef _val(a, low, a):\n    \"\"\"Returns the value of the first non-zero value.\n    \"\"\"\n    return (0, 0, 0)\n\ndef _val(a, b):\n    \"\"\"Returns the value of the first element of the range.\n    \"\"\"\n    return (a, b)\n\ndef _val(a, low"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn 0\n\n\ndef get_max_value(a, b):\n    \"\"\"Returns the value of the given input.\n    \"\"\"\n    if not isinstance(a, int):\n        return 0\n    else:\n        return 0\n\ndef _get_num_of_n(a):\n    return 0\n\n\ndef _get_max_n(a):\n    \"\"\"Returns the number of the given number.\n    \"\"\"\n    if not isinstance("
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn a + 1.0 * (1.0 + 1.0)\n\ndef _int(a, b):\n    return (2.0 - 1.0) * (1.0)\n\ndef _l(a):\n    return (2.0 - 1.0) * (1.0 - 1.0) * (1.0 - 1.0)\n\ndef _l(a"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\tif not isinstance(a, int):\n\t\treturn max(a, b)\n\n\ndef max_of_two(a, low):\n    \"\"\"Returns the value of the given value.\n    \"\"\"\n    return max(low, min(value, b))\n\n\ndef max_of_two(a, b):\n    \"\"\"Returns the value of the given value.\n    \"\"\"\n    return max(low, b)\n\n\ndef max_of_two"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 7,
+          "lines_dropped": 0,
+          "body_stmts": 2,
+          "completion": "\t\"\"\"Return the value of the given value of the given value.\n\t\"\"\"\n\treturn 0\n\ndef _parse(x):\n    return 0\n\ndef _check_max(x):\n    return 0\n\ndef _parse(x):\n    return 0\n\ndef _parse(x):\n    return 0\n\ndef _parse(x):\n    return 0\n\ndef _parse(x):\n    return 0"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef _calc(a, b):\n    \"\"\"Return a value of the smallest value in the given range.\n    \"\"\"\n    return _clamp(a, b)\n\ndef _calc(a, b):\n    \"\"\"Return a a a value of the given range.\n    \"\"\"\n    return _clamp(a, b)\n\ndef _clamp(a, b):\n    \"\"\"Return a a a a a a a a a a a a a"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "task": "fibonacci",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 4,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn (1, 2, 2)\n\ndef _is_zero(num):\n    return (1, 2)\n\ndef _is_negative(num):\n    return (1, 2)\n\ndef _is_zero(num):\n    return (1, 2)\n\ndef _is_zero(num):\n    return (1, 2)\n\ndef _is_zero(num):\n    return ("
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Return the number of elements in the range [n] or [n] if the number of the first element is greater than the number of the first element of the first element.\n\ndef _get_num(n):\n    return (num)\n\n\ndef _num_of_n(n):\n    return (low(low(n))\n\ndef _get_num(n):\n    return (num_of_n)\n\ndef"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": " return (1.0, 1.0)\ndef _l_val(n):\n    \"\"\"Return the value of the first-order of the first-order of the first-order of the first-order.\n    \"\"\"\n    return (0.0, 1.0)\n\ndef _l_val(n):\n    \"\"\"Return the value of the first-order of the first-order of the first-order of the first-order of"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lines_dropped": 21,
+          "body_stmts": 0,
+          "completion": "\"\"\"Return the number of integers in the range [0, 1]\n\"\"\"\ndef _str(n):\n    return \"1\"\ndef _str(a):\n    return \"1\"\n\ndef _str(n):\n    return \"1\"\n\ndef _str(a):\n    return \"1\"\n\ndef _str(n):\n    return \"1\"\n\ndef _str(a):\n    return \"1\"\n\ndef"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn 1.0\n\ndef _clamp(value):\n    return 0.0\n\ndef _l(n):\n    return 0.0\n\ndef _l(n):\n    return 0.0\n\ndef _l(x):\n    return 0.0\n\ndef _l(x):\n    return 0.0\n\ndef _l(x):\n    return 0.0\n\ndef _l"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn [0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn 1.0 * (1.0 * (1.0 * 2.0))\n\ndef _lh(x):\n    return (1.0 * 1.0)\n\ndef _l(x):\n    return (1.0 * 1.0)\n\ndef _l(x):\n    return (1.0)\n\ndef _l(x):\n    return (1.0)\n\ndef"
+        }
+      ]
+    },
+    {
+      "task": "is_prime",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 5,
+      "samples": [
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tif not isinstance(value, int):\n\t\treturn 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\t\"\"\"Returns the number of elements in the given list of integers.\n\t\"\"\"\n\ndef _print(n):\n    \"\"\"Returns the number of elements in the given string.\n    \"\"\"\n    return \"None\"\n\ndef _val(n):\n    if not isinstance(n, str):\n        return \"None\"\n    else:\n        return \"None\"\n\ndef _val(n):\n    return \"Not a valid integer\"\n\ndef _value("
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn (1, 1)\n\ndef is_prime(x):\n    return (1, 1)\n\n\ndef _clamp(x):\n    return (1, 1)\n\n\ndef _prime(x):\n    return (1, 1)\n\n\ndef _clamp(x):\n    return (1, 1)\n\n\ndef _clamp(x):\n    return (1, 1)\n\n\ndef _"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn (0.01)\n\ndef is_prime(n):\n    \"\"\"Returns the number of elements in the given list of integers.\n    \"\"\"\n\n\ndef is_prime(n):\n    \"\"\"Returns the number of elements in the given range.\n    \"\"\"\n\ndef _clamp(value):\n    \"\"\"Returns the number of the number of elements in the given range.\n    \"\"\"\n\ndef _clamp(value):\n    \"\"\"Returns the given"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn [0.01, 0.01]\n\ndef _is_zero(n):\n    \"\"\"Returns the value of the integer.\n    \"\"\"\n    return [0.01, 0.01]\n\ndef _is_zero(n):\n    \"\"\"Returns the value of the number.\n    \"\"\"\n    return [0.00, 0.01]\n\ndef _is_zero(n):\n    \"\"\""
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn (1, 2)\n\ndef _is_prime(n):\n    return (1, 2)\n\ndef _is_negative(n):\n    return (1, 2)\n\ndef _is_negative(n):\n    return (1, 2)\n\ndef _is_negative(n):\n    return (1, 2)\n\ndef _is_negative(value):\n    return (1)\n"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Returns the number of the first element in the first element of the first element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second element of the second"
+        },
+        {
+          "rung": 1,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\t\"\"\"Return the number of elements in the range [n]\n\treturn 1.0\n\ndef _max(x):\n    \"\"\"Returns the number of elements in the same as the value of the first element in the list of all the elements in the list of the first element of the list of integers.\"\"\"\n    return 1.0\n\n\ndef _max(x):\n    \"\"\"Return the number of all the elements in the list of the first element in"
+        }
+      ]
+    }
+  ],
+  "reached": {
+    "L1+": 10,
+    "L2+": 10,
+    "L3+": 10,
+    "L4+": 0
+  },
+  "diagnostics": {
+    "samples_total": 80,
+    "looped": 39,
+    "per_sample_l3plus": 0.4875,
+    "per_sample_l3plus_ci95": 0.1095,
+    "looped_frac": 0.487,
+    "median_max_line_repeat": 2,
+    "l3_samples": 39,
+    "l3_looped": 23,
+    "l3_looped_frac": 0.59
+  }
+}

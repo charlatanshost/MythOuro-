@@ -1,0 +1,93 @@
+[probe] loaded checkpoints_reuse8/step_0066000.pt (step 66000) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.09 [0.05-0.17] | distinct1 0.63 [0.54-0.71] | distinct2 0.93 [0.89-0.97] | n=5
+    e.g.: ' start with the weather when I’ve been sitting in the winter. This might be better than we can see in this case, from this last year to the end of the summer of the 90-year old, to go through the same year that I’ve got.\n\nAt the beginning of our summer, there’s a lot of room that I have to get away with – perhaps something different. The last time, I’ve been talking with a'
+
+  α=0.25 | top_share 0.08 [0.06-0.10] | distinct1 0.64 [0.51-0.72] | distinct2 0.92 [0.82-0.98] | n=5
+    e.g.: ' keep the windows open.\n\nWe started a walk along the west of the lake as a group, which could be turned off at any area you want. So, it will be more important to see, maybe it is that an island gets its own group? For now, this is an important case of a "man of the town" I see a lot of "man".\n\nThere is a lot of fun that, in the afternoon, that would be a good'
+
+  α=0.5  | top_share 0.08 [0.06-0.10] | distinct1 0.63 [0.47-0.72] | distinct2 0.89 [0.79-0.96] | n=5
+    e.g.: ' go the zoo to the water, and we\'ll take a picnic to take it.\n\nI said "So if you have time, the zoo, you can see the lions as this will be your first day, which is a bit different from the rest of the zoo, and there is a lot of animals in the first day of the day.", but if you don\'t know, the zoo is the first one. Because if you don\'t really know how many days we'
+
+  α=0.7  | top_share 0.11 [0.07-0.20] | distinct1 0.61 [0.54-0.66] | distinct2 0.87 [0.76-0.95] | n=5
+    e.g.: ' go to the outskirts of the capital of Berdramon. The most interesting part was, of course, the railway, consisting of three platforms, numbered from west, which had to look at the maps, and a train consisting of several cars in a row. The first platform is the westmost, the first (the second part of the line)\n\nYou can move on this map at speed 15 m/s, with the direction of\n\n- the'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.11 [0.06-0.24] | distinct1 0.53 [0.38-0.65] | distinct2 0.77 [0.55-0.95] | n=5
+    e.g.: " taking the patient's treatment, including the treatment, and ensuring a patient has the following type of disease:\n\n• A single drug that can be used with the drug:\n\n• A person can be diagnosed with the same type of drug.\n\n• A person with a certain type of drug that's in the best place for the best condition\n\n• A person has a unique dose of the most common form of a given a certain type of drug.\n\n"
+
+  α=0.25 | top_share 0.26 [0.08-0.95] | distinct1 0.48 [0.06-0.72] | distinct2 0.68 [0.07-0.93] | n=5
+    e.g.: ' antibiotics and can take as little as 70000000051153 nanose. To get rid of any kind of infection if the body is also suffering a fever, you need to look deep (like with the antibiotic you may have to keep in their surroundings). The best use is just being more efficient and easier to get along.\n\nWhat can you achieve through your own immune system? In many of these cells, you have a'
+
+  α=0.5  | top_share 0.11 [0.05-0.23] | distinct1 0.60 [0.42-0.69] | distinct2 0.89 [0.68-0.96] | n=5
+    e.g.: " antibiotics, which are medications that are used for a high-frequency chemical treatment. The best method to combat the symptoms while using antibiotics, according to this article by Dr. Mark from the CDC, is that you should always practice the following. First, take a few minutes to get to the hospital in an active, high dose, high-frequency, and possibly a fast one to get down. It's the same idea as using a low-frequency antibiotic, but for most of"
+
+  α=0.7  | top_share 0.14 [0.07-0.21] | distinct1 0.57 [0.44-0.69] | distinct2 0.81 [0.64-0.95] | n=5
+    e.g.: ' antibiotics. For parasitic infections, anthelm is needed. We also provide a diagnostic service to identify the cause of disease in livestock animals.\n\nA parasitic skin is an invasive parasite that will damage the outer layers of the skin by the means of feeding on blood and other body. It also contains an overview of the treatment of different types of skin parasitic infections related to prevention.\n\nIn certain situations, such as the presence of a tumor in the brain, the treatment would'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.19 [0.05-0.64] | distinct1 0.53 [0.14-0.67] | distinct2 0.77 [0.23-0.94] | n=5
+    e.g.: ", but the problem with my stomach is that it doesn't seem to lead to a decrease in the blood and blood conditions like a 50 ppm and 75, so the reason might not be the problem with the other half of it, so we don't need to put another one of the same. It is probably a bad treatment for one of the most common clinical problems (which I hope that you can do well for the first two, which is probably not very"
+
+  α=0.25 | top_share 0.13 [0.05-0.27] | distinct1 0.59 [0.39-0.71] | distinct2 0.82 [0.55-0.97] | n=5
+    e.g.: ' increased, which includes:\nDairy products include:\nSaturated fats: They raise an increase in the LDL levels, but only small amounts (in the form of a "mild" or "mod")\n\nSome things you might want, but you might need to do more, if you want to have more complex types, and also for each other, and you can read up to it\'s not too dense, but you might want to use the combination of two'
+
+  α=0.5  | top_share 0.17 [0.06-0.54] | distinct1 0.58 [0.30-0.71] | distinct2 0.83 [0.44-0.99] | n=5
+    e.g.: ': \n\n- Increased thirst-dependent inflammation or infection\n\n- The body becomes a significant reduction in the amount of sugar in the body\n\n- Increased thirst-dependent symptoms such as: "It is the most common and most important to know and to eat when your heart rate is more likely to go down or is not in the same way as your body is not able to give it a lot of negative impacts \n\n- The correct dose for your heart\'s symptoms like'
+
+  α=0.7  | top_share 0.08 [0.05-0.10] | distinct1 0.64 [0.60-0.69] | distinct2 0.88 [0.83-0.94] | n=5
+    e.g.: ' increased, not decreased, and this is not likely to cause a diagnosis even if false.\n\nOption H: "No more than 10 days in this particular year: It\'s not a significant enough, and the answer might be 1/2 to 40%. But the question asks about the percentage of the possible range of values of the patient\'s body. The range is approximately 1/4, and the most common is around 60-8'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.11 [0.07-0.15] | distinct1 0.54 [0.17-0.67] | distinct2 0.88 [0.72-0.97] | n=5
+    e.g.: " the allergic and other conditions\n\nIs the same as in the patient’s clinical or clinical treatment, but we can only say that the other three weeks of treatment, but as well as the best treatment, the drug is the most beneficial way to do that. You need to get the most efficient way to do so.\n\nHow long does this process, or why it's worth paying the same for the same thing? To make this kind of self-indit."
+
+  α=0.25 | top_share 0.11 [0.05-0.23] | distinct1 0.59 [0.47-0.69] | distinct2 0.85 [0.67-0.96] | n=5
+    e.g.: ' the following conditions.\nWhich of the following is a key component of a patient’s immune system that is necessary for a patient to have a different set of the following.\nThe function of the following is a product called a cell that is a molecule that is not easily used in this order.\nWhat is a product of a single one of the next step?\nA healthy body is the key to the one.\nTo have a good health system that can be done'
+
+  α=0.5  | top_share 0.09 [0.05-0.12] | distinct1 0.60 [0.50-0.74] | distinct2 0.88 [0.83-0.98] | n=5
+    e.g.: ' pain, inflammation, and fever. It works by adding a combination of different types of medicines, including a non-inflammatory agent and a strong pain, which may cause an increase in the level of the medication in the patient.\n\nG: D.H.  In the treatment of heart disease, which includes both hypertension and cardiac stress.\n\nL-L-L B-C-C-C-P D-C-C-G-H D-'
+
+  α=0.7  | top_share 0.07 [0.05-0.10] | distinct1 0.66 [0.56-0.74] | distinct2 0.89 [0.78-0.96] | n=5
+    e.g.: " pain and inflammation, but I've heard that ibuprofen can cause some stomach issues that are related to the microbiome?\n\nSo, I need to think through the different types of proteins involved in inflammation. Cytokines are signaling, but maybe the question is whether the microbiome is involved in producing a protein, which can then be broken down by these specific proteo- or peptidases. These are enzymes that break down proteins.\n\nIf the cytokine is part of a larger"
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.13 [0.07-0.22] | distinct1 0.44 [0.22-0.53] | distinct2 0.68 [0.43-0.82] | n=5
+    e.g.: '\n    return n*(n + n + n)*(n + n + n + n + n + n*(n + n))\n```\n\nPlease use the following function:\n```\ndef get_first_value(x):\n    return (x**n)*(n + n*(n+1))\n\nFor the purpose of the solution to a linear equation, use the same function as `0, 1` or `1`.\n\nFor the first'
+
+  α=0.25 | top_share 0.12 [0.06-0.30] | distinct1 0.51 [0.42-0.58] | distinct2 0.77 [0.64-0.88] | n=5
+    e.g.: '\n    return (x-x for x, _ in range(n-1)) == 0. (x) - (y/y) * x ** n - 1\n\ndef sort_fibonacci(n):\n    """ \n    This function return a list of possible pairs\n    """\n    for s in range(1, n +1):\n        # 1st and 2-level 1-based numbers with no more entries\n        # 1st'
+
+  α=0.5  | top_share 0.14 [0.05-0.20] | distinct1 0.39 [0.31-0.49] | distinct2 0.63 [0.46-0.74] | n=5
+    e.g.: '\n    nums = []\n    for i in range(n):\n        for x in range(3):\n            while True:\n                nums.append(x)\n                break\n            nums.append(x)\n            # print(x)\n            nums.append(x)\n            nums.append(x)\n            x += int(input())\n            print(x, int(input))\n            print(x, x)\n            # print( x , x)\n            # print(x'
+
+  α=0.7  | top_share 0.09 [0.07-0.10] | distinct1 0.44 [0.33-0.56] | distinct2 0.71 [0.61-0.85] | n=5
+    e.g.: '\n\n    if n <= n * 10:  # To avoid stack overflow due to large n?\n\n    a, b, c = x, b, x + b  # Here, maybe they are using c = sqrt(5), but x + b would be 4 + 1 = 5, but the actual Fibonacci would be 5, but no, maybe not.\n\n        Wait, perhaps x was not in use. Maybe the actual formula uses the'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.11 [0.08-0.15] | distinct1 0.48 [0.41-0.56] | distinct2 0.77 [0.65-0.86] | n=5
+    e.g.: ' 24. \n\nThe problem is to find the equation 4x^2 - 5x + 6 = 40. \n\nThe equation x^2 - 5x = -50x, which is a real number. \n\nThe number 5x is the first two lines of the expression 5x + 5x + 8 = 11x. \n\nTo solve this problem, we need to find the'
+
+  α=0.25 | top_share 0.12 [0.07-0.19] | distinct1 0.43 [0.23-0.54] | distinct2 0.73 [0.51-0.89] | n=5
+    e.g.: ' 17, and apply the given solutions x^2 = 7x - 3x(x - 6) + 5x - 4 and then plug it into the new equation 4x^2 + 6x - 4x, given that the second solution is a perfect and accurate one. The next step is to use the x-term solution to solve the equation x^3 − 6x^2 + 3x –'
+
+  α=0.5  | top_share 0.15 [0.09-0.22] | distinct1 0.37 [0.23-0.57] | distinct2 0.69 [0.54-0.86] | n=5
+    e.g.: ' 18\n\n2. A number must be divisible by 100 to be divisible by 100. No 10-digit 9 is always divided by 1002 as per 999 + 4, what will be the div. ? 44 + 178 2962 10005 5022. Is there a number greater than zero? 2 + '
+
+  α=0.7  | top_share 0.07 [0.05-0.10] | distinct1 0.54 [0.45-0.62] | distinct2 0.81 [0.65-0.91] | n=5
+    e.g.: ' 0. The solutions should start with "Solution is a list of numbers { ". Then, in order from smallest  first to second largest, output each step of the process into a string, in the first position, followed by the current result. The answer should be given in JSON format. To format each step of the equation and its result correctly, refer to the examples:\n\n\n\nExample:\nInput: The quadratic equation x 2 + 2 +'
+
