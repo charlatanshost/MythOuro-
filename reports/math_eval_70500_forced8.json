@@ -1,0 +1,934 @@
+{
+  "step": 70500,
+  "temperature": 0.4,
+  "seed": 1234,
+  "samples": 8,
+  "repetition_penalty": 1.0,
+  "tasks": [
+    {
+      "task": "add",
+      "prompt": "12 + 7 =",
+      "answers": [
+        19
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": true,
+          "rel_err": 0.3684,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.126,
+          "completion": " 12\n\nSo:\n\n(4 + 12) = 12\n\nWait, no\u2014 the problem says \"The first person who had a good, the first, and the second, and the second",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": true,
+          "rel_err": 0.1579,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0588,
+          "completion": " 12\n\nSo the sum is:\n\n-12 = 12\n\nWait, let me check:\n\nOriginal problem:\n\nA: 16\n\nB: 12\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.4737,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3176,
+          "completion": " 10\n\nWait, actually, the problem is: \"A student is a student, and the student is a student\"\n\nWait, the problem says \"A student is a student, and the student is a student,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": true,
+          "rel_err": 0.3684,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.055,
+          "completion": " 12, 12 + 4 = 12.\n\nSo, the answer is 12.\n\nWait, let me check:\n\nThe number of possible divisors of the form 12",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "copied_from_prompt": true,
+          "rel_err": 0.3684,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2333,
+          "completion": " 12\n\nWait, 12 is 12, 12 is 12.\n\nWait 12 is 12, 12, 12, 12, 1",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.4737,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0556,
+          "completion": " 30\n\nSo:\n\nx = 300\n\nSo x = 10 + 10 = 10.\n\nWait, the original problem is:\n\nThe two numbers, ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": false,
+          "rel_err": 0.4737,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3506,
+          "completion": " 3\n\nWait, let me check the terms:\n\nFirst term: 10, 10, 10, 10, 10, 10, 10, 10",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 0.4737,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1042,
+          "completion": " 10\n\nSo the answer is:\n\n\\[\n\\frac{3}{3} \\cdot 10 \\cdot 10 = 10\n\\]\n\nWait, no, the original problem",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "sub",
+      "prompt": "45 - 18 =",
+      "answers": [
+        27
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 0.037,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2222,
+          "completion": " 28\n\nSo the answer is: 18.\n\nSo, 18 + 18 = 18\n\nWait, no, the answer is: 18 + 18 = ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1593,
+          "completion": " 18\n\nSo the answer is:\n\nThe answer is: 18.\n\nWait, let me check:\n\nThe first line: \"A\" is the first line: \"A\"\n\nThen",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": false,
+          "rel_err": 0.4815,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2159,
+          "completion": " 14\n\nWait, let me check the original problem:\n\nThe first is 1, 12, 14, 14, 14, 14, 14, 1",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3699,
+          "completion": " 18\n\nWait, let me check:\n\nThe first row is 10, 10, 10, 10, 10, 10, 10, 10",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": false,
+          "rel_err": 0.0741,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1587,
+          "completion": " 25\n\nSo, 14 + 1 = 10.\n\nWait, 14 is 14, 14 is 14.\n\nWait 14 is 14",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3824,
+          "completion": " 18\n\nWait, let me check:\n\nFirst row: 1, 10, 10, 10, 10, 10, 10, 10, ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0759,
+          "completion": " 18\n\nSo 18 + 18 = 18.\n\nWait, let me check:\n\nOriginal:\n\nNumber 1: 18\n\nWait 18.\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3377,
+          "completion": " 18\n\nWait, let me check:\n\nWait the first row is 10, 10, 10, 10, 10, 10, 10, 1",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "mul",
+      "prompt": "6 * 7 =",
+      "answers": [
+        42
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.7143,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1781,
+          "completion": " 12\n\nWait, no. Let me check the original problem:\n\nThe number of squares is 12, and the number of squares is 12.\n\nWait, actually, the problem is:\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 0.7619,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2174,
+          "completion": " 10\n\nSo the answer is:\n\n\\[\n\\begin{align}\n\\frac{3}{4} = \\frac{3}{4} \\cdot \\frac{3}{4} \\cdot \\",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": false,
+          "rel_err": 0.5238,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1739,
+          "completion": " 20, 10, 10, 10.\n\nWait, the given numbers are:\n\na, 2, 5, 10, 10, 10, ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.7143,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1377,
+          "completion": " 12\n\nBut wait, the problem says \"A man is the most important, and the only one that is the best.\"\n\nWait, the problem says \"the first person is a good, but the one is a",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": false,
+          "rel_err": 0.7619,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0619,
+          "completion": " 10\n\nSo 10^3 = 10^10 * 10^10\n\nWait, actually, the original problem is:\n\nThe square of 10^3 (which",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.8571,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2857,
+          "completion": " 3\n\n**6. **\n\n**10000**\n\n**200000**\n\n**200000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 0.7619,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5306,
+          "completion": " 10, 10: 10\n\nSo 10: 10, 10, 10, 10, 10, 10, 10, 1",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.7143,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2258,
+          "completion": " 12\n\nHmm, so I need to check the values.\n\nThe first row of the first row is the first row.\n\nThe second row is the second row.\n\nThe second row is the second",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "div",
+      "prompt": "84 / 4 =",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3194,
+          "completion": " 12\n\nSo:\n\n\\( 12 \\times 12 = 12 \\cdot 12 = 12 \\cdot 12 \\cdot 12 \\cdot 12 \\",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": false,
+          "rel_err": 0.5238,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.32,
+          "completion": " 10\n\nWait, let me check:\n\nFirst, the first is 2, 10, 10, 10, 10, 10, 10, 10",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": false,
+          "rel_err": 0.9524,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4235,
+          "completion": " 1.\n\nSo the answer is:\n\n\\[\n\\frac{1}{1 + 1} \\cdot \\frac{1}{1 + 1} \\cdot \\frac{1}{1 + 1",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.242,
+          "completion": " 12\n\nWait, let me check:\n\nThe first row of the first row, which is the first row, and the second row.\n\nSo the first row is the first row, and the second row.",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1071,
+          "completion": " 12\n\nThen, when we multiply 12, we get:\n\nWe have:\n\nx + 12 = 12\n\nSo:\n\nx = 12\n\nWe have",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "copied_from_prompt": false,
+          "rel_err": 0.5238,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3506,
+          "completion": " 10\n\nWait, let me check:\n\nWait the first row is 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3649,
+          "completion": " 12\n\nWait, let me check:\n\nThe first term is 12, 12, 12, 12, 12, 12, 12, 12",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 0.5238,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1062,
+          "completion": " 130\n\nThen the answer is 56.\n\nWait, let me check the original problem:\n\nThe first two numbers are 10, 10, 10, 10,",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "pct",
+      "prompt": "10% of 250 is",
+      "answers": [
+        25
+      ],
+      "rung": 3,
+      "label": "L3 buried",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1887,
+          "completion": " 1000.\n\nWait, let me check the options:\n\nThe first is 10.\n\nThe second is 10.\n\nThe second 10.\n\nThe second 1",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": true,
+          "rel_err": 0.6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2651,
+          "completion": " 10, and 10 is 10.\n\nBut the problem is about the number of 100000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 3,
+          "n_numbers": 4,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3953,
+          "completion": " 10.\n\nThe total number of coins is 10.\n\nThe number of boxes is 25.\n\nThe total number of coins is 10.\n\nThe number of the total is ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.52,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0813,
+          "completion": " 12, but the total is 12.\n\nWait, let me check the problem:\n\nA. The first person is the 10th, and the second is the 10.\n\nThe",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 0.2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1552,
+          "completion": " 40, so 10 is 10.\n\nWait, the problem says \"How many people are in the range [1, 20, 10]?\"\n\nWait no, the problem says",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 3.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1847,
+          "completion": " 100, so the total is 100.\n\nWait, the original problem says: \"The first person who was a man, who is a man, and the second person, and the second person, and",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1733,
+          "completion": " 10, but the total is 10.\n\nWait, 100 is 10. So 10 is 10.\n\nWait 10 is 10, 10",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 0.44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5208,
+          "completion": " 13, 12, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14,",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "avg",
+      "prompt": "The average of 4, 8, and 12 is",
+      "answers": [
+        8
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": false,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1899,
+          "completion": " 3, 12, 13. \n\nThe number of pairs in the given set is 12, 12, 13, 13, 13, 13, 1",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 13,
+          "copied_from_prompt": false,
+          "rel_err": 0.375,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3529,
+          "completion": " 2, 4, 5, 12, and 2, 12, 12, 12, 2, 12, 12, 2, 12, ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.25,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1037,
+          "completion": " 10.\n\nThe problem is to find the minimum value of x, given the values of x, which are the minimum of the maximum of x, but the maximum of x is 12.\n\nThe given values",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7091,
+          "completion": " 4, which is 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.7755,
+          "completion": " 14.\n\nThe answer is 12.\n\nThe answer is 12.\n\nThe answer is 12.\n\nThe answer is 12.\n\nThe answer is 12",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": false,
+          "rel_err": 0.25,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3647,
+          "completion": " 10.\n\nThe number 10 is 10, which is 10.\n\nThe number 10 is 10.\n\nThe number 10 is 10.\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 0.25,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6909,
+          "completion": " 10, which is 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 1",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": false,
+          "rel_err": 0.25,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1781,
+          "completion": " 10, 10, 10, 10, and 10, 10, 10.\n\nThe sum of the two numbers is 10, 10, 1",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "linear",
+      "prompt": "Solving 3x + 6 = 21 gives x =",
+      "answers": [
+        5
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": true,
+          "rel_err": 0.2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3119,
+          "completion": " 3x^2.\n\nWait, let me check the equation again:\n\nx^2 + 4x^2 = 11, but x is 1.\n\nWait, let me check the equation",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "copied_from_prompt": false,
+          "rel_err": 0.4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3636,
+          "completion": " 12.\n\nSo, the equation is: 12x^3 + 12x^2 + 12x^2 + 12x^2 + 12x^2.\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": false,
+          "rel_err": 0.4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0822,
+          "completion": " 12.\n\n**10. Find x and solve for x.\n\n**2x^2 - 3x^2 = 12**\n\n**10x^2 - 2x**",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0938,
+          "completion": " 10.\n\nBut I'm not sure.\n\nWait, let me think of x = 3x\u00b2 + 2x^2.\n\nWait, actually, let me see:\n\nx^2",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 0.4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1496,
+          "completion": " 2x^2.\n\nWait, actually the original equation is:\n\nx^2 + 3x^2 = 12.\n\nWait, actually I need to clarify the problem.\n\nThe equation",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": false,
+          "rel_err": 0.6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1795,
+          "completion": " 12.\n\nThe solutions are:\n\nx^2 + 2x^2 = 12\n\nThe equation is:\n\nx^2 + 2x^2 + 2x^2",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 0.6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3077,
+          "completion": " 11.\n\nThe equation is 11x^2 + 11x^2 + 11x^2 + 11x + 11x^2 + 11x^2",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "copied_from_prompt": false,
+          "rel_err": 0.6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1176,
+          "completion": " 2x^2 + 2x^2.\n\nWait, let me check the expression again:\n\nx^2 + 2x^2 = 2x^2, so 2x^2 +",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "quadratic",
+      "prompt": "To solve the quadratic equation x^2 - 5x + 6 = 0, we find x =",
+      "answers": [
+        2,
+        3
+      ],
+      "rung": 3,
+      "label": "L3 buried",
+      "samples": [
+        {
+          "rung": 3,
+          "n_numbers": 8,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2476,
+          "completion": " 0.\n\nTo solve the equation:\nx^2 - 3x^2 = 0.\n\nTo solve the equation, we can use the equation:\nx^2 + 5x^2 =",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1391,
+          "completion": " 0.\n\nTo solve the equation, we need to find the value of x.\n\nThe equation x^2 - 2x + 1 = 1.\n\nThe equation is 2x^2 -",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 3,
+          "n_numbers": 9,
+          "copied_from_prompt": false,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2247,
+          "completion": " 15. \n\nThe equation x^3 + 5x + 2 = 15. \n\nThe equation 12x + 3 = 15 is 12x. \n\nThe equation",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 13,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2338,
+          "completion": " 0.\n\nThe equation x^2 + 5x^2 - 5x^2 = 0.\n\nThe equation is 1 + 2x^2 - 2x^2 + 2",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": true,
+          "rel_err": 1.0,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3836,
+          "completion": " 0.\n\n**Final Answer**\n\n**Final Answer**\n\n**100000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1121,
+          "completion": " 0.\n\nTo solve the equation, we can use the formula for x^2.\n\nLet's consider the equation:\n\nx^2 + 1 = 0.\n\nWe have:\n\nx",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2375,
+          "completion": " 0. \n\nThe equation y^2 + 2x + 5 = 0. \n\nThe equation x^2 + 5x + 5x^2 + 2x + 2x + ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2716,
+          "completion": " 0.\n\nThe equation is:\nx^2 + 12x^2 - 12x^2 - 12x^2 - 12x^2\n\nThe given equation is:",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "area",
+      "prompt": "The area of a rectangle 7 cm by 3 cm is",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.3167,
+          "completion": " 12 cm.\n\nA) 300 cm \nA) 10 cm \nA) 10 cm \nB) 10 cm \nA) 10 cm \n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 15,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3889,
+          "completion": " 14 cm by 14 cm 12 14 14 14 12 14 14 14 14 14 14 14 14",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.5238,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.6016,
+          "completion": " 2. \nThe length of a rectangle is 10 cm. \n\nThe area of a rectangle is 10 cm. \n\nThe area of a rectangle is 10 cm. \n\nThe area of a",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0828,
+          "completion": " 11. \nThe area of a square is 14. \n\nTo find the value of a square, we can use the following steps:\n1. Find the area of the rectangle.\n2. The area",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.7121,
+          "completion": " 12 cm. \n\nThe area of the rectangle is 12 cm. \n\nThe area of the rectangle is 12 cm. \n\nThe area of the rectangle is 12 cm. \n\nThe area",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.7059,
+          "completion": " 11. \nThe area of a square is 12. \n\nThe area of a square is 12. \n\nThe area of a square is 12. \n\nThe area of a square is",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 16,
+          "copied_from_prompt": false,
+          "rel_err": 0.5238,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8367,
+          "completion": " 10 \u00d7 10 10 10 10 10 10 10 10 10 10 10 10 10 10 1",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3621,
+          "completion": " 12 cm. \n(a) 10 cm \n(b) 10 cm \n(b) 10 cm \n(c) 10 cm \n(c) 1",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "frac",
+      "prompt": "1/2 + 1/4 =",
+      "answers": [
+        0.75
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2771,
+          "completion": " 1/4\n\nWait, let me check the values:\n\nThe first term is 2, 1, 1, 1, 1, 1, 1, 1, 1, ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": true,
+          "rel_err": 0.6667,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1081,
+          "completion": " 1/4\n\nWait, maybe I need to think of the values.\n\nThe original equation:\n\n(x^2 + 3) + 1/4 = 1/4\n\nWait, actually",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1772,
+          "completion": " 1/2, so 1/2 = 1.\n\nWait, let me check the first term:\n\nLeft: 1/2, 1/2, 1/2, 1/2",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1753,
+          "completion": " 1/2.\n\nWait, let me check the problem again.\n\nThe first part is:\n\nFirst line: 1, 1, 1, 1, 1, 1, 1",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0374,
+          "completion": " 1/2.\n\nWait, maybe I need to make a more precise:\n\nLet me consider the first term:\n\n(x^2 + 1)^2) + 1/2 = 1/",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2545,
+          "completion": " 1/2\n\nWait, let me check:\n\nWait the original equation:\n\nx^2 + 1/4 = 1/2\n\nWait the original equation is:\n\nx^2 +",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": true,
+          "rel_err": 0.6667,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.225,
+          "completion": " 1/4,\n\nSo the value of x^2 + 1/4 = 1/4, which is 1/4, which is 1/4 + 1/4.\n\nWait,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": true,
+          "rel_err": 0.6667,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.063,
+          "completion": " 1/4\n\nWait, that is a mistake.\n\nWait, actually, the problem is:\n\nThe coins are 1/4, and the total number of the first is 1/4.\n\n",
+          "halt_depth": 2.0
+        }
+      ]
+    }
+  ],
+  "n_loops": 8,
+  "force_full_depth": true,
+  "mean_halt_depth": 2.0,
+  "copied_from_prompt": 29,
+  "median_rel_err": 0.4286,
+  "within_10pct": 10,
+  "per_sample_l4": 0.0,
+  "per_sample_l3plus": 0.0375,
+  "reached": {
+    "L1+": 10,
+    "L2+": 10,
+    "L3+": 2,
+    "L4+": 0
+  }
+}

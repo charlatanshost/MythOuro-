@@ -1,0 +1,851 @@
+{
+  "step": 70500,
+  "temperature": 0.4,
+  "seed": 1234,
+  "samples": 8,
+  "repetition_penalty": 1.0,
+  "tasks": [
+    {
+      "task": "add",
+      "prompt": "12 + 7 =",
+      "answers": [
+        19
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": true,
+          "rel_err": 0.3684,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.4157,
+          "completion": " 12.\n\nWait, let me check the problem statement:\n\nThe problem statement is:\n\nThe problem statement is:\n\nThe problem statement:\n\nThe problem statement is:\n\nThe problem statement is"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.3684,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3,
+          "completion": " 12.\n\nSo, 12 is 12, so 12 is 12.\n\nSo 12 is 12.\n\nSo 12.\n\nSo 1"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "copied_from_prompt": false,
+          "rel_err": 0.3684,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2794,
+          "completion": " 11 + 11 + 12\n\nThe answer is 11 + 11 = 11 + 11 + 11 = 11 + 11 = 11 +"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 0.3684,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3396,
+          "completion": " 11, 11 + 4 = 11, 11 = 11, 11 + 12, 11, 11 + 12, 11, "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 0.3684,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3667,
+          "completion": " 11 + 11 + 11 = 11 + 11 + 11 + 11 + 11 + 12 + 11 + 12 + 11 +"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 0.3684,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.6606,
+          "completion": " 11. \n\nThe number 12 is the number 12. \n\nThe number 12 is the number 12. \n\nThe number 12 is the number 12. \n\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.8947,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.453,
+          "completion": " 36\n\nBut wait, the problem statement says:\n\nThe problem statement says:\n\nThe problem statement is:\n\nThe problem statement says:\n\nThe problem statement is:\n\nThe problem statement is:"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 5.263157894736842e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": " 10000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "task": "sub",
+      "prompt": "45 - 18 =",
+      "answers": [
+        27
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.037,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.7917,
+          "completion": " 28\n\nSo the answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.5926,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.7917,
+          "completion": " 11\n\nSo the answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.4815,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.7833,
+          "completion": " 14.\n\nSo the answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.6978,
+          "completion": " 12, 18 = 18\n\nThe first three terms are:\n\nThe first three terms are:\n\nThe first three terms are:\n\nThe first three terms are:\n\nThe first two"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.4444,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1985,
+          "completion": " 15\n\nSo, the answer is 11, which is the answer to the correct answer.\n\nThe answer is 11, which is 11, but the answer is 11, but the"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": true,
+          "rel_err": 0.2593,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2273,
+          "completion": " 18\n\nWait, let me see:\n\nThe first 4, 20, 19, 18, 19, 19, 19, 19, 1"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1584,
+          "completion": " 11, 11, 18, 18, 18, 18, 18\n\nWait, but how can we find the answer?\n\nWait, the problem statement says:"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.4091,
+          "completion": " 11, so 11.\n\nSo, the answer is:\n\nA = 18\n\nA = 18\n\nA = 18\n\nA = 18\n\nA"
+        }
+      ]
+    },
+    {
+      "task": "mul",
+      "prompt": "6 * 7 =",
+      "answers": [
+        42
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.619,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.7594,
+          "completion": " 16\n\nWait, but the problem statement says:\n\nThe problem statement says:\n\nThe problem statement says:\n\nThe problem statement says:\n\nThe problem statement says:\n\nThe problem statement says:"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.7143,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.225,
+          "completion": " 11\n\nSo the answer is:\n\nG: 12\n\nG: 12\n\nThe answer is:\n\nThe answer is:\n\nA: 12\n\nB: "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.7619047619047615e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": " 20000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.7143,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.398,
+          "completion": " 12.\n\nThe answer is: 12.\n\nThe answer is: 12.\n\nThe answer is 12.\n\nThe answer is: 12.\n\nThe answer is"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.9048,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3853,
+          "completion": " 4\n\nSo the first two numbers are:\n\na = 100\n\nSo the first two numbers are:\n\na = 100\n\nThen the second is:\n\na = "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 0.1429,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7708,
+          "completion": " 36, 66, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.3809523809523808e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": " 10000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.8571428571428574e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9167,
+          "completion": " 12000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "task": "div",
+      "prompt": "84 / 4 =",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.5574,
+          "completion": " 12.\n\nSo, the correct answer is 12.\n\nSo, the correct answer is 12.\n\nSo, the correct answer is 12.\n\nThe correct answer is 1"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 0.1905,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2258,
+          "completion": " 17 / 3 = 17 / 3. \n\nThe number 2 is 12, 13, 12, 12, 13, 12, 13"
+        },
+        {
+          "rung": 1,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.9762,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3494,
+          "completion": " 1/22.\n\nSo, the final answer is:\n\n(1/2) * 1/22.\n\nThe final answer is:\n\n(1/2) * (1/2"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": false,
+          "rel_err": 0.8571,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5714,
+          "completion": " 12/4 = 12/4 = 12/4 = 12/4 = 12/4 = 12/5 = 12/5 = 12/5 ="
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.775,
+          "completion": " 12.\n\nSo, the answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": false,
+          "rel_err": 0.619,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4364,
+          "completion": " 1 / 8 = 1 / 3 = 1 / 4 = 1 / 10000000000000000000000000"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": false,
+          "rel_err": 0.9048,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0971,
+          "completion": " 1 + 2.\n\nBut since 1 + 2 = 1, then 1 + 2 = 1 + 2 = 1.\n\nWait, but the original problem statement says:\n\n"
+        },
+        {
+          "rung": 1,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9762,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.775,
+          "completion": " 1/2.\n\nSo the answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:"
+        }
+      ]
+    },
+    {
+      "task": "pct",
+      "prompt": "10% of 250 is",
+      "answers": [
+        25
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 43.68,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1683,
+          "completion": " 1117.\n\nThe problem is that the solution is not yet a good solution. The solution is not necessarily the solution to the solution. The solution is not a good solution for the solution. The solution is not yet"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.52,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3098,
+          "completion": " 12. So, the total number of people who have been in the middle is 12. So, the total number of people who have been in the same as the number of people who have been in the same as the"
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3288,
+          "completion": " not a good idea.\n\nThe problem is that the problem is not necessarily the problem with the problem statement.\n\nThe problem is that the problem is a problem with the problem statement.\n\nThe problem is that the problem is"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": true,
+          "rel_err": 9.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3176,
+          "completion": " 250.\n\nThe total number of people who have been in the 250000000000000000000000000000"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 0.374,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3,
+          "completion": " 46, so 11.25 is 11.25, which is 15.65.\n\nBut 11.35 is 11.25, which is "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 3.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7064,
+          "completion": " the first 100% of the first 100% of the first 100% of the first 100% of the first 100% of the second 100% of"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 9.2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3152,
+          "completion": " a 255.\n\nThe total number of people who are in the same way as the number of people who are in the same way as the same as the number of people who are in the same way as the number of"
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1848,
+          "completion": " the most common.\n\nThe average number of people who have been in the same category is the same as the average of the first two, but the total number of people who have been in the first two, which is the same as"
+        }
+      ]
+    },
+    {
+      "task": "avg",
+      "prompt": "The average of 4, 8, and 12 is",
+      "answers": [
+        8
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3822,
+          "completion": " not the same as the average of 4, but the average of 12 is not the same as the average of 4, but the average of 12 is the same as the average of 12, but the"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 11.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4254,
+          "completion": " given by the average of the first two rows. The average of the first two rows is 100, and the second is the average of the first two rows. The average of the first two rows is 100,"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4674,
+          "completion": " the same as the average of 12, 12, 12, 12, 12 is the same as the average of 12, 12, 12, 12,"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4674,
+          "completion": " the same as the average of 12, 12, 12, 12, 12 is the same as the average of 12, 12, 12, 12,"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4674,
+          "completion": " the same as the average of 12, 12, 12, 12, 12 is the same as the average of 12, 12, 12, 12,"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.268,
+          "completion": " also a good idea.\n\nThe 12th is the first 120, and the 12 is also a good idea.\n\nThe 120, 12, 12, "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4674,
+          "completion": " the same as the average of 12, 12, 12, 12, 12 is the same as the average of 12, 12, 12, 12,"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6378,
+          "completion": " also the same as the average of 12, 12, 12 is also the same as the average of 12, 12, 12 is also the same as the average of 12"
+        }
+      ]
+    },
+    {
+      "task": "linear",
+      "prompt": "Solving 3x + 6 = 21 gives x =",
+      "answers": [
+        5
+      ],
+      "rung": 3,
+      "label": "L3 buried",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1486,
+          "completion": " 3x + 12, which is 3x + 15.\n\nThe equation is:\n\nx^2 = 12 + 12x + 12x + 12 ="
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": false,
+          "rel_err": 1.4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5294,
+          "completion": " 12. \n\nThe equation y = 12 + 12x + 12x + 12x + 12x + 12x + 12x + 12x"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "copied_from_prompt": false,
+          "rel_err": 0.2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5,
+          "completion": " 2x + 4x + 4x + 12x + 4x + 12x + 12x + 12x + 12x + 12x + 1"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2e+45,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": " 10000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 0.6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1325,
+          "completion": " 25, so x = 27, and then x = 22.\n\nThe original equation is:\n\nx = 10^(2)\n\nx = 10^(21"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": false,
+          "rel_err": 0.6,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2931,
+          "completion": " 2x + 2x + 12 = 12.\n\n**24555**\n\n**22555**\n\n**24555**\n\n**22"
+        },
+        {
+          "rung": 3,
+          "n_numbers": 10,
+          "copied_from_prompt": false,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2262,
+          "completion": " 11, which is a solution.\n\nThe solution is 2x + 5x + 2x + 5x + 2x + 2x + 2x + 2x + 1"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": true,
+          "rel_err": 3.2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.72,
+          "completion": " 21, so x = 22, so x = 22, so x = 22, so x = 22, so x = 22, so x = 21, so x"
+        }
+      ]
+    },
+    {
+      "task": "quadratic",
+      "prompt": "To solve the quadratic equation x^2 - 5x + 6 = 0, we find x =",
+      "answers": [
+        2,
+        3
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3333,
+          "completion": " 0. The equation is:\n\nx^2 - 18x + 12x + 18x + 18x + 18x + 18x + 12x +"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3243,
+          "completion": " 0. \n\nTo solve the equation 10x + 2x + 10x - 10x + 10x + 10x + 10x + 10x +"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1081,
+          "completion": " 0. So, we can solve for x^2 - 10x^2 - 10x^2 + 10x^2. \n\nThe problem is that the solution is not the same as the"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": true,
+          "rel_err": 1.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3433,
+          "completion": " 0. The equation 10x + 10x + 10x + 10x + 20x + 10x + 10x + 10x + 10"
+        },
+        {
+          "rung": 1,
+          "n_numbers": 12,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3654,
+          "completion": " 0. 0. 12. 12x + 12. 12x + 22. 12x + 12. 12x + 12. 1"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7963,
+          "completion": " 0.5x^2 + 1.5x^2 + 1.5x^2 + 1.5x^2 + 1.5x^2 + 1.5x^2 +"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3286,
+          "completion": " 0. \n\nThe equation y = x^2 + 2x + 6x + 2y + 10x + 10x + 10x + 10x + 10"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": false,
+          "rel_err": 0.3,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6545,
+          "completion": " 0.32x + 1.4x + 1.2x + 1.2x + 1.2x + 1.2x + 1.2x + 1.2x"
+        }
+      ]
+    },
+    {
+      "task": "area",
+      "prompt": "The area of a rectangle 7 cm by 3 cm is",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.2381,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3913,
+          "completion": " 110 cm.\n\nThe following is a basic form of the following:\n\nThe following is a simple example of a simple example:\n\nThe following is a simple example of a simple example:\n\nThe following"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 53.2857,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.2388,
+          "completion": " 1140 cm.\n\n**Hmm**\n\n**D**\n\n**A**\n\n**B**\n\n**C**\n\n**A**\n\n**D**\n\n**A**"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 13,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6458,
+          "completion": " 2. 3. 12. 10. 12. 12. 12. 12. 12. 12. 12. 12. 1"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 4.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.446,
+          "completion": " 112. The area of the rectangle 125. The area of the rectangle is 123. The area of the rectangle is 123. The area of the rectangle 124. The"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 3.7619,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2042,
+          "completion": " the same as the original, but with a 100 cm, the original is 100 mm, and the original is 100 cm, and the original is 100 cm. The original is "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.4762,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8542,
+          "completion": " 11. 1000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2148,
+          "completion": " 112. The area of a rectangle 12. The width of the first and second is 123. The area of the rectangle is 12. The length of the first and second is 12"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2538,
+          "completion": " 32. The length of the rectangle 12 cm by 12. The length of the 12. The width of the 12. The length of the 12. The length of the 1"
+        }
+      ]
+    },
+    {
+      "task": "frac",
+      "prompt": "1/2 + 1/4 =",
+      "answers": [
+        0.75
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2772,
+          "completion": " 1/2\n\nSo, the answer is 1/2.\n\nSo, the answer is 1/2.\n\nSo the answer is 1/2.\n\nWait, but the answer is "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1741,
+          "completion": " 1/2.\n\nThe problem is solved by finding the probability that the solution is a positive value. The problem is solved by using the following steps:\n\nThe problem is solved by finding the solution to the given problem statement"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1525,
+          "completion": " 1/2, so 1/2 = 1/2.\n\nBut the problem statement says: \"The problem statement is not a valid solution to the given problem statement, but it says that the problem statement is not"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4737,
+          "completion": " 1/2 + 1/2 + 1/2 + 1/2 + 1/2 = 1/2 + 1/2 + 1/2 + 1/2 + 1/"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3125,
+          "completion": " 1/2.\n\nBut wait, this is a bit of a 2.\n\nWait, but the problem says:\n\nThe problem statement says:\n\nThe problem says:\n\nThe problem statement says:"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1304,
+          "completion": " 1/2 + 1/2.\n\nSo, if we have a 1/2, then we can use the same as the original equation:\n\n\\begin{align}\n\n\\begin{align}"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1138,
+          "completion": " 1/2 + 1/2 + 1/2\n\nSo, the answer is:\n\n- The total number of possible combinations of the numbers that are not necessarily the same as the sum of the number of possible"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 6.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.234,
+          "completion": " 11/2, but the original is 11/2.\n\nSo the problem is:\n\nLet me check if the original problem is:\n\nThe original problem is:\n\nLet me check if the"
+        }
+      ]
+    }
+  ],
+  "copied_from_prompt": 26,
+  "median_rel_err": 0.5,
+  "within_10pct": 7,
+  "per_sample_l4": 0.0,
+  "per_sample_l3plus": 0.0125,
+  "reached": {
+    "L1+": 10,
+    "L2+": 10,
+    "L3+": 1,
+    "L4+": 0
+  }
+}
