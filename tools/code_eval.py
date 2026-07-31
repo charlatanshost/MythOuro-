@@ -160,6 +160,47 @@ def _max_line_repeat(src: str) -> int:
     return max(Counter(lines).values(), default=0)
 
 
+def _lrs_frac(src: str) -> float:
+    """Longest substring occurring twice, as a fraction of length. 0=clean, 1=degenerate.
+
+    WHY, on top of `_max_line_repeat`: that metric counts identical LINES and is
+    blind to degeneracy that stays WITHIN a line. Both of these scored a line
+    repeat of 1 — i.e. perfectly clean — at step 70,500:
+
+        return self.get_value(self.get_value(self.get_value(self.get_value(...
+        return 0.00000000000000000000000000000000000000000000000000000 (95 zeros)
+
+    They are as degenerate as anything the line metric catches. It mattered:
+    `--framing file` produces more of this shape (docstrings, indentation and
+    method chains keep output on one line), so 23/80 file samples were scored
+    clean by lines while the character measure flags them, versus 14/80 bare —
+    nearly double the undercount, which distorted a framing comparison.
+
+    CALIBRATION on real 70,500 completions: genuinely correct code lands at
+    0.07-0.10 (`return a + b` = 0.071; a full iterative fibonacci = 0.096), while
+    the two degenerate examples above are 0.80 and 0.90. 0.35 is the flag
+    threshold — comfortably above real code, well below clear degeneracy. The
+    CONTINUOUS median is the better statistic; the flag is for the summary line.
+
+    Note zlib compression ratio was considered and rejected as the primary: it
+    exceeds 1.0 on short completions (header overhead), so it misreads exactly
+    the terse correct answers we most want to score as clean.
+    """
+    s = src.replace("\\n", "\n").replace("\\t", "\t")
+    n = len(s)
+    if n < 2:
+        return 0.0
+    sufs = sorted(range(n), key=lambda i: s[i:])
+    best = 0
+    for a, b in zip(sufs, sufs[1:]):
+        i = 0
+        while a + i < n and b + i < n and s[a + i] == s[b + i]:
+            i += 1
+        if i > best:
+            best = i
+    return best / n
+
+
 def _body_stmts(tree: ast.AST, fname: str) -> int:
     """Statements in the target function's body — a complete-ness proxy."""
     for n in ast.walk(tree):
@@ -185,6 +226,7 @@ def score_sample(prompt: str, completion: str, fname: str,
     d = {"rung": 0, "max_line_repeat": _max_line_repeat(raw),
          "max_line_repeat_completion": _max_line_repeat(
              completion.replace("\\n", "\n").replace("\\t", "\t")),
+         "lrs_frac": round(_lrs_frac(completion), 4),
          "lines_dropped": 0, "body_stmts": 0, "completion": completion}
     code, dropped = _truncate_to_parseable(raw)
     d["lines_dropped"] = dropped
@@ -402,10 +444,22 @@ def main() -> None:
             "per_sample_l3plus": round(p_l3, 4), "per_sample_l3plus_ci95": round(ci95, 4),
             "looped_frac": round(looped / tot, 3) if tot else 0.0,
             "median_max_line_repeat": med_rep,
+            "median_lrs_frac": round(med_lrs, 4),
+            "char_degenerate": char_deg, "line_metric_blind": blind,
             "l3_samples": len(l3s), "l3_looped": l3_looped,
             "l3_looped_frac": round(l3_looped / len(l3s), 3) if l3s else None}
-    print(f"\n  repetition: {looped}/{tot} samples looped (>=3 identical lines), "
+    lrs = sorted(s["lrs_frac"] for s in all_samples)
+    med_lrs = lrs[len(lrs) // 2] if lrs else 0.0
+    char_deg = sum(1 for s in all_samples if s["lrs_frac"] >= 0.35)
+    blind = sum(1 for s in all_samples
+                if s["max_line_repeat_completion"] < 3 and s["lrs_frac"] >= 0.35)
+    print(f"\n  repetition, BY LINE: {looped}/{tot} looped (>=3 identical lines), "
           f"median max-repeat {med_rep}")
+    print(f"  repetition, BY CHARACTER: {char_deg}/{tot} degenerate "
+          f"(lrs_frac>=0.35), median lrs_frac {med_lrs:.3f}")
+    if blind:
+        print(f"    ({blind} of those are INVISIBLE to the line metric — "
+              f"within-line nesting or character runs)")
     if l3s:
         print(f"  of L3 samples, {l3_looped}/{len(l3s)} were SALVAGED from a loop "
               f"({100 * l3_looped / len(l3s):.0f}%) — the rest were finished code.")
