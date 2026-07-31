@@ -48,9 +48,23 @@ _SEED_RE = re.compile(r"SEED:\s*(.*?)\s+\(\d+ tok\)")
 _ALPHA_RE = re.compile(r"α=([\d.]+)")
 
 
-def parse_report(path: str) -> "dict[str, dict[str, str]]":
-    """{seed: {alpha: example_text}} from a probe report."""
-    out: dict[str, dict[str, str]] = {}
+def parse_report(path: str) -> "dict[str, dict[str, list[str]]]":
+    """{seed: {alpha: [texts]}} from a probe report or its richer .json.
+
+    ⚠ A .txt report contains ONE sample per (seed, α) — and it is sample #1,
+    kept by position, not chosen for being representative. The probe generated
+    `--samples` of them and threw the rest away, keeping only their numbers.
+    Comparing checkpoints on 1-of-5 is comparing a small part, not the whole:
+    with n=5 you can pick two runs of an unchanged model and "see" a difference.
+    Pass the .json (probe `--json`) to read every sample. Historical .txt reports
+    are all we have for older checkpoints — their other samples are gone.
+    """
+    if path.endswith(".json"):
+        import json
+        blob = json.loads(Path(path).read_text())
+        return {seed: {a: list(v["texts"]) for a, v in alphas.items()}
+                for seed, alphas in blob.get("seeds", {}).items()}
+    out: dict[str, dict[str, list[str]]] = {}
     lines = Path(path).read_text(errors="ignore").split("\n")
     seed = alpha = None
     for i, line in enumerate(lines):
@@ -68,7 +82,7 @@ def parse_report(path: str) -> "dict[str, dict[str, str]]":
             txt = line.split("e.g.:", 1)[1].strip()
             if txt[:1] in "'\"" and txt[-1:] in "'\"":
                 txt = txt[1:-1]
-            out[seed][alpha] = txt
+            out[seed][alpha] = [txt]          # .txt holds only sample #1
             alpha = None
     return out
 
@@ -105,13 +119,18 @@ def render(paths: "list[str]", alphas: "list[str] | None") -> str:
             o.append(f"\n### α={a}" + ("  *(no teacher help — the real-use case)*"
                                        if float(a) == 0.0 else ""))
             for lbl, r in reports:
-                txt = r.get(seed, {}).get(a)
-                o.append(f"\n**{lbl}**\n")
-                if txt is None:
-                    o.append("\n*(not in this report)*\n")
-                else:
+                txts = r.get(seed, {}).get(a)
+                if not txts:
+                    o.append(f"\n**{lbl}**\n\n*(not in this report)*\n")
+                    continue
+                note = ("  *(only sample #1 survives in the .txt — the rest were "
+                        "discarded)*" if len(txts) == 1 else
+                        f"  *(all {len(txts)} samples)*")
+                o.append(f"\n**{lbl}**{note}\n")
+                for i, txt in enumerate(txts, 1):
                     body = txt.replace("\\n", "\n").replace("\\t", "\t")
-                    o.append("\n```\n" + body.strip() + "\n```\n")
+                    head = f"\nsample {i}/{len(txts)}\n" if len(txts) > 1 else "\n"
+                    o.append(head + "```\n" + body.strip() + "\n```\n")
         o.append("\n**Reading notes:** \n")   # left blank to be filled in by hand
     return "".join(o)
 

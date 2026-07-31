@@ -116,6 +116,12 @@ def main() -> None:
                         "converge, so effective depth (and the logits) differ. "
                         "Use this to compare against pre-2026-07 probe entries.")
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--json", default=None,
+                   help="Persist ALL decoded samples (not just the printed "
+                        "e.g.) plus their per-sample metrics. Use it: the .txt "
+                        "report shows 1-of-n chosen by position, and output "
+                        "quality is judged by reading pairs. tools/text_diff "
+                        "prefers this file when present.")
     args = p.parse_args()
 
     torch.manual_seed(args.seed)
@@ -155,13 +161,24 @@ def main() -> None:
         raise SystemExit("teacher failed to load")
     print(f"[probe] teacher {args.teacher_id} on {args.teacher_device}\n")
 
+    collected: dict | None = {} if args.json else None
+
     for seed_text in args.seeds:
         seed_ids = tok.encode(seed_text)[: args.seed_len]
         prompt = torch.tensor([seed_ids], device=sdev)
         print("=" * 78)
         print(f"SEED: {seed_text!r}  ({len(seed_ids)} tok)")
         for alpha in args.alphas:
+            # KEEP EVERY DECODED SAMPLE, not just the first (2026-07-31).
+            # This printed one `e.g.` — always sample #1 — and discarded the
+            # other n-1 texts, retaining only their numbers. Since output QUALITY
+            # is judged by READING prompt->output pairs (the aggregates have
+            # pointed the wrong way repeatedly), that meant every textual
+            # judgement in the probe history rests on 1-of-n, chosen by position
+            # rather than representativeness — and the rest are unrecoverable
+            # without re-running. `--json` now persists all of them.
             d1s, d2s, tss, example = [], [], [], None
+            texts: list[str] = []
             for _ in range(args.samples):
                 roll = generate_rollout(
                     student, teacher, prompt,
@@ -175,12 +192,34 @@ def main() -> None:
                 gen_ids = roll[0, len(seed_ids):].tolist()
                 d1, d2, ts = _rep_numbers(gen_ids)
                 d1s.append(d1); d2s.append(d2); tss.append(ts)
+                txt = tok.decode(gen_ids)
+                texts.append(txt)
                 if example is None:
-                    example = tok.decode(gen_ids)
+                    example = txt
             print(f"\n  α={alpha:<4} | top_share {_agg(tss)} | "
                   f"distinct1 {_agg(d1s)} | distinct2 {_agg(d2s)} | n={args.samples}")
             print(f"    e.g.: {example!r}")
+            if collected is not None:
+                collected.setdefault(seed_text, {})[str(alpha)] = {
+                    "texts": texts,
+                    "top_share": tss, "distinct1": d1s, "distinct2": d2s,
+                }
         print()
+
+    if collected is not None:
+        _write_json(args.json, collected, step, args)
+
+
+def _write_json(path, collected, step, args):
+    import json
+    from pathlib import Path as _P
+    _P(path).write_text(json.dumps(
+        {"step": step, "samples": args.samples, "temp": args.temp,
+         "top_k": args.top_k, "alphas": args.alphas, "seed": args.seed,
+         "rollout_len": args.rollout_len, "seeds": collected}, indent=2))
+    n = sum(len(v["texts"]) for a in collected.values() for v in a.values())
+    print(f"wrote {path} — {n} decoded samples retained "
+          f"(the .txt shows {len(collected)} of them)")
 
 
 if __name__ == "__main__":
