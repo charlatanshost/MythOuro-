@@ -124,6 +124,31 @@ backends, exactly as they do between any two backends.
 
 1. **PyTorch SDPA segfaults on XPU** inside HF models → force `eager`/manual
    attention (`attn_implementation="eager"`; custom models: bmm-based attention).
+   - **⚠ PARTIALLY OBSOLETE as of torch 2.13.0+xpu (re-tested 2026-07-30).** For
+     our *own* model's GQA path this is fixed and SDPA is now enabled
+     (`mythouro/main.py`, commit b83d1dc). Re-probed every shape the model
+     actually takes on a Max 1100 / i915 LTS 2523.x — including the exact
+     `enable_gqa=True` call with UNEXPANDED K/V (16 q-heads vs 4 kv-heads),
+     a *different kernel* from the pre-expanded one and the likely original
+     culprit. No segfault, no exception, max rel err 0.0040 (bf16 tolerance):
+     `enable_gqa B8 T1024` 0.72 ms vs 10.07 manual (**14.0x**);
+     `B32 T80` 0.27 vs 2.16 (**8.0x**); decode shapes 7.8–14.3x.
+     Reproduce with `tools/sdpa_probe.py` (one case per process, so a segfault
+     is distinguishable from a wrong answer by exit code).
+   - **MLA still uses manual — for SPEED, not safety.** With the K/V head-dim
+     mismatch (Dk=80, Dv=48) SDPA loses its fused path: 25.40 ms vs 9.08 manual
+     at B8 T1024 = **0.36x, ~3x SLOWER**. Gated separately as `sdpa_ok_for_mla`.
+   - **The end-to-end gain was ZERO.** 8–14x on the attention kernel moved step
+     time by ~1% (see `docs/training_throughput.md`) — attention is a small
+     slice next to 48 MoE experts run 4x per forward. Kept because it is free
+     and numerically gated (0.00200 nats KL), not because it bought throughput.
+   - **The HF-teacher half of this item still stands** — untested, leave `eager`.
+   - **FlashAttention-2 is not available on this hardware, ever.** `flash_attn`
+     is hand-written CUDA for sm80+; there is no SYCL/XPU build and it will not
+     compile. `_fa2_usable()` requires a CUDA compute capability, which is
+     `None` here. **torch SDPA on XPU IS the fused-attention path for this card**
+     — Intel's kernel filling the same role. Not a consolation prize, and per the
+     point above it would not have mattered anyway.
 2. **`topk`/`multinomial` sampling segfaults** → sample on CPU (negligible cost
    at batch sizes that matter).
 3. **Complex-dtype ops unsupported** → real-valued RoPE variant.

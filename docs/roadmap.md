@@ -33,6 +33,24 @@ mix is now **uniform** (code 20%→33%) to test whether the residual code weakne
 *dose*, since code was the least-fed domain. Detail: `docs/generation_probe_tracker.md`
 (07-25/27 entries). Everything below is the standing longer-form record.
 
+**UPDATE 2026-07-30 — THROUGHPUT: 2.3x measured, and the code-capability wall is CAPACITY.**
+Two independent results, both from new instruments, both correcting earlier reasoning:
+
+* **`--rollout-reuse 8` = 2.30x** (1,478 → ~3,400 tok/s live; 91M → ~209M tok/day). The
+  step profiler (`--profile-steps`) found **rollout generation was 72% of the step, the
+  teacher only 21%** — inverting three prior predictions and finally explaining the λ null
+  result. The bottleneck **rotates**: at reuse=8 the teacher becomes 54%, making the
+  teacher-logit cache the next lever and λ the one after. Cost is rollout *staleness*
+  (~23 steps), gated by `run_reuse8_ab.sh` against the reuse=2 control. Full record:
+  **`docs/training_throughput.md`**.
+* **Code L4 (correct code) = 0 across 240 generations with looping provably removed.** A
+  repetition penalty drives looping from 51/80 samples to 1/80 and doubles runnable output,
+  and L4 still does not move ⇒ **not a decoding problem**. Anti-repetition training comes
+  OFF the queue; the token pour and `grow_width.py` are reinforced. Note the split: code
+  correctness is **token**-bound (3.6 tok/param vs Chinchilla's 20), medical facts are
+  **capacity**-bound — so pour before growing. Detail: `docs/generation_probe_tracker.md`
+  (07-30 code-eval entry).
+
 **Current status (2026-06-17, updated 2026-07-21):** the generation-degeneration investigation is
 complete — it is **exposure bias** (a learned repetition attractor), **not**
 recurrent/hidden-state collapse (reps are healthy; verified with
