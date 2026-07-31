@@ -467,7 +467,35 @@ real training run on the promoted model.
 
 - **Hidden-dim growth (Net2Wider)**: separate doc when we're ready
 - **Layer-count growth (Net2Deeper)**: same
-- **Loop-count growth**: trivial, just `cfg.max_loop_iters += K`
+- ~~**Loop-count growth**: trivial, just `cfg.max_loop_iters += K`~~
+  **⚠ CORRECTED 2026-07-31 — it is NOT trivial, and doing exactly that fails
+  SILENTLY.** Four tensors are sized BY the loop count and hold the per-loop
+  adaptation the model has been learning for 70,500 steps:
+
+  | tensor | shape at 4 loops |
+  |---|---|
+  | `recurrent.lora.B` | (4, 8, 1280) |
+  | `recurrent.lora.scale.weight` | (4, 8) |
+  | `recurrent.ms_inject.blend` | (4, 3) |
+  | `recurrent.injection.scheduler.log_scale` | (4,) |
+
+  41,008 elements — 0.012% of 341.9M, so the *intuition* that it is nearly free
+  is right; 99.988% of the model is loop-shared and loads at any depth. But
+  bumping `max_loop_iters` alone makes all four shape-mismatch, and the loader's
+  `load_state_dict(strict=False)` **drops mismatched keys without a warning**.
+  The run resumes with that adaptation freshly reinitialised and nothing in the
+  logs says so.
+
+  Use **`tools/grow_depth.py`**, which expands them with a per-tensor init
+  policy (`lora.B` → zero, so new loops start as the bare block; everything else
+  → copy the last trained slot) and verifies that a forward at the ORIGINAL
+  depth is bit-identical (measured: 0.000e+00). It also drops optimizer state,
+  whose moments for the grown tensors still have the old shape.
+
+  Note also that depth cannot be added by *asking* at inference: the @70,500
+  `--n-loops` budget sweep was flat at 4/6/8 (median rel_err 0.400/0.400/0.400)
+  while n_loops=2 was clearly worse (0.500) — ACT halts at ~4 and ignores the
+  extra allowance. It has to be trained in.
 - **Cross-tokenizer expansion**: bigger vocabulary, requires
   embedding resize
 - **Pruning the source experts during promotion**: e.g., consolidating
