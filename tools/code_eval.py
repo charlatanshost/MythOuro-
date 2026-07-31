@@ -85,6 +85,34 @@ _TASKS = [
      "assert is_prime(7)\nassert not is_prime(8)"),
 ]
 
+# ── FRAMING: does the prompt look like the data the model was TRAINED on? ──
+#
+# The distillation mix feeds `codeparrot/codeparrot-clean` for code — whole
+# GitHub Python FILES: module docstring, imports, several functions in sequence.
+# The eval has always prompted with a BARE signature and expected a solved body,
+# which is a task the training distribution never demonstrates. So a persistent
+# L4=0 may be measuring a FORMAT MISMATCH rather than a capability wall — and
+# that distinction decides whether `grow_width.py` is the right next spend.
+#
+# `--framing file` wraps the same signature in realistic file context. Same
+# tasks, same ladder, same checks: only the door the model is asked to come
+# through changes. Compare bare-vs-file on ONE checkpoint; if L3/L4 jump, the
+# wall is the framing.
+#
+# The preamble is deliberately generic and unrelated to any task (no helper the
+# model could crib from), so it supplies CONTEXT, not answers.
+_FILE_PREAMBLE = '''"""Small utility helpers."""
+import math
+import os
+
+
+def _clamp(value, low, high):
+    """Bound `value` to the inclusive range [low, high]."""
+    return max(low, min(value, high))
+
+
+'''
+
 _RUNNER = """\
 import sys
 {code}
@@ -149,7 +177,14 @@ def score_sample(prompt: str, completion: str, fname: str,
     rung and 110 truncated characters, so any new question meant regenerating.
     """
     raw = (prompt + completion).replace("\\n", "\n").replace("\\t", "\t")
+    # Two repetition figures. `max_line_repeat` counts the whole prompt+completion
+    # and is what every report before 2026-07-31 used — keep it for continuity.
+    # `max_line_repeat_completion` counts ONLY what the model produced, which is
+    # the figure to use when comparing framings: a long `--framing file` preamble
+    # adds distinct lines and would otherwise make the same looping look milder.
     d = {"rung": 0, "max_line_repeat": _max_line_repeat(raw),
+         "max_line_repeat_completion": _max_line_repeat(
+             completion.replace("\\n", "\n").replace("\\t", "\t")),
          "lines_dropped": 0, "body_stmts": 0, "completion": completion}
     code, dropped = _truncate_to_parseable(raw)
     d["lines_dropped"] = dropped
@@ -269,6 +304,15 @@ def main() -> None:
                         "does the repetition attractor hide real capability? Sweep "
                         "1.0/1.15/1.3 — too high destroys code, which is itself a "
                         "result worth recording.")
+    p.add_argument("--framing", choices=("bare", "file"), default="bare",
+                   help="'bare' = prompt is just the signature (the historical "
+                        "default; every report before 2026-07-31 used it). "
+                        "'file' = the same signature wrapped in realistic Python "
+                        "FILE context, matching codeparrot-clean, which is what "
+                        "the model is actually trained on. Run both on ONE "
+                        "checkpoint: if L3/L4 jump under 'file', the L4=0 wall is "
+                        "a format mismatch, not a capability limit — which "
+                        "changes whether growing the model is the right spend.")
     p.add_argument("--seed", type=int, default=None,
                    help="Seed the sampler so RE-MEASURING A CHECKPOINT IS "
                         "REPRODUCIBLE. Added 2026-07-31 after an unseeded rerun "
@@ -288,12 +332,20 @@ def main() -> None:
         torch.manual_seed(args.seed)        # sampling is on CPU, so this is enough
     print(f"checkpoint step {step} | {args.samples} samples/task | "
           f"T={args.temperature} | rep_penalty={args.repetition_penalty} | "
-          f"seed={args.seed}\n")
+          f"seed={args.seed} | framing={args.framing}")
+    if args.framing == "file":
+        print("  prompts wrapped in file context — NOT comparable to bare-framing "
+              "reports; compare the two on the SAME checkpoint")
+    print()
 
     names = {0: "L0 nothing", 1: "L1 syntax", 2: "L2 defines",
              3: "L3 runs", 4: "L4 correct"}
     rows, hist, all_samples = [], {k: 0 for k in names}, []
     for fname, prompt, checks in _TASKS:
+        # ONE transform, used for BOTH generation and scoring — they must see
+        # the identical prompt or the ladder scores a different string than the
+        # model continued.
+        prompt = _FILE_PREAMBLE + prompt if args.framing == "file" else prompt
         best, best_txt, samples = 0, "", []
         for _ in range(args.samples):
             comp = generate(model, tok, prompt, args.device, args.max_new,
@@ -363,6 +415,7 @@ def main() -> None:
             {"step": step, "temperature": args.temperature,
              "repetition_penalty": args.repetition_penalty,
              "seed": args.seed,
+             "framing": args.framing,
              "samples": args.samples, "tasks": rows,
              "reached": {f"L{r}+": reach(r) for r in (1, 2, 3, 4)},
              "diagnostics": diag}, indent=2))
