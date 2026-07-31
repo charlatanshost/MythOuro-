@@ -183,6 +183,14 @@ def main() -> None:
                         "correct answer into contradicting itself.")
     p.add_argument("--temperature", type=float, default=0.4)
     p.add_argument("--n-loops", type=int, default=4)
+    p.add_argument("--force-full-depth", action="store_true",
+                   help="Suppress ACT early exit so the block actually runs the\n"
+                        "full --n-loops. WITHOUT this, --n-loops sets a BUDGET,\n"
+                        "not a depth: positions halt at act_threshold=0.99 and a\n"
+                        "larger allowance may simply go unused, so a flat sweep\n"
+                        "cannot distinguish 'depth does not help' from 'the extra\n"
+                        "depth was never taken'. Reported halt depth tells you\n"
+                        "which happened.")
     p.add_argument("--repetition-penalty", type=float, default=1.0)
     p.add_argument("--seed", type=int, default=None,
                    help="Seed the sampler so re-measuring a checkpoint is "
@@ -198,8 +206,12 @@ def main() -> None:
     model.eval()
     if args.seed is not None:
         torch.manual_seed(args.seed)
+    block = getattr(model, 'recurrent', None)
+    if args.force_full_depth and block is not None:
+        block.force_full_depth = True
     print(f"checkpoint step {step} | {args.samples} samples/task | "
-          f"T={args.temperature} | seed={args.seed}\n")
+          f"T={args.temperature} | seed={args.seed} | "
+          f"n_loops={args.n_loops} | force_full_depth={args.force_full_depth}\n")
 
     names = {0: "L0 nothing", 1: "L1 a number", 2: "L2 right form",
              3: "L3 buried", 4: "L4 CORRECT"}
@@ -212,6 +224,8 @@ def main() -> None:
                             args.repetition_penalty)
             s = score_sample(comp, [float(a) for a in answers], n_exp, kind,
                              prompt=prompt)
+            hs = getattr(block, 'last_halt_step', None) if block is not None else None
+            s['halt_depth'] = round(float(hs.float().mean()), 2) if hs is not None else None
             samples.append(s)
             if s["rung"] > best:
                 best, best_txt = s["rung"], comp
@@ -244,6 +258,11 @@ def main() -> None:
     errs = sorted(s["rel_err"] for s in all_samples if s["rel_err"] is not None)
     med_err = errs[len(errs) // 2] if errs else None
     near = sum(1 for e in errs if e <= 0.10)
+    hd = [s["halt_depth"] for s in all_samples if s.get("halt_depth") is not None]
+    if hd:
+        print(f"  ACTUAL halt depth: mean {sum(hd)/len(hd):.2f} of "
+              f"{args.n_loops} budgeted  <- if this is flat across a --n-loops "
+              f"sweep, the extra depth was never taken")
     print(f"  COPIED from prompt: {copied}/{tot} = {100 * copied / tot:.1f}%  "
           f"(echo, not arithmetic — falling means computation is starting)")
     print(f"  rel. error of closest number: median "
@@ -257,6 +276,9 @@ def main() -> None:
             {"step": step, "temperature": args.temperature, "seed": args.seed,
              "samples": args.samples,
              "repetition_penalty": args.repetition_penalty, "tasks": rows,
+             "n_loops": args.n_loops,
+             "force_full_depth": args.force_full_depth,
+             "mean_halt_depth": (sum(hd)/len(hd)) if hd else None,
              "copied_from_prompt": copied,
              "median_rel_err": med_err,
              "within_10pct": near,
