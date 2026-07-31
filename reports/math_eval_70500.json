@@ -1,0 +1,688 @@
+{
+  "step": 70500,
+  "temperature": 0.4,
+  "seed": 1234,
+  "samples": 8,
+  "repetition_penalty": 1.0,
+  "tasks": [
+    {
+      "task": "add",
+      "prompt": "12 + 7 =",
+      "answers": [
+        19
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1659,
+          "completion": " 12.\n\nWait, let me check the problem statement again.\n\nWait the original problem says:\n\nThe user provided a problem statement that's written in the original problem statement, but the user provided a problem statement"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.4167,
+          "completion": " 12.\n\nSo the answer is:\n\n\\[\n\n\\[\n\n\\]\n\n\\[\n\n\\]\n\n\\[\n\n\\]\n\n\\[\n\n\\]\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9167,
+          "completion": " 11 + 11 + 11 + 11 + 11 + 11 + 11 + 11 + 11 + 11 + 11 + 11 +"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6949,
+          "completion": " 11, 11 + 4 = 11 + 11 + 11 + 11 + 11 + 11 + 11 + 11 + 11 + "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1923,
+          "completion": " 11, and 12 + 12 = 11, and 12 + 12 = 12.\n\nWait, let me check the problem.\n\nWait, the original problem is"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.14,
+          "completion": " 11. \n\n**25555598898872887599992146999999993123999"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8963,
+          "completion": " 3\n\nSo the sum of the sum of the sum of the sum of the sum of the sum of the sum of the sum of the sum of the sum of the sum of the sum of the sum of the sum of the"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.661,
+          "completion": " 12, 12 + 12 = 12 + 12 + 12 = 12 + 12 + 12 = 12 + 12 + 12 +"
+        }
+      ]
+    },
+    {
+      "task": "sub",
+      "prompt": "45 - 18 =",
+      "answers": [
+        27
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3188,
+          "completion": " 18, which is 18. So the total is 18, which is 18.\n\nWait, perhaps I need to compute the sum of the sum of the sum of the sum of the sum of"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.7917,
+          "completion": " 18\n\nSo the answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\nThe answer is:\n\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1384,
+          "completion": " 18\n\nWait, but the original problem says \"the first two numbers are the same\". So the original equation is:\n\na^2 = 18\n\nWait, no, maybe the original problem is:"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4568,
+          "completion": " 18\n\nSo the answer is 18, which is 18, so 18 is 18, so 18 is 18, so 18 is 18, so "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.5614,
+          "completion": " 18\n\nSo, 18 = 18\n\nSo 18 = 18 = 18\n\nSo 18 = 18 = 18\n\nSo 18"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3636,
+          "completion": " 18\n\nWait, let me see:\n\nThe first 4, 20, 10, 10, 10, 10, 10, 10, 1"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0876,
+          "completion": " 18, 18 = 18, 18 = 18.\n\nThe problem is that the solution is not a solution to the problem, but it is not possible to solve the problem.\n\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.14,
+          "completion": " 18, so 18 is 18.\n\nWait, let me check the original problem.\n\nWait, the original problem: The problem is a 18-digit number, but the original problem is"
+        }
+      ]
+    },
+    {
+      "task": "mul",
+      "prompt": "6 * 7 =",
+      "answers": [
+        42
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1497,
+          "completion": " 16\n\nWait, no. Let me check the original problem again. The problem says \"the number of ways to arrange a cube with a 2-digit number\" but the problem statement says \"the number of ways to"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.5833,
+          "completion": " 11\n\nSo the answer is:\n\n**10**\n\n**10**\n\n**10**\n\n**10**\n\n**10**\n\n**10**\n\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4375,
+          "completion": " 11, 11, 12, 13, 12, 13, 14, 14, 14, 14, 14, 14,"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2481,
+          "completion": " 12.\n\nSo the number of ways to arrange a 2-digit number with 12.\n\nWe can also add 12 to the number of ways to arrange 12.\n\nWe can"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7917,
+          "completion": " 4, 14, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5167,
+          "completion": " 7 * 16 = 11 * 11 * 11 = 11 * 11 * 11 * 11 * 11 * 11 * 11 * "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9167,
+          "completion": " 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5721,
+          "completion": " 12, the number of ways to arrange the number of distinct numbers in the number of ways to arrange the number of ways to arrange the number of ways to arrange the number of ways to arrange the number of ways to arrange the number"
+        }
+      ]
+    },
+    {
+      "task": "div",
+      "prompt": "84 / 4 =",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.75,
+          "completion": " 12.\n\nSo, the correct answer is 12.\n\nSo, the correct answer is 12.\n\nSo, the correct answer is 12.\n\nSo, the correct answer is"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1047,
+          "completion": " 17\n\nWait, maybe I need to re-calculate the number of possible combinations of the first two terms. Let me check the problem again.\n\nWait the problem statement:\n\nThe problem statement says:\n\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.6437,
+          "completion": " 1.\n\nThe answer is:\n\n\\boxed{2}\n\nThe answer is:\n\n\\boxed{2}\n\nThe answer is:\n\n\\boxed{2}\n\n\\"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2333,
+          "completion": " 14\n\nSo, 2^(2) = 14\n\nSo, 2^(2) = 14\n\nWait, but the problem says the first part is 14, then"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.6071,
+          "completion": " 12.\n\nSo, 12 = 12.\n\nSo 12 = 12.\n\nSo 12 = 12.\n\nSo 12 = 12"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1032,
+          "completion": " 10^8\n\nSo the answer is: 10^8 = 10^8\n\nWait, but the problem says \"the number of people in the first part of the problem is 10^"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 14,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4085,
+          "completion": " 1 + 2.\n\nBut since 1 + 2 = 1, then 1 + 2 = 1 + 2 = 1 + 2 = 1 + 2 = 1 + "
+        },
+        {
+          "rung": 1,
+          "n_numbers": 1,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.25,
+          "completion": " 1.04\n\nSo the answer is:\n\n\\[\n\n\\[\n\n\\]\n\n\\[\n\n\\]\n\n\\]\n\n\\[\n\n\\]\n\n\\["
+        }
+      ]
+    },
+    {
+      "task": "pct",
+      "prompt": "10% of 250 is",
+      "answers": [
+        25
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2069,
+          "completion": " 100% of the total number of people who have been in the same room. The number of people who are in the same place is 100% of the total number of people in the first place.\n\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3357,
+          "completion": " 100% of the total amount of money.\n\nThe total amount is 100% of the total amount.\n\nThe total amount is 100% of the total amount of money.\n\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3151,
+          "completion": " 150, but the total is 150, so 100 is 150, so 150 is 150, so 150 is 150.\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2244,
+          "completion": " 150.\n\nThe total number of people who have been in the middle of the game is 100, but the number of people who are in the middle of the game is 100, and the"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6415,
+          "completion": " 400, and 100 is 100000000000000000000000000000000000"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1603,
+          "completion": " 100, so the total is 100, so the total is 100.\n\nWait, but the problem says \"the total number of people who are in the first place and then the total number"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4489,
+          "completion": " 100% of the total number of people in the country.\n\nThe total number of people in the country is 100% of the total number of people in the country.\n\nThe total number of people"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2292,
+          "completion": " 13, 12, 13, 13, 12, 14, 14, 14, 15, 15, 14, 12,"
+        }
+      ]
+    },
+    {
+      "task": "avg",
+      "prompt": "The average of 4, 8, and 12 is",
+      "answers": [
+        8
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1414,
+          "completion": " 3, 12.\n\nThe total number of people who are in the same category, which is 1, 2, 4, 1, 1, 1, 1, 1, "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2763,
+          "completion": " 10, and 10 is 12, and 12 is 12.\n\nThe average of 12, 12 is 12, and 12 is 12."
+        },
+        {
+          "rung": 2,
+          "n_numbers": 13,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6875,
+          "completion": " 3, 3, 4, 4, 10, 10, 10, 10, 10, 10, 10, 10, 10,"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5,
+          "completion": " 4, and 4 is 12.\n\nThe first 20000000000000000000000000000000"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.297,
+          "completion": " 14.\n\nThe average of 12 is 10.\n\nThe sum of the values of 12 is 12.\n\nThe sum of the values of 12.\n\nThe"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3115,
+          "completion": " 12.\n\nThe average of 12, 12, 12, 12 is 12, 12, 12, 12, 12, 12"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1548,
+          "completion": " 5, and the total number is 12.\n\nThe total number of ways to make a sequence of numbers, such as:\n\n- The number of ways to make a number of different numbers, such as 1"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9167,
+          "completion": " 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,"
+        }
+      ]
+    },
+    {
+      "task": "linear",
+      "prompt": "Solving 3x + 6 = 21 gives x =",
+      "answers": [
+        5
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.4426,
+          "completion": " 3x + 3 = 12.\n\nLet me see:\n\nx = 12\n\nx = 12\n\nx = 12\n\nx = 12\n\nx"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1781,
+          "completion": " 4, so x = 3x + 12 + 1 = 12.\n\nSo, the solution is:\n\nx = 12 + 12 + 12 + 12"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3797,
+          "completion": " 2x^2 + 12. \n\nThe solution is:\n\nx^2 = 12 + 12 + 12 + 12. \n\nThe solution is:\n\nx^"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 13,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3182,
+          "completion": " 11.\n\nThe equation is:\n\nx^2 + 2x^2 + 3x^2 + 2x^2 + 2x^2 + 2x^2 + 2"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.284,
+          "completion": " 25, so x = 27. \n\nThe equation x^2 + 3x^2 = 25 + 2x^2 = 25. \n\nThe equation x^2 + "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0606,
+          "completion": " 25.\n\nIn the case where x = 4, we can find the value of x.\n\nThe solution is:\n\nx = 12 + 2x + 12 + 12"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2,
+          "completion": " 11, which is a solution.\n\nWait, let me check again.\n\nWait, let me check again:\n\nThe problem is:\n\nWe have a number x, and we have to find x."
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2824,
+          "completion": " 21.\n\nThe solution is:\n\n\\[\n\\frac{4}{3} = 11 \\cdot 11 \\cdot 10 \\cdot 10 \\cdot 10 \\cdot"
+        }
+      ]
+    },
+    {
+      "task": "quadratic",
+      "prompt": "To solve the quadratic equation x^2 - 5x + 6 = 0, we find x =",
+      "answers": [
+        2,
+        3
+      ],
+      "rung": 3,
+      "label": "L3 buried",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2308,
+          "completion": " 0. The equation is:\n\nx^2 - 1 = 0.\n\nWe can solve the equation:\n\nx^2 - 1 = 0.\n\nWe can find the value of x"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1321,
+          "completion": " 0. \n\nTo solve the equation x^2 + 10x + 10x - 10x + 10x, we need to find the value of x. \n\nThe equation x^"
+        },
+        {
+          "rung": 3,
+          "n_numbers": 7,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.3333,
+          "completion": " 0.\n\nThe solution is:\n\nx^2 = 0.\n\nThe solution is:\n\nx^2 - 3x^2 = 0.\n\nThe solution is:\n\nx"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 13,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5455,
+          "completion": " 0.\n\nThe solution is:\n\nx^2 + 2x^2 + 2x^2 + 2x^2 + 2x^2 + 2x^2 + 2x"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0761,
+          "completion": " 0.\n\nThe equation x^2 - 5x + 10 = 0.\n\nTo find x, we need to find the value of x^2 + 10x^2.\n\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3696,
+          "completion": " 0. \n\nTo solve the equation x^2 + 6x + 5 = 0. \n\nTo solve the equation x^2 + 5x^2 + 5x + 5x^2"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4225,
+          "completion": " 0. \n\nThe equation y = x^2 + 2y + 6x + 2y + 2y + 2y + 2y + 2y + 2y + 2y"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 13,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2162,
+          "completion": " 0.\n\nThe quadratic equation x^2 - 5x^2 + 15x^2 + 15x^2 = 15x^2 + 15x^2 + 1"
+        }
+      ]
+    },
+    {
+      "task": "area",
+      "prompt": "The area of a rectangle 7 cm by 3 cm is",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.5328,
+          "completion": " 120 cm.\n\nThe length of the square is 120 cm.\n\nThe length of the square is 120 cm.\n\nThe length of the rectangle is 120 cm."
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2458,
+          "completion": " 14.\n\nThe area of a rectangle 12 inches is 14.\n\nThe area of a triangle 12.\n\nThe area of a rectangle 12.\n\nThe area of a"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2419,
+          "completion": " 2. 30 cm, 40 cm is 2. 40 cm. 3. 3. 3. 3. 40 cm. 40 cm. 40 cm."
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8542,
+          "completion": " 11. 12. 12. 12. 12. 12. 12. 12. 12. 12. 12. 12."
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.5077,
+          "completion": " 80 cm.\n\n**B. 1.5 cm**\n\n**B. 100 cm**\n\n**B. 100 cm**\n\n**B. 100 cm"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4062,
+          "completion": " 11. 100 cm = 100 cm. 100 cm = 100 cm. 100 cm. 100 cm. 100 cm. 1"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4907,
+          "completion": " 11. The length of the rectangle is 12. The width of the rectangle is 12. The length of the rectangle is 12. The length of the rectangle is 12. The length of the"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "max_line_repeat_completion": 9,
+          "lrs_frac": 0.8649,
+          "completion": " 3.\n\n**Answer**\n\n**Answer**\n\n**Answer**\n\n**Answer**\n\n**Answer**\n\n**Answer**\n\n**Answer**\n\n**Answer**\n\n**Answer**"
+        }
+      ]
+    },
+    {
+      "task": "frac",
+      "prompt": "1/2 + 1/4 =",
+      "answers": [
+        0.75
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2282,
+          "completion": " 1/4\n\nSo the answer is 1/4.\n\nWait, let me check the answer. The original problem is:\n\nThe problem is:\n\nThe original problem is:\n\nThe original problem"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.3696,
+          "completion": " 1/4\n\nWait, maybe I need to think about the problem.\n\nWait, let me see:\n\nThe problem is:\n\nThe problem is:\n\nThe problem is:\n\nThe problem is"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3051,
+          "completion": " 1/2, so 1/4 = 1/2, so 1/4 = 1/2.\n\nSo, 1/2 = 1/2, so 1/2 = "
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0924,
+          "completion": " 1/2, but we need to find the value of 1/2.\n\nWait, the problem says:\n\nThe equation is x^2 + 2^2 = 1/2, and the equation"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3452,
+          "completion": " 1/2.\n\nBut the problem says:\n\na = 1/2 + 1/2 + 1/2.\n\nSo, the problem says:\n\na = 1/2 +"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.2459,
+          "completion": " 1/2 + 1/2.\n\nSo, the answer is:\n\n\\[\n\n\\[\n\n\\[\n\n\\[\n\n\\]\n\n\\[\n\n\\]\n\n"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3556,
+          "completion": " 1/2 + 1/4, where the total number of possible combinations of the numbers in the first 1/4 is equal to the number of possible combinations of the numbers in the first 1/4, and the"
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2282,
+          "completion": " 1/2\n\nWait, but the problem says \"the number of distinct numbers in the first two points, which are not necessarily the same as the number of distinct numbers in the first two, but in the second, the second"
+        }
+      ]
+    }
+  ],
+  "per_sample_l4": 0.0,
+  "per_sample_l3plus": 0.0125,
+  "reached": {
+    "L1+": 10,
+    "L2+": 10,
+    "L3+": 1,
+    "L4+": 0
+  }
+}
