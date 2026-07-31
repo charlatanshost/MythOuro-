@@ -2264,7 +2264,8 @@ class MythOuro(nn.Module):
         input_ids: torch.Tensor,
         n_loops: Optional[int] = None,
         force_full_depth: bool = False,
-    ) -> "tuple[torch.Tensor, torch.Tensor]":
+        return_states: bool = False,
+    ) -> tuple:
         """
         Inference-only forward returning a per-recurrent-loop output trajectory.
 
@@ -2283,6 +2284,12 @@ class MythOuro(nn.Module):
             n_loops          -- recurrent depth; defaults to cfg.max_loop_iters.
                                 May be raised above the trained value
                                 (depth extrapolation).
+            return_states    -- when True return (None, unc_traj, states) with
+                                states (B,T,K,D) = the post-coda/post-norm hidden
+                                state per loop, and SKIP stacking logits. For
+                                training a depth policy: the caller computes
+                                head(states[...,k,:]) one loop at a time, because
+                                (B,T,K,V) is ~10GB in bf16 at training shape.
             force_full_depth -- when True, suppress ACT's convergence/halt-all
                                 early-exit so the loop runs the *full* n_loops.
                                 Lets the trajectory observe the loops ACT would
@@ -2330,6 +2337,7 @@ class MythOuro(nn.Module):
         K = traj.shape[2]
         logits_steps: list[torch.Tensor] = []
         unc_steps: list[torch.Tensor] = []
+        state_steps: list[torch.Tensor] = []
         for k in range(K):
             h = traj[..., k, :]
             for i, layer in enumerate(self.coda):
@@ -2337,11 +2345,24 @@ class MythOuro(nn.Module):
             if sink_len:
                 h = self.sink.strip(h)
             normed = self.norm(h)
-            logits_steps.append(self.head(normed))
+            if return_states:
+                # Post-coda, post-norm hidden state per loop — the exact input
+                # `self.head` and `self.uncertainty` consume. Returned so a depth
+                # policy can be trained on it WITHOUT re-deriving coda/sink/norm
+                # handling outside this method (which would silently drift).
+                state_steps.append(normed)
+            else:
+                logits_steps.append(self.head(normed))
             unc_steps.append(self.uncertainty(normed))
 
-        logits_traj = torch.stack(logits_steps, dim=2)  # (B, T, K, V)
         unc_traj = torch.stack(unc_steps, dim=2)          # (B, T, K)
+        if return_states:
+            # Logits are deliberately NOT stacked here: (B,T,K,V) is ~10GB in
+            # bf16 at B=8,T=1024,K=4. The caller computes `head(states[..,k,:])`
+            # one loop at a time and discards, which is the only way this fits
+            # alongside a 2.6B teacher.
+            return None, unc_traj, torch.stack(state_steps, dim=2)  # (B,T,K,D)
+        logits_traj = torch.stack(logits_steps, dim=2)  # (B, T, K, V)
         return logits_traj, unc_traj
 
     @torch.no_grad()
