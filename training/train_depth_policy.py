@@ -102,6 +102,11 @@ def main() -> None:
     p.add_argument("--lr", type=float, default=3e-4,
                    help="Higher than distillation LR: one small head trains from "
                         "a target it has never seen, and nothing else moves.")
+    p.add_argument("--act-weight", type=float, default=1.0,
+                   help="Weight on the ACTHalting loss relative to the "
+                        "UncertaintyHead loss. The ACT branch is the one that "
+                        "runs at real inference, so 0 disables the half that "
+                        "matters and is only useful for isolating the two.")
     p.add_argument("--temp", type=float, default=1.0,
                    help="Softmax temperature on -uncertainty when forming the "
                         "ranking loss.")
@@ -124,17 +129,32 @@ def main() -> None:
     # it. Only the halt/uncertainty branch learns.
     for prm in model.parameters():
         prm.requires_grad_(False)
+    # TWO heads, both consuming the same broken signal, both retrained here.
+    # They are genuinely separate modules and fixing one does NOT fix the other:
+    #   ACTHalting (recurrent.act)  -> p = act(h); cumulative_p >= act_threshold
+    #                                  decides the EARLY EXIT. This is what runs
+    #                                  at normal inference, and it fired at a
+    #                                  constant depth of 2.00 in all 24 measured
+    #                                  (domain x alpha) cells.
+    #   UncertaintyHead (.uncertainty) -> ranks loops for best-of-trajectory,
+    #                                  which the docs call "the supervision
+    #                                  signal, never the decode path".
+    # Supervising only the second would fix the diagnostic path and leave the
+    # production halt untouched.
     head = model.uncertainty
-    for prm in head.parameters():
+    act = model.recurrent.act
+    for prm in list(head.parameters()) + list(act.parameters()):
         prm.requires_grad_(True)
     head.train()
-    n_train = sum(p.numel() for p in head.parameters() if p.requires_grad)
+    act.train()
+    trainable = [p for p in list(head.parameters()) + list(act.parameters())
+                 if p.requires_grad]
+    n_train = sum(p.numel() for p in trainable)
     n_all = sum(p.numel() for p in model.parameters())
-    logger.info(f"training UncertaintyHead only: {n_train:,} / {n_all:,} params "
-                f"({100 * n_train / n_all:.3f}%)")
+    logger.info(f"training UncertaintyHead + ACTHalting: {n_train:,} / {n_all:,} "
+                f"params ({100 * n_train / n_all:.3f}%)")
 
-    opt = torch.optim.AdamW([p for p in head.parameters() if p.requires_grad],
-                            lr=args.lr, weight_decay=0.0)
+    opt = torch.optim.AdamW(trainable, lr=args.lr, weight_decay=0.0)
 
     ds = MixedDataset(encoding=enc, seq_len=args.seq_len, seed=args.seed)
     loader = DataLoader(ds, batch_size=args.micro_batch, num_workers=0)
@@ -143,7 +163,7 @@ def main() -> None:
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
     t0 = time.perf_counter()
-    run_loss = run_agree = run_gap = 0.0
+    run_loss = run_agree = run_gap = run_act = 0.0
     seen = 0
 
     for step in range(1, args.steps + 1):
@@ -176,19 +196,59 @@ def main() -> None:
         unc = torch.stack(
             [head(states[:, :, k, :].detach())
              for k in range(states.shape[2])], dim=-1)      # (B,T,K)
-        loss = F.cross_entropy(
+        loss_unc = F.cross_entropy(
             (-unc / args.temp).reshape(-1, unc.shape[-1]),
             best_k.reshape(-1),
         )
 
+        # ── STUDENT 2: the ACT halt distribution toward the same label ──
+        # `recurrent.last_halt_distribution` is the PonderNet P(halt at step n),
+        # (B,T,K) and normalised, built from lambdas that stay in the autograd
+        # graph — so a gradient reaches ACTHalting. It needs a SECOND, gradient-
+        # enabled forward: the teacher pass above ran under no_grad. That costs
+        # one extra forward, but the graph is tiny because every upstream
+        # parameter is frozen, so only the act linear's inputs are retained.
+        #
+        # force_full_depth is required here: without it the loop short-circuits
+        # at the current (constant, depth-2) halt and the distribution would only
+        # span the loops ACT chose to run — we would be supervising the policy on
+        # exactly the truncated view we are trying to correct.
+        model.recurrent.force_full_depth = True
+        try:
+            model(x, n_loops=args.n_loops)
+            halt_dist = model.recurrent.last_halt_distribution   # (B, T_ext, K)
+        finally:
+            model.recurrent.force_full_depth = False
+
+        # ⚠ STRIP THE ATTENTION SINK. The recurrent block runs on a SINK-EXTENDED
+        # sequence (`self.sink.prepend`, cfg.n_sink_tokens=4), so halt_dist is
+        # (B, T+n_sink, K) while best_k is (B, T) — forward_trajectory already
+        # stripped the sink from its states. Without this every label would be
+        # shifted by n_sink positions and the policy would train on a silently
+        # misaligned target. Caught only by asserting the shape.
+        pad = halt_dist.shape[1] - best_k.shape[1]
+        if pad:
+            halt_dist = halt_dist[:, pad:, :]
+        assert halt_dist.shape[:2] == best_k.shape, (
+            f"halt_dist {tuple(halt_dist.shape)} vs labels {tuple(best_k.shape)}"
+        )
+
+        loss_act = F.nll_loss(
+            torch.log(halt_dist.clamp_min(1e-9)).reshape(-1, halt_dist.shape[-1]),
+            best_k.reshape(-1),
+        )
+        loss = loss_unc + args.act_weight * loss_act
+
         opt.zero_grad(set_to_none=True)
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(head.parameters(), 1.0)
+        torch.nn.utils.clip_grad_norm_(trainable, 1.0)
         opt.step()
 
         with torch.no_grad():
             agree = (unc.argmin(-1) == best_k).float().mean()
+            act_agree = (halt_dist.argmax(-1) == best_k).float().mean()
         run_loss += float(loss.detach())
+        run_act += float(act_agree)
         run_agree += float(agree)
         run_gap += float(ce_final - ce_oracle)
         seen += 1
@@ -197,11 +257,12 @@ def main() -> None:
             dt = time.perf_counter() - t0
             logger.info(
                 f"step {step:5d}/{args.steps} | loss {run_loss / seen:.4f} "
-                f"| agree {100 * run_agree / seen:5.1f}% "
+                f"| unc-agree {100 * run_agree / seen:5.1f}% "
+                f"| ACT-agree {100 * run_act / seen:5.1f}% "
                 f"| oracle headroom {run_gap / seen:.4f} nats "
                 f"| {dt / step:.2f}s/step"
             )
-            run_loss = run_agree = run_gap = 0.0
+            run_loss = run_agree = run_gap = run_act = 0.0
             seen = 0
 
         if step % args.save_every == 0 or step == args.steps:
