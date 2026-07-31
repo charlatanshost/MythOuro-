@@ -440,6 +440,15 @@ def main() -> None:
     l3s = [s for s in all_samples if s["rung"] == 3]
     l3_looped = sum(1 for s in l3s if s["max_line_repeat"] >= 3)
     med_rep = sorted(s["max_line_repeat"] for s in all_samples)[tot // 2]
+    # Character-level figures must be computed BEFORE `diag` consumes them — an
+    # earlier edit left them below it, so the run crashed on UnboundLocalError at
+    # the very last statement, AFTER all 80 generations had been produced and
+    # discarded. Keep every derived value above the dict that reads it.
+    lrs = sorted(s["lrs_frac"] for s in all_samples)
+    med_lrs = lrs[len(lrs) // 2] if lrs else 0.0
+    char_deg = sum(1 for s in all_samples if s["lrs_frac"] >= 0.35)
+    blind = sum(1 for s in all_samples
+                if s["max_line_repeat_completion"] < 3 and s["lrs_frac"] >= 0.35)
     diag = {"samples_total": tot, "looped": looped,
             "per_sample_l3plus": round(p_l3, 4), "per_sample_l3plus_ci95": round(ci95, 4),
             "looped_frac": round(looped / tot, 3) if tot else 0.0,
@@ -448,11 +457,6 @@ def main() -> None:
             "char_degenerate": char_deg, "line_metric_blind": blind,
             "l3_samples": len(l3s), "l3_looped": l3_looped,
             "l3_looped_frac": round(l3_looped / len(l3s), 3) if l3s else None}
-    lrs = sorted(s["lrs_frac"] for s in all_samples)
-    med_lrs = lrs[len(lrs) // 2] if lrs else 0.0
-    char_deg = sum(1 for s in all_samples if s["lrs_frac"] >= 0.35)
-    blind = sum(1 for s in all_samples
-                if s["max_line_repeat_completion"] < 3 and s["lrs_frac"] >= 0.35)
     print(f"\n  repetition, BY LINE: {looped}/{tot} looped (>=3 identical lines), "
           f"median max-repeat {med_rep}")
     print(f"  repetition, BY CHARACTER: {char_deg}/{tot} degenerate "
