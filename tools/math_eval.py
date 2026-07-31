@@ -242,7 +242,12 @@ def main() -> None:
                 ids = torch.tensor([tok.encode(prompt)], device=args.device)
                 r = bot.generate(ids, max_new_tokens=args.max_new,
                                  temperature=args.temperature, top_k=50)
-                comp = tok.decode(list(r["generated_ids"]))
+                # Returns "sequences" = prompt + completion (1, T), NOT just the
+                # new tokens — slice the prompt off or every completion silently
+                # begins with the question restated, which would read as the
+                # model echoing and corrupt copied_from_prompt.
+                seq = r["sequences"][0].tolist()
+                comp = tok.decode(seq[ids.shape[1]:])
                 chosen = list(r.get("chosen_loops") or [])
             else:
                 comp = generate(model, tok, prompt, args.device, args.max_new,
