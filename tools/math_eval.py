@@ -52,6 +52,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from inspect_checkpoint import _load_model                      # noqa: E402
 from tools.code_eval import _lrs_frac, _max_line_repeat, generate  # noqa: E402
+from mythouro.inference import BestOfTrajectoryGenerator          # noqa: E402
 
 # (name, prompt, answers, n_expected, kind)
 #   answers    — every value that must appear for L4 (order-insensitive)
@@ -183,6 +184,18 @@ def main() -> None:
                         "correct answer into contradicting itself.")
     p.add_argument("--temperature", type=float, default=0.4)
     p.add_argument("--n-loops", type=int, default=4)
+    p.add_argument("--decoder", choices=("act", "best_of_trajectory"),
+                   default="act",
+                   help="'act' = the normal path: the recurrent block's ACT\n"
+                        "halting decides the exit. 'best_of_trajectory' scores\n"
+                        "EVERY loop with the UncertaintyHead and emits the most\n"
+                        "confident one per token — keeping the best step it saw\n"
+                        "rather than running deeper and trying to undo a bad\n"
+                        "one. The @70,500 sweep showed depth is inert under ACT;\n"
+                        "this is a DIFFERENT SELECTOR over the same trajectory\n"
+                        "and is untested against task correctness (the P0.5 audit\n"
+                        "measured calibration only). Needs no training. Slow:\n"
+                        "B=1, full recompute per token, no KV cache.")
     p.add_argument("--force-full-depth", action="store_true",
                    help="Suppress ACT early exit so the block actually runs the\n"
                         "full --n-loops. WITHOUT this, --n-loops sets a BUDGET,\n"
@@ -206,12 +219,17 @@ def main() -> None:
     model.eval()
     if args.seed is not None:
         torch.manual_seed(args.seed)
+    bot = (BestOfTrajectoryGenerator(
+               model, n_loops=args.n_loops, min_loops=2,
+               force_full_depth=args.force_full_depth)
+           if args.decoder == 'best_of_trajectory' else None)
     block = getattr(model, 'recurrent', None)
     if args.force_full_depth and block is not None:
         block.force_full_depth = True
     print(f"checkpoint step {step} | {args.samples} samples/task | "
           f"T={args.temperature} | seed={args.seed} | "
-          f"n_loops={args.n_loops} | force_full_depth={args.force_full_depth}\n")
+          f"n_loops={args.n_loops} | force_full_depth={args.force_full_depth} | "
+          f"decoder={args.decoder}\n")
 
     names = {0: "L0 nothing", 1: "L1 a number", 2: "L2 right form",
              3: "L3 buried", 4: "L4 CORRECT"}
@@ -219,13 +237,24 @@ def main() -> None:
     for name, prompt, answers, n_exp, kind in _TASKS:
         best, best_txt, samples = 0, "", []
         for _ in range(args.samples):
-            comp = generate(model, tok, prompt, args.device, args.max_new,
-                            args.n_loops, args.temperature,
-                            args.repetition_penalty)
+            chosen = None
+            if bot is not None:
+                ids = torch.tensor([tok.encode(prompt)], device=args.device)
+                r = bot.generate(ids, max_new_tokens=args.max_new,
+                                 temperature=args.temperature, top_k=50)
+                comp = tok.decode(list(r["generated_ids"]))
+                chosen = list(r.get("chosen_loops") or [])
+            else:
+                comp = generate(model, tok, prompt, args.device, args.max_new,
+                                args.n_loops, args.temperature,
+                                args.repetition_penalty)
             s = score_sample(comp, [float(a) for a in answers], n_exp, kind,
                              prompt=prompt)
             hs = getattr(block, 'last_halt_step', None) if block is not None else None
             s['halt_depth'] = round(float(hs.float().mean()), 2) if hs is not None else None
+            if chosen:
+                s['chosen_loops_mean'] = round(sum(chosen) / len(chosen), 2)
+                s['chosen_loops'] = chosen
             samples.append(s)
             if s["rung"] > best:
                 best, best_txt = s["rung"], comp
@@ -276,6 +305,7 @@ def main() -> None:
             {"step": step, "temperature": args.temperature, "seed": args.seed,
              "samples": args.samples,
              "repetition_penalty": args.repetition_penalty, "tasks": rows,
+             "decoder": args.decoder,
              "n_loops": args.n_loops,
              "force_full_depth": args.force_full_depth,
              "mean_halt_depth": (sum(hd)/len(hd)) if hd else None,

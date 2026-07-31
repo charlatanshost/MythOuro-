@@ -132,13 +132,24 @@ class UncertaintyGatedGenerator:
 
 
 def _sample(logits: torch.Tensor, temperature: float, top_k: int) -> torch.Tensor:
-    """Standard top-K + temperature sampler."""
-    logits = logits / max(temperature, 1e-5)
+    """Standard top-K + temperature sampler.
+
+    SAMPLES ON CPU. `topk` and `multinomial` segfault on XPU — workaround #2 in
+    docs/max1100_field_notes.md. That fix was applied in tools/collapse_metrics.py
+    and tools/code_eval.py but never here, so EVERY generator in this module
+    (BestOfTrajectory, ConfidenceAware, Speculative) would take the card down on
+    the first sampled token. The cost is negligible: one vocab-sized row per
+    step, and these are diagnostic paths that already recompute without a KV
+    cache. The returned index is moved back to the caller's device so the
+    concatenation into `input_ids` stays on-device.
+    """
+    dev = logits.device
+    logits = (logits / max(temperature, 1e-5)).cpu()
     if top_k > 0:
         v, _ = logits.topk(top_k)
         logits = logits.masked_fill(logits < v[:, -1:], float("-inf"))
     probs = F.softmax(logits, dim=-1)
-    return torch.multinomial(probs, num_samples=1)
+    return torch.multinomial(probs, num_samples=1).to(dev)
 
 
 # ---------------------------------------------------------------------------
