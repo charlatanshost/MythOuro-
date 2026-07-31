@@ -103,6 +103,10 @@ def main() -> None:
                    help="Rollouts per (seed, α). >1 reports mean [min-max] so a "
                         "single unlucky sample can't mislead the read.")
     p.add_argument("--n-loops", type=int, default=4)
+    p.add_argument("--force-full-depth", action="store_true",
+                   help="Suppress ACT early exit so the block runs the full "
+                        "--n-loops. Without it --n-loops is a BUDGET, not a "
+                        "depth.")
     p.add_argument("--seq-len", type=int, default=1024)
     p.add_argument("--no-sandwich-norm", action="store_true",
                    help="Build WITHOUT sandwich norm (default: WITH, matching "
@@ -129,6 +133,7 @@ def main() -> None:
 
     tok = MythOuroTokenizer(args.tokenizer)
 
+
     cfg = _VARIANTS[args.student_variant]()
     cfg.vocab_size = tok.vocab_size
     cfg.max_seq_len = args.seq_len
@@ -150,6 +155,9 @@ def main() -> None:
     student.load_state_dict(model_state, strict=False)
     step = ckpt.get("step", "?")
     student.eval()
+    _block = getattr(student, 'recurrent', None)
+    if args.force_full_depth and _block is not None:
+        _block.force_full_depth = True
     print(f"[probe] loaded {ckpts[-1]} (step {step}) on {sdev}")
 
     teacher = load_distillation_teacher(
@@ -179,6 +187,7 @@ def main() -> None:
             # without re-running. `--json` now persists all of them.
             d1s, d2s, tss, example = [], [], [], None
             texts: list[str] = []
+            halts: list[float] = []
             for _ in range(args.samples):
                 roll = generate_rollout(
                     student, teacher, prompt,
@@ -194,15 +203,25 @@ def main() -> None:
                 d1s.append(d1); d2s.append(d2); tss.append(ts)
                 txt = tok.decode(gen_ids)
                 texts.append(txt)
+                # HALT DEPTH per sample. The block halts when cumulative ACT
+                # probability crosses act_threshold; the sentinel is n_loops
+                # ('never converged'). Recorded per SEED so we can see whether
+                # the model allocates compute by DOMAIN — the architecture's
+                # actual claim — rather than only whether more depth helps.
+                _hs = getattr(_block, 'last_halt_step', None) if _block is not None else None
+                if _hs is not None:
+                    halts.append(round(float(_hs.float().mean()), 2))
                 if example is None:
                     example = txt
             print(f"\n  α={alpha:<4} | top_share {_agg(tss)} | "
-                  f"distinct1 {_agg(d1s)} | distinct2 {_agg(d2s)} | n={args.samples}")
+                  f"distinct1 {_agg(d1s)} | distinct2 {_agg(d2s)} | n={args.samples}"
+                  + (f" | halt {sum(halts)/len(halts):.2f}/{args.n_loops}" if halts else ""))
             print(f"    e.g.: {example!r}")
             if collected is not None:
                 collected.setdefault(seed_text, {})[str(alpha)] = {
                     "texts": texts,
                     "top_share": tss, "distinct1": d1s, "distinct2": d2s,
+                    "halt_depth": halts,
                 }
         print()
 
