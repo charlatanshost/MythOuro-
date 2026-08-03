@@ -26,6 +26,30 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
 
 ---
 
+## Hardware / inference efficiency
+
+- **Efficient LLM inference solution on Intel GPU** — Wu et al., Intel, 2023-12
+  (rev. 2024-06). arXiv **2401.05391**. *Intel engineers optimising LLM inference
+  on our exact hardware class. Three contributions, and their relevance to
+  MythOuro differs sharply:*
+  * **Decoder layer fusion** (fuse data movement + element-wise ops to cut
+    memory-access frequency) — the most relevant. Our recurrent block runs the
+    SAME layer n_loops times per token, so any per-layer fusion win multiplies by
+    loop count. But `docs/decode_kernel_optimization.md` already rules that
+    hand-written mega-kernel tier OUT for us (bespoke per backend, throwaway on
+    the Intel port, wrong scale at 278M/4 loops) and names `torch.compile` +
+    graph capture as "≈90% of the win, ≈5% of the effort". Read this paper as
+    evidence the fusion win is real on Intel silicon, not as a build order.
+  * **Custom SDPA kernel** — low marginal value. We enabled torch's XPU SDPA
+    2026-07-30: 8–14x on the attention kernel, ~0% end-to-end, because attention
+    is not where this model spends its seconds (48 MoE experts x 4 loops is).
+  * **Segment KV cache** (request/response KV in separate physical memory) —
+    irrelevant to training, where rollouts run `use_kv_cache=False` deliberately
+    (the ACT distribution-preserving finding), but relevant to DEPLOYMENT.
+  *Headline 7x latency / 27x throughput is inference vs an unoptimised
+  HuggingFace baseline — do not expect anything of that order here.*
+  See also `docs/decode_kernel_optimization.md`, `docs/max1100_field_notes.md`.
+
 ## Architecture — recurrent depth / looped / latent reasoning
 
 - **Huginn** — "Scaling up Test-Time Compute with Latent Reasoning: A Recurrent
