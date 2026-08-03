@@ -62,7 +62,9 @@ def probe(model, tok, device: str, n_loops: int, chunks: int,
           seq_len: int) -> dict:
     from mythouro.training_utils import MixedDataset
 
-    ds = MixedDataset(encoding=tok, seq_len=seq_len, seed=0)
+    # rank/world_size are REQUIRED positionally — matches training/distill.py
+    # (`MixedDataset(encoding, seq_len, rank=0, world_size=1, ...)`).
+    ds = MixedDataset(tok, seq_len, rank=0, world_size=1, seed=0)
     it = iter(ds)
 
     best_hist: Counter = Counter()

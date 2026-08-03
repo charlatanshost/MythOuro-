@@ -156,7 +156,8 @@ def main() -> None:
 
     opt = torch.optim.AdamW(trainable, lr=args.lr, weight_decay=0.0)
 
-    ds = MixedDataset(encoding=enc, seq_len=args.seq_len, seed=args.seed)
+    # rank/world_size are REQUIRED — same construction as training/distill.py.
+    ds = MixedDataset(enc, args.seq_len, rank=0, world_size=1, seed=args.seed)
     loader = DataLoader(ds, batch_size=args.micro_batch, num_workers=0)
     it = iter(loader)
 
