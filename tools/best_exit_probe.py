@@ -134,6 +134,13 @@ def main() -> None:
                    help="Scored depth. Above the trained 4 is deliberate: the "
                         "question is whether USEFUL depth exists beyond where "
                         "ACT stops, not what ACT does.")
+    p.add_argument("--trained-loops", type=int, default=4,
+                   help="The depth training actually emits from (cfg."
+                        "max_loop_iters). Headroom is measured against THIS, not "
+                        "against the last SCORED loop: with --n-loops 8 the final "
+                        "loop is off-distribution and bad, which inflates the gap "
+                        "and flatters a depth router that would never be compared "
+                        "against it in production.")
     p.add_argument("--chunks", type=int, default=12)
     p.add_argument("--seq-len", type=int, default=256)
     p.add_argument("--json", default=None)
@@ -160,12 +167,22 @@ def main() -> None:
 
     print("\n  CE per loop:", "  ".join(f"{k}:{c:.3f}"
                                         for k, c in enumerate(r["ce_per_loop"])))
-    gap = r["ce_final_loop"] - r["ce_oracle_best"]
-    print(f"\n  CE at final loop  {r['ce_final_loop']:.4f}   <- what training emits")
-    print(f"  CE at head choice {r['ce_head_choice']:.4f}")
-    print(f"  CE at ORACLE exit {r['ce_oracle_best']:.4f}")
-    print(f"  headroom (final - oracle): {gap:.4f} nats "
-          f"({100 * gap / max(r['ce_final_loop'], 1e-9):.1f}%)")
+    ti = min(args.trained_loops, len(r["ce_per_loop"])) - 1
+    ce_trained = r["ce_per_loop"][ti]
+    gap = ce_trained - r["ce_oracle_best"]
+    r["ce_trained_depth"] = ce_trained
+    r["headroom_nats"] = gap
+    print(f"\n  CE at loop {ti} (trained depth) {ce_trained:.4f}   <- what "
+          f"training emits")
+    print(f"  CE at last scored loop  {r['ce_final_loop']:.4f}   (off-distribution "
+          f"if > trained depth — NOT the baseline)")
+    print(f"  CE at head choice       {r['ce_head_choice']:.4f}")
+    print(f"  CE at ORACLE exit       {r['ce_oracle_best']:.4f}")
+    print(f"  headroom vs trained depth: {gap:.4f} nats "
+          f"({100 * gap / max(ce_trained, 1e-9):.1f}%)")
+    if r["ce_head_choice"] > ce_trained:
+        print(f"  ⚠ the head's selection is WORSE than a fixed depth of {ti} — "
+              f"the current selector is actively harmful.")
 
     n_used = len(r["best_exit_hist"])
     print()
