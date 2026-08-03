@@ -89,8 +89,8 @@ def probe(model, tok, device: str, n_loops: int, chunks: int,
         B, T, K, V = logits_traj.shape
 
         # Per-loop CE against the gold next token, per position. Computed loop by
-        # loop so we never hold (B,T,K,V) in float32 — at training shapes that
-        # tensor alone is ~10GB in bf16.
+        # loop so we never hold (B,T,K,V) in float32 — at training shape that
+        # tensor alone is ~3.2GB in bf16 (vocab 49,152).
         ce = torch.empty(B, T, K, device=device, dtype=torch.float32)
         for k in range(K):
             ce[:, :, k] = F.cross_entropy(

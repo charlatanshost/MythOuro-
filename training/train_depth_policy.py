@@ -71,8 +71,9 @@ def per_loop_ce(model, states: torch.Tensor, targets: torch.Tensor
                 ) -> torch.Tensor:
     """(B,T,K) CE of each loop's logits against the gold next token.
 
-    Computed one loop at a time and discarded: stacking (B,T,K,V) is ~10GB in
-    bf16 at training shape, which does not fit beside the rest of the run.
+    Computed one loop at a time and discarded: stacking (B,T,K,V) is ~3.2GB in
+    bf16 at B=8,T=1024,K=4 (vocab 49,152) — real memory beside a 2.6B teacher
+    and an optimizer, and it scales with K.
     """
     B, T, K, _ = states.shape
     ce = torch.empty(B, T, K, device=states.device, dtype=torch.float32)

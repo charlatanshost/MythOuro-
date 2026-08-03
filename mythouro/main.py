@@ -2289,7 +2289,7 @@ class MythOuro(nn.Module):
                                 state per loop, and SKIP stacking logits. For
                                 training a depth policy: the caller computes
                                 head(states[...,k,:]) one loop at a time, because
-                                (B,T,K,V) is ~10GB in bf16 at training shape.
+                                (B,T,K,V) is ~3.2GB in bf16 at B=8,T=1024,K=4 (vocab 49,152).
             force_full_depth -- when True, suppress ACT's convergence/halt-all
                                 early-exit so the loop runs the *full* n_loops.
                                 Lets the trajectory observe the loops ACT would
@@ -2357,8 +2357,9 @@ class MythOuro(nn.Module):
 
         unc_traj = torch.stack(unc_steps, dim=2)          # (B, T, K)
         if return_states:
-            # Logits are deliberately NOT stacked here: (B,T,K,V) is ~10GB in
-            # bf16 at B=8,T=1024,K=4. The caller computes `head(states[..,k,:])`
+            # Logits are deliberately NOT stacked here: (B,T,K,V) is ~3.2GB in
+            # bf16 at B=8,T=1024,K=4 (Ouro vocab 49,152), and scales with K.
+            # The caller computes `head(states[..,k,:])`
             # one loop at a time and discards, which is the only way this fits
             # alongside a 2.6B teacher.
             return None, unc_traj, torch.stack(state_steps, dim=2)  # (B,T,K,D)
