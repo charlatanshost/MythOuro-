@@ -13,12 +13,41 @@ A verified, file-by-file account of how this fork (**MythOuro**,
 
 ## Verdict
 
-Not a rebrand. `main.py` alone went from 1,085 → 1,911 lines with **1,076
+Not a rebrand. `main.py` alone went from 1,085 → 1,911 lines (2,422 as of 2026-08-03) with **1,076
 changed/added lines** — only ~1% of the upstream file survives untouched. The
 architecture *skeleton* (RMSNorm, RoPE, GQA/MLA attention, MoE, the
 Prelude→Recurrent→Coda loop with LTI injection and ACT halting) is inherited;
 nearly everything around it is new or reworked, and a full distillation → SFT →
 model-growth training pipeline was built on top.
+
+### Clarification (2026-08-03): "ACT halting" inherited is true of the CLASS, not the system
+
+Verified against upstream `open_mythos/main.py` (fetched, not recalled).
+`ACTHalting` does exist upstream at line 750 — a 38-line Graves-2016 halting
+head; MythOuro's is 45 lines and barely changed. So the class is inherited.
+
+But the adaptive-depth SYSTEM around it is entirely net-new. Occurrences in
+upstream `main.py` vs MythOuro's:
+
+| machinery | upstream | MythOuro |
+|---|---:|---:|
+| PonderNet halt distribution | 0 | 5 |
+| `last_halt_distribution` / `halt_dist` | 0 | 10 |
+| `force_full_depth` | 0 | 9 |
+| `last_halt_step` telemetry | 0 | 3 |
+| convergence early-exit (`conv_eps`) | 0 | 10 |
+| depth regulariser | 0 | 3 |
+| `collect_trajectory` | 0 | 7 |
+
+Upstream has a halt probability and a cumulative threshold. It has no halt
+DISTRIBUTION, no regulariser shaping it, no convergence exit, no forced-depth
+counterfactual, no per-loop telemetry, and no trajectory capture — hence no
+`forward_trajectory` and no `BestOfTrajectoryGenerator`. Every instrument used
+to diagnose the halting policy (2026-07-31/08-03) sits on machinery that does
+not exist upstream.
+
+Read the summary line above as: the halting PRIMITIVE was inherited; the
+adaptive-depth architecture was built here.
 
 ## 1. File-level diff (quantified)
 
@@ -28,7 +57,7 @@ model-growth training pipeline was built on top.
 | `tokenizer.py` | 64 L | 155 L | 171 | Heavily rewritten (Ouro alignment) |
 | `variants.py` | 198 L | 351 L | 211 | Heavily changed (distill variants) |
 | `__init__.py` | 55 L | 61 L | 50 | Renamed exports + new variants |
-| `moda.py` | 1,063 L | 1,063 L | **0** (line-endings only) | **Genuinely unchanged** |
+| `moda.py` | 1,063 L | — | **0** | **Moved to `examples/`** (2026-08-03: no longer in the package; nothing outside `examples/` imports it, so ZERO upstream lines run in the model) |
 
 `moda.py` is the only truly shared module — a self-contained DeepSeek-style MoE
 implementation (`MoDAConfig`, `DeepSeekExpert`, `DeepSeekGate`, `DeepSeekMoE`)
