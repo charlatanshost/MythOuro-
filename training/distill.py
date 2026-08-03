@@ -240,6 +240,19 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                    help="Escape hatch: inline per-micro-step rollout "
                         "generation with full O(L^2) recompute (the "
                         "pre-buffer, pre-KV-cache behaviour).")
+    p.add_argument("--compile", choices=("off", "teacher", "student", "both"),
+                   default="off",
+                   help="torch.compile the TRAINING forwards (automatic kernel "
+                        "fusion + launch reduction). Field notes measured +10%% "
+                        "end-to-end on XPU with zero graph breaks, and it has "
+                        "never been wired into this trainer. Needs "
+                        "TRITON_DEFAULT_BACKEND=intel and intel-ocloc. DEFAULT "
+                        "MODE ONLY -- max-autotune replaces oneDNN's XMX GEMMs "
+                        "with Triton templates and LOSES on PVC (14.9k vs 17.2k "
+                        "tok/s, measured). The GENERATION path is deliberately "
+                        "left in eager: rollout grows the sequence every token, "
+                        "so a compiled graph would recompile per length and can "
+                        "easily cost more than the fusion saves.")
     p.add_argument("--profile-steps", type=int, default=0,
                    help="DIAGNOSTIC, NOT TRAINING. Profile this many steps after "
                         "--profile-warmup, print a per-component wall-clock "
@@ -615,6 +628,26 @@ def main():
     last_ckpt_time = time.perf_counter()
     log_every = args.log_every
 
+    # ── torch.compile aliases (training forwards only) ──
+    # The raw `student` / `teacher` handles stay in use for GENERATION and for
+    # checkpointing; only the fixed-shape training forwards go through the
+    # compiled wrappers. That split matters twice:
+    #   * generation grows the sequence each token -> a compiled graph would
+    #     recompile per length, and the rollout is 31% of the step;
+    #   * save_checkpoint(student, ...) must see the ORIGINAL module, or every
+    #     key acquires an `_orig_mod.` prefix and the checkpoint stops loading.
+    student_fwd, teacher_fwd = student, teacher
+    if args.compile != "off":
+        if args.compile in ("student", "both"):
+            student_fwd = torch.compile(student)          # default mode ONLY
+        if args.compile in ("teacher", "both") and teacher is not None:
+            teacher_fwd = torch.compile(teacher)
+        logger.info(
+            f"torch.compile={args.compile} (default mode); generation and "
+            f"checkpointing still use the uncompiled modules. First steps will "
+            f"be slow while Inductor builds."
+        )
+
     prof = _StepProfiler(str(device), enabled=args.profile_steps > 0)
     if prof.enabled:
         logger.info(f"PROFILING MODE: {args.profile_warmup} warmup steps, then "
@@ -737,11 +770,11 @@ def main():
                 # NOTE: this runs on EVERY micro-step, on-policy or offline. It is
                 # the prime suspect for the λ null result — see _StepProfiler.
                 with prof.region("teacher_fwd"):
-                    t_logits = teacher_logits(teacher, x_in).to(device)
+                    t_logits = teacher_logits(teacher_fwd, x_in).to(device)
 
                 # ── Student forward ──
                 with prof.region("student_fwd"):
-                    s_logits, unc = student(x_in, n_loops=n_loops)
+                    s_logits, unc = student_fwd(x_in, n_loops=n_loops)
 
                 # ── Distillation (+ CE blend on the offline path) ──
                 distill_total, distill_metrics = distillation_loss(
