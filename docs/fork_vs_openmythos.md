@@ -13,8 +13,46 @@ A verified, file-by-file account of how this fork (**MythOuro**,
 
 ## Verdict
 
-Not a rebrand. `main.py` alone went from 1,085 → 1,911 lines (2,422 as of 2026-08-03) with **1,076
-changed/added lines** — only ~1% of the upstream file survives untouched. The
+Not a rebrand — but the "~1% survives" figure below was a diff artifact, corrected
+2026-08-03. `main.py` went from 1,085 → 1,911 lines (2,422 as of 2026-08-03).
+
+**Two measurements, both valid, measuring different things:**
+
+* **Diff-based (the original claim):** 1,076 of 1,085 lines land in changed
+  hunks, i.e. ~1% survive *untouched in place*. But `diff` marks a line changed
+  when its CONTEXT moves, and ~1,300 lines were inserted throughout — so most of
+  those are identical content in a shifted position. As a measure of rewrite it
+  is misleading.
+* **Content-based (measured against the fetched upstream):** **77.6% of upstream
+  SUBSTANTIVE lines** (blanks, comments and sub-18-char boilerplate excluded)
+  still appear in the corresponding class.
+
+| class | upstream | MythOuro | % kept |
+|---|---:|---:|---:|
+| `Expert` | 16 | 17 | **100%** |
+| `ACTHalting` | 17 | 18 | **100%** |
+| `MythOuroConfig` | 46 | 63 | 93.5% |
+| `TransformerBlock` | 31 | 46 | 87.1% |
+| `MLAttention` | 86 | 98 | 86.0% |
+| `MoEFFN` | 65 | 96 | 81.5% |
+| `MythOuro` | 112 | 214 | 80.4% |
+| `GQAttention` | 67 | 93 | 74.6% |
+| `RMSNorm` | 41 | 59 | 73.2% |
+| `RecurrentBlock` | 60 | 172 | 68.3% |
+| `LTIInjection` | 32 | 43 | 50.0% |
+| `LoRAAdapter` | 25 | 36 | **28.0%** |
+| **total** | **598** | **955** | **77.6%** |
+
+⇒ The inherited classes were heavily **EXTENDED** (+60% substantive lines), not
+heavily **REWRITTEN**. Only `LoRAAdapter` and `LTIInjection` were genuinely
+reworked; `Expert` and `ACTHalting` are effectively verbatim.
+
+The divergence is real but it lives ELSEWHERE: six net-new classes, the entire
+adaptive-depth system built around the inherited ACT primitive (see the
+clarification below), and 27,906 lines of Python against upstream's ~2,465 —
+distillation, on-policy/GKD, teacher corpus, eval suite, growth tooling. The
+model file inherited a working skeleton and kept most of it; the research
+project was built alongside it. The
 architecture *skeleton* (RMSNorm, RoPE, GQA/MLA attention, MoE, the
 Prelude→Recurrent→Coda loop with LTI injection and ACT halting) is inherited;
 nearly everything around it is new or reworked, and a full distillation → SFT →
