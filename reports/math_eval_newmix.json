@@ -1,0 +1,935 @@
+{
+  "step": 82711,
+  "temperature": 0.4,
+  "seed": 1234,
+  "samples": 8,
+  "repetition_penalty": 1.0,
+  "tasks": [
+    {
+      "task": "add",
+      "prompt": "12 + 7 =",
+      "answers": [
+        19
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 1,
+          "n_numbers": 9,
+          "copied_from_prompt": false,
+          "rel_err": 0.3421,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3167,
+          "completion": " 11.77\n\nSo, the answer is 12.12.11.5.12.5.5.5.5.5.5.5.5.5.5.",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": true,
+          "rel_err": 0.3684,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.4909,
+          "completion": " 12.\n\nThus, the answer is 12.\n\nTherefore, the answer is 12.\n\nTherefore, the answer is 12.\n\nThe answer is 12.\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 13,
+          "copied_from_prompt": false,
+          "rel_err": 0.3684,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2459,
+          "completion": " 11 + 11 + 7 = 11 + 11 + 6 + 7 = 12 + 12 + 7 = 12 + 7 = 12 + ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 13,
+          "copied_from_prompt": false,
+          "rel_err": 0.4211,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3559,
+          "completion": " 11, 11 + 4 = 11 + 7 = 11 + 7 = 11, 11 + 7 = 11 + 7 = 11 + ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 5.789473684210526e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9167,
+          "completion": " 11000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.5789473684210526e+45,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": " 30000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.8947,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2721,
+          "completion": " 36\n\nBut wait, the problem is that the number is 36, so the number is 36, but the number is 36, and the number is 36, and the number is ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": false,
+          "rel_err": 0.6316,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3158,
+          "completion": " 1000 + 7 = 10000 + 7 = 100000 + 7 + 7 = 100000 + 7 = 100",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "sub",
+      "prompt": "45 - 18 =",
+      "answers": [
+        27
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.1852,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3839,
+          "completion": " 22\n\n**Answer**\n\n**Answer**\n\n**Explanation**\n\nThe answer is 32, which is 32, which is 32, which is 32, which is ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9167,
+          "completion": " 0.000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.4815,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3982,
+          "completion": " 14.00\n\nThe total cost of the water supply is 14.00, which is 14.00.\n\nThe total cost of the water supply is 14.00",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.6593,
+          "completion": " 12\n\nSo the number of 18 is 12.\n\nSo the number of 18 is 12.\n\nSo the number of 18 is 12.\n\nSo",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 8.463,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8542,
+          "completion": " 255.5, 255.5, 255.5, 255.5, 255.5, 255.5, 255.5",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 6.4074,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.875,
+          "completion": " 200.0000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9167,
+          "completion": " 0.000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.5926,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.398,
+          "completion": " 11\n\n**Answer**\n\nThe correct answer is: 11\n\n**Answer:** 11\n\n**Answer:** 11\n\n**Answer:** 11\n\n**\n\n**",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "mul",
+      "prompt": "6 * 7 =",
+      "answers": [
+        42
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.3809523809523808e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": " 10000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 10,
+          "copied_from_prompt": false,
+          "rel_err": 0.9643,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8596,
+          "completion": " 0.5 * 1.5 * 1.5 * 1.5 * 1.5 * 1.5 * 1.5 * 1.5 * 1.5 * 1.",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 1.381,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4776,
+          "completion": " 100\n\nSo, the number of hours is 1000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 0.7143,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8667,
+          "completion": " 12 * 11 * 11 * 11 * 11 * 11 * 11 * 11 * 11 * 11 * 11 * 11 *",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.3809523809523808e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": " 10000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": true,
+          "rel_err": 0.619,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5167,
+          "completion": " 7 * 16 = 11 * 11 * 11 = 11 * 11 * 11 * 11 * 11 * 11 * 11 * ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.3809523809523808e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": " 10000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 13,
+          "copied_from_prompt": false,
+          "rel_err": 0.7143,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5667,
+          "completion": " 12 * 7 = 12 * 7 * 12 = 12 * 12 = 12 * 12 = 12 * 12 = 12 * 1",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "div",
+      "prompt": "84 / 4 =",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "completion": " 12.00000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 15,
+          "copied_from_prompt": false,
+          "rel_err": 0.1429,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3175,
+          "completion": " 17 / 3 = 7 / 3 = 18 / 3 * 3 = 18 / 3 = 3 * 3 = 3 * 3 = 3 * 3 =",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9512,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0625,
+          "completion": " 1.023799753997266676204487041556822181317728146",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 0.9762,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.561,
+          "completion": " 0.5\n\nSo, the correct answer is 0.5, which is 0.5, and the correct answer is 0.5, which is 0.5, and the correct answer is 0",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.4048,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7959,
+          "completion": " 12.5 * 10000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 5.610748444397026e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3125,
+          "completion": " 11782571733233756216853745492510000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 16,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.254,
+          "completion": " 12 + 2 + 2 + 4 + 2 + 4 + 4 + 2 + 4 + 2 + 3 + 2 + 2 + 2 + 2 + 2",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 5.714285714285715e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9167,
+          "completion": " 12000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "pct",
+      "prompt": "10% of 250 is",
+      "answers": [
+        25
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 3.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5075,
+          "completion": " 100% of the total cost of the 200000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.6029,
+          "completion": " 20% of the original price.\n\n**Answer**\n\nThe answer is 20% of the original price.\n\n**Answer**\n\nThe answer is 20% of the original price.\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 3.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4156,
+          "completion": " 100% of the total number of people in the 2000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 9.2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3797,
+          "completion": " 255.\n\nThe total number of people in the first 20000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.6,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3737,
+          "completion": " 40% of 450.\n\n**Answer**\n\nThe answer is 255.\n\n**Answer**\n\nThe answer is 255.\n\n**Explanation:**\n\nThe",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 7.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1517,
+          "completion": " the same as the average of the two largest numbers.\n\nThe number of years in the first two years is 200, and the number of years is 200. The number of years in the second year is",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 8e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": " 20000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 51.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2105,
+          "completion": " 1300. So the total cost is 2100.\n\nWait, but the total cost is 2100. The total cost is 2100. So, the total cost is",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "avg",
+      "prompt": "The average of 4, 8, and 12 is",
+      "answers": [
+        8
+      ],
+      "rung": 3,
+      "label": "L3 buried",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.5569,
+          "completion": " not an integer.\n\nThe number of people in the first 12 is not a prime number.\n\nThe number of people in the first 12 is not a prime number.\n\nThe number of people in the",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 3,
+          "n_numbers": 16,
+          "copied_from_prompt": false,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2708,
+          "completion": " 2, 4, 5, 6, 7, 7, 7, 6, 7, 6, 7, 8, 7, 7, 6, 7,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 3,
+          "n_numbers": 11,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1321,
+          "completion": " calculated using the following formula: \n\nThe average of the average of 4, 5, 6, 7, 7, 7, 8, 8, 7, 8, 8, ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3924,
+          "completion": " not a valid value.\n\nThe correct answer is: 12.00000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 0.75,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2292,
+          "completion": " 14, 15, 17, 18, 20, 20, 30, 30, 20, 30, 20, 20,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 16,
+          "copied_from_prompt": true,
+          "rel_err": 0.25,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5417,
+          "completion": " 12, 3, 3, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 6, 4",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "copied_from_prompt": true,
+          "rel_err": 0.125,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0889,
+          "completion": " not a valid value.\n\nThe problem is to find the number of 4, 1, 2, 3, 5, 6, 6, 6, 7, 7, 7,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 15,
+          "copied_from_prompt": false,
+          "rel_err": 0.25,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6042,
+          "completion": " 5, 5, 10, 5, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, ",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "linear",
+      "prompt": "Solving 3x + 6 = 21 gives x =",
+      "answers": [
+        5
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 1,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 3.2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2917,
+          "completion": " 31.565, 21.566, 21.56, 21.566, 21.55, 21.56, 21",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 13,
+          "copied_from_prompt": false,
+          "rel_err": 0.2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4915,
+          "completion": " 4, 3x + 2x + 2x + 4 = 3x + 2x + 2x + 2x + 2x + 2x + 2x + 1",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 6,
+          "copied_from_prompt": false,
+          "rel_err": 5.6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2105,
+          "completion": " 33, and 33.5 is the same as 33.5, which is the same as 33.5.\n\nThe answer is 33.5, which is 33.",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 5.0,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2632,
+          "completion": " 30.\n\nThe equation is:\n\nx = 30\n\nThis equation is equivalent to x = 30\n\nThe equation is:\n\nx = 30\n\nThe equation is x",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 3.4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5,
+          "completion": " 22, so x = 22, and x = 22, so x = 22, so x = 22, and x = 22, so x = 22, and x",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.6,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2743,
+          "completion": " 22.\n\nThe solutions to the equation:\n\nx + 2 = 22.\n\nThe solution to the equation is:\n\nx + 2 = 22.\n\nThe solution to",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 12,
+          "copied_from_prompt": false,
+          "rel_err": 5.2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2917,
+          "completion": " 31, 32, 33, 32, 33, 33, 33, 33, 43, 33, 43, 43,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 5.4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.05,
+          "completion": " 32.\n\nThe equation x = 33.6555627634257357756657242842881272",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "quadratic",
+      "prompt": "To solve the quadratic equation x^2 - 5x + 6 = 0, we find x =",
+      "answers": [
+        2,
+        3
+      ],
+      "rung": 3,
+      "label": "L3 buried",
+      "samples": [
+        {
+          "rung": 1,
+          "n_numbers": 3,
+          "copied_from_prompt": true,
+          "rel_err": 1.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2793,
+          "completion": " 0.\n\nTo solve for x, we need to find x, y, and x, where x = 0, and x = 0, we need to find x, y, and x, and y = ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3467,
+          "completion": " 0.\n\nTo solve the equation x^2 - 6x + 6x + 6x + 6x + 6x + 6x + 2x + 6x + 6x",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.4651,
+          "completion": " 1500.\n\nThe given equation is:\n\nx^2 - 5x + 4 = 1500.\n\nThe given equation is:\n\nx^2 - 5x",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": false,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3146,
+          "completion": " -1.\n\nThe equation x^2 - 5x + 6 = 1.\n\nThe equation x^2 - 5x + 1 = 1.\n\nThe equation x^2 - ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1324,
+          "completion": " - 5x^2 + 6.\n\nThe equation is:\n\nx^2 + 6x + 4x^2 + 6x - 12x + 2x + 12",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 3,
+          "n_numbers": 11,
+          "copied_from_prompt": false,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1857,
+          "completion": " -3x + 6x + 3x - 3x + 6x + 3x + 3x + 4.\n\nThe equation x - 3x + 3x + 2x",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5612,
+          "completion": " 0. \n\nThe equation x^2 - 5x + 6 = 0, which is a function of x, which is a function of x, which is a function of x, which is a function of x",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 10,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2328,
+          "completion": " 0.\n\nThe quadratic equation x^2 - 5x + 6 = 0, which is a linear equation x^2 - 5x^2 - 1 = 0.\n\nThe quadratic equation",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "area",
+      "prompt": "The area of a rectangle 7 cm by 3 cm is",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 1,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.8333,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.5868,
+          "completion": ":\n\n**Answer**\n\nThe area of the triangle is 3.5 cm.\n\n**Answer**\n\nThe area of the triangle is 3.5 cm.\n\n**Answer**\n\nThe area",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.7143,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3688,
+          "completion": " 6.\n\n**Answer**\n\nThe area of the rectangle is 6.\n\n**Answer**\n\nThe area of the rectangle is 6.\n\n**Explanation:**\n\nThe area of the rectangle is",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.8333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4571,
+          "completion": " 2. The area of the triangle is 3.5 cm. \n\nThe area of the triangle is 3.5 cm. The area of the triangle is 3.5 cm. \n\nThe area of the triangle",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.4571,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5522,
+          "completion": " 11.4 cm\u00b2. The area of the area of the triangle is 2.5 cm. The area of the triangle is 2.5 cm. The area of the triangle is 2.5 cm. The",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.1667,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2482,
+          "completion": " the area of the rectangle. \n\nThe area of the triangle is 24.5 cm by 3.5 cm. \n\nThe area of the triangle is 3.5 cm. \n\nThe area of the triangle",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.7381,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3607,
+          "completion": " 4.\n\nThe area of the rectangle is 5.5 cm.\n\nThe area of the rectangle is 1.5 cm.\n\nThe area of the rectangle is 5.5 cm.\n\nThe",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7632,
+          "completion": " 11. The area of the rectangle is 12. The area of the rectangle is 12. The area of the rectangle is 12. The area of the rectangle is 12. The area of the",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": true,
+          "rel_err": 0.8333,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.6721,
+          "completion": " 3.\n\nThe area of the rectangle is 3.5 cm.\n\nThe area of the rectangle is 3.5 cm.\n\nThe area of the rectangle is 3.5 cm.\n\nThe",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "frac",
+      "prompt": "1/2 + 1/4 =",
+      "answers": [
+        0.75
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 7,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3659,
+          "completion": " 1.5\n\nSo, the value of the first 3 digits of 1 is 2.5, and the value of the last 3 digits of 1 is 2.5, and the value of the",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": false,
+          "rel_err": 6.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3214,
+          "completion": " 11/2 + 11/2 + 11/2 + 22/2 + 22/2 + 32/2 + 22/2 + 22/2 +",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": false,
+          "rel_err": 6.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.875,
+          "completion": " 11/2 + 11/2 + 11/2 + 11/2 + 11/2 + 11/2 + 11/2 + 11/2 +",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": false,
+          "rel_err": 6.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6964,
+          "completion": " 11/2 + 12/2 + 11/2 + 11/2 + 11/2 + 11/2 + 11/2 + 11/2 +",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9167,
+          "completion": " 0.000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": false,
+          "rel_err": 6.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.875,
+          "completion": " 11/2 + 11/2 + 11/2 + 11/2 + 11/2 + 11/2 + 11/2 + 11/2 +",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.6000000000000001e+46,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9167,
+          "completion": " 12000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 13.6667,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "completion": " 11.00000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        }
+      ]
+    }
+  ],
+  "decoder": "act",
+  "n_loops": 4,
+  "force_full_depth": false,
+  "mean_halt_depth": 2.0,
+  "copied_from_prompt": 13,
+  "median_rel_err": 0.75,
+  "within_10pct": 9,
+  "per_sample_l4": 0.0,
+  "per_sample_l3plus": 0.0375,
+  "reached": {
+    "L1+": 10,
+    "L2+": 10,
+    "L3+": 2,
+    "L4+": 0
+  }
+}

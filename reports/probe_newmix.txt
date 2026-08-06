@@ -1,0 +1,94 @@
+[probe] loaded checkpoints_newmix/step_0082711.pt (step 82711) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.14 [0.09-0.26] | distinct1 0.56 [0.53-0.61] | distinct2 0.85 [0.71-0.94] | n=5 | halt 2.00/4
+    e.g.: " start with the weather at once once it started on the day of 6000 day, then the same time every time you have to go to a day or day.\n\nThat's the second time you need to go to somewhere in your current date. How do you set the time you are going to get with the clock in the year? In the day you want to know the day you should use, you can start with the first day at the start."
+
+  α=0.25 | top_share 0.10 [0.07-0.16] | distinct1 0.55 [0.46-0.69] | distinct2 0.83 [0.74-0.96] | n=5 | halt 2.00/4
+    e.g.: " keep the windows open and in the next two weeks:\n\n- In the first day of the month, I had 2 hours with the second week's time, 3 hours with the second week, 3 hours of the month, and 3 months of the month.\n\nTo see this in 3 months, after 3 months, the weather was clear.\n\nThere is a 3 to 6 hour change in the day.\n\nIn"
+
+  α=0.5  | top_share 0.09 [0.06-0.11] | distinct1 0.63 [0.59-0.70] | distinct2 0.93 [0.88-0.98] | n=5 | halt 2.00/4
+    e.g.: " go the zoo to the zoo, and we will take a few things to get to the night and then we'll have to come into the park again, but not sure.\n\nSo, yeah, in all honesty. Let me just do my job out. For example, a lot of people, if I got a bunch of people who are just going to be in places where they'll be doing the first steps of the system. Not like this or we can't take"
+
+  α=0.7  | top_share 0.08 [0.04-0.12] | distinct1 0.65 [0.58-0.70] | distinct2 0.92 [0.88-0.98] | n=5 | halt 2.00/4
+    e.g.: " go to the outskirts of the capital of Berdram\n\n.\n\nThere was, at the time, a little money in the capital, and we decided that it's time to go out for a walk.\n\nIn the middle of the village, there is a row of n houses. Each house has a price, and it's either\n\npurchaseIf we are allowed to open a restaurant on our own.\n\nand I found\n\nThat's"
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.27 [0.10-0.40] | distinct1 0.30 [0.14-0.43] | distinct2 0.46 [0.21-0.67] | n=5 | halt 2.00/4
+    e.g.: ':\n\n•• C.P.\n\n• a.\n\n• D.\n\n• C.\n\n• L.\n\n• C.\n\n• L.\n\n– C.\n\n• A.\n\n• E.\n\n• B.\n\n• C.\n\n• A.\n\n• A.\n\n• A.\n\n• A.\n\n• A.\n\n• A.\n\n'
+
+  α=0.25 | top_share 0.19 [0.06-0.60] | distinct1 0.51 [0.12-0.73] | distinct2 0.73 [0.14-0.98] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics and can take up the first week-term or second week, depending on which is not a common cause. (The most accurate comparison is to compare it to a new one, but I think that would be the most important here because of the cost. As far as the new ones were not yet considered to be the worst, i.e., not necessarily true.\n\nWhat can you do with your child? How can you help in improving the quality of a health'
+
+  α=0.5  | top_share 0.09 [0.05-0.18] | distinct1 0.61 [0.46-0.72] | distinct2 0.92 [0.80-0.98] | n=5 | halt 2.00/4
+    e.g.: ":\n   - **Hospitalization**: Initial treatment, monitoring vital signs, and initial treatment.\n\n1. **Vital-Signs and Clinical Monitoring:** The first step is to ensure that the patient's vital signs (like:\n   - The type and severity of the disease are noted in a medical chart called an **EKG** (electrically generated) or **EJ-9** (electrophysiology) chart. The **SBPAC** chart represents the"
+
+  α=0.7  | top_share 0.12 [0.07-0.18] | distinct1 0.55 [0.51-0.69] | distinct2 0.83 [0.74-0.99] | n=5 | halt 2.00/4
+    e.g.: " antibiotics. For parasitic infections, you might have things like anti-parasitic drugs, maybe even some antiparasitic agents, and the same for viral. I guess the key here is to determine for the most important drugs in the categories, in which the patient will choose the most likely correct answer.\n\nBut a point to remember is that some infections related to bacteria also happen in humans. One that's important is the antibiotic treatment, which includes drugs such as amoxic"
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.25 [0.08-0.46] | distinct1 0.40 [0.14-0.56] | distinct2 0.60 [0.25-0.83] | n=5 | halt 2.00/4
+    e.g.: ':\n\n- Most patients with the same type of HIV may not have any symptoms\n\n- In cases such as diabetes, or any new non-specific diseases that, like the same type of the most common\n\n- A) The most common "non-clinical" for conditions\n\n- The same type of\n\n- The most common types of\n\n- The patient\'s condition needs to be a good\n\n- The\n\n- People who have the'
+
+  α=0.25 | top_share 0.11 [0.07-0.22] | distinct1 0.51 [0.16-0.67] | distinct2 0.77 [0.37-0.91] | n=5 | halt 2.00/4
+    e.g.: ' increased thirst-related effects of a certain metabolic and biochemical-related disease.\n\nA review of the findings concluded that if the condition is not clearly a "disease" or "mildr".\n\nSome people do not have diabetes-related symptoms of the same group of people and the same time.\n\nWhat is the difference between the two most common diseases and how they can be diagnosed as "reactive".\n\nIt is often used in combination with a'
+
+  α=0.5  | top_share 0.12 [0.08-0.22] | distinct1 0.65 [0.50-0.72] | distinct2 0.91 [0.74-0.98] | n=5 | halt 2.00/4
+    e.g.: ':\n\n- Increased thirst-and-laughing, because it has a high blood-trying\n- Frequent need of a lot of\n- Blurred vision\n- Increased risk for a person\n- Some more\n- Unnecessary\n- Difficulty eating your\n- Unimplemented\n- More\n- More\n- Increased\n- The\n- Increased cholesterol and\n- The\n- Your\n- High\n- Increase\n- How many symptoms of'
+
+  α=0.7  | top_share 0.12 [0.10-0.17] | distinct1 0.66 [0.59-0.73] | distinct2 0.90 [0.83-0.96] | n=5 | halt 2.00/4
+    e.g.: ' increased thirst, or politysis\n\nAnswers\n\nAs stated in\n2010s, it was noted that there are more people who suffer from\ntype 21 diabetes. The condition is typically known\nto be chronic or can be described as a type of metabolic\ndysfunction called\nmetabolic disease\n(\n)\n\nSo, with the first case of\ntype 1a\ndiabetic,\nthe most dangerous side effect'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.10 [0.05-0.12] | distinct1 0.57 [0.36-0.67] | distinct2 0.90 [0.86-0.94] | n=5 | halt 2.00/4
+    e.g.: ' the underlying and/or\n\nQuestion: Is the product used to treat the non-antibotase-associated B1, which is associated with a non-inflammatory drug as per the FDA?\n\nAnswer: Yes, the user is asking about the possible relationship between the two types.\n\nA) The question could be "the reason for the absence of the type of drugs/e. The answer is a) To determine the type of the a the an un'
+
+  α=0.25 | top_share 0.12 [0.08-0.18] | distinct1 0.57 [0.49-0.64] | distinct2 0.86 [0.80-0.95] | n=5 | halt 2.00/4
+    e.g.: " the bacteria to reduce the risk of not being infected with your skin is not as healthy.\n\n- You can treat your skin in a very different set of the problem.\n\n- So I think they are talking about the most important of the things you should get in the same space as the right to prevent them getting\n\n- It's just a way to start at\n\n- It's a different one\n\n- So, to protect the skin, you'll"
+
+  α=0.5  | top_share 0.17 [0.08-0.47] | distinct1 0.53 [0.32-0.60] | distinct2 0.78 [0.45-0.91] | n=5 | halt 2.00/4
+    e.g.: ' pain, inflammation, and fever. It works by reducing the risk of heart disease.\n\nInhaled corticosteroids are more likely to cause the infection than the most common or more serious ones. In most cases, there are a few cases where these drugs have their own special features.\n\nThe most common side-effects of the most common and serious medications are:\n\nCommon to all of the\n\nThe most common cause of the most common causes of the chronic ('
+
+  α=0.7  | top_share 0.08 [0.05-0.11] | distinct1 0.65 [0.58-0.74] | distinct2 0.91 [0.83-0.95] | n=5 | halt 2.00/4
+    e.g.: ' pain and inflammation, but it\'s not used to directly cause weight loss.\n\nEI:\nEpinephrine is a hormone that causes the "fight or "fright" or "flight" response, which increases blood flow to the muscles.\n\nEJ:\n\nPhenob\n\n## What are the 3 categories of hormones that affect the body?\n\nEpinephrine is the body\'s equivalent of adrenaline and is the main hormone responsible for a fight'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.12 [0.05-0.25] | distinct1 0.45 [0.21-0.65] | distinct2 0.67 [0.33-0.95] | n=5 | halt 2.00/4
+    e.g.: '\n    return n n * n n n n n + 1 + 1\n\n# Function\nprint(sum(sum_n * n * n * n))\n# print(sum_n * n * n * n * n.append(n * n * n * n * n)\n# print(sum_n * n * n)\n# print(n * n * n * n * n)\n# print(sum_n'
+
+  α=0.25 | top_share 0.11 [0.07-0.18] | distinct1 0.45 [0.32-0.57] | distinct2 0.69 [0.53-0.82] | n=5 | halt 2.00/4
+    e.g.: '\n    return (n--1) * (n < n\n    ...\n\nWait, but the original problem says that the user wants to create a Python function that computes the number of times the number of digits in all numbers. So, in the code, the function returns (x-1,1,1), and the number of times the numbers are computed. So the function is written in Python, so the user wants to generate the number of "f" bits'
+
+  α=0.5  | top_share 0.09 [0.05-0.11] | distinct1 0.47 [0.35-0.61] | distinct2 0.76 [0.73-0.83] | n=5 | halt 2.00/4
+    e.g.: '\n    nums = []\n    for i in range(n-1, 0, -3):\n        while i in range(1, 1, -3):\n            if not is_prime_p_1_1_3:\n                nums[i] = nums[i] + 1\n            nums[i + 1] = nums[i]\n        else:\n            if i not in sorted_nums:\n                temp_len = min(i,'
+
+  α=0.7  | top_share 0.09 [0.06-0.12] | distinct1 0.58 [0.52-0.61] | distinct2 0.86 [0.77-0.91] | n=5 | halt 2.00/4
+    e.g.: "\n    a1 = 0\n    a2 = 1\n    return a1, a2 if n == 1\n\nBut wait, maybe I'm misunderstanding. Let me try again. The function is a generator function, which uses 'yield' instead of 'return'. So, the function is supposed to return the first 'n' Fibonacci numbers, one after the other. Wait, no. The function should generate the first n Fibonacci number sequence. Oh right"
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.13 [0.11-0.16] | distinct1 0.31 [0.17-0.46] | distinct2 0.69 [0.52-0.79] | n=5 | halt 2.00/4
+    e.g.: " 27.8895...\n\nSo, 46330 is a prime. So, 4633 is a prime (since it's a non-negative non-negative integer).\n\nSo, by subtracting 33367 - 547300100000...\n\nI think that in terms of exponents, 573 ... is 433483"
+
+  α=0.25 | top_share 0.11 [0.07-0.17] | distinct1 0.48 [0.42-0.55] | distinct2 0.80 [0.75-0.84] | n=5 | halt 2.00/4
+    e.g.: ' 0. So, we can apply the method.\n\nThe solution is straightforward. We can proceed with simplifying the equation.\n\nTo solve the equation 3x + 13x - 41 = 32x, we can solve for x by combining the two equations. We can use an equation to calculate the number of factors we want x to find x + 10 and 6.\n\n**Answer**\n\nThe quadratic equation'
+
+  α=0.5  | top_share 0.09 [0.06-0.14] | distinct1 0.50 [0.42-0.59] | distinct2 0.78 [0.66-0.93] | n=5 | halt 2.00/4
+    e.g.: ' 18\n\n2. A number must have exactly three different prime factors. Solve for the number 1 in terms of the 6th and 7th powers of the 7th powers of the 4th powers of the 3rd, 4th powers of the 4th powers of the 7th 5th powers of 1 and 3.\n\nAnswer the following: Is there a number (30) that can be divided'
+
+  α=0.7  | top_share 0.09 [0.06-0.12] | distinct1 0.50 [0.28-0.62] | distinct2 0.77 [0.48-0.89] | n=5 | halt 2.00/4
+    e.g.: ' 0. The solutions should start with "Solution is a list of all solutions in the given interval." and then proceed to generate the roots of the equation.\nNow, let\'s generate the roots. Let me think. The equation is x^2 -5 = -5x +6. The variable is x^2 -5x -6=0. Then, to find solutions, we can use the quadratic formula. \n\nThe solution to quadratic equation x +'
+
+wrote reports/probe_newmix.json — 120 decoded samples retained (the .txt shows 6 of them)
