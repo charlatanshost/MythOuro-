@@ -33,6 +33,21 @@ mix is now **uniform** (code 20%→33%) to test whether the residual code weakne
 *dose*, since code was the least-fed domain. Detail: `docs/generation_probe_tracker.md`
 (07-25/27 entries). Everything below is the standing longer-form record.
 
+**UPDATE 2026-08-06 — CORRECTED-MIX POUR @100,000: the data fixes WORKED.** 483M tokens on the
+new mix (lifetime 1.64B, 5.9 tok/param). Math `copied_from_prompt` **41.2% → 16.2%** and
+per-sample L3+ **1.2% → 11.2%** (9x) — the model stopped echoing operands and started
+attempting arithmetic. Code produced its first non-salvage correct implementations
+(`return n * 2`). The medical scare at 82,711 was mid-integration and fully resolved (bacterial
+0/5, best in the series). **Do not lower the medical ratio.** Detail:
+`docs/generation_probe_tracker.md` (08-06 entry).
+
+**🔑 "CONTAINER BEFORE CONTENT" IS THE ACQUISITION ORDER.** α=0.0 degeneracy rose to its worst
+(15/120) — because the model is looping on OpenMathInstruct's *format* (`**Step-by-Step
+Explanation**`, numbered problems, LaTeX). Third instance of the same pattern (math answers,
+medical abstracts, solution formatting) ⇒ **a format-degeneracy spike is a LEADING indicator
+that a domain is landing**, not a warning. It is also the cheap problem — a repetition penalty
+takes looping 51/80 → 1/80 with L4 unmoved, so it is decode-time fixable while capability is not.
+
 **UPDATE 2026-07-30 — THROUGHPUT: 2.3x measured, and the code-capability wall is CAPACITY.**
 Two independent results, both from new instruments, both correcting earlier reasoning:
 

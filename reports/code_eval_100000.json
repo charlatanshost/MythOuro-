@@ -1,0 +1,830 @@
+{
+  "step": 100000,
+  "temperature": 0.4,
+  "repetition_penalty": 1.0,
+  "seed": 1234,
+  "framing": "bare",
+  "samples": 8,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 4,
+      "label": "L4 correct",
+      "looped": 6,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.3987,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\t# Add a new element to the new list\n\t# Add a new element to the new list\n\t# Add a new element to the new list\n\t# Add a new element to the new list\n\t# Add a new list to the new list\n\t# Add a new element to the new list\n\t# Add a new list to the new list\n\t# Add a new list to the new list\n\t# Add a new list to the"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.3707,
+          "lines_dropped": 0,
+          "body_stmts": 5,
+          "completion": "\tif a == b:\n\t\treturn 0\n\tif a == b:\n\t\treturn 0\n\tif a == b:\n\t\treturn 0\n\treturn 0\n\treturn 0\n\ndef get_two_subtract(a):\n\t\treturn a + b\n\ndef get_two_subtract(a):\n\t\treturn a + b\n\ndef get_two_subtract(a):\n\t\treturn"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.306,
+          "lines_dropped": 1,
+          "body_stmts": 3,
+          "completion": "\tif a == b:\n\t\treturn [a, b]\n\tif a == b:\n\t\treturn [a, b]\n\tif a == b:\n\t\treturn [a, b]\n\ndef find_two(a, b):\n\tif a == b:\n\t\treturn [a, b]\n\ndef find_two(a, b):\n\treturn [a, b]\n\ndef find_two("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7178,
+          "lines_dropped": 4,
+          "body_stmts": 0,
+          "completion": "\tif a == b:\n\t\tif b == b:\n\t\t\treturn a + b + 2 * b + 2 * b + 2 * b + 2 * b + 2 * b + 2 * b + 2 * b + 2 * b + 2 * b + 2 * b + 2 * b + 2 * b + 2 * b + 2 * b + 2 * b + "
+        },
+        {
+          "rung": 4,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.3889,
+          "lines_dropped": 12,
+          "body_stmts": 6,
+          "completion": "\tif a == b:\n\t\treturn a + b\n\treturn a + b\n\treturn a + b\n\treturn a + b\n\treturn a + b\n\treturn a + b\n\ndef f_a(a):\n\ta = a\n\ndef b:\n\ta = a\n\ndef b:\n\ta = a\n\ndef b:\n\ta = a\n\treturn a\n\ndef b:\n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4742,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\tif a == b:\n\t\treturn a + b + a + b + a + a + b + a + a + a + b + a + b + a + a + a + a + a + a + b + a + a + a + a + a + a + a + a + a + a + a + a + a + a + a + a + a + a + a + a + a + a + a + a"
+        },
+        {
+          "rung": 4,
+          "max_line_repeat": 9,
+          "max_line_repeat_completion": 9,
+          "lrs_frac": 0.283,
+          "lines_dropped": 1,
+          "body_stmts": 6,
+          "completion": "\tif a == b:\n\t\treturn a + b\n\tif a == b:\n\t\treturn a + b\n\treturn a + b\n\treturn a + b\n\treturn a + b\n\treturn a + b\n\ndef list_two(a):\n    return a + b\n\ndef a2(a):\n    return a + b\n\ndef a2(a):\n    return a + b\n\ndef a2(a"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.2917,
+          "lines_dropped": 1,
+          "body_stmts": 5,
+          "completion": "\tif a == 2:\n\t\treturn a + 2\n\treturn a + 2\n\treturn a + 2\n\treturn a + 2\n\treturn a + 2\n\ndef main():\n\tif a == 2:\n\t\treturn 2\n\treturn a + 2\n\ndef main():\n\tif a == 2:\n\t\treturn 0\n\treturn a + 2\n\ndef main"
+        }
+      ]
+    },
+    {
+      "task": "double_it",
+      "rung": 4,
+      "label": "L4 correct",
+      "looped": 5,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4027,
+          "lines_dropped": 0,
+          "body_stmts": 2,
+          "completion": "\treturn n * (n - 1) * (n - 1) * (n - 1) * (n - 1)\n\tdef n_div(n):\n\t\treturn n - 1 * (n - 1) * (n - 1) * (n - 1) * (n - 1) * (n - 1) * (n - 1) * (n - 1)"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.7758,
+          "lines_dropped": 1,
+          "body_stmts": 2,
+          "completion": "\treturn 0\n\treturn 0\n\ndef is_prime(n):\n\treturn True\n\ndef is_prime(n):\n\treturn True\n\ndef is_prime(n):\n\treturn True\n\ndef is_prime(n):\n\treturn True\n\ndef is_prime(n):\n\treturn True\n\ndef is_prime(n):\n\treturn True\n\ndef is_prime(n):"
+        },
+        {
+          "rung": 4,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.3107,
+          "lines_dropped": 1,
+          "body_stmts": 4,
+          "completion": "\treturn n * 2\n\tif n == 0:\n\t\treturn -1\n\tif n % 2 == 0:\n\t\treturn -1\n\tif n % 2 == 0:\n\t\treturn -1\n\ndef is_prime(n):\n\treturn not isinstance(n, int)\n\ndef is_prime(n):\n\treturn not isinstance(n, int)\n\ndef is_prime("
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 8,
+          "max_line_repeat_completion": 8,
+          "lrs_frac": 0.7368,
+          "lines_dropped": 2,
+          "body_stmts": 8,
+          "completion": "\treturn 0\n\tif n == 0:\n\t\treturn 0\n\tif n == 0:\n\t\treturn 0\n\tif n == 0:\n\t\treturn 0\n\tif n == 0:\n\t\treturn 0\n\tif n == 0:\n\t\treturn 0\n\tif n == 0:\n\t\treturn 0\n\treturn 0\n\tif n == 0:\n\t"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1792,
+          "lines_dropped": 8,
+          "body_stmts": 2,
+          "completion": "\treturn 0\n\treturn 0\n\ndef generate_n(n):\n\tn = 0\n\tfor x in range(1, n+1):\n\t\tif x < 1:\n\t\t\t# if n < 1:\n\t\t\t# if n < 1:\n\t\t\t# if n > 1:\n\t\t\t\t# if n < 2:\n\t\t\t\t# if n > 2:\n\t\t\t\t# if n <"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2303,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn n * (n * (n - 1))\n\treturn (n - 1) * (n - 1)\n\ndef compute(n):\n\treturn n * (n - 1) * (n - 1)\n\ndef compute_sum(n):\n\treturn (n - 1) * (n - 1)\n\ndef compute_sum(n):\n\tif n == 0:"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.3811,
+          "lines_dropped": 5,
+          "body_stmts": 5,
+          "completion": "\treturn 0\n\tif not isinstance(n, int):\n\t\treturn 0\n\tif not isinstance(n, int):\n\t\treturn 0\n\tif isinstance(n, int):\n\t\treturn 0\n\tif isinstance(n, int):\n\t\treturn 0\n\tif isinstance(n, int):\n\t\tif isinstance(n, int):\n\t\treturn 0\n\tif isinstance(n, int):\n\t\t"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.4306,
+          "lines_dropped": 1,
+          "body_stmts": 2,
+          "completion": "\treturn sum(n)\n\treturn sum(n)\n\ndef get_max_length(n):\n\treturn max(n)\n\treturn len(n)\n\ndef get_max_length(n):\n\treturn max(n)\n\ndef get_max_length(n):\n\treturn max(n)\n\ndef get_max_length(n):\n\treturn max(n)\n\ndef get"
+        }
+      ]
+    },
+    {
+      "task": "get_first",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 2,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.5709,
+          "lines_dropped": 2,
+          "body_stmts": 5,
+          "completion": "\tif not isinstance(items, list):\n\t\treturn None\n\tif isinstance(items, list):\n\t\treturn None\n\tif isinstance(items, list):\n\t\treturn None\n\tif isinstance(items, list):\n\t\treturn None\n\tif isinstance(items, list):\n\t\treturn None\n\ndef get_first_list(items):\n\treturn list(items)\n\ndef get_first_list(items):\n\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4375,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(sorted(sorted(list(sorted(sorted(sorted(sorted(sorted(list, sorted(sorted(list, sorted(sorted(sorted(list, sorted(list, sorted(sorted(list, sorted(sorted(sorted(list, sorted(list, sorted(sorted(list, sorted(sorted(sorted(list, sorted(list, sorted(list, sorted(list, sorted(sorted(list, sorted(sorted(list,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1786,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\t# Return the first occurrence of the first element in the list\n\t# The first occurrence of the first element in the list is the first occurrence of the first occurrence of the first element in the list\n# The second one is the first occurrence of the first occurrence of the first element in the list\n\ndef get_first_occurrence(items):\n    \"\"\"\n    Returns the first occurrence of the first occurrence of the first occurrence of the first occurrence of the list."
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2633,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(sorted(sorted(sorted(items.keys(), key=sorted(sorted(sorted(sorted(sorted(sorted(keys.keys(), key=sorted(keys.keys(), key=sorted(sorted(keys.keys(), key=sorted(keys.keys(), key=sorted(keys.keys(), key=sorted(keys.keys(), key=sorted(sorted(keys, key=sorted(keys.keys(), key=sorted(keys,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3722,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(sorted(sorted(list(sorted(sorted(list(sorted(list(sorted(sorted(sorted(list(sorted(sorted(list(sorted(list(sorted(sorted(sorted(list(sorted(sorted(list(sorted(sorted(sorted(sorted(sorted(list(sorted(sorted(sorted(list(sorted(sorted(list(sorted(list(sorted(sorted(sorted(list(sorted(sorted(list("
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.5429,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn sorted(sorted(list(sorted(items.items()))))\n\ndef get_first(items):\n\treturn sorted(items.items())\n\ndef get_first(items):\n\treturn sorted(items.items())\n\ndef get_first(items):\n\treturn sorted(items.items())\n\ndef get_first(items):\n\treturn sorted(items)\n\ndef get_first(items):\n\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.25,
+          "lines_dropped": 3,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(sorted(sorted(sorted(items, key=lambda x: x + 1, key=lambda x: x + 1, key=lambda x: x + 1, key=lambda x: lambda x, key=lambda x: lambda x, key=lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x, key=lambda x: lambda x: lambda x,\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5324,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(sorted(sorted(sorted(items, key=lambda x: x[0], key=lambda x: lambda x: x[0], key=lambda x: lambda x: x[0], key=lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda x: lambda"
+        }
+      ]
+    },
+    {
+      "task": "sum_list",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 7,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 10,
+          "max_line_repeat_completion": 10,
+          "lrs_frac": 0.1761,
+          "lines_dropped": 6,
+          "body_stmts": 6,
+          "completion": "\tif not isinstance(nums, list):\n\t\treturn None\n\tif not isinstance(nums, list):\n\t\treturn None\n\tif len(nums) == 0:\n\t\treturn None\n\treturn None\n\treturn None\n\treturn None\n\ndef get_nums_by_index(nums):\n\t\treturn None\n\tif not isinstance(nums):\n\t\treturn None\n\treturn None\n\treturn None\n\ndef get_"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3548,
+          "lines_dropped": 3,
+          "body_stmts": 0,
+          "completion": "\t# Create a list of unique elements from the list\n\t# The list is sorted in ascending order and has a maximum value of 10000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.3782,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn sorted(nums,Key, 1)\n\t# Print the list of numbers\n\n# Print the list of numbers\n\n# print(sorted(nums))\n\n# print(sorted(nums, 1))\n\n# print(nums)\n\n# print(nums)\n\n# print(nums)\n\n# print(nums)\n\n# print(nums)\n\n# print(nums)\n\n# print(nums"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.3899,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn sorted(nums, key=str(num_list) if len(num_list) > 0 else 0)\n\ndef is_prime(num_list):\n\treturn len(num_list) > 0\n\ndef is_prime(num_list):\n\treturn len(num_list) > 0\n\ndef is_prime(num_list):\n\treturn 0\n\ndef is_prime"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.218,
+          "lines_dropped": 1,
+          "body_stmts": 2,
+          "completion": "\tif not nums:\n\t\treturn None\n\t# Check if the input list is empty\n\tif not nums:\n\t\t# Check if the input list is empty\n\t\tif not nums:\n\t\t\treturn None\n\t\tif not nums:\n\t\t\treturn None\n\t\tif not nums:\n\t\t\treturn None\n\t\treturn None\n\ndef is_prime(n):\n    return not isinstance(n, list)\n\ndef is_prime(n):"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.7105,
+          "lines_dropped": 18,
+          "body_stmts": 0,
+          "completion": "\tif not nums:\n\treturn []\n\ndef max_val(nums):\n\treturn max_val(nums)\n\ndef max_val(nums):\n\treturn max_val(nums)\n\ndef max_val(nums):\n\treturn max_val(nums)\n\ndef max_val(nums):\n\treturn max_val(nums)\n\ndef max_val(nums):\n\treturn max_val"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.507,
+          "lines_dropped": 7,
+          "body_stmts": 0,
+          "completion": "\t# Create a list of unique numbers from the list\n\t# The list of unique numbers from the list is sorted by their unique value\n\t# The list of unique numbers from the list is sorted by the number of unique numbers\n\t# The list of unique numbers from the list is sorted by the number of unique numbers\n\t# The list of unique numbers from the list is sorted by the number of unique numbers\n\t# The list of unique numbers from the list"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 12,
+          "max_line_repeat_completion": 12,
+          "lrs_frac": 0.8411,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(nums,\n\t(sorted_list,\n\t(sorted_list,\n\t(sorted_list,\n\t(sorted_list,\n\t(sorted_list,\n\t(sorted_list,\n\t(sorted_list,\n\t(sorted_list,\n\t(sorted_list,\n\t(sorted_list,\n\t(sorted_list,\n\t(sorted_list,\n\t(sorted_list"
+        }
+      ]
+    },
+    {
+      "task": "count_items",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 5,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1115,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(sorted(sorted(items, key=lambda x: (key, value))\n\n# Example usage\n# print(f\"The given list of dictionaries: {sorted(items.items())}\")\n# Example usage:\n# print(f\"The list of items is {sorted(items.items())}\")\n# print(f\"The list of items is {list(sorted(items.items())})}\")\n# print(f"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 13,
+          "max_line_repeat_completion": 13,
+          "lrs_frac": 0.7377,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\t# Convert to a dictionary\n\t# Convert to a dictionary\n\t# Convert to a dictionary\n\t# Convert to a dictionary\n\t# Convert to a dictionary\n\t# Convert to a dictionary\n\t# Convert to a dictionary\n\t# Convert to a dictionary\n\t# Convert to a dictionary\n\t# Convert to a dictionary\n\t# Convert to a dictionary\n\n# Convert to a dictionary\n\t# Convert to a dictionary\n\t# Convert to a"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 9,
+          "max_line_repeat_completion": 9,
+          "lrs_frac": 0.5931,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\t# Remove duplicates in the list\n\tif len(items) > 0:\n\t\t# Remove duplicates in the list\n\tif len(items) > 0:\n\t\t\t# Remove duplicates in the list\n\t\t# Remove duplicates in the list\n\t\t# Remove duplicates in the list\n\t\t# Remove duplicates in the list\n\t\t# Remove duplicates in the list\n\t\t# Remove duplicates in the list\n\t\t# Remove duplicates in the list\n\t\t#"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1608,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(sorted(sorted(items, key=lambda x: (x[0] if x[0] == ' ' else ' '))\n\ndef sort_list(lst):\n    return sorted(items, key=lambda x: (x[0] == ' ' and len(list(items)) == 0)\n\ndef sort_list(lst):\n    return sorted(list(sorted(items, key=lambda x: '"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4305,
+          "lines_dropped": 4,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(sorted(sorted(items.items), \n\t\t# \t\tif not isinstance(items, dict):\n\t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t\t# \t"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.5347,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn count_items\n\t# This is the first time the function call\n# the function call\n# the function call\n# the first time the function call\n# the first time the function call\n# the first time the function call\n# the first time the function call\n# the first time the function call\n# the first time the function call\n# the first time the first time the function call\n# the first time the function call\n# the"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.5808,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn sorted(items)\n\n# Example usage\n# print(sorted(items))\n# Example usage:\n# print(sorted(items))\n# Example usage:\n# print(sorted(items))\n# Example usage:\n# print(sorted(items))\n# Example usage:\n# print(sorted(items))\n# Example usage:\n# print(items)\n# print(sorted(items))\n# print(items)"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.3099,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn sorted(items)\n\treturn sorted(items)\n\ndef count_items(items):\n\treturn sorted(items)\n\ndef count_items(items):\n\treturn len(items)\n\ndef count_items(items):\n\treturn count_items(items)\n\ndef count_items(items):\n\treturn sorted(items)\n\ndef count_items(items):\n\treturn count_items(items"
+        }
+      ]
+    },
+    {
+      "task": "is_even",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 5,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5704,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t# Check if the number of distinct numbers is greater than 10000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.1546,
+          "lines_dropped": 1,
+          "body_stmts": 3,
+          "completion": "\treturn n * (n - 1) * (n - 1) * (n - 1) * (n - 1)\n\tif n > 0:\n\t\treturn None\n\tif n > 0:\n\t\treturn None\n\ndef is_prime(n):\n\treturn False\n\tif n > 0:\n\t\treturn None\n\tdef is_prime(n):\n\t\treturn False\n\tdef"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.7468,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\tif not isinstance(n, int):\n\t\treturn False\n\ndef is_even(n):\n\treturn False\n\ndef is_even(n):\n\treturn False\n\ndef is_even(n):\n\treturn False\n\ndef is_even(n):\n\treturn False\n\ndef is_even(n):\n\treturn False\n\ndef is_even(n):\n\treturn False\n\ndef is_"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.4569,
+          "lines_dropped": 1,
+          "body_stmts": 3,
+          "completion": "\treturn len(n)\n\treturn len(n)\n\treturn len(n)\n\ndef is_even(n):\n\treturn len(n)\n\ndef is_even(n):\n\treturn is_even(n)\n\ndef is_even(n):\n\treturn is_even(n)\n\ndef is_even(n):\n\treturn is_even(n)\n\ndef is_even"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8922,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn (100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5486,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\t# Check if the number of elements in the list is greater than 200000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.3939,
+          "lines_dropped": 1,
+          "body_stmts": 7,
+          "completion": "\treturn is_prime(n)\n\tif not is_even(n):\n\t\treturn False\n\tif not is_even(n):\n\t\treturn False\n\tif is_prime(n):\n\t\treturn False\n\tif is_even(n):\n\t\treturn False\n\tif is_prime(n):\n\t\treturn False\n\tif is_even(n):\n\t\treturn False\n\ndef is_prime(n"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.2893,
+          "lines_dropped": 9,
+          "body_stmts": 1,
+          "completion": "\treturn len(n)\n\t# Check if n is not an integer\n\tif n == 0:\n\t\t# Check if n is not an integer\n\t\t# Check if n is not an integer\n\t\t# Check if n is a number\n\t\t# Check if n is not an integer\n\t\t# Check if n is a number\n\t\t# Check if n is a number\n\t\t# Check if n is a number\n\t\t# Check if n"
+        }
+      ]
+    },
+    {
+      "task": "reverse_string",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 6,
+      "samples": [
+        {
+          "rung": 2,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.3755,
+          "lines_dropped": 1,
+          "body_stmts": 2,
+          "completion": "\treturn s.lower()\n\treturn str(s)\n\ndef reverse_string(s):\n    return s.replace(s, reverse_string(s))\n\ndef reverse_string(s):\n    return s.replace(s, reverse_string(s))\n\ndef reverse_string(s):\n    return reverse_string(s)\n\ndef reverse_string(s):\n    return reverse_string(s)\n\ndef"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.7958,
+          "lines_dropped": 1,
+          "body_stmts": 2,
+          "completion": "\treturn s.lower()\n\treturn ' '\n\ndef reverse_string(s):\n    return ' '\n\ndef reverse_string(s):\n    return ' '\n\ndef reverse_string(s):\n    return ' '\n\ndef reverse_string(s):\n    return ' '\n\ndef reverse_string(s):\n    return ' '\n\ndef reverse_string(s):\n    return ' '\n\ndef reverse_string("
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7918,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn s.lower()\n\treturn ''.join(s.lower()) + reverse_string(s.lower()) + reverse_string(s.lower()) + reverse_string(s.lower()) + reverse_string(s.lower()) + reverse_string(s.lower()) + reverse_string(s.lower()) + reverse_string(s.lower()) + reverse_string(s.lower()) + reverse_string(s.lower"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.2152,
+          "lines_dropped": 0,
+          "body_stmts": 2,
+          "completion": "\treturn s.lower()\n\treturn s.upper()\n\ndef is_valid(s):\n\tif not s.is_valid():\n\t\treturn False\n\treturn False\n\ndef is_valid_str(s):\n\treturn True\n\treturn False\n\ndef is_valid_str(s):\n\treturn True\n\ndef is_valid_str(s):\n\tif not s:\n\t\treturn False\n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.6598,
+          "lines_dropped": 1,
+          "body_stmts": 4,
+          "completion": "\treturn s.lower()\n\treturn \" \"\n\treturn s.lower()\n\treturn \" \"\n\ndef reverse_string(s):\n\treturn \" \"\n\ndef reverse_string(s):\n\treturn \" \"\n\ndef reverse_string(s):\n\treturn \" \"\n\ndef reverse_string(s):\n\treturn \" \"\n\ndef reverse_string(s):\n\treturn \" \"\n\ndef"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.4533,
+          "lines_dropped": 43,
+          "body_stmts": 0,
+          "completion": "\treturn s.replace(r'\\\\\\\\\\n\\n', '\\\\n\\n\\n\\n', '\\\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.487,
+          "lines_dropped": 1,
+          "body_stmts": 2,
+          "completion": "\treturn s.lower()\n\treturn str(s)\n\ndef is_valid_string(s):\n\treturn s.lower()\n\treturn s.lower()\n\ndef is_valid_string(s):\n\treturn s.lower()\n\ndef is_valid_string(s):\n\treturn s.lower()\n\ndef is_valid_string(s):\n\treturn s.lower()\n\ndef is"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.516,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn s[0]\n\treturn ''.join(s)\n\ndef reverse_string(s):\n\treturn ''.join(s)\n\ndef reverse_string(s):\n\treturn reverse_string(s)\n\ndef reverse_string(s):\n\treturn reverse_string(s)\n\ndef reverse_string(s):\n\treturn reverse_string(s)\n\ndef reverse_string(s):\n\t"
+        }
+      ]
+    },
+    {
+      "task": "max_of_two",
+      "rung": 2,
+      "label": "L2 defines",
+      "looped": 7,
+      "samples": [
+        {
+          "rung": 2,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.2139,
+          "lines_dropped": 3,
+          "body_stmts": 1,
+          "completion": "\tif max_of_two(a):\n\t\tif max_of_two(a):\n\t\t\tif max_of_two(a):\n\t\t\t\treturn 0\n\t\treturn 0\n\ndef max_of_two(a):\n\t\tif max_of_two(a):\n\t\t\treturn 0\n\t\treturn 0\n\ndef max_two(a):\n\t\tif max_of_two(a):\n\t\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 8,
+          "max_line_repeat_completion": 8,
+          "lrs_frac": 0.8864,
+          "lines_dropped": 19,
+          "body_stmts": 0,
+          "completion": "\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2649,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\t# Check if the first element is a prime\n\t# If the second is a prime, it's not a prime\n\t# If the second is a prime, then it's a prime, so it's not a prime\n\t# If the second is a prime, it's a prime\n\t# If the second is a prime, it's a prime\n\t# If the second is a prime, then it's a prime\n\t# If the second"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.1702,
+          "lines_dropped": 1,
+          "body_stmts": 2,
+          "completion": "\treturn max_of_two(a)\n\treturn max_of_two(a)\n\n# Function to calculate the maximum and minimum value of a\n# function\n#\n\ndef min_two(a):\n\treturn max_two(a)\n\ndef min_two(a):\n\treturn max_two\n\ndef min_two(a):\n\treturn max_two\n\ndef max_two(a):"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.3538,
+          "lines_dropped": 0,
+          "body_stmts": 5,
+          "completion": "\tif a == 2 and a == 2:\n\t\treturn 0\n\tif a == 2 and a == 2:\n\t\treturn 0\n\tif a == 2 and a == 2:\n\t\treturn 0\n\treturn 0\n\treturn 0\n\ndef max_of_two(a, b):\n    return a == 2\n\ndef max_of_two(a):\n    return a"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.4502,
+          "lines_dropped": 8,
+          "body_stmts": 1,
+          "completion": "\tif max_of_two(a):\n\t\treturn max_of_two(a)\n\ndef max_of_two(a):\n\t# Return the maximum number of two\n# The first element is the minimum number of two\n# The second element is the maximum of two\n# The second element is the maximum of two\n# The second element is the maximum of two\n# The second element is the maximum of two\n# The second"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.75,
+          "lines_dropped": 19,
+          "body_stmts": 0,
+          "completion": "\ndef max_of_two(a, b):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_of_two(a):\n\ndef max_two("
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.7754,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn max_of_two(a)\n\ndef max_of_two(a):\n\treturn max_of_two(a)\n\ndef max_of_two(a):\n\treturn max_of_two(a)\n\ndef max_of_two(a):\n\treturn max_of_two(a)\n\ndef max_of_two(a):\n\treturn max_of_two("
+        }
+      ]
+    },
+    {
+      "task": "fibonacci",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 4,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.4307,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn 1\n\ndef is_prime(n):\n\treturn is_prime\n\ndef is_prime(n):\n\treturn (n % 1000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.901,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.6143,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn 0\n\ndef prime_prime(n):\n\treturn 1\n\treturn 0\n\ndef prime_prime(n):\n\treturn 1\n\ndef prime_prime(n):\n\treturn 1\n\ndef prime_prime(n):\n\treturn 1\n\ndef prime_prime(n):\n\treturn 1\n\ndef prime_prime(n):\n\treturn 1\n\ndef"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.4088,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn 0\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn (n % 1000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.2596,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn 0\n\t# check if the number is prime\n\t# return 0\n\t# return 0\n\ndef is_prime(n):\n\tif not is_prime(n):\n\t\treturn False\n\tif not is_prime(n):\n\t\treturn False\n\ndef is_prime(n):\n\treturn False\n\ndef is_prime(n):\n\treturn False\n\ndef is_prime(n"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.8131,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn 1\n\ndef prime_prime(n):\n\treturn 0\n\ndef prime_prime(n):\n\treturn 0\n\ndef prime_prime(n):\n\treturn 0\n\ndef prime_prime(n):\n\treturn 0\n\ndef prime_prime(n):\n\treturn 0\n\ndef prime_prime(n):\n\treturn 0\n\ndef prime_prime(n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.75,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\treturn [n * (n + 1) for 10000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.5202,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn 1\n\ndef _get_num_of_digits(n):\n\treturn 0\n\ndef count_of_digits(n):\n\treturn 0\n\ndef get_num_of_digits(n):\n\treturn 0\n\ndef get_num_of_digits(n):\n\treturn 0\n\ndef get_num_of_digits(n):\n\treturn 0\n\ndef"
+        }
+      ]
+    },
+    {
+      "task": "is_prime",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 7,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.899,
+          "lines_dropped": 2,
+          "body_stmts": 0,
+          "completion": "\tif n < 2000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.6667,
+          "lines_dropped": 0,
+          "body_stmts": 2,
+          "completion": "\treturn is_prime(n)\n\treturn True\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.8166,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn is_prime(n)\n\ndef is_prime(n):\n    return is_prime(n)\n\ndef is_prime(n):\n    return is_prime(n)\n\ndef is_prime(n):\n    return is_prime(n)\n\ndef is_prime(n):\n    return is_prime(n)\n\ndef is_prime(n):\n    return is_prime(n)\n\ndef"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.5417,
+          "lines_dropped": 0,
+          "body_stmts": 9,
+          "completion": "\treturn is_prime(n)\n\tif is_prime(n):\n\t\treturn False\n\tif is_prime(n):\n\t\treturn False\n\tif is_prime(n):\n\t\treturn False\n\tif is_prime(n):\n\t\treturn False\n\tif is_prime(n):\n\t\treturn False\n\treturn True\n\tif is_prime(n):\n\t\treturn False\n\treturn False\n\n"
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.8164,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime("
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 6,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.8164,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime(n)\n\ndef is_prime(n):\n\treturn is_prime("
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 10,
+          "max_line_repeat_completion": 10,
+          "lrs_frac": 0.5787,
+          "lines_dropped": 0,
+          "body_stmts": 8,
+          "completion": "\tif n == 0:\n\t\treturn False\n\tif n == 0:\n\t\treturn False\n\tif n == 0:\n\t\treturn False\n\tif n == 0:\n\t\treturn False\n\tif n == 0:\n\t\treturn False\n\tif n == 0:\n\t\treturn False\n\treturn False\n\treturn False\n\ndef is_prime(n):\n\treturn False\n\treturn False"
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 7,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.7353,
+          "lines_dropped": 1,
+          "body_stmts": 2,
+          "completion": "\treturn is_prime(n)\n\treturn True\n\ndef is_prime(n):\n\treturn False\n\ndef is_prime(n):\n\treturn False\n\ndef is_prime(n):\n\treturn False\n\ndef is_prime(n):\n\treturn False\n\ndef is_prime(n):\n\treturn False\n\ndef is_prime(n):\n\treturn False\n\ndef is_prime"
+        }
+      ]
+    }
+  ],
+  "reached": {
+    "L1+": 10,
+    "L2+": 10,
+    "L3+": 9,
+    "L4+": 2
+  },
+  "diagnostics": {
+    "samples_total": 80,
+    "looped": 54,
+    "per_sample_l3plus": 0.4625,
+    "per_sample_l3plus_ci95": 0.1093,
+    "looped_frac": 0.675,
+    "median_max_line_repeat": 5,
+    "median_lrs_frac": 0.4569,
+    "char_degenerate": 59,
+    "line_metric_blind": 18,
+    "l3_samples": 34,
+    "l3_looped": 26,
+    "l3_looped_frac": 0.765
+  }
+}

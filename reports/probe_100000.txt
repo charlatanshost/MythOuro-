@@ -1,0 +1,94 @@
+[probe] loaded checkpoints_newmix/step_0100000.pt (step 100000) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.10 [0.07-0.18] | distinct1 0.59 [0.49-0.66] | distinct2 0.88 [0.77-0.95] | n=5 | halt 2.00/4
+    e.g.: " start a new day when I was on the night in the morning.\n\nSo, first we go to the previous day and then we'll go to the same day-day-day.\n\nThis is because if we go to the weekend of a Monday night, we'll have a month, and we'll get more days that will start in the month that day and we don't know about it.\n\nThere is a time that is not at the start."
+
+  α=0.25 | top_share 0.13 [0.05-0.33] | distinct1 0.49 [0.11-0.68] | distinct2 0.71 [0.17-0.95] | n=5 | halt 2.00/4
+    e.g.: " keep the windows and see if the sun has a nice little brown.\n\n\n\n\nThe problem is to determine the number of times the second player's card is placed, which is the number of times the second player's number of days in the middle of the season.\n\n\n**Final Answer**\n\nThe answer is to compute the number of times the second player's arrival would be 65% of the previous one. It will be 37%"
+
+  α=0.5  | top_share 0.11 [0.07-0.15] | distinct1 0.54 [0.41-0.62] | distinct2 0.81 [0.67-0.92] | n=5 | halt 2.00/4
+    e.g.: " go the zoo to the morning of the.\nAnd then the second one, I could eat them because I didn't have any time.\nAnd I'm not sure what the last couple of weeks will look like,\nWell it's a little difficult to know.\nOkay, so I'm saying,\nThis is not the first time I see something.\nSo it's also possible that I have seen it.\nI think that's an issue we're going to"
+
+  α=0.7  | top_share 0.08 [0.05-0.11] | distinct1 0.63 [0.54-0.70] | distinct2 0.89 [0.77-0.96] | n=5 | halt 2.00/4
+    e.g.: ' go to the outskirts of the city on a bicycle ride. In the summer, we played in a\nThe most common way to travel is by using the train.\n\nThe time complexity of the algorithm was O(n).\n\nThe problem is about finding the median value in the list.\n\nA string of length at least 10\n\nThe shortest distance between two points is a straight line on the surface of the earth.\n\nThe answer is the'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.13 [0.06-0.20] | distinct1 0.48 [0.23-0.59] | distinct2 0.76 [0.52-0.86] | n=5 | halt 2.00/4
+    e.g.: " the treatment of a plant that includes the presence of the microorganisms that can be divided into one of the major groups.\n\nA study conducted by Laut's study suggests that the occurrence of a cell that has the same amount of cells may not be affected by the presence of a new antibody. This is because there is a large amount of the immune system that is linked to the immune system's presence and the activity of the other organs.\n\nA researcher is required to give"
+
+  α=0.25 | top_share 0.13 [0.06-0.27] | distinct1 0.54 [0.41-0.62] | distinct2 0.81 [0.57-0.96] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics and antibiotics. If the first step is to prevent it, use a variety of antibiotics to treat the various diseases (common) and treat the problem by using the proper system for the treatment and the treatment of diseases.\n\n"When an infection of any kind, it may be dangerous for people with an autoimmune or infection with a more severe condition, such as inflammation or loss of tissues. The first thing to do is to try to figure out how to treat any other conditions'
+
+  α=0.5  | top_share 0.07 [0.06-0.10] | distinct1 0.59 [0.53-0.66] | distinct2 0.89 [0.84-0.96] | n=5 | halt 2.00/4
+    e.g.: " antibiotics, which are medications that can kill from a high, they can quickly remove the infection. Antibiotics that can help you, but since they can't tell the difference between some things that you need and that you don't, it is very important that you do not get too much to antibiotics. It can also lead to the development of bacterial infections which could be harder than anything to get into a new system that is being used in this study. When you get a lot of antibiotics"
+
+  α=0.7  | top_share 0.10 [0.04-0.17] | distinct1 0.61 [0.51-0.70] | distinct2 0.89 [0.82-0.97] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics. For parasitic infections, the appropriate treatment is antiparasitic medication, which is specifically designed to target and eliminate parasites.\nA common misunderstanding is that parasitic worms in the human body are always able to be seen with a microscope in a urine sample.  However, even if a doctor has used microscopic techniques to determine a presence of parasites, it is only possible to detect certain types of infections.\nThe most common parasitic infections are giardiasis- also can be seen in'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.26 [0.09-0.57] | distinct1 0.37 [0.15-0.56] | distinct2 0.52 [0.23-0.84] | n=5 | halt 2.00/4
+    e.g.: ":\n\n- High-drying\n- High-drying\n- High-drying\n- High-drying\n\n- Low-drying\n\n- High-drying\n\n- High-drying\n\n- Nailing a large scale or even less than 1-10 to 2-5%\n\nThe main challenge is the patient's condition – that is, on a 6-3-10-10"
+
+  α=0.25 | top_share 0.11 [0.05-0.19] | distinct1 0.56 [0.44-0.72] | distinct2 0.80 [0.65-0.92] | n=5 | halt 2.00/4
+    e.g.: ' increased thirst, and excessive urination and a high level of sugar in your diet. They are an easy-to-exce to eat healthy. In a 2000-3000 mm a few days, you’ll have a 40 to 500 kg to 150-250mg. \nType 10 111 111131 2 5 124'
+
+  α=0.5  | top_share 0.08 [0.06-0.10] | distinct1 0.61 [0.57-0.66] | distinct2 0.88 [0.81-0.96] | n=5 | halt 2.00/4
+    e.g.: ': \n\n- Increased thirst-related problems or symptoms \n\n- The feeling of a negative impact at the moment \n\n- The need for water or non-leviator substances to cause this problem is not recommended. \n\n- The desire to keep things going on and on the same scale as it was before is not in the same state as the other people. \n\nThe symptoms of this disease are very rare and it is not related to a condition of high blood'
+
+  α=0.7  | top_share 0.16 [0.08-0.26] | distinct1 0.53 [0.36-0.70] | distinct2 0.79 [0.66-0.95] | n=5 | halt 2.00/4
+    e.g.: ' increased thirst, or pol or or\n\nAnthrax\n\nA.\n26/04/2021\n\nWhich symptom is most indicative of:\n\nAnthrax\n\n(A)\n\nHead-colds\n\n(0/8)\n\n(5/6/12)\n\n(C)\n\nNausea\n\n(0/4, 2)\n\n(5/1/2'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.21 [0.06-0.72] | distinct1 0.56 [0.25-0.66] | distinct2 0.81 [0.29-0.96] | n=5 | halt 2.00/4
+    e.g.: " the disease, but it's not necessary to use the drug itself. This might be the case where people with hypertension might have a tendency to use the drug in a person with a non-inflammatory condition, which causes the type of the disease. In the case of the patient, it is often reported that the risk of death could be due to high blood pressure, or other diseases such as diabetes, which can be brought into the patient's environment.\n\nThe primary cause of"
+
+  α=0.25 | top_share 0.09 [0.06-0.11] | distinct1 0.58 [0.55-0.62] | distinct2 0.88 [0.75-0.93] | n=5 | halt 2.00/4
+    e.g.: ' the following conditions.\nWhich of the following structures is responsible for the following?\nWhat drugs are used in such a way to make a therapeutic treatment plan?\nAre they the best in the treatment of a condition?\nWhat do the two main things you should consider in the research?\nThis is to show how the use of a drug is important to treat a specific type of disease or the patient you have to.\nTo have a good understanding of what you are doing'
+
+  α=0.5  | top_share 0.11 [0.07-0.19] | distinct1 0.57 [0.49-0.64] | distinct2 0.84 [0.69-0.93] | n=5 | halt 2.00/4
+    e.g.: ' pain, inflammation, and fever. It works by a mechanism of action that is essential to the correct process.\n\n## Step 2: Identify the Mechanisms of Endocannabinoids\nEnd of the mechanisms of action to control the function of the end of the pathway. In the context of the question, which includes both the end of the pathway and the other side of the organ of the end of the pathway, the mechanism is the mechanism of the end of the pathway. The'
+
+  α=0.7  | top_share 0.06 [0.05-0.08] | distinct1 0.67 [0.61-0.75] | distinct2 0.93 [0.87-0.98] | n=5 | halt 2.00/4
+    e.g.: ' pain and inflammation, but it\'s not used to directly cause weight loss.\n\nE-cigarette\n\nThe e-cigarette was developed as a healthier alternative to a standard that\'s a "smoking" device. Though, an e-cigarette also is used in terms of the device\'s smoking, it\'s been suggested as a healthier, safe option for those who want to start the journey to stop the smoking. The e-treatment device also has nicotine, which is the'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.24 [0.09-0.48] | distinct1 0.36 [0.25-0.49] | distinct2 0.55 [0.36-0.78] | n=5 | halt 2.00/4
+    e.g.: '\n    return n % 855554599999999999999999999999999999999999\n\ndef calculate_dangerous(n):\n    base_number = (10, 11, 11, 20)\n    assert len(0, 1000)\n    return 0\n\n'
+
+  α=0.25 | top_share 0.17 [0.10-0.24] | distinct1 0.38 [0.27-0.48] | distinct2 0.62 [0.39-0.86] | n=5 | halt 2.00/4
+    e.g.: '\n    return 0\n\ndef get_long_int(n):\n    return 0\n\ndef min_int(n):\n    return -1\n\ndef get_long_int(n):\n    return 0\n\ndef get_long_int(n):\n    return 1\n\ndef num_of_lucky_int(n):\n    if not is_num_of_num_of_int(n):\n        return None'
+
+  α=0.5  | top_share 0.08 [0.05-0.10] | distinct1 0.51 [0.41-0.64] | distinct2 0.80 [0.60-0.93] | n=5 | halt 2.00/4
+    e.g.: "\n    # Check if n is a positive integer and not a perfect square\n    # If n is not a positive integer\n\n    # If n is 0, then return 0\n    # If the absolute value of n is less than 3, return 0\n    # If n is not a prime number (since it's not a perfect square)\n    # If n is a prime, return 0, then return 3\n\n171) Given a list of positive"
+
+  α=0.7  | top_share 0.09 [0.06-0.12] | distinct1 0.46 [0.25-0.67] | distinct2 0.71 [0.44-0.93] | n=5 | halt 2.00/4
+    e.g.: '\n\n    if not is_valid(n):\n\n        print("No prime, no Fibonacci numbers here! Skipping this: " + str(n))\n\n        return\n\n    # check the two conditions on the last row\n\n    # build a new set by processing the fib sum and square\n\n    # if both conditions satisfied, return the first \'n\' and add to the set\n\n    # else, proceed\n\n#\n\n# Example: testing\n\nprint(fibonacci(4'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.27 [0.10-0.49] | distinct1 0.25 [0.18-0.35] | distinct2 0.38 [0.24-0.55] | n=5 | halt 2.00/4
+    e.g.: ' 24.\n\nThe roots of the quadratic equation x^2 + 3x + 3x + 6x + 3x + 5x + 3x + 4x + 6x + 4x + 3x - 4x + 4x + 6x + 5x + 3x + 4x + 10x + 4x + 4x + 6x'
+
+  α=0.25 | top_share 0.15 [0.06-0.21] | distinct1 0.29 [0.16-0.58] | distinct2 0.51 [0.31-0.86] | n=5 | halt 2.00/4
+    e.g.: ' 0. So, 3x^2 + 5x - 4x = 14. \n\nSo, 3x^2 + 5x = 36. 3x^2 + 5x - 4x = -9. 2x^2 + 2x + 3. \n\nSo x = -2 + sqrt{(2)^3 − 4(x)} + 3 over x'
+
+  α=0.5  | top_share 0.14 [0.08-0.26] | distinct1 0.44 [0.31-0.51] | distinct2 0.72 [0.57-0.85] | n=5 | halt 2.00/4
+    e.g.: " 18\n\n1. A single quadratic, it is easy to apply the quadratic formula. Let's say in terms of the variable x. Solve for x: x + (x) = x +2 + (-2), 2 + (x + (x)) -6. x(x -2) = -x -2, so we can write x(x + 2) -2. So: x = ( ( (x) + (-2"
+
+  α=0.7  | top_share 0.09 [0.07-0.15] | distinct1 0.50 [0.34-0.62] | distinct2 0.82 [0.58-0.94] | n=5 | halt 2.00/4
+    e.g.: ' 0. The solutions should start with "Solution is a list".\n\nWait, actually in the prompt you can just write the problem, but you won’t have this question, but in the beginning prompt, it shows:\n- For the given quadratic equation, solve it: $x^2 - 5x + 6 = 0.\n- Solution is $x = 2, x = 3, \\boxed{3} = '
+
+wrote reports/probe_100000.json — 120 decoded samples retained (the .txt shows 6 of them)

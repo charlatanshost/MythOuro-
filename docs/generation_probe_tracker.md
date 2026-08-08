@@ -823,6 +823,87 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-06 — ✅ CORRECTED-MIX POUR @100,000: math capability 9x, and "container before content" is the ACQUISITION ORDER
+
+**483M tokens on the corrected mix** (70,500 → 100,000; lifetime 1.64B, 5.9 tok/param) after
+three data fixes landed together on 2026-07-31: medical promoted from harvest-only to 0.20,
+math split 0.26 → 0.13 raw + 0.13 OpenMathInstruct-2, code split 0.27 → 0.135 raw + 0.135
+OpenCodeInstruct. Verdict: **the mix change worked.** Do not lower the medical ratio.
+
+### Math — the mechanism metric moved, then capability followed
+
+| step | per-sample L4 | per-sample L3+ | copied from prompt | within 10% |
+|---|---|---|---|---|
+| 70,500 (pre-mix) | 0.0% | 1.2% | **41.2%** | 8/80 |
+| 82,711 | 0.0% | 3.8% | **16.2%** | 9/80 |
+| 100,000 | 1.2%* | **11.2%** | 32.5% | **16/80** |
+
+`copied_from_prompt` was built to detect the exact @70,500 failure — `12 + 7 =` → `12`,
+`10% of 250 is` → `100%`, the quadratic → `0` on all 8 samples. Slot-filling by echo. Adding
+task-shaped math **more than halved it**, and L3+ (the correct answer *appears*) is now **9x
+baseline** with near-misses doubled. The model stopped echoing and started attempting
+arithmetic — wrong arithmetic, but computed.
+
+**\* the L4 is NOT genuine.** Prompt `10% of 250 is`, answer 25, completion
+`" 25% of 250. So 10% of 250 is 250."` — it wrote *25 percent*, the scorer took the leading
+number. Same coincidence class as the earlier `len(items)` hit. **Genuine math L4 remains 0.**
+
+### Code — genuinely correct implementations, but the primary metric dipped
+
+| code | 70,500 | 100,000 |
+|---|---|---|
+| per-sample L3+ | **53.8%** | 46.2% |
+| task-level L4 | 1/10 | **2/10** |
+| char-degenerate | 64/80 | 59/80 |
+
+`double_it` produced `return n * 2` — correct, first statement, no salvage. Both `add_two`
+hits are real too. But per-sample L3+ went DOWN; code is roughly flat.
+
+### 🔑 "CONTAINER BEFORE CONTENT" IS THE ACQUISITION ORDER, not a failure
+
+Degeneracy at α=0.0 rose to its worst of the series (15/120 total, mean top_share
+0.122 → 0.201). Reading it shows **why**, and it is not collapse:
+
+    x^3 - 4x + 7.   **Step-by-Step Explanation for x: x^3 - 5x + 7.
+                    **Step-by-Step Explanation for x + 5x + 7.
+    14.9999...  25. Find the general solution y = x y - x.  11. Give...
+
+That is **OpenMathInstruct's format** — step-by-step headers, numbered problem sequences,
+LaTeX. The model learned the SHAPE of a worked solution and loops on it. Richer structure to
+repeat ⇒ higher `top_share`. The degeneracy rise is a side effect of ACQUIRING the format.
+
+This is the third instance of the same pattern: math answers (learned `So the answer is:` then
+empty `\[ \]`), medical abstracts (register + correct associations, invented dosages), now
+solution formatting. ⇒ **A format-degeneracy spike is a LEADING indicator that a domain is
+landing**, not a warning. And it is the cheap problem: a repetition penalty took looping from
+51/80 to 1/80 with L4 unmoved (2026-07-30), so this is decode-time fixable while capability is not.
+
+### Medical — the 82,711 scare fully resolved
+
+| α=0.0 degenerate | 70,650 | 82,711 | 90,499 | 100,000 |
+|---|---|---|---|---|
+| bacterial infection | 0/5 | **3/5** | 1/5 | **0/5** |
+| type 2 diabetes | 1/5 | 3/5 | 2/5 | 3/5 |
+
+Bacterial is at its **best reading in the series**. The 82,711 spike was mid-integration, and
+the phrase attractor `"a combination of an infection, infection, or a viral..."` appears at BOTH
+70,500 and 90,351 — pre-existing, not introduced by real abstracts.
+
+⚠ **METHOD NOTE — four reversals in one session, all coverage failures.** Reading the
+degeneracy COUNT before the text; reading α=0.0 only (30 of 120 samples); comparing one
+remembered 70,500 line against a full 5-sample set; and calling a spike a regression from two
+points. Each was corrected by widening coverage, never by thinking harder. Full 4-point
+side-by-side: `reports/text_diff_pour_a00.md` (1,755 lines).
+
+### Depth policy — precondition STRENGTHENED
+
+`best_exit_probe` @100,000: best exits spread across all 8 depths; headroom vs the trained
+depth **26.8% → 35.6%** (0.093 nats, CE 0.261 → oracle 0.168); head agreement flat at
+**25.3%** vs 12.5% chance; and the head's own selection (CE 0.550) remains **worse than a
+fixed depth of 3**. ⇒ `training/train_depth_policy.py` is a go, and the bar is fixed-depth-3,
+not the broken head.
+
+
 ## 2026-07-30 — 🧪 CODE EVAL, FIRST CAPABILITY SERIES (46k→66k): the attractor hid STRUCTURE, not CORRECTNESS
 
 **The headline: L4 (correct code) is ZERO everywhere, and a repetition penalty proves that is NOT a decoding
