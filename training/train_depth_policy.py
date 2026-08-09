@@ -114,14 +114,35 @@ def main() -> None:
     p.add_argument("--log-every", type=int, default=25)
     p.add_argument("--save-every", type=int, default=500)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--resume", action="store_true",
+                   help="Restart from the newest checkpoint in --out-dir instead "
+                        "of from --checkpoint. For unattended runs: a crash at "
+                        "step 1,800 of 2,000 otherwise throws the whole night "
+                        "away.")
+    p.add_argument("--log-file", default=None,
+                   help="Also write the log here. loguru writes to stderr only, "
+                        "so an unattended run's output lives in scrollback and is "
+                        "gone if the terminal closes.")
     args = p.parse_args()
+
+    if args.log_file:
+        Path(args.log_file).parent.mkdir(parents=True, exist_ok=True)
+        logger.add(args.log_file, level="INFO")
 
     torch.manual_seed(args.seed)
     from mythouro.tokenizer import MythOuroTokenizer
     from mythouro.training_utils import MixedDataset
 
     enc = MythOuroTokenizer(args.tokenizer)
-    model, cfg, step0 = _load_model(args.checkpoint, args.device)
+    src = args.checkpoint
+    resumed_from = 0
+    if args.resume:
+        prior = sorted(Path(args.out_dir).glob("step_*.pt")) if Path(args.out_dir).exists() else []
+        if prior:
+            src = str(prior[-1])
+            # Steps already done are encoded in the filename (step0 + trained).
+            logger.info(f"RESUMING from {src} instead of {args.checkpoint}")
+    model, cfg, step0 = _load_model(src, args.device)
     model.eval()                       # frozen everywhere except the head below
 
     # FREEZE EVERYTHING, then unfreeze only the uncertainty head. This trainer
@@ -278,7 +299,12 @@ def main() -> None:
             extra["depth_policy_from"] = str(args.checkpoint)
             ck["extra"] = extra
             path = out / f"step_{step0 + step:07d}.pt"
-            torch.save(ck, path)
+            # Write-then-rename: a crash or power loss mid-torch.save otherwise
+            # leaves a truncated .pt that looks valid to glob and fails to load,
+            # which would silently break --resume on the next attempt.
+            tmp = path.with_suffix(".pt.partial")
+            torch.save(ck, tmp)
+            tmp.replace(path)
             logger.info(f"saved {path}")
 
     logger.info("done. Compare agreement against the pre-training baseline from "
