@@ -59,54 +59,66 @@ echo "FULL VALIDATION @ step $STEP  ($CKPT)" | tee "$LOG"
 echo "log: $LOG" | tee -a "$LOG"
 PASS=0; FAILED=""
 
-run () {                      # run <name> <command...>
-  local name="$1"; shift
+run () {                      # run <name> <artifact-or-EXITCODE> <command...>
+  # VERIFY BY ARTIFACT, NOT EXIT CODE. XPU teardown raises
+  # "PyGILState_Release: thread state must be current" AFTER the work finishes
+  # (field notes workaround #4), so a completed tool routinely exits non-zero.
+  # The first battery run scored 2 tools FAILED that had written their JSON and
+  # printed their verdict — the same mistake the training scripts already avoid.
+  local name="$1" want="$2"; shift 2
   echo -e "\n########## $name ##########" | tee -a "$LOG"
-  if "$@" >>"$LOG" 2>&1; then
-    PASS=$((PASS+1)); echo "  OK" | tee -a "$LOG"
+  "$@" >>"$LOG" 2>&1; local rc=$?
+  local ok=1
+  if [ "$want" = "EXITCODE" ]; then
+    [ $rc -eq 0 ] || ok=0
   else
-    FAILED="$FAILED $name"; echo "  *** FAILED (continuing) ***" | tee -a "$LOG"
+    [ -s "$want" ] || ok=0          # artifact exists and is non-empty
+  fi
+  if [ $ok -eq 1 ]; then
+    PASS=$((PASS+1)); echo "  OK (rc=$rc)" | tee -a "$LOG"
+  else
+    FAILED="$FAILED $name"; echo "  *** FAILED (rc=$rc, no artifact) ***" | tee -a "$LOG"
   fi
 }
 
-run "1 collapse GREEDY" python -u -m tools.collapse_metrics \
+run "1 collapse GREEDY" EXITCODE python -u -m tools.collapse_metrics \
     --checkpoint "$CKPT" --device xpu:0 --n-loops 4 --generate --max-new 96
-run "2 collapse SAMPLED" python -u -m tools.collapse_metrics \
+run "2 collapse SAMPLED" EXITCODE python -u -m tools.collapse_metrics \
     --checkpoint "$CKPT" --device xpu:0 --n-loops 4 --generate --max-new 96 --temperature 0.8
 
-run "3 rollout probe (alpha ladder + TEXT)" python -u -m tools.onpolicy_rollout_probe \
+run "3 rollout probe (alpha ladder + TEXT)" "reports/probe_${STEP}.json" python -u -m tools.onpolicy_rollout_probe \
     --ckpt-dir "$DIR" --student-device xpu:0 --teacher-device xpu:0 \
     --teacher-id "$TEACHER" --trust-remote-code --no-kv-cache --samples 5 \
     --json "reports/probe_${STEP}.json"
 
-run "4 math_eval" python -u -m tools.math_eval -c "$CKPT" --device xpu:0 \
+run "4 math_eval" "reports/math_eval_${STEP}.json" python -u -m tools.math_eval -c "$CKPT" --device xpu:0 \
     --samples 8 --seed 1234 --json "reports/math_eval_${STEP}.json"
 
-run "5a code_eval pen=1.0" python -u -m tools.code_eval -c "$CKPT" --device xpu:0 \
+run "5a code_eval pen=1.0" "reports/code_eval_${STEP}_pen1.0.json" python -u -m tools.code_eval -c "$CKPT" --device xpu:0 \
     --samples 8 --temperature 0.4 --seed 1234 --repetition-penalty 1.0 \
     --json "reports/code_eval_${STEP}_pen1.0.json"
-run "5b code_eval pen=1.15" python -u -m tools.code_eval -c "$CKPT" --device xpu:0 \
+run "5b code_eval pen=1.15" "reports/code_eval_${STEP}_pen1.15.json" python -u -m tools.code_eval -c "$CKPT" --device xpu:0 \
     --samples 8 --temperature 0.4 --seed 1234 --repetition-penalty 1.15 \
     --json "reports/code_eval_${STEP}_pen1.15.json"
 
-run "6 best_exit_probe" python -u -m tools.best_exit_probe -c "$CKPT" --device xpu:0 \
+run "6 best_exit_probe" "reports/best_exit_${STEP}.json" python -u -m tools.best_exit_probe -c "$CKPT" --device xpu:0 \
     --n-loops 8 --chunks 12 --seq-len 256 --json "reports/best_exit_${STEP}.json"
 
-run "7 knowledge_probe" python -u -m tools.knowledge_probe --ckpt-dir "$DIR" \
+run "7 knowledge_probe" EXITCODE python -u -m tools.knowledge_probe --ckpt-dir "$DIR" \
     --student-device xpu:0 --teacher-device xpu:0 --teacher-id "$TEACHER" \
     --trust-remote-code
-run "8 knowledge_likelihood" python -u -m tools.knowledge_likelihood_probe \
+run "8 knowledge_likelihood" EXITCODE python -u -m tools.knowledge_likelihood_probe \
     --ckpt-dir "$DIR" --student-device xpu:0 --n-loops 4
 
-run "9 kd_exhaustion" python -u -m tools.kd_exhaustion --ckpt-dir "$DIR" \
+run "9 kd_exhaustion" EXITCODE python -u -m tools.kd_exhaustion --ckpt-dir "$DIR" \
     --device xpu:0 --teacher-id "$TEACHER" --trust-remote-code --batches 8
 
-run "10 per_loop_calibration" python -u -m tools.per_loop_calibration \
+run "10 per_loop_calibration" "reports/per_loop_ece_${STEP}.json" python -u -m tools.per_loop_calibration \
     --checkpoint "$CKPT" --device xpu:0 --max-samples 20 --seq-len 256 \
     --out "reports/per_loop_ece_${STEP}.json"
 
 echo -e "\n=========================================" | tee -a "$LOG"
-echo "PASSED $PASS/10" | tee -a "$LOG"
+echo "PASSED $PASS/11" | tee -a "$LOG"
 [ -n "$FAILED" ] && echo "FAILED:$FAILED" | tee -a "$LOG"
 echo "validation @$STEP: $PASS/10 passed$FAILED $(date)" > "$OK"
 echo "full log: $LOG" | tee -a "$LOG"

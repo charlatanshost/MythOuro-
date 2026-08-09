@@ -823,6 +823,76 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-09 — 📊 FULL VALIDATION BATTERY @108,471: next-token accuracy DOUBLED, code capability 49% → 75%
+
+First run of `run_full_validation.sh` — all eleven runs across nine instruments on one
+checkpoint, so the comparisons are matched rather than assembled from partial reads.
+
+### 🔑 THE HEADLINE IS IN THE CALIBRATION TABLE, not the evals
+
+| loop | accuracy @108,471 | was (P0.5 audit, v2, 2026-06-09) |
+|---|---|---|
+| 0 | **0.696** | 0.140 |
+| 1 | **0.896** | 0.500 |
+| 2 | **0.962** | 0.510 |
+| 3 | **0.980** | 0.499 |
+
+**98% next-token accuracy at the trained depth.** Confirmed independently by `best_exit_probe`:
+CE at the trained depth **0.261 → 0.211**, oracle **0.168 → 0.153**. The LM itself improved
+enormously; the task evals had not been showing this because they measure multi-token
+generation, not next-token prediction.
+
+### Code — the capability number moved a lot
+
+| @108,471 | pen 1.0 (degeneracy) | pen 1.15 (capability) |
+|---|---|---|
+| per-sample L3+ | 48.8% | **75.0%** |
+| char-degenerate | 67/80 | **0/80** |
+| looped | 42/80 | **1/80** |
+
+75% runnable at the capability setting vs **49% at 70,500**, with degeneracy fully removed by
+the penalty. Per the protocol established 2026-07-30 (report BOTH), this is the number that
+counts, and it is the largest capability move in the project so far.
+
+### Math — oscillating, not climbing
+
+| step | L3+ | copied from prompt |
+|---|---|---|
+| 70,500 | 1.2% | 41.2% |
+| 82,711 | 3.8% | **16.2%** |
+| 100,000 | 11.2% | 32.5% |
+| 108,471 | **5.0%** | **37.5%** |
+
+⚠ **Correction to the 08-06 entry.** The 82,711 copy-rate drop was reported there as the
+mix change landing. Across four points it now reads as an OUTLIER, not a trend — copied has
+drifted back to 37.5%, near the 41.2% baseline. Math is oscillating around a modest
+improvement. The claim "the mechanism metric moved" was made on two points and does not
+survive four.
+
+### Depth headroom SHRANK as the model improved
+
+`best_exit_probe`: headroom vs the trained depth **0.093 → 0.058 nats** (agreement 25.3% →
+22.5%). A better LM leaves less for a depth router to recover — which independently reinforces
+the 08-09 decision to shelve `train_depth_policy` after it made the task worse.
+
+### The head is now WILDLY overconfident at shallow loops
+
+ECE at loop 0 went **0.217 → 0.288**: it reports **1.7% error where the truth is 30.4%**. The
+final loop is excellent (0.013). So the direction of the P0.5 finding holds — calibrated where
+trained, badly miscalibrated shallower — but the magnitude at loop 0 worsened. Anything that
+consumes this signal at shallow depths is consuming noise.
+
+### Instrument/method notes
+
+* **Verify by ARTIFACT, not exit code — the battery scored 2/11 FAILED that had fully
+  succeeded.** Both hit the XPU teardown crash (`PyGILState_Release`, field-notes workaround
+  #4) *after* writing their JSON and printing their verdict. The training scripts already
+  avoid this; the validation script did not. Fixed.
+* I printed per-loop accuracy with `r.get('acc', 0)` — the key is `accuracy` — and nearly
+  reported **0.000 accuracy at every loop**, which would have inverted the single most
+  positive result in the battery. Read the record's keys before reading its values.
+
+
 ## 2026-08-09 — ⚖️ DEPTH POLICY: succeeded on its objective, made the TASK worse (the label is teacher-forced)
 
 `training/train_depth_policy.py`, 6,000 steps head-only on `step_0100000.pt`.

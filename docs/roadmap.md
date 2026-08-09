@@ -33,6 +33,15 @@ mix is now **uniform** (code 20%→33%) to test whether the residual code weakne
 *dose*, since code was the least-fed domain. Detail: `docs/generation_probe_tracker.md`
 (07-25/27 entries). Everything below is the standing longer-form record.
 
+**UPDATE 2026-08-09 — FULL BATTERY @108,471: next-token accuracy DOUBLED.** Per-loop accuracy
+0.140/0.500/0.510/0.499 (June, v2) → **0.696/0.896/0.962/0.980**. 98% at the trained depth,
+confirmed independently by CE (trained-depth 0.261 → 0.211). **Code capability 49% → 75%**
+per-sample L3+ at the pen-1.15 capability setting, with degeneracy fully removed (0/80). Math
+oscillates rather than climbs, and the 08-06 "copy rate halved" reading does NOT survive four
+points — it was an outlier. Depth headroom SHRANK 0.093 → 0.058 nats as the LM improved,
+reinforcing the decision to shelve the depth policy. Detail:
+`docs/generation_probe_tracker.md` (08-09 battery entry).
+
 **UPDATE 2026-08-06 — CORRECTED-MIX POUR @100,000: the data fixes WORKED.** 483M tokens on the
 new mix (lifetime 1.64B, 5.9 tok/param). Math `copied_from_prompt` **41.2% → 16.2%** and
 per-sample L3+ **1.2% → 11.2%** (9x) — the model stopped echoing operands and started

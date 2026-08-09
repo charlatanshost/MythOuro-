@@ -1,0 +1,44 @@
+{
+  "n_loops": 4,
+  "samples": 20,
+  "seq_len": 256,
+  "per_loop": [
+    {
+      "loop": 0,
+      "ece": 0.2875,
+      "accuracy": 0.6957,
+      "mean_uncertainty": 0.0168,
+      "actual_error_rate": 0.3043,
+      "gap": 0.2875,
+      "positions": 5120
+    },
+    {
+      "loop": 1,
+      "ece": 0.094,
+      "accuracy": 0.8959,
+      "mean_uncertainty": 0.0101,
+      "actual_error_rate": 0.1041,
+      "gap": 0.094,
+      "positions": 5120
+    },
+    {
+      "loop": 2,
+      "ece": 0.0305,
+      "accuracy": 0.9623,
+      "mean_uncertainty": 0.0072,
+      "actual_error_rate": 0.0377,
+      "gap": 0.0305,
+      "positions": 5120
+    },
+    {
+      "loop": 3,
+      "ece": 0.0132,
+      "accuracy": 0.9801,
+      "mean_uncertainty": 0.0068,
+      "actual_error_rate": 0.0199,
+      "gap": 0.0131,
+      "positions": 5120
+    }
+  ],
+  "elapsed_s": 10.7
+}
