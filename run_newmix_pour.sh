@@ -45,7 +45,7 @@ SRC=checkpoints_reuse8/step_0070500.pt
 DIR=checkpoints_newmix
 TEACHER=ByteDance/Ouro-2.6B-Thinking
 FILES='data_teacher_v2/shard_*.jsonl,data_teacher_med/shard_*.jsonl'
-TARGET=100000
+TARGET=140000
 OK=reports/newmix_pour_DONE; FAIL=reports/newmix_pour_FAILED
 rm -f "$OK" "$FAIL"
 trap '[ -f "$OK" ] || echo "incomplete exit=$? $(date)" > "$FAIL"' EXIT
