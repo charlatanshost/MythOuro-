@@ -823,6 +823,67 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-09 — ⚖️ DEPTH POLICY: succeeded on its objective, made the TASK worse (the label is teacher-forced)
+
+`training/train_depth_policy.py`, 6,000 steps head-only on `step_0100000.pt`.
+Both halting heads trained from one best-exit label — the loop with the lowest per-loop CE,
+taken from the model's own forced-depth trajectory. 411k of 216M params (0.19%); LM body frozen
+and verified unchanged.
+
+### It cleared the bar it was given
+
+| | @100,000 | after policy |
+|---|---|---|
+| head agrees with oracle | 25.3% | **42.4%** |
+| CE at the head's choice | 0.5496 | **0.2220** |
+| CE at fixed depth 3 *(the bar)* | 0.2606 | 0.2628 |
+| CE oracle | 0.1680 | 0.1676 |
+
+The head went from **worse than a constant** to **beating it**, capturing **43% of the
+available headroom** ((0.2628−0.2220)/(0.2628−0.1676)). Selection became sensible: it used to
+pick loop 7 — the WORST loop, CE 0.72 — 17.1% of the time; now 0.5%, with the mass on loops 3
+and 4, the two lowest-CE depths.
+
+**ACTHalting moved too:** mean halt depth **2.00 → 3.60**. The branch that was pinned at
+exactly 2.00 across 120 measurements (6 domains × 4 α × 5 samples, zero variance) is adaptive.
+
+### And the task got worse
+
+| | @100,000 | after policy |
+|---|---|---|
+| math per-sample L3+ | 11.2% | **5.0%** |
+| copied from prompt | 26/80 | 28/80 |
+
+⚠ 9 samples vs 4 of 80 — the CIs overlap, so directionally consistent with the mechanism change
+rather than conclusive alone.
+
+### 🔑 ROOT CAUSE — the label is TEACHER-FORCED, deployment is AUTOREGRESSIVE
+
+Per-loop CE is measured on gold tokens with a correct prefix. Generation runs on the model's
+own output. So the policy was trained to answer *"which loop best predicts the next GOLD token
+given a CORRECT prefix"* and then deployed where neither holds. **That is the exposure-bias gap
+this whole project exists to close, and the depth label walked into it.**
+
+It also fits the forced-depth null result (2026-07-31): making the model run deeper never
+helped, and this made it actually run deeper (2.00 → 3.60) and the task got worse. Two
+independent routes to the same conclusion — **depth is not where the capability is**.
+
+⇒ **The fix is a label redesign, not a tuning change:** the best exit must be scored under
+GENERATION (roll out from each candidate exit, score the continuation), not teacher-forced CE.
+That is real work and is not queued.
+
+⇒ **Pour continues from `checkpoints_newmix/step_0100000.pt`.** `checkpoints_depthpolicy` is
+kept as a branch — a genuine result, not a discard. And note `distill.py` retrains BOTH heads
+every step (`uncertainty_calibration_loss`, `depth_regularization_loss`) with the old
+objectives, so pouring from the policy checkpoint on the standard recipe would overwrite it
+within a few hundred steps regardless.
+
+**Method note:** the trainer ran at 0.33–0.40 s/step, ~40 min for 6,000 steps — I had sized the
+overnight expecting a head-only step to be slow because of the 8-loop teacher pass. It is not.
+Also `| tail -40` in the wrapper buffers until exit, so the run appeared to produce no output
+for 40 minutes; only the `--log-file` safeguard made it observable.
+
+
 ## 2026-08-06 — ✅ CORRECTED-MIX POUR @100,000: math capability 9x, and "container before content" is the ACQUISITION ORDER
 
 **483M tokens on the corrected mix** (70,500 → 100,000; lifetime 1.64B, 5.9 tok/param) after
