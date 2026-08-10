@@ -823,6 +823,98 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-10 — 🔴 SFT CANNOT WORK ON A STRONG BASE: more dose SHARPENS the attractor, exactly as documented
+
+Continuation to **36,202 cumulative SFT steps** — 5.6x v4's known-good ~6.5k, the dose the
+roadmap identified as the fix. It is not the fix.
+
+| scored in each model's own format | base (raw) | SFT 3k | SFT 36.2k |
+|---|---|---|---|
+| code per-sample L3+ @ pen 1.15 | **75.0%** | 0.0% | 0.0% |
+| math per-sample L3+ | 5.0% | 1.2% | **0.0%** |
+| math copied-from-prompt | 30/80 | 2/80 | 1/80 |
+
+**Monotonically worse with dose**, and the generations regressed rather than progressed on the
+same `def add_two(a, b):` prompt:
+
+```
+SFT 3k      def def __init__(self, self):   (then doubled quote-blocks and doubled prose)
+SFT 36.2k   - - - - - - - - : : : : : | | | = = = conclude:
+```
+
+At 3k it still emitted Python-shaped tokens; at 36.2k, punctuation spam. That is the OPPOSITE
+of the roadmap's repetition → word-salad → phrases → coherence trajectory. More dose did not
+walk it up that ladder; it walked it further down.
+
+### 🔑 THE ANSWER WAS IN `docs/onpolicy_plan.md` THE WHOLE TIME
+
+> *"Every offline divergence we swept **mode-collapses with tokens** into a sharp `is is is`
+> attractor. The cause is **exposure bias**: offline distillation only ever sees TEACHER-FORCED
+> sequences, so the student never learns to recover from its own trajectories. It is
+> **decoupled from every formal metric** (PPL 1.759, ECE 0.0152, stability, reps all healthy at
+> the collapsed checkpoint). **More offline tokens — continued OR fresh — only sharpen the
+> attractor. The cure is a different objective, not more data.**"*
+
+Every clause replicated tonight:
+
+| documented | observed 2026-08-10 |
+|---|---|
+| decoupled from every formal metric | training `ce` mean 0.269, `gnorm` 0.15 — loss looks converged |
+| mode-collapses into a repetition attractor | `def def def` → `- - - : : :` |
+| **more tokens only sharpen it** | 3k → 36.2k strictly worse on both evals |
+| the cure is a different objective | ⇒ SFT needs the on-policy treatment distillation already got |
+
+**SFT is a teacher-forced offline objective.** It therefore has precisely the exposure-bias
+failure this project already diagnosed and solved for distillation with on-policy/GKD. More SFT
+was never going to work, and the document says so in as many words.
+
+**Why June's `v4` was different:** it reached word-salad with more cumulative SFT on a MUCH
+weaker base — one with no strong attractor to sharpen. On a base at 98% next-token accuracy and
+75% code L3+, extra dose reinforces the attractor instead of building structure. The roadmap's
+"more SFT moves the needle" is conditional on base strength. That condition was never stated;
+it is now measured.
+
+### The objective is NOT broken — verified, and my alarm was wrong
+
+I flagged the final logged `ce 0.0130` as impossible and predicted a broken loss. Checked on
+real batches from the live iterator against the trained checkpoint:
+
+* alignment at masked positions: **0 misaligned** (`target[i] == input[i+1]` throughout)
+* independently measured masked CE: **0.534**
+* logged `ce`, last 200 steps: mean 0.269, median 0.190, **range 0.010–2.21**
+
+`0.0130` was the *final* value in a distribution spanning two orders of magnitude. I read one
+log line as representative of the run. The objective, the masking and the alignment are all
+correct — which leaves the documented exposure-bias explanation as the only one still standing.
+
+**One real (minor) bug found:** 32 masked targets are PAD tokens — 0.27% of loss-bearing
+positions. Padding should never enter the loss. Far too small to explain anything here.
+
+### Six hypotheses died this session, all to measurement
+
+learning rate · format shock · truncated stop tokens (owner's — killed at 2.9%) · target
+off-by-one (the doubling looked exactly like predicting the current token; verified false) ·
+**dose** (5.6x made it worse) · broken loss (mine; measured 0.534, inside the logged range).
+The surviving answer came from the docs both times the owner pointed at them — the standing
+lesson, now on its third instance.
+
+### Consequence
+
+**SFT as implemented cannot be used on this base.** It needs on-policy treatment — generate
+from the student, correct against the target — the same change that fixed offline distillation.
+That is real work, not a flag. The base `checkpoints_newmix/step_0108471.pt` is untouched and
+remains the line; the pour resumes there.
+
+Two data defects found on the way, worth fixing before any future attempt:
+`clean_code` rejects ~52% of OpenCodeInstruct (the adapter requires EVERY unit test to pass;
+median score is 0.90), and sampling ratios are not gradient ratios — loss-bearing token fraction
+is 65.9% for `clean_general` vs 12.7% math and 8.2% pubmedqa, so general receives ~5x the
+gradient of math at a near-identical sample ratio.
+
+Raw: `reports/code_sft_cont_36202_pen1.15.json`, `reports/math_sft_cont_36202.json`,
+`reports/code_sft_cont_34000_pen1.15.json`.
+
+
 ## 2026-08-10 — ❌ SFT @3k COLLAPSED THE MODEL — and the roadmap already said it would
 
 First SFT on the current line. `checkpoints_newmix/step_0108471.pt` → 3,000 steps,
