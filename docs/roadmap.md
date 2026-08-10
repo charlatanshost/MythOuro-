@@ -730,13 +730,21 @@ attacks those two roots, not the symptoms.
 
 | # | Work | Cost | Gate / success criterion |
 |---|------|------|--------------------------|
-| 0 | **Big-batch SFT A/B** (`checkpoints_v8_bigbatch`, effective batch 256 vs 8) | RUNNING, ~8.8h | `code_eval` @pen1.15 vs base **75.0%**. Any movement off 0.0% ⇒ gradient noise was part of the collapse. Still 0.0% ⇒ exposure bias stands with batch ruled out. Either way it is decided, not argued. |
+| 0 | **Big-batch SFT A/B** (`checkpoints_v8_bigbatch`, effective batch 256 vs 8) | RUNNING, **~12h** (2,500 steps @ 20.4 s/step at full depth) | `code_eval` @pen1.15 vs base **75.0%**. Any movement off 0.0% ⇒ gradient noise was part of the collapse. Still 0.0% ⇒ exposure bias stands with batch ruled out. Either way it is decided, not argued. |
 | 1 | **Per-domain best-exit headroom** — `best_exit_probe --by-domain` | instrument, ~20 min, no training | Does depth benefit VARY by subject? Spread <25% of the largest headroom ⇒ **per-subject depth is disconfirmed**; do not grow depth. Built 2026-08-10. |
 | 2 | **`--unc-loop-weighting uniform`** — calibrate the UncertaintyHead at every loop | 1 overnight | Loop-0 ECE falls from **0.288** (`tools/per_loop_calibration.py`). The head currently predicts 1.68% error where it makes 30.4% — 18x overconfident. Run ALONE, not with #3. |
 | 3 | **`--loop-loss-weighting uniform`** — distil against every loop | 1 overnight | Closes the Ouro divergence. `uniform` FIRST, not `exit_pdf`: depth-reg pulls the halt distribution toward uniform, so `exit_pdf` is confounded from step one. Judge on `code_eval` / `math_eval`, not CE. |
 | 4 | **Resume the pour** to 140,000 (`run_newmix_pour.sh`) | continuous | The base is still the binding constraint on everything else; every rung above is a better *objective* on the same weak base. |
 | 5 | **Grow depth 4→8** (`grow_depth.py`, SHELVED) | 2 sessions | ⚠ Gated on **#1 showing real per-subject variation** AND **#2 landing**. A budget increase is worthless while the allocator is broken — the model already declines extra passes, and repeating an identical contraction converges to the same fixed point. |
 | 6 | **On-policy SFT** — the actual cure for 2026-08-10 | multi-session build | `docs/onpolicy_plan.md`: "more offline tokens — continued OR fresh — only sharpen the attractor. The cure is a different objective, not more data." Generate from the student, correct against the target. |
+
+**⏱ Timing these runs — estimate at FULL depth, not from warmup.** The 2026-08-10
+big-batch run was called at ~8.8h from a 12.7 s/step reading taken at steps 10-40,
+when `LoopCurriculum` still had `n_loops`=2. It ramped 2 -> 3 at step 730 -> 4 at
+step 1260 and settled at **20.4 s/step**, i.e. ~12h — a 3-hour miss straight into the
+evening Windows window. Any wall-clock estimate for a run that starts below
+`max_loop_iters` must use the rate AFTER the curriculum tops out, or it understates
+by ~40%.
 
 **Blocking prerequisites for any future SFT** (both found 2026-08-10, neither fixed):
 `clean_code` rejects ~52% of OpenCodeInstruct (adapter demands EVERY unit test
