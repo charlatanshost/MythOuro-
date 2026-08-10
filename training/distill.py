@@ -184,6 +184,31 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--jsd-beta", type=float, default=0.5,
                    help="JSD interpolation weight when --divergence jsd "
                         "(β→0 ≈ fwd_kl, β→1 ≈ rev_kl). Try 0.5 or 0.9.")
+    p.add_argument("--loop-loss-weighting",
+                   choices=["off", "uniform", "progressive", "exit_pdf"],
+                   default="off",
+                   help="Distil against EVERY recurrent loop instead of the "
+                        "final one, combining per-loop losses with weights that "
+                        "sum to 1. 'off' (default) = current behaviour, "
+                        "bit-identical. This closes our documented divergence "
+                        "from Ouro, which trains L = SUM_t p(t|x)*L^(t) while we "
+                        "supervise h_K alone (docs/growth_design.md 'loop-loss "
+                        "supervision'). uniform = 1/K each. progressive = t^alpha "
+                        "normalised (later loops weigh more, see "
+                        "--loop-loss-alpha). exit_pdf = the model's own halt "
+                        "distribution, i.e. Ouro's p(t|x) exactly. "
+                        "CAUTION: exit_pdf interacts with --depth-reg-coeff, "
+                        "which pulls the halt distribution TOWARD UNIFORM; at "
+                        "0.3 the two weightings largely converge, so 'uniform' "
+                        "is the honest control arm, not a strawman. "
+                        "MEMORY: K sets of logits stay live for the backward "
+                        "(~805MB each at micro-batch 8 / seq 1024 / vocab "
+                        "49,152); drop --micro-batch if this OOMs.")
+    p.add_argument("--loop-loss-alpha", type=float, default=1.0,
+                   help="Exponent for --loop-loss-weighting progressive: "
+                        "w_t proportional to (t+1)^alpha, normalised. 0 = "
+                        "uniform, 1 = linear ramp, >1 = sharper toward the "
+                        "final loop. Ignored by the other weightings.")
     p.add_argument("--lb-coeff", type=float, default=1e-2)
     p.add_argument("--unc-coeff", type=float, default=5e-2)
     p.add_argument("--sparse-coeff", type=float, default=1e-3)
@@ -445,6 +470,63 @@ class _StepProfiler:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
+
+def _loop_weights(
+    mode: str,
+    K: int,
+    halt: "torch.Tensor | None",
+    *,
+    alpha: float,
+    shape: "tuple[int, int]",
+    device: "torch.device",
+) -> torch.Tensor:
+    """
+    Per-token weights over the K recurrent loops, for loop-weighted distillation.
+
+    Returns (B, T, K) summing to 1 along K at every position, so the K weighted
+    per-loop losses add up to one properly-scaled loss.
+
+    Modes:
+      uniform      1/K everywhere. The CONTROL ARM, and not a strawman — see
+                   the exit_pdf note below.
+      progressive  w_t ∝ (t+1)^alpha, normalised; later loops weigh more.
+      exit_pdf     the model's own halt distribution p(t|x) — Ouro's objective
+                   exactly, and the only mode whose weights vary PER TOKEN,
+                   which is the whole point of adaptive depth.
+
+    ⚠ exit_pdf vs --depth-reg-coeff. `depth_regularization_loss` is a KL from
+    the halt distribution to UNIFORM. Run both at strength (the pour uses 0.3)
+    and the halt distribution is actively pulled toward 1/K, so exit_pdf
+    converges toward uniform. That is not a bug in either piece — Ouro pairs
+    per-step weighting WITH entropy regularisation on purpose, because the
+    weighting alone hands the optimiser a lever to dump all mass on the easiest
+    loop (our own λ₀→1 ACT collapse, docs/growth_design.md). The two are a
+    matched pair; tune them together, and read `uniform` as the null against
+    which exit_pdf must actually earn its keep.
+
+    Falls back to uniform when the halt distribution is unavailable, loudly:
+    silently degrading exit_pdf to uniform would make the A/B meaningless.
+    """
+    B, T = shape
+    if mode == "exit_pdf":
+        if halt is None:
+            raise RuntimeError(
+                "--loop-loss-weighting exit_pdf needs the halt distribution, "
+                "but the recurrent block published none (or its shape drifted "
+                "from the states). Use 'uniform' or 'progressive', or fix "
+                "RecurrentBlock.last_halt_distribution — do not let this "
+                "silently fall back, or the A/B measures nothing."
+            )
+        return halt
+    if mode == "uniform":
+        w = torch.full((K,), 1.0 / K, device=device)
+    elif mode == "progressive":
+        t = torch.arange(1, K + 1, device=device, dtype=torch.float32) ** float(alpha)
+        w = t / t.sum()
+    else:
+        raise ValueError(f"unknown --loop-loss-weighting {mode!r}")
+    return w.view(1, 1, K).expand(B, T, K)
 
 
 def main():
@@ -773,17 +855,64 @@ def main():
                     t_logits = teacher_logits(teacher_fwd, x_in).to(device)
 
                 # ── Student forward ──
-                with prof.region("student_fwd"):
-                    s_logits, unc = student_fwd(x_in, n_loops=n_loops)
+                if args.loop_loss_weighting == "off":
+                    with prof.region("student_fwd"):
+                        s_logits, unc = student_fwd(x_in, n_loops=n_loops)
 
-                # ── Distillation (+ CE blend on the offline path) ──
-                distill_total, distill_metrics = distillation_loss(
-                    s_logits, t_logits, targets=distill_targets,
-                    temperature=args.temperature,
-                    alpha=args.alpha,
-                    divergence=args.divergence,
-                    jsd_beta=args.jsd_beta,
-                )
+                    # ── Distillation (+ CE blend on the offline path) ──
+                    distill_total, distill_metrics = distillation_loss(
+                        s_logits, t_logits, targets=distill_targets,
+                        temperature=args.temperature,
+                        alpha=args.alpha,
+                        divergence=args.divergence,
+                        jsd_beta=args.jsd_beta,
+                    )
+                else:
+                    # ── LOOP-WEIGHTED distillation: supervise EVERY loop ──
+                    # Closes the documented divergence from Ouro, which trains
+                    # L = SUM_t p(t|x)·L^(t) while we supervise h_K alone. See
+                    # docs/growth_design.md "loop-loss supervision".
+                    #
+                    # Uses the RAW `student`, not `student_fwd`: the compiled
+                    # alias wraps `forward`, and calling a different method on a
+                    # compiled module falls back to eager anyway. Being explicit
+                    # keeps `--compile` and this flag independent.
+                    with prof.region("student_fwd"):
+                        states, halt = student.forward_loop_states(
+                            x_in, n_loops=n_loops,
+                        )
+                    K = states.shape[2]
+                    w = _loop_weights(
+                        args.loop_loss_weighting, K, halt,
+                        alpha=args.loop_loss_alpha,
+                        shape=states.shape[:2], device=states.device,
+                    )
+
+                    distill_total = None
+                    soft_sum = hard_sum = 0.0
+                    for k in range(K):
+                        logits_k = student.head(states[..., k, :])
+                        loss_k, metrics_k = distillation_loss(
+                            logits_k, t_logits, targets=distill_targets,
+                            temperature=args.temperature,
+                            alpha=args.alpha,
+                            divergence=args.divergence,
+                            jsd_beta=args.jsd_beta,
+                            token_weights=w[..., k],
+                        )
+                        distill_total = (
+                            loss_k if distill_total is None
+                            else distill_total + loss_k
+                        )
+                        soft_sum += metrics_k["soft"]
+                        hard_sum += metrics_k["hard"]
+                        if k == K - 1:
+                            # Final loop stays the reference output: the
+                            # uncertainty head and every downstream metric are
+                            # defined against the depth inference actually emits.
+                            s_logits = logits_k
+                    unc = student.uncertainty(states[..., K - 1, :])
+                    distill_metrics = {"soft": soft_sum, "hard": hard_sum}
 
                 # ── Auxiliary losses (keep MoE / uncertainty / sparsity healthy) ──
                 router_buf = collect_router_logits(student)

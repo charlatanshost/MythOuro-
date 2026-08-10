@@ -1621,6 +1621,11 @@ class RecurrentBlock(nn.Module):
         # byte-for-byte unchanged and pays nothing.
         self.collect_trajectory = False
         self.last_trajectory: Optional[torch.Tensor] = None
+        # Opt-in: keep the autograd graph on `last_trajectory` instead of
+        # detaching it. Only `MythOuro.forward_loop_states` sets this, and only
+        # for the duration of one forward. Default False so every inference
+        # consumer keeps the cheap detached behaviour.
+        self.trajectory_requires_grad = False
 
         # Measurement override (off by default). When set alongside
         # `collect_trajectory`, the two inference early-exit breaks (convergence
@@ -1932,8 +1937,19 @@ class RecurrentBlock(nn.Module):
         # (B, T, K, D) where K is the number of loops actually run; None when
         # capture wasn't requested.
         if collect:
+            # `.detach()` by default: every existing consumer is an inference
+            # inspector (forward_trajectory, BestOfTrajectoryGenerator) and
+            # holding the graph there would leak activations across a whole
+            # generation. `trajectory_requires_grad` is the opt-in for
+            # MythOuro.forward_loop_states, which needs the graph precisely
+            # BECAUSE it builds a training loss at every loop — without it the
+            # recurrent block and prelude receive no gradient at all and the
+            # loop-weighted objective silently trains only the head.
+            stacked = torch.stack(traj_states, dim=2) if traj_states else None
             self.last_trajectory = (
-                torch.stack(traj_states, dim=2).detach() if traj_states else None
+                stacked
+                if (stacked is not None and self.trajectory_requires_grad)
+                else (stacked.detach() if stacked is not None else None)
             )
 
         # Always return the FINAL loop's hidden state h_K — at training AND
@@ -2257,6 +2273,105 @@ class MythOuro(nn.Module):
         logits = self.head(normed)
         unc = self.uncertainty(normed)
         return logits, unc
+
+    def forward_loop_states(
+        self,
+        input_ids: torch.Tensor,
+        n_loops: Optional[int] = None,
+    ) -> tuple:
+        """
+        GRAD-TRACKED per-loop states — the training counterpart of
+        `forward_trajectory`.
+
+        WHY THIS EXISTS SEPARATELY. `forward_trajectory` is `@torch.no_grad()`
+        and cannot be reused for a loss: it is an inspector. This method runs
+        the same prelude → recurrent → per-loop coda/norm path with autograd
+        live, so a caller can build a loss at EVERY loop instead of only the
+        final one.
+
+        WHAT IT IS FOR. `training/distill.py` currently distils against
+        `h_K` alone (final loop), which is our documented divergence from Ouro
+        — see docs/growth_design.md "loop-loss supervision (divergence from
+        Ouro)". Ouro trains `L = Σ_t pφ(t|x)·L^(t)`: a per-step loss weighted
+        by exit probability. This returns the pieces that objective needs.
+
+        RETURNS STATES, NOT LOGITS, ON PURPOSE. `(B,T,K,V)` is ~3.2 GB in bf16
+        at B=8, T=1024, K=4 (vocab 49,152), while `(B,T,K,D)` at D=1280 is
+        ~84 MB — 38x smaller. The caller applies `self.head` one loop at a time
+        and discards, which is the only shape that fits beside a 2.6B teacher.
+        Same reasoning as `forward_trajectory(return_states=True)`.
+
+        Args:
+            input_ids -- (B, T) token indices.
+            n_loops   -- recurrent depth; defaults to `cfg.max_loop_iters`.
+
+        Returns:
+            (states, halt_dist):
+              states    -- (B, T, K, D) post-coda, post-norm hidden state per
+                           loop; exactly what `self.head` / `self.uncertainty`
+                           consume, so no caller re-derives coda/sink/norm and
+                           silently drifts from `forward`.
+              halt_dist -- (B, T, K) halt probability per loop, already
+                           sink-stripped and renormalised over K, or None when
+                           the recurrent block published none. This is the
+                           `pφ(t|x)` of Ouro's objective.
+
+        NOTE ON force_full_depth: deliberately NOT exposed. ACT's early exit is
+        part of the behaviour being trained; suppressing it here would train
+        against loops that inference will never run.
+        """
+        x = self.embed(input_ids)
+        x, sink_len = self.sink.prepend(x)
+
+        T_ext = x.shape[1]
+        freqs_cis = (
+            self.freqs_cis_mla if self.cfg.attn_type == "mla" else self.freqs_cis
+        )[:T_ext]
+        mask = self._causal_mask(T_ext, input_ids.device, x.dtype) if T_ext > 1 else None
+
+        for i, layer in enumerate(self.prelude):
+            x = layer(x, freqs_cis, mask, None, cache_key=f"prelude_{i}")
+
+        e = x
+        self.recurrent.collect_trajectory = True
+        self.recurrent.trajectory_requires_grad = True
+        try:
+            self.recurrent(x, e, freqs_cis, mask, n_loops, None)
+            traj = self.recurrent.last_trajectory       # (B, T_ext, K, D) or None
+        finally:
+            self.recurrent.collect_trajectory = False
+            self.recurrent.trajectory_requires_grad = False
+            self.recurrent.last_trajectory = None
+
+        if traj is None:                                # n_loops == 0
+            traj = e.unsqueeze(2)
+
+        K = traj.shape[2]
+        state_steps: list[torch.Tensor] = []
+        for k in range(K):
+            h = traj[..., k, :]
+            for i, layer in enumerate(self.coda):
+                h = layer(h, freqs_cis, mask, None, cache_key=f"coda_{i}")
+            if sink_len:
+                h = self.sink.strip(h)
+            state_steps.append(self.norm(h))
+        states = torch.stack(state_steps, dim=2)        # (B, T, K, D)
+
+        # Halt distribution, aligned to `states`. `last_halt_distribution` is
+        # (B, T_ext, K) — T_ext includes the prepended sink tokens, so it is
+        # LONGER than T. Trimming the FRONT is what aligns them; getting this
+        # backwards shifts every weight by `sink_len` positions silently, which
+        # is the defect that had to be fixed in train_depth_policy.py.
+        halt = getattr(self.recurrent, "last_halt_distribution", None)
+        if halt is not None:
+            pad = halt.shape[1] - states.shape[1]
+            if pad > 0:
+                halt = halt[:, pad:, :]
+            if halt.shape[:2] != states.shape[:2] or halt.shape[2] != K:
+                halt = None                             # shape drift: refuse to guess
+            else:
+                halt = halt / halt.sum(dim=-1, keepdim=True).clamp_min(1e-9)
+        return states, halt
 
     @torch.no_grad()
     def forward_trajectory(

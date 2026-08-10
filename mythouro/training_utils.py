@@ -1528,6 +1528,7 @@ def distillation_loss(
     ignore_index: int = -100,
     divergence: str = "fwd_kl",
     jsd_beta: float = 0.5,
+    token_weights: "Optional[torch.Tensor]" = None,
 ) -> "tuple[torch.Tensor, dict]":
     """
     Hinton-style knowledge distillation with an optional gold-label CE blend.
@@ -1614,6 +1615,26 @@ def distillation_loss(
         )
     div_rows = div_rows.view(-1)                        # (B·T,) per-position
 
+    # Per-token weights for loop-weighted supervision (default None = off).
+    # SEMANTICS, and why it is a weighted SUM over a plain position count
+    # rather than a weighted mean: the caller invokes this once per recurrent
+    # loop k with w_k, where the weights satisfy Σ_k w_k(i) = 1 at every
+    # position i (Ouro's L = Σ_t p(t|x)·L^(t)). Normalising each call by its
+    # OWN weight sum would rescale every loop back to a full-strength mean and
+    # destroy exactly the relative weighting we are trying to apply — each loop
+    # would then contribute as if it were the only one. Dividing by the number
+    # of valid positions instead makes the K calls sum to a proper mean.
+    w_rows = None
+    if token_weights is not None:
+        w_rows = token_weights.reshape(-1).to(div_rows.dtype)
+        if w_rows.shape != div_rows.shape:
+            raise ValueError(
+                f"token_weights has {tuple(token_weights.shape)} → "
+                f"{tuple(w_rows.shape)} positions but the logits give "
+                f"{tuple(div_rows.shape)}. A mismatch here silently misweights "
+                "every token, so this refuses to broadcast."
+            )
+
     # P1.9: the hard CE respects ignore_index but the soft term previously
     # averaged over ALL positions — harmless on packed distillation data (no
     # padding) but a silent footgun for blended phases with padded/masked rows.
@@ -1623,8 +1644,12 @@ def distillation_loss(
         n_valid = int(valid.sum())
         if n_valid == 0:
             soft = div_rows.sum() * 0.0                 # keep graph, zero loss
+        elif w_rows is not None:
+            soft = (div_rows * w_rows)[valid].sum() / n_valid * (T * T)
         else:
             soft = div_rows[valid].mean() * (T * T)
+    elif w_rows is not None:
+        soft = (div_rows * w_rows).sum() / div_rows.numel() * (T * T)
     else:
         soft = div_rows.mean() * (T * T)
 
@@ -1637,11 +1662,28 @@ def distillation_loss(
         # half the intended gradient). `soft` in metrics is the raw pre-scale KL.
         return soft, {"soft": float(soft.item()), "hard": 0.0}
 
-    hard = F.cross_entropy(
-        student_logits.view(-1, V),
-        targets.view(-1),
-        ignore_index=ignore_index,
-    )
+    if w_rows is not None:
+        # Weight the hard term on the SAME positions and by the SAME rule as
+        # the soft term above; leaving CE unweighted would make every loop
+        # contribute a full-strength CE and quietly undo the weighting.
+        ce_rows = F.cross_entropy(
+            student_logits.view(-1, V),
+            targets.view(-1),
+            ignore_index=ignore_index,
+            reduction="none",
+        )
+        valid = (targets.view(-1) != ignore_index)
+        n_valid = int(valid.sum())
+        hard = (
+            (ce_rows * w_rows)[valid].sum() / n_valid
+            if n_valid else ce_rows.sum() * 0.0
+        )
+    else:
+        hard = F.cross_entropy(
+            student_logits.view(-1, V),
+            targets.view(-1),
+            ignore_index=ignore_index,
+        )
     total = alpha * soft + (1.0 - alpha) * hard
     return total, {"soft": float(soft.item()), "hard": float(hard.item())}
 
