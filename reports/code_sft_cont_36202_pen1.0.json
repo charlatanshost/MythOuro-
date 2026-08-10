@@ -1,0 +1,831 @@
+{
+  "step": 36202,
+  "temperature": 0.4,
+  "repetition_penalty": 1.0,
+  "seed": 1234,
+  "framing": "bare",
+  "chat_template": true,
+  "samples": 8,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4688,
+          "lines_dropped": 86,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nprintprintprintprintprintprintprintprintprintprintprintprintprintprintprintprint_\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4977,
+          "lines_dropped": 88,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n-\n\n\n\n\n<|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|>\n\n\n\n):\n\n\nThe theistant\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3966,
+          "lines_dropped": 98,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<|im_end|>assass\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTheistant\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2086,
+          "lines_dropped": 29,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n- - - - - - - - - - - -\n\n\n\n- - - - - - - - - - - - - - - -\n\n- - - - - - - - - - - - - - - -\n- - - - - - - - - -\n\n\n\\\n\n- - - - - - - - - - - - - - -\n\n\n- - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4466,
+          "lines_dropped": 100,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nQuestion::\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.3571,
+          "lines_dropped": 93,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n--\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n---\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n---\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n-"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.46,
+          "lines_dropped": 101,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3086,
+          "lines_dropped": 31,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n- - - - - - - - - - - -\n\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - -\n- - - - - - - - - -\n\n\n\n\n\n\n- - - - - - - - - - - - - -\n\n\n\n- - -"
+        }
+      ]
+    },
+    {
+      "task": "double_it",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4451,
+          "lines_dropped": 39,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n: : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :\n  \n\n\n\n\n\n\n\nit(n): : : :<|im_start|> extra\n\n\n\n\n\n\n\n\n\n\n\n\n\n : : : : : : : : : : : : : : :"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8854,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4753,
+          "lines_dropped": 38,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n: : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :\n  \n\n\n\n\n\n\n\nit(n): : : : up the_\n\n\n\n\n\n\n\n\n\n\n\n\n : : : : : : : : : : : : : : :"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4271,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\n-44444444555555555555555555555555555555555555555555-55555555555555555---55544455555555555555555"
+        }
+      ]
+    },
+    {
+      "task": "get_first",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7102,
+          "lines_dropped": 21,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n\n\n- - - - - - - - - - - - - - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.819,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n\n\n\n---------------------------------------------------------------------------------------"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4118,
+          "lines_dropped": 86,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<|im_end|>\n\n\n\n\n\n\n\n\n\nfirstfirstfirstfirstfirstfirstfirstfirstfirstfirstfirstfirstfirstfirstfirst first\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6312,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\nThe the the the the the the the the largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest  first first largest largest largest largest largest first first largest largest largest largest largest largest first largest largest largest largest largest largest largest, 0 largest largest largest largest"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4596,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest first first first largest largest largest largest largest first first largest largest largest largest largest largest, largest largest largest largest largest largest largest, first first first largest largest largest largest largest largest largest largest largest largest largest largest of  first largest largest largest largest"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7225,
+          "lines_dropped": 24,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n\n\n\n\n\n- - - - - - - - - - - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7151,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n- - - - - - - - - - - - - - - - - - - - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6828,
+          "lines_dropped": 19,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n\n- - - - - - - - - - - - - - - - - -"
+        }
+      ]
+    },
+    {
+      "task": "sum_list",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5152,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\nThe The the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the of the the the the the the the the the the the the the the the the the\n\n\n\n\nThe the the the the the the the the the the the the the the the the the the the the the the"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9734,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n\n\n\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6573,
+          "lines_dropped": 66,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<|im_end|>\n\n\n\n\n\n\n\n\n\n\n\nnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnumsnums"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7429,
+          "lines_dropped": 21,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n\n\n\n--\n\n\n\n\n\n-------------------------------------------------------------------------------"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5333,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n\n<|im_end|>\n\n\n\n\n\n-44444444444444455555555555555555555555555555555555555555555555555555555544455555555555"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5077,
+          "lines_dropped": 87,
+          "body_stmts": 0,
+          "completion": "\n\n<|im_end|>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|>\n\n\n\n\n\n<|im_start|><|im_start|>ly\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9868,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def"
+        }
+      ]
+    },
+    {
+      "task": "count_items",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 1,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6828,
+          "lines_dropped": 19,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n\n- - - - - - - - - - - - - - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7225,
+          "lines_dropped": 24,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n\n\n\n\n\n- - - - - - - - - - - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8095,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n\n\n\n-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.819,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n\n\n\n---------------------------------------------------------------------------------------"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6757,
+          "lines_dropped": 20,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n\n\n- - - - - - - - - - - - - - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5575,
+          "lines_dropped": 22,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n- - - - - - - - - - - - -\n\n\n\n\n- - - - - - - - - - - - - - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.3143,
+          "lines_dropped": 92,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n\n\n\n--\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n---\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n--\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n--\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n-"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6757,
+          "lines_dropped": 20,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n\n\n- - - - - - - - - - - - - - - - - -"
+        }
+      ]
+    },
+    {
+      "task": "is_even",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9634,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4877,
+          "lines_dropped": 40,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n: : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :\n\n\n\n\n\n\n\n\n\n\n:: : : List of all\n\n\n\n\n\n\n\n\n\n\n\n\n : : : : : : : : : : : : : : :"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3153,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the the most most most most most most most most most most most most most most mostEEEEEEEEEteteteteteteteededEEEEEE-EEEteteteteteteteedededededn-n most more more more more\n1oEEEEEnnnnnnnnnnnededEE"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4701,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\nThe): Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return Return input input input input input input input input input input input input input input input input input input input input input input input input input input input input input input input input input input input input input input input_||$$$$$$11111 input"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5,
+          "lines_dropped": 39,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n: : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : |\n\n\n\n\n\n\n\n\n: : : : : this_\n\n\n\n\n\n\n\n\n\n\n\n\n\n : : : : : : : : : : : : : : :"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7184,
+          "lines_dropped": 21,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n\n\n-:: - - - - - - - - - - - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4675,
+          "lines_dropped": 39,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n: : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :\n\n\n\n\n\n\n\n\n\n\n): : : : containing the\n\n\n\n\n\n\n\n\n\n\n\n: : : : : : : : : : : : : : : : :"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5166,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the from the the the the the the the the the the the the the the the the the_\n\n\n\nThe the the the the the the the the the the the the the the the the the the the the the the"
+        }
+      ]
+    },
+    {
+      "task": "reverse_string",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7251,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original original_ original original original original original original original original original original original original original original original_ass, original original original original"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n---------------------------------------------------------------------------------------"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n---------------------------------------------------------------------------------------"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9566,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining remaining"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.709,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\n# # # #                                                                                                                                       |                                            "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5,
+          "lines_dropped": 40,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n: : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : |\n\n\n\n\n\n\n\n\n\n:: : : : : :\n\n\n\n\n\n\n\n\n\n\n\n\n : : : : : : : : : : : : : : :"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n---------------------------------------------------------------------------------------"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8854,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n--------------------------------------------------------------------------------------"
+        }
+      ]
+    },
+    {
+      "task": "max_of_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3824,
+          "lines_dropped": 24,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - - - -\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n- - - - - - - - - - - + +\n\n\n\n- - - - - - - - - - - - - -\n\n\n- - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2209,
+          "lines_dropped": 31,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - - - -\n\n\n\n- - - - - - - - - - - - - - - -\n\n- - - - - -\n\n- - - - - - -\n\n- - - - - - - - - - - -> ->\n\n\n\n\n- - - - - - - - - - - - -\n\n\n\n- - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3869,
+          "lines_dropped": 26,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n- - - - - - - - - - -\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n- - - - - - - - - - = = -\n\n\n\n- - - - - - - - - - - - -\n\n\n- - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3869,
+          "lines_dropped": 26,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - - - -\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n- - - - - - - - - - - = =\n\n\n\n\n- - - - - - - - - - - - -\n\n\n\n- - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4375,
+          "lines_dropped": 26,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n-------------------------------------):):\n\n<|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|><|im_start|>\n\n----):\n\n---istant\n\n\n\n\n\n\n---------------------"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3846,
+          "lines_dropped": 25,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - - - -\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n- - - - - - - - - - - - -\n\n\n\n- - - - - - - - - - - - - -\n\n\n\n- - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3801,
+          "lines_dropped": 23,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - - - - -\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n- - - - - - - - - - - = =\n\n\n\n- - - - - - - - - - - - - - -\n\n\n- - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2625,
+          "lines_dropped": 93,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n):):\n\n<|im_start|><|im_start|><|im_start|>\n\n\n\n\n\n\n\n\n\n\n):):\n\n<|im_start|><|im_start|>istant\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        }
+      ]
+    },
+    {
+      "task": "fibonacci",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7184,
+          "lines_dropped": 23,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n\n\n\n- - - - - - - - - - - - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9688,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\n##############################################################################################"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9583,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\n-111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.408,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\n\nThe The The The The The The The The The The The the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the\n\n- in the the the the the the the the the the the the the the\n\n\n\n\n\nThe the the the the the the the the the the the the the the the the the the the the the"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.875,
+          "lines_dropped": 18,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n\n-------------------------------------------------------------------------------------"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9688,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\n##############################################################################################"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7057,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number666 number number number number number number number number number number number number number6 number number number number number number number * number66 number number"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6803,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number number6 number number number number number number number number number number number number number number number number number number number number number number number66 number number number number"
+        }
+      ]
+    },
+    {
+      "task": "is_prime",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9583,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\n-111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4517,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest largest positive positive positive positive positive positive positive positive. A first first first first first first first largest largest largest largest largest largest largest, positive positive positive positive positive positive positive first largest largest largest largest largest largest largest, first first largest largest largest largest"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3542,
+          "lines_dropped": 21,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n-44444444444444455555555555555555555555555555555555-----55555\n\n\n-\n\n-----544555555555555"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7151,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n- - - - - - - - - - - - - - - - - - - - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8854,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n\n--------------------------------------------------------------------------------------"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6875,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n\n\\[xxxxxxxxxxxxxxxxxxxxx"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9583,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\n-111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n\n\n:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        }
+      ]
+    }
+  ],
+  "reached": {
+    "L1+": 0,
+    "L2+": 0,
+    "L3+": 0,
+    "L4+": 0
+  },
+  "diagnostics": {
+    "samples_total": 80,
+    "looped": 1,
+    "per_sample_l3plus": 0.0,
+    "per_sample_l3plus_ci95": 0.0,
+    "looped_frac": 0.013,
+    "median_max_line_repeat": 1,
+    "median_lrs_frac": 0.6803,
+    "char_degenerate": 74,
+    "line_metric_blind": 74,
+    "l3_samples": 0,
+    "l3_looped": 0,
+    "l3_looped_frac": null
+  }
+}

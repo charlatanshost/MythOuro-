@@ -1,0 +1,831 @@
+{
+  "step": 36202,
+  "temperature": 0.4,
+  "repetition_penalty": 1.15,
+  "seed": 1234,
+  "framing": "bare",
+  "chat_template": true,
+  "samples": 8,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.09,
+          "lines_dropped": 34,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n- - - - - - - - - - -\n \n  \n  \n  \n  \n                 |  | | |\n \n \n \n  \n   |  = = = = conclude:        : : :: | | | |\n        + \\[ + \\\n   \n   \n- [\n       \n-:: & : : : : : : **\n   \n  **\n    def def def def:"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0495,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n-11122222455876665587779944458888660587773440000099-1111142336   2\n\n---- 122[53}88]# # The$$$$\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0947,
+          "lines_dropped": 29,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n- - - - - - - - - - /\n       | \\ \\\n  + +     | * * + +\n \n \n  \n     | \\ \\||| = = + + + +++\n   | 1**\n   \n    | |   [cdot2: :\n   \n}\n<|im_end|>--1: : : : : : : : :\n  1_ **\n        \"\"\"\n   "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0613,
+          "lines_dropped": 42,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n--:\n \n \n \n \n \n \n  \n  \n  \n  \n         |\n   \n    |  - - - - - : : : : : : |\n    [\n    | |  | = = { {\n        } }: $-+:\n        }):\n\n}The new_31_1:\n    --:\n       \n \n   \n  - the:\n  \n  \n  2 :\n\n    __str__(self,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0459,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n<|im_end|>\n--1112255884444558000007759988656958333267777762498999613255111\n-|    - -11163444| | |-D[[[x"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1238,
+          "lines_dropped": 36,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n- - - - - - - - - - -\n       |<|im_end|>-------\n  \n \n \n \n      | |, | : : : :boxeded_*\n   \n   \n   \n  \n  :\n       \n       \n       \n       \n|::\n  \n   \n   \n   \n##### # # # * * *6 + + + +\n  112 = = \\"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0785,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nThe the the \\ \\ \\ \\ \\\\\\{{:\n \n<|im_end|>\n- - The the \\{\\{\\{\\{\\[\\frac{}{}{}{}{}{++}}}}\\}\\}\\boxeded{{1111\\}\\right\\ \\ \\ \\]  320550<|im_end|>\nThe the the \\ $\\begin{align\\\\|\\|\\|\\|\\ | 1|| | | |"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.09,
+          "lines_dropped": 41,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n- - - - - - - - - - /\n \n \n \n \n  |  |         | | |  | |\n  \n  \n  \n  \n  \n            :: \n   \n   \n   \n   \n   :\n \n- : : : :\n        def def the_:\n   \n       \ndef,\n        \"\"\"--.:\n\n##### # \n\n((((((3"
+        }
+      ]
+    },
+    {
+      "task": "double_it",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0977,
+          "lines_dropped": 23,
+          "body_stmts": 0,
+          "completion": "\n\n- - - - - - - - : : : : : : : : : | |          = = { { { {\n \n  | | | } } } }\n   1:\n  \n  \n               & | * +):\n  \n  \n   of of the\n\n\n-::\n     - - + : $||||||>>>\n# # # # #"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0952,
+          "lines_dropped": 19,
+          "body_stmts": 0,
+          "completion": "\n\n********\n\n------====+++++|)\n\n### \"\"\"\n    def def def def defdef(::::: # # #              -def\\[):):\n  \n   best_class = =\n   \n   \n    + - - - |   51123 = = = + + +||||"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0783,
+          "lines_dropped": 21,
+          "body_stmts": 0,
+          "completion": "\n\n\n-------::::::: - - -\n\\ \\ \\ \\ \\ : : : : : : : | | - - - - \\ \\ \\ \\\n  \n  \n  \n          = = = =-100):\n   \n   \n    the_frac,\n\n##-The__(():):\n    # # ##### #   \\begin{{{"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0995,
+          "lines_dropped": 20,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the entire entire): \n\n\n\n\n\n- - - - - - - - -             | | | | | - - (- +   >        |  = = = + + + (- (- (- (-)+)+)+)+))\n   -++++ + + + + * * * *\n \n\n-----:\n  * $ $ $ $"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0954,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\nThe the the the the the the its greater address address address address address address identify identify identify identify identify identify specified specified specified specified specified corresponding of of corresponding corresponding corresponding of representing representing index index index index index of  0quad from between between both to that that that than than than per index ID   - - - is\n<|im_end|>\n---- to:558888 specified address ID | |      \\Rightarrow |      "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1101,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\nThe n n n n n n nnnnnnnnmmmjjjjjzyyyyyy y ybbbzzzzzxxwYoyy y\n\n\nDDddd+ZxxkkkkxooooDDDp zzgqqqqd58bbBBB-Z51ZYY"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0728,
+          "lines_dropped": 37,
+          "body_stmts": 0,
+          "completion": "\n\n\\ \\ \\ \\ \\ \\ \\ \\):         - - : : : : : : | | | | \n  \n  \n  \n  \n  \n \n \n \n \n \n \n \n   _:)::: : : :param\n\n\n\n-\n   \n    \"\"\"it(2):\n   \n   \n    solve the_\n       \n\n## / \\[\\begin{ a}}}  \n  \n  \n        : {\\{\\{\\{\\}\\"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1368,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the remaining): \n\nThe The The its corresponding corresponding corresponding corresponding corresponding corresponding corresponding consecutive consecutive consecutive consecutive consecutive consecutive consecutive starting starting four four four repeated repeated repeated repeated repeated repeated repeated consecutive starting starting starting shorter shorter shorter shorter shorter44circcirccircine repeated56 of positive positive positive shorter4 repeated inscribed inscribed inscribed inscribed inscribed 1 four \u2264 555 (istant bound opposite opposite opposite opposite opposite of  one 7 total total"
+        }
+      ]
+    },
+    {
+      "task": "get_first",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1602,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the largest largest largest largest largest larger larger larger larger positive positive positive positive positive positive positive positive positive positive regular regular regular regular single single normal normal normal normal normal normal normal target- oated + regular regular regular normal left left left left left left left + target target target target target target target that other other first first first first first < unassededatedatedated 221121114 the unassedated"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0797,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\nnnnn^^^^^^zzzzzz z z z z z zZZZZZZ Z Zzzyyyy y & & &XXXXXZ ZQQQxxx& & &&&|||x\n$$$$$$xZ+iziziziziz|| \\Rightarrow&>>X&x & & Z Z"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0965,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\nThe The The several several several several several several other other two two two two distinct distinct distinct distinct distinct distinct distinct distinct than than than than physical other single single single single single inverse inverse corresponding corresponding adjacent adjacent adjacent adjacent opposite opposite of absolute absolute absolute absolute absolute absolute double inverse inverse inverse inversemathbfmathbfmathbf identity inverse inverse as four four four four, independent_$ absolute bound bound bound that normal normal base inside single single vector of identical inverse inverse corresponding corresponding smaller"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1296,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\nThe the the the the the the its greater greater lower lower lower lower lower lower lower low low low low low low low low done number number number number number number than than than than than either either either 62o numbernumbernumbernumber66 - - - - -cdot 1 55566 7488556\nThe28 + number number Number\n five4444112480221"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1246,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\\ \\ \\ \\ \\ \\ \\ : : : : : : : | | | |\\ \\ \\ \\\\\\{  - - - - - - - + + + + \\^\\):\n  \n                 = = = = the_:\n  \n  \n  \n  standarded_\n\n---The the the entire entire entire entire entire entire every every every every single single single single single multiple multiple multiple multiple distinct"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1277,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\n\n\\(((({{}})})})):): : : : : : : : : : | | |}})})})])3$$$ $ $ $ $ \\:::::::: 11111100_22222255544888336457779):\n  \n  \n  \n  \n       - - - - - -"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0714,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\nThe The The B B B B D D DDDDDDDddddzzzzzxxxxxxkddddbbbzqqzyyyy^nkjjjjj_aaooooo+5555888+1&16666\n\n\n n44455992qZZ"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1222,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n-------- - - - - - - - - - - - (- (- (- (- (- ( ( ( ( ((-(-(-(-(-)()()()+)+)+)+)+)+ ) )),),),        |+})))|)|)|)|)\nThe : : : : : | | | | | | | | \n  = $^^^*|||)|||||}-"
+        }
+      ]
+    },
+    {
+      "task": "sum_list",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2258,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\\ \\ \\ \\ \\ \\):): Return Return Return Return ordered ordered ordered ordered ordered ordered ordered orderedaaaaoooooiineineineineineineineeeaanananananniiicicicicicanenoreeesesesednin, aaasasistant,aAbbacacatOoiineidecdotcdotmedd_cabas"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1291,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\nThe several several multiple multiple multiple multiple multiple distinct distinct distinct distinct distinct distinct distinct positive positive positive positive positive positive positive positive+positivepositivepositiveatedatedatedatedated normal normal normal normal normal normal normal after de-1re_Aaine|| 22222|  - the independent independent independent independentateicicicedededed, of | \\text{izedized of smallest distinct single single single single single, that after de-11"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0761,
+          "lines_dropped": 25,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\\[[[[[{{{}{}{}{}{}{}}}\\}\\}\\}\\}\\}\\```````````````\\{\\ \\]]]]]]}):\n  \n  \n  \n  \n   ````$$\n\n\n\n\n\n****---nums.*\n\n\n<|im_start|> the second\n\n# # #       * [{==|||--+||||\\)\\)\\)\\)\\)\\|\\"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1978,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\nThe the the the each one one one one one first first first first third third third second second second positive positive positive positive positive positive positive positive positive     than than than than than target number positive positive's current current, of - - - - - - |       | | | | \\text{ * * * * *  & \\cdot             \\quad   4 = > > 241-+ +"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1391,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\nThe the the the each one one one one one single single single single single single single single single vector vector vector vector vector vector vector vector vector vector per per regular regular normal normal normal normal target matrix matrix matrix matrix vectors vectors vectorsizeizeizeizeizeatedatedated,             <|im_end|>Distant inverse inverse inversemathbfmathbfedoidoidoidoidoidoidoid\n$$22DDDistantant normal^ scalar scalar scalar"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0625,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n-500111234458888222997775554444866666667735504441999888821133333097\n\n---011125559889777728$$7**"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0981,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\n\n<|im_end|>\n\n\n\nThe the the the the the entire entire entire entire entire every every regular regular normal normal normal The   than than than than than of last last last left left left left left left left left > > > > 22222211x right right right right right right left face face on on on on on to 1111116884 first first first first two left face face reverse reverse reverse"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1155,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def get get get get get getgetgetgetgetgetofofofof of the new new new new new_primeordordordordististististististersersersersersistant theprimeordordordortortististantedntntntntodat,_11ineineine<|im_end|>\nGnnnnn\n\n-Hassassorsors*oidityistanteded"
+        }
+      ]
+    },
+    {
+      "task": "count_items",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0708,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n---ororororororiveiveiveiveiveiveiveiveantantatingatingatingatedatedatedatedatedoidientientientientientientientity\n \natingatingimalimalimaloidaticaticousityityialationistantibilitySettingingthpositiveizedized productizeoidoid<|im_start|>erenterentiferateantizeizingationationizeizeate||istantientedismism between theistantantantatingating"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1205,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n\nThe number number number number number number numbers numbers numbers numbers units units units units from the the original original original original original original original original new new new new new modified unique unique unique unique distinct distinct distinct solution_numberoriginaloriginaloriginaloriginaloriginalizeizeizeatedatedizedizedized only other bound bound bound bound bound absoluteassmentateateveveineine: normal 2 actual actual actual actual what fixed fixed modifiedableableableable_text^,\nexample final"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1252,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the entire smallest smallest smallest smallest smallest smallest lowest lowest lowest lowest lowest lowest first minimum minimum minimum minimum minimum minimum minimum minimum minimum min min min acute median median median median median median 2 mean minimum minimum max max max min min min acute acute acute acute acute   6 of   25 absolute absolute absolute absolute absolute absolute of all minimum$ possible possible possible possible maximum min. min + of subsequent subsequent number of from $max minimize minimize"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.122,
+          "lines_dropped": 36,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n#### # #           - - - - - - -       | |\n  \n \n  \n  \n  \n  \n  \n \n \n \n  + + + + + + + + + +++||||||||||||)\n    # | | | | \n   \n   \n   \n   \n   \n       \n       \n############   *  *\n       \n       \n           \n           \n            :- or## # #"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0973,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\nnnnnnnNNNNN N N NNNNN N N N NMDDDDZZZZMFFXXXYRKKDDBBVLBBFFFWWX+RKKTTTLRLHVVVVUJJG D444ZZQPP$$$xI\\RGMM"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2373,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\nThe number number number number number number number6666777788888844555111224588999944505111222DDDDDG\nnumbernumbernumbernumbernumbernumber 33800\n   \n   4d DBBBBB$67766663904455"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0662,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n---DDDDD D D Dddddzzzzzzzz z z z zZZZyyyyywkzZZ Z Z ZizizZZZZ66&xkk++++x&&&&& & &|&\n   & & & & & \\cdot zazazazazazix$\\9bb"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0848,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n---DDDDddddzzzzzz z z z z z z z + + ++++++ + + + & & & & & Z Z Z^++||| | |&&&&&&&& & \\cdot & & & | || \\quad \\cdot  * * |\n  \n \n    +444Z\n   & \\times z z"
+        }
+      ]
+    },
+    {
+      "task": "is_even",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1103,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the largest largest largest largest largest larger larger larger lower lower lower lower lower upper upper upper upper upper upper within positive positive positive positive positive target target target target target target target mid mid mid floor floor floor floor floor of of of of both than than than-target 222224:\n\n- - - - 51111116884662254300 length length"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.063,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n<|im_end|>\n\n\nThe The The B B B B b b b b n n n n nnnnnnnkkkkkkjjjjjjj+yyoooiixmzzzzzz+++yyyyYQxmmbbbbdx\\ddddDXK*kwwwwZld|x$$$"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1878,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe smallest smallest smallest smallest smallest smallest than than than than than of of of the first first first first first largest largest largest   > > > > > 1111224400  - - - -45551112680008884576677723992   64 =4111788940 largest primary"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0899,
+          "lines_dropped": 20,
+          "body_stmts": 0,
+          "completion": "\n\n******<|im_end|>\n------- - - - - - - - - (- (-        = = = + + + + + + +++ > > > * | | | | | | | + + + \\\n \n \n \n \n  \n              \n  \n  ::::::-|\n\n##classclass\", - - (- (- (- ("
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0929,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n<|im_end|>\n\n\n---texttexttexttexttexttexttexttext text string string string string string string str str str character character character character letter letter letter letter letter letter letter letter letters letters letters letters letters letters characters characters characters characters lowercase lowercase lowercase lowercase vowels vowels vowels vowels vowelsercase spaces spaces spaces spaces text sentencedigitdigit unique distinct distinct distinct distinct distinct digits digits lowercase lowercase lowercase digits digits digits \\digit four four left left left left product repeated white digits letters letters same"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3356,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe number number number number number number number number66666688888855557777794498881402155776444421112250000099913333422516669 2849991343755"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1891,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\nThe the the first first first first first first largest largest largest positive positive positive positive positive positive positive positive positive regular regular regular regular regular regular per largest largest positive + + +cdot \\0 positive   - - - 1244556 = - \\ \\RightRightRightRightarrow \\ \\text{{{[1| < < < < < < | 1 | a largest largest larger, | | \\cdoteded"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2433,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the largest largest largest largest largest larger larger larger positive positive positive positive positive positive positive positive positive regular      5edatedatedatedatedatedatedized| \\oo{{{1||||||A .aistant&&&&&+} | | | | | ||$<++>>>\n$$4edededated string 2\n    - -a"
+        }
+      ]
+    },
+    {
+      "task": "reverse_string",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2203,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the original original original original original original original original_ofofofofofof of The The entire entire entire entire whole whole number number number number number numbernumbernumber - - - 2222506666664number - - - -  5881111175944444587780558307-22"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1463,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n\n------- - - - - - - - - - + + + 222988881115577666633988884455577779994444450000000111333336\n \n \n \n        * *4\n   \n   22"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1423,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the remaining remaining remaining remaining remaining remaining remaining remaining left left left left left left left left left right right right right rightrightright blue blue blue blue red red red red redredred left circular circular circular circular, reverse blue brown brown brown brown brownredred white white white white green greenright blue brown brown brown green green green-assassededatedatedated 2 four four blue blue orange orange orange pink redredredred \ufffd"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1199,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\n<|im_end|>\n\ndefdefdefdef def from from reference reference reference reference reference reference reference separate separate separate unique unique unique unique original original original original original original original original input input input input input input input string 10 relevant relevant relevant relevant new new new new corresponding specified specified specified written written written written text string string string-| per new new novel novel novel_string_string|||| | |1**texttexttext)\\ \\ 0 specific actual"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1866,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the remaining remaining remaining remaining remaining remaining remaining remaining remaining fewer fewer fewer fewer fewer fewer more8 answer answer of of of of of all many  than than without without without  566  - -: are from of several several including including without without - 5577; 12 many many many some, without include include<|im_end|>\n-... \\Rightarrow all few five five five four other yet\\[86"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1242,
+          "lines_dropped": 21,
+          "body_stmts": 0,
+          "completion": "\n\n-s,,    - - - - - - - - - - + + + + + + ++++++++||||&&&&=====++))\n\n-                 = = = =+*** * * * * * = = = ****\n  \n  \n  \n  \n \n \n \n \n \n  | | | | |"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0924,
+          "lines_dropped": 29,
+          "body_stmts": 0,
+          "completion": "\n##############  \n\n\n(:::||###### 8\n  \n  \n  \n  \n  \n  \n \n \n \n \n ;;\n    : : : : : | | |\n  \n   \n    $ #\n    #\n    def########      \n       2__: ###_class_class **:**:**    34442[||**$****8"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2536,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the the the the remaining remaining remaining remaining remaining remaining remaining remaining fewer fewer fewer fewer fewer fewer more more 58888666 number number many many than than than 1754444269555221107777723168866928955504214 number number many many  | 61 | "
+        }
+      ]
+    },
+    {
+      "task": "max_of_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0848,
+          "lines_dropped": 25,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - - -cdot\n\n\n<|im_end|>\n-             * / / + + +\n \n   = = = = = = = & |<|im_end|>\n  + 11:\n    \"\"\"- and and and and : : : : : : : : \\\n    \"\"\"\n    def def def def from_ or or or or or or % 1110:\n  \n  \n    "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.101,
+          "lines_dropped": 40,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - - + + \n \n \n \n \n  + + + + +cdot * * * * * ***\n   \n \n  \n  \n  \n  \n  \n  \n            \n\n\n\n:\n\n- : : : : 1112223_\n<|im_end|>\n### # \\[ \\begin{{{{}{|}\n   \n   \n   \n   \n   \n    return in"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2819,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nThe number number number number number number number666877768885555691114444728885552201111044233333799666669\n|||| | | | x - 22[[  | 7*88} | | \\"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0955,
+          "lines_dropped": 37,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - - - + \n \n \n \n \n              | | | | | +  \n  \n  \n  \n  \n  \n   -> -> ->\n <|im_end|>\n::::\n-:\n    : : : : :\n\n def def def defistant_ or\n```<|im_end|>\n--- = * / / / / / / + \n   \n   \n   \n   \n   \n   : & :"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0978,
+          "lines_dropped": 36,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - - / /\n \n \n \n \n  | | |        * * + + + + + +\n \n  \n  \n  \n  \n         |<|im_end|>\n}\n   \n   \n   \n| : : : : :: $|||[[[ : 114444] |\n\n***** / /\n \n   \n   \n  \n  \n   :s ="
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1159,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - (- (- (-))))| | | + + + + + | * * * + (- (-),  & & | | + + + 12222224, 5558867766666118444445977776698311|||\n  \n  2"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0989,
+          "lines_dropped": 31,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - - (- (-\n\n\n--++ + + + + +)\n \n \n \n \n \n \n \n--+++++ + 122223.\n   \n-         : :\n        |<|im_end|>assistant: \n  \n  \n  \n  :     * * $|| | | | (- (\n     #  ** & & |"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0814,
+          "lines_dropped": 40,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n- - - - - - - - - - + + \n \n \n \n \n \n  \n           | | | | | +  \n   \n    = = = = = = = + the_x\n\n# # 1:\n   111:\n  \n  \n  \n  \n  \n\n  \n\n<|im_end|>\n\n# # #     :param : : : : : :[\n    |\n   \n    \"\"\"\n       \n        def def def"
+        }
+      ]
+    },
+    {
+      "task": "fibonacci",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0446,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n\n-56666677998884445557777558800004441111123558899222211110877333399544--- 66677 and and88804444\nThe number of35"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1042,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n\n-50000011111122244488555777776669944448855877776399944448855033322225---860011113186922[\n| 866"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0723,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\n\n#### # # # # 11122223338\n   \n   \n   \n    : : ::   | | ||||||[[[\n       \n        \"\"\"\n        \"\"\"\\ \\ \\ \\ \\ \\] 11 # # $: 11134_035######_\\:   #   -14222444568\n    # $-"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0643,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\nThe The The \\ \\ \\ \\ \\ \\text{{{{{{*****===&&&&++++||||}}}}}}} } &&------(===\\}\\}\\):\n\n\n#### Step      440 \\begin{\\\\frac{[[[:::: -5 = \\\\ \\\\ \\\\"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0762,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\n\n-444445555888886666777775551111286666777999021112299999933\n\n- - - -40863-558030850038\n \n \n  = = = 7$77*"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.099,
+          "lines_dropped": 27,
+          "body_stmts": 0,
+          "completion": "\n\n## # # # #         - - - - - - - -> -> ->\n  \n  \n  \n  \n \n \n       = | | | | -> -> ->\n  \n  \n  \n \n \n   \n   \n   \n((##       # $-=:       | # $-++###### # \\#                   + - - - + + + + & = 1\n   \n   "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.075,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n\nThe The the the the the the its its most most most more more more more more less less less less less less than than than without without without without without avoid other other other other other such such such than than including including including without except except as as of several several several several bothn as   - - - + = etc, 1111\nThe than of of of of of all other odd otherotherotherotherother as a have less than compared"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1356,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n\nThe The the the the the the the corresponding corresponding corresponding corresponding corresponding of of between between between between between between between between through consecutive consecutive consecutive consecutive consecutive consecutive consecutive consecutive four followed followed followed followed followed followed included\n\\cdot starting starting starting starting starting repeated repeated repeated repeated repeated repeated repeated quadratic andass of 6   45 non44 shorter shorter shorter absolute: \\cdot regular regular regular single multiple between of two than than than than them on both-edated"
+        }
+      ]
+    },
+    {
+      "task": "is_prime",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0633,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\nThe the the the the the the most most than than than than than than than of several several several several other other other two two two two two twoTwoTwo adjacent adjacent are including either either both both 2 2 two two between between smaller smaller four four adjacent adjacent adjacent opposite opposite opposite are of of both both both as one face from two following following following at other corresponding four four four four4, which have adjacent on on on on each both as 222"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1636,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\nThe the the the number number number number number numbernumbernumbernumbernumbernumbertimes666666666557777numbernumber}888884459457712018888244559445312999$210055117Number{| Number Number Number Number of\\##\\[30"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.196,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\nThe The The The number number number number number number number numbers numbers numbers numbers - - - - - - -cdot + + + + + * * * * * > > > - - > -cdot + + + & & & & &  = = \\end{{}}}} = \\Rightarrow $ $ $ $+++++||| | = 66666 | | | | | 1"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0571,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n\n--44422222221110005555588888999666001777773888899664444457331111116995----22234444 770055"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1604,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n\nThe number number number number number number numbernumbernumbernumbernumbernumbernumbernumbern +cdotcdot666665567***n integer integer integer integer integer + +88885577144 integer integer integer integer integer  - 000551111244471995009 originalNumber\n+nnn^$283388"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1026,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\n-xassassassassass\n\n------11111222228855554477766632998888454477336000000099111999, the newededededed_+5547778133222"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.089,
+          "lines_dropped": 19,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\\ \\ \\ \\ \\ : : : : : : : : : | | |\n\\ \\ \\ \\[ | | | | | |  - - - - - - + :                - - + + + + + - - = = = = * * * *\n \n \n \n \n\\ \\begin{{: } } } } $ $ $ $ $ $ # # #\n   \n   \n   "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1658,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\n<|im_end|>\n\n\n\n\nThe The first index index index index index index index index index index index ID ID ID ID ID0000000 False False False False False False False numerator numerator numerator numerator \\ \\ \\ \\ \\|\\{{{11112}} \\}\\}\\}\\Rightarrow numerator numerator length length length length length 5889988 valueindexindexangle angle angle angle angle 5 root numerator}{--"
+        }
+      ]
+    }
+  ],
+  "reached": {
+    "L1+": 0,
+    "L2+": 0,
+    "L3+": 0,
+    "L4+": 0
+  },
+  "diagnostics": {
+    "samples_total": 80,
+    "looped": 0,
+    "per_sample_l3plus": 0.0,
+    "per_sample_l3plus_ci95": 0.0,
+    "looped_frac": 0.0,
+    "median_max_line_repeat": 1,
+    "median_lrs_frac": 0.0995,
+    "char_degenerate": 0,
+    "line_metric_blind": 0,
+    "l3_samples": 0,
+    "l3_looped": 0,
+    "l3_looped_frac": null
+  }
+}

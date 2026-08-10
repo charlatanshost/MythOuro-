@@ -1,0 +1,936 @@
+{
+  "step": 36202,
+  "temperature": 0.4,
+  "seed": 1234,
+  "samples": 8,
+  "repetition_penalty": 1.15,
+  "tasks": [
+    {
+      "task": "add",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n12 + 7 =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        19
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 5.853812842105556e+40,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0702,
+          "completion": "\n<|im_end|>\n--1112224440000055588866755777766999988862355",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 11695320.6316,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3018,
+          "completion": "\n\n\n<|im_end|>\n(((((222211111)) ) ) ) specified specified specified specified specified specified positive positive positive positive positive    - - ) )):\n\n-Ded positive",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2338,
+          "completion": "\n\n<|im_end|>\n------- - - - - - - - - - + + +++++++=====&&&))\n \n \n \n  &++\\+\\+\\",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1364,
+          "completion": "\n\n\n-*******<|im_end|>\n-:::::             | | - - - - - - | |\n  \n  \n  \n         & |\n  - +",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.9415157953276023e+35,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1228,
+          "completion": "\n<|im_end|>\n--------5588880011122444555776669911122274055",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 5.853818421053041e+40,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0877,
+          "completion": "\n<|im_end|>\n--1112225500000077766666885544445899966677885",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 5.853801181293562e+41,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0877,
+          "completion": "\n\n<|im_end|>\n11122222244457766888776655588005999888773955",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.9222222163684446e+41,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0702,
+          "completion": "\n\n<|im_end|>\n-5552222211100044488886677333330979988876677",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "sub",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n45 - 18 =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        27
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2466,
+          "completion": "\n\n- - - - - - - - - - + + + + + + + + + ++++++=====&&&&+\\+\\+\\+\\|\\|\\|||++=",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1739,
+          "completion": "\n\n|| | | | | | | | | \\ \\ \\ \\ \\\n  & & & & & & + + + - - - - + + + + + - - = = = = = = = & &\n ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.0559712016477323e+43,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0833,
+          "completion": "\n\n-555112224444887766667779988880055899667739988",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.055555559671202e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1042,
+          "completion": "\n-5550000011112244888766662591112284888777999533",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.0559712016477363e+43,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.125,
+          "completion": "\n\n-555112224444888777666669921111088776666579903",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.8519,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2217,
+          "completion": "\n\n<|im_end|>\n\n\nThe the the the remaining remaining remaining remaining remaining remaining fewer fewer fewer fewer fewer number number number number number six six five four four four four4 6886666 numbernumber eight six five five",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.055559674897942e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0833,
+          "completion": "\n-5550011122224444111100008889977765566666338889",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.0555596748979426e+36,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0702,
+          "completion": "\n\n<|im_end|>\n\n-----55500111222244445588866677775888999588",
+          "halt_depth": 2.01
+        }
+      ]
+    },
+    {
+      "task": "mul",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n6 * 7 =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        42
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.3121693386243917e+34,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1228,
+          "completion": "\n<|im_end|>\n\n--------551111122222244458888666777990004558",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 263.8095,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1364,
+          "completion": "<|im_end|>\n\nThe new new new_\\ \\ \\ \\ \\ \\ \\ \\text{{{{11122\\}\\}\\}\\}\\{\\[\\]]]$$$$$$$$ $ $\\{\\{\\",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.3121719577259258e+34,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1228,
+          "completion": "\n<|im_end|>\n\n--------551112222244888855999666774444407855",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.237,
+          "completion": "<|im_end|>\n\nThe the the the the the the the the of than than than than than than than than than before before before before after after   - - - -> -> ->\n                :   ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.3095502910026455e+34,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1228,
+          "completion": "\n<|im_end|>\n\n--------550011122221111138888666554447773298",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.3216957669309534e+41,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0526,
+          "completion": "\n<|im_end|>\n\n-5551122221110004888777664443333558889976762",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.321695772592328e+34,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1228,
+          "completion": "\n<|im_end|>\n\n--------555112224488777766888866254449997506",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.3227565873021153e+41,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0702,
+          "completion": "<|im_end|>\n\n\n-5555577666668884444222217766779889900001113",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "div",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n84 / 4 =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.642857195820116e+42,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0702,
+          "completion": "\n<|im_end|>\n-55500001112222441111000888776668944444559889",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.6246556609523817e+42,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0702,
+          "completion": "\n<|im_end|>\n-55117768880000022211111368888994554444412569",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1818,
+          "completion": "\n<|im_end|>\n\n------- - - - - - - - - (- (- (- (-(-(-(-(-(-(-(-++++)()()()()()()))))\n\n***",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1951,
+          "completion": "\n\n\n-------- - - - - - - - - (- (- (- (- ( ( ( (--++++)+)+)+)+):\n  { { {(( ()()(+))",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.6428571481486782e+35,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1053,
+          "completion": "\n<|im_end|>\n\n-------5550000011112224588886666777777734588",
+          "halt_depth": 2.03
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.6452385184126955e+42,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1053,
+          "completion": "\n<|im_end|>\n-55550008886666611222444477777778911122253359",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.6454499470534393e+42,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0526,
+          "completion": "\n<|im_end|>\n-55554448888122224447766688999776111100033988",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2058,
+          "completion": "\n<|im_end|>\nTheThe the the the the the the original original original original original original original new new new new modified modified modified modified modified modified modified corresponding corresponding corresponding corresponding corresponding corresponding original new newnewnewtargettargettarget target < other modified consecutive",
+          "halt_depth": 2.01
+        }
+      ]
+    },
+    {
+      "task": "pct",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n10% of 250 is<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        25
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 8.844446667552023e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.125,
+          "completion": "\n22111116668880055777777555999998444444466855000",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 8.888844442355108e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1042,
+          "completion": "\n22222111105887766666777544555998666888741444555",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 8.888446355110665e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1042,
+          "completion": "\n22221115887776664088555945777766999004485545776",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 8.888903555867084e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.125,
+          "completion": "\n22222258889667711133344558800007111111044558866",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 8.844444488897782e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1042,
+          "completion": "\n22111111222244455887766355777666888889959055000",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.4488982235551067e+43,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1042,
+          "completion": "\n\n1112224555888776666667445550008779966695448888",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 8.889378204440032e+43,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1042,
+          "completion": "\n2222344551110007888666675555111789998667775557$",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 8.888445782235551e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1458,
+          "completion": "\n22221114455588876666777511100009899666777531224",
+          "halt_depth": 2.01
+        }
+      ]
+    },
+    {
+      "task": "avg",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\nThe average of 4, 8, and 12 is<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        8
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1548,
+          "completion": "\n\nThe              - - -<|im_start|><|im_start|><|im_start|>angleangle = \\\n  - -  \n\n  \n\n  \n   * - - - organic^assassassedingingingationation  \n\n  \n  \n  \n  ",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1951,
+          "completion": "\n<|im_end|>\n- - - - - - - - - / / the + + + + - %-/-/-++++++=====&&% %-/-/---|||||",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 5.55556390277819e+40,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0702,
+          "completion": "\n\n<|im_end|>\n--444445112222255177766888111116855777799988",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2081,
+          "completion": "\n\nThe the             <|im_start|>WriteWriteiseiseiseise question question question question question question asked - - - - assistant assistant assistant answerise conclude drawingboxbox box box sentence sentence box / /",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 14.875,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1,
+          "completion": "\n\n<|im_end|>\n-------111 the000055222224871116668855994477881",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 281.25,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1875,
+          "completion": "\n\n<|im_end|>\n--44444500<|im_start|><|im_start|>assassassassed55111178888<|im_start|><|im_start|>ively, are ofedededatedated 2258",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1946,
+          "completion": "\n\n<|im_end|>\n- - - - - - - - - -<|im_start|><|im_start|><|im_start|><|im_start|>assassassed or or or or or / / / / / understand understand understandageageageageededousous, are of of of",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 5.555688890278236e+40,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1228,
+          "completion": "\n<|im_end|>\n---444455111222258877766555111229988877766999",
+          "halt_depth": 2.01
+        }
+      ]
+    },
+    {
+      "task": "linear",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\nSolving 3x + 6 = 21 gives x =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        5
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.2222444466668917e+41,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0702,
+          "completion": "\n<|im_end|>\n--1111122223333445877665858894455547777666888",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.2224444977000013e+36,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0702,
+          "completion": "\n<|im_end|>\n--     11112222488500005711113345588866799991",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1498,
+          "completion": "\n<|im_end|>\nThe the the the the the the the the original original answer answer answer answerQuestionQuestionQuestionateateationationationationsatesatesatatatatatizeedlylymentmentingationateistantedineineine",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1638,
+          "completion": "\n<|im_end|>\n\nThe the the the the the are are are are together together together together together themselves themselves in in in in in of of of of of ofofofinging what another themselves themselves_x from from from other other other",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.225,
+          "completion": "\n<|im_end|>\n- - - - - - - - - + +<|im_start|><|im_start|><|im_start|><|im_start|>istantistant    = = = + + + + + + conclude concludeboxboxboxbox.    # #        ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 8.889022224445116e+41,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0702,
+          "completion": "\n<|im_end|>\n--4444511112222557776668511100089887776999881",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 8.89022224445771e+40,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1228,
+          "completion": "\n<|im_end|>\n---444511112222885500007711111682885500699977",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2308,
+          "completion": "\n<|im_end|>\n- - - - - - - - - + +<|im_start|><|im_start|><|im_start|><|im_start|>boxbox!           | | | | | |AnswerAnsweristantistant\n  \n  \n  \n            ",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "quadratic",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\nTo solve the quadratic equation x^2 - 5x + 6 = 0, we find x =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        2,
+        3
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 6.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1061,
+          "completion": "\n\n------11: = - <|im_start|> Trans Trans Transf\n\nThe the the the the115 = = +<|im_start|><|im_start|> problem ( ( ( ( ( ( ( (-222)))",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 55555624999.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1687,
+          "completion": "\n\n\n- - - - - - - - = = = the the the the\n\n-- - - + + + + + = = = = = + 111111250000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 556.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1318,
+          "completion": "\n\n----1111: \\ \\\n<|im_start|>boxboxboxedededededatedatedatedizedicicicicicousousatiseededatedatedatedimalationatesatingatingateine",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 278.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2105,
+          "completion": "\n\n\n- - - - - - - * = 10000\n\n------555 = 11128884444895573",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": true,
+          "rel_err": 1.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2319,
+          "completion": "\n\n- - - - - - - - - + + 00 = =\n \n \n \n \n \n ;; 5 = + + 1125598888664443",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1929,
+          "completion": "\n\n-<|im_end|>\n\n- - - - * = =<|im_end|><|im_start|><|im_start|><|im_start|><|im_start|>ularularularularularularularularoidoidoidistantistantoidThisThis are arefatedatedatedatedatedistantcirclyededed",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1579,
+          "completion": "\n\n-<|im_end|>\n\n\nInInInB}}\nThe the the the\n\n- Given Given Given Given GivenQuestion::\n  \n  \n  \n  \n  \n                 Step answer answer<|im_end|>\n  \n\n  ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1364,
+          "completion": "\n\n-<|im_end|>\n\n----x = x *texttexttexttext\n\n-***** - - - = x * * *+|\n\n|||| | | | - - the",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "area",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\nThe area of a rectangle 7 cm by 3 cm is<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 104.9048,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1629,
+          "completion": "\n\nThe the larger larger larger larger larger larger of of of the the greater greater greater greater greater lower the of other other other other particular of  than than than either either either of  > 2224 that are are,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1636,
+          "completion": "\n\n<|im_end|>\n- - - - - - - - - - / + +\n \n \n    * / / / /cdotcdot + + + + + = = = \n  \n  \n  \n  \n       |cdot & &",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.1164338629631227e+39,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0877,
+          "completion": "\n\n\n<|im_end|>\n--44445111122225577766688011223548577769988",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1667,
+          "completion": "\n\n\n<|im_end|>\n- - - - - - - - - -cdotcdot\n \n \n   = = + + + + + * * % % % + + + & & | = = = = = = * * *",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1651,
+          "completion": "\n\n<|im_end|>\n- - - - - - - - - - / +cdot + + + \\\n \n \n    = = = + + + +cdotcdotcdot = = \\\n  \n  \n       | = = |",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0758,
+          "completion": "\n\n<|im_end|>\n-xxzzzzzz z z z++++|||&&&&& &zZZ z z+*||||>>&&= & & &",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1856,
+          "completion": "\n\n<|im_end|>\n- - - - - - - - - - / +cdot\n \n \n  | \\ \\    | | % (- + + + + + +\n \n  | \\ \\[   * * * *",
+          "halt_depth": 2.01
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1574,
+          "completion": "\n\n\n<|im_end|>\n- - - - - - - - | |\n  \n  \n  \n  \n  \n  \n \n            |   | |\n  \n  \n  \n   \n \n \n      *\n  = = the",
+          "halt_depth": 2.02
+        }
+      ]
+    },
+    {
+      "task": "frac",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n1/2 + 1/4 =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        0.75
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.9629660734844457e+46,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.125,
+          "completion": "\n22222245551133344888666755777774999988866605777",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.9629661184888906e+46,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1042,
+          "completion": "\n22222245888666677777755111114445889999950011333",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.4829659274518222e+45,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.125,
+          "completion": "\n\n1112224445588866697777555444448866699777555000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.4829632592534518e+45,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.125,
+          "completion": "\n\n1112222444440088855576625777668899955576609777",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.4814962965925812e+46,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2083,
+          "completion": "\n11111222224444358887766555999006888887766555599",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.9629660785066684e+46,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1458,
+          "completion": "\n22222245588800011111111755776665994444430855777",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 5.927703688889334e+39,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1053,
+          "completion": "\n<|im_end|>\n\n\n\n--4445777766666999888855555766666220888800",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.962966078222362e+46,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1042,
+          "completion": "\n22222245586667711111444558888007990004453558886",
+          "halt_depth": 2.0
+        }
+      ]
+    }
+  ],
+  "chat_template": true,
+  "decoder": "act",
+  "n_loops": 4,
+  "force_full_depth": false,
+  "mean_halt_depth": 2.002625,
+  "copied_from_prompt": 1,
+  "median_rel_err": 1.3227565873021153e+41,
+  "within_10pct": 0,
+  "per_sample_l4": 0.0,
+  "per_sample_l3plus": 0.0,
+  "reached": {
+    "L1+": 10,
+    "L2+": 10,
+    "L3+": 0,
+    "L4+": 0
+  }
+}

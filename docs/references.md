@@ -26,6 +26,33 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
 
 ---
 
+- **Loop as a Bridge: Can Looped Transformers Truly Link Representation Space and
+  Natural Language Outputs?** — Chen, Liu, Shao (Shanghai AI Lab / SJTU), 2026-01.
+  arXiv **2601.10242**. *Measured ON OURO (1.4B and 2.6B, 1-8 loop steps) — our
+  own teacher family, so it transfers unusually directly.*
+  **Core finding:** models are "largely insensitive to injections during the
+  INTERMEDIATE loops — detection and identification only occur in the FINAL loop
+  iteration." Semantics are committed at the final loop; intermediate loops are
+  not doing interpretable work. They also report representation-probe accuracy
+  DECLINING with iterations, so the narrowing gap between probe and textual
+  verification reflects representational degradation rather than better
+  self-verification.
+  **Why it matters here — external corroboration of four of our own results:**
+  * best-of-trajectory selecting intermediate loops was WORSE than a fixed final
+    depth (CE 0.550 vs 0.261, 2026-08-06);
+  * the UncertaintyHead is calibrated at the final loop (ECE 0.013) and badly
+    miscalibrated shallower (0.288 at loop 0, 2026-08-09);
+  * forcing depth beyond the halt point never helped — measured twice
+    (2026-07-31 budget/forced sweeps);
+  * the depth policy improved per-loop CE while making the TASK worse
+    (2026-08-09).
+  If intermediate representations are not semantically committed, selecting an
+  intermediate exit is intrinsically lossy and per-loop CE at those depths
+  measures something that does not transfer to generation. ⇒ Supports keeping
+  `tools/grow_depth.py` and `training/train_depth_policy.py` SHELVED.
+  **Does NOT address** SFT, exposure bias, teacher forcing or mode collapse — it
+  is not a lead on the 2026-08-10 SFT-collapse problem.
+
 ## Hardware / inference efficiency
 
 - **Efficient LLM inference solution on Intel GPU** — Wu et al., Intel, 2023-12
