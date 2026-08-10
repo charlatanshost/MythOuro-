@@ -197,6 +197,147 @@ if the flat-depth wall lifts, `recurrent-depth-ttc`'s is.
   are unvalidated and should not be cited.
 
 
+### 🎯 2026-08-10 (batch 3) — THREE INDEPENDENT SOURCES SAY: HALT ON GEOMETRY, NOT ON A LEARNED HEAD
+
+All eight IDs below were **verified against arXiv before filing** (an assistant
+supplied them; plausible-but-fabricated IDs are the standard failure mode, so
+each was fetched. All eight are real. Two claims in the summary were wrong and are
+corrected in place: LoopFormer's title includes *"for Latent Reasoning"*, and FPRM
+is **not** "truncated BPTT and deep supervision" — it is fixed-point convergence
+used as the halting rule.)
+
+**The convergent finding.** We have spent three efforts on a learned halting /
+confidence signal — ACT thresholding, `BestOfTrajectoryGenerator`, and
+`train_depth_policy.py` — and all three failed, with the head measurably
+overconfident at shallow loops (ECE 0.288 at loop 0, predicting 1.68% error where
+it makes 30.4%). Three independent 2026 sources arrive at the same alternative:
+
+| source | halting signal | learned head? |
+|---|---|---|
+| **Two-Scale Latent Dynamics** [2509.23314](https://arxiv.org/abs/2509.23314) | **second-order differences in step size** of the latent iterate | **no** |
+| **FPRM** [2606.18206](https://arxiv.org/abs/2606.18206) | **fixed-point convergence** of the loop | **no** |
+| [recurrent-depth-ttc](https://github.com/duongtrongnguyen123/recurrent-depth-ttc) | hardcoded halt rule after LoRA finetune | **no** |
+
+2509.23314 explicitly claims its step-size criterion beats **KL-divergence-based
+early exit** on performance, stability *and* efficiency. Our `UncertaintyHead` is
+a learned error-probability predictor — a third family, and the one that keeps
+failing here.
+
+⇒ **This deserves its own rung.** It is cheap (a decode-time rule, no training),
+it needs no calibrated head, and it sidesteps the failure we have reproduced
+three times. It does not conflict with `--unc-loop-weighting`; it is the fallback
+if that also fails, and the two can be measured against each other with
+`tools/per_loop_calibration.py` and the math/code evals we already run.
+
+---
+
+- **Two-Scale Latent Dynamics for Recurrent-Depth Transformers** —
+  [arXiv:2509.23314](https://arxiv.org/abs/2509.23314). Studies the *geometry* of
+  the latent iterates and argues for a two-scale picture: **within a looped block,
+  updates are small-scale refinements; across consecutive blocks, states undergo
+  larger-scale drift.** Proposes early exit on **second-order differences in step
+  size**, reporting better performance, stability and efficiency than KL-based
+  exit.
+  **⭐ Most actionable item in this batch.** Two uses: (a) a halting rule needing
+  no trained head — see the table above; (b) **new instrumentation for
+  `tools/collapse_metrics.py`**, which today tracks scalar proxies (ρ(A), rank,
+  top_share) and has no notion of step-size geometry across loops. The two-scale
+  claim is also directly testable against our own trajectories and would explain
+  *why* intermediate loops are not linguistically accessible
+  ([2601.10242](https://arxiv.org/abs/2601.10242)): if within-block updates are
+  small refinements and the real movement is drift *between* blocks, mid-loop
+  states are transitional by construction.
+
+- **LoopFormer: Elastic-Depth Looped Transformers for Latent Reasoning via
+  Shortcut Modulation** — [arXiv:2602.11451](https://arxiv.org/abs/2602.11451),
+  ICLR 2026. **A THIRD POSITION IN THE LOOP-SUPERVISION CONTRADICTION (§0.1), and
+  possibly the right one.** Rather than supervising every loop independently
+  (Ouro/RLTT) or only the last (Silent Thinking), it uses a **shortcut-consistency
+  objective that ALIGNS SHORTER TRAJECTORIES TO THE LONGEST ONE** — self-distillation
+  inside the loop — "ensuring that shorter loops yield informative representations
+  while longer loops continue to refine them."
+  **Why this may dissolve the contradiction:** the Silent Thinking objection is
+  that intermediate supervision lets the model take *shortcuts* instead of
+  iterating. Aligning short trajectories **to the long one** cannot produce that
+  shortcut, because the long trajectory defines the target — the short loops are
+  pulled toward the deep computation rather than given an independent objective.
+  ⇒ Candidate successor to `--loop-loss-weighting uniform` if rung 3's uniform arm
+  shows depth collapsing toward loop 0. Also the natural objective for **elastic
+  depth**, which is what our budget-and-gates design has always wanted.
+
+- **DeepLoop: Depth Scaling for Looped Transformers** —
+  [arXiv:2607.13491](https://arxiv.org/abs/2607.13491). Formalises residual
+  scaling when the *same* blocks are revisited, via a perturbation bound with a
+  visit-alignment coefficient, and adjusts the Post-LN **DeepNorm exponent from
+  1/4 to 1/2 as recurrent depth increases**. Validated on GPT-2 scale.
+  **Directly gates rung 5.** `grow_depth.py` expands four per-loop tensors but
+  changes NO normalisation scaling, and we run sandwich norm. This says the
+  residual scaling itself must be a function of loop count — which is a concrete
+  candidate explanation for Ouro's own "tried 8, dropped to 4 after loss spikes
+  and gradient oscillations". **Read before any 4→8 attempt.**
+
+- **Loop, Think, & Generalize: Implicit Reasoning in Recurrent-Depth
+  Transformers** — [arXiv:2604.07822](https://arxiv.org/abs/2604.07822).
+  Controlled study of two things we care about: **systematic generalization**
+  (composing knowledge never composed in training) and **depth extrapolation**
+  (shallow → deeper at inference). Vanilla transformers fail both; recurrent-depth
+  variants succeed via a three-stage learning process plus inference-time
+  recurrence scaling.
+  **The caution matters as much as the result: excessive iterations cause
+  "OVERTHINKING" that degrades performance.** That tempers the test-recurrence-32
+  enthusiasm from [2511.07384](https://arxiv.org/abs/2511.07384) — depth
+  extrapolation has an optimum, not a monotone gain, which is precisely what an
+  adaptive halt is supposed to find.
+
+- **A Survey of On-Policy Distillation for Large Language Models** — Song &
+  Zheng, [arXiv:2604.00626](https://arxiv.org/abs/2604.00626). Formalises OPD as
+  **f-divergence minimisation over student-sampled trajectories** and organises
+  the design space along three axes, with the RL connection made explicit.
+  **The map for rung 6.** Our on-policy work (`--onpolicy-lambda`,
+  `--teacher-mix-alpha`, rev_kl/JSD) was assembled from MiniLLM
+  ([2306.08543](https://arxiv.org/abs/2306.08543)) and GKD (Agarwal et al., ICLR
+  2024) directly; this is the first source that lays out what we have and have not
+  tried, and it names exposure bias as the structural problem — the same
+  diagnosis `docs/onpolicy_plan.md` reached independently. **Read before building
+  on-policy SFT.**
+
+- **Fixed-Point Reasoners: Stable and Adaptive Deep Looped Transformers** —
+  [arXiv:2606.18206](https://arxiv.org/abs/2606.18206). Signal-propagation fixes
+  (pre-norm, residual scaling) plus **fixed-point convergence as an end-to-end
+  halting mechanism**, adapting compute to task difficulty. Benchmarks: Sudoku,
+  Maze, state-tracking, ARC-AGI.
+  Second member of the halt-on-geometry family. Note the benchmark set is puzzle/
+  reasoning rather than open text, so the halting rule transfers more readily than
+  the results do. Its residual-scaling half pairs with DeepLoop above.
+
+- **Adaptive Loops and Memory in Transformers: Think Harder or Know More?** —
+  [arXiv:2603.08391](https://arxiv.org/abs/2603.08391), Latent & Implicit Thinking
+  Workshop @ ICLR 2026. Per-layer adaptive looping with learned halting, plus
+  gated memory banks. Finding: **"looping primarily benefits mathematical
+  reasoning, while memory banks help recover performance on commonsense tasks"**,
+  against parameter- and FLOP-matched baselines.
+  **Bears directly on the question rung 1 could not settle** — whether depth
+  benefit varies by subject. This is independent evidence that it does, and in a
+  specific direction (math yes, commonsense no) that our own per-domain probe was
+  too noisy to confirm or deny. Worth re-reading alongside
+  `reports/best_exit_bydomain_108471_v2.json` if rung 3 changes the picture.
+
+- **Skip a Layer or Loop It? Learning Program-of-Layers in LLMs (PoLar)** —
+  [arXiv:2606.06574](https://arxiv.org/abs/2606.06574), ICML 2026, extends
+  [2507.07996](https://arxiv.org/abs/2507.07996); code released. A lightweight
+  network emits a per-input "program" over pretrained layers, which may be
+  **skipped OR looped**. Reports most inputs do as well or better with shorter
+  paths, and that some wrong predictions are fixed by an alternative program using
+  **fewer** layers — concluding "fixed-depth execution captures only a narrow
+  subset of an LLM's latent reasoning capacity."
+  **The "fewer layers fixes a wrong answer" result is the interesting one for us**:
+  it is independent support for the owner's original loop-comparison idea (exit
+  with an earlier, better answer rather than degrading deeper) — the design intent
+  behind `BestOfTrajectoryGenerator`, which failed on *selector* quality, not on
+  premise. Architecturally distant (per-layer routing over a fixed stack, not a
+  weight-tied loop), so file as design input, not a port.
+
+
 - **Prioritize the Process, Not Just the Outcome: Rewarding Latent Thought Trajectories
   Improves Reasoning in Looped Language Models** — arXiv **2602.10520**, 2026-02
   (Princeton PLI talk listing). *Trained on **Ouro-1.4B and Ouro-2.6B-Thinking** — our
