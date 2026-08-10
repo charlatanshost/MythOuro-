@@ -59,12 +59,22 @@ from inspect_checkpoint import _load_model                      # noqa: E402
 
 @torch.no_grad()
 def probe(model, tok, device: str, n_loops: int, chunks: int,
-          seq_len: int) -> dict:
+          seq_len: int, mix_ratios: "dict | None" = None) -> dict:
     from mythouro.training_utils import MixedDataset
 
     # rank/world_size are REQUIRED positionally — matches training/distill.py
     # (`MixedDataset(encoding, seq_len, rank=0, world_size=1, ...)`).
-    ds = MixedDataset(tok, seq_len, rank=0, world_size=1, seed=0)
+    #
+    # `mix_ratios` is how --by-domain isolates one corpus: passing
+    # {"math": 1.0} yields a PURE math stream. Done this way on purpose rather
+    # than by labelling chunks inside MixedDataset, for two reasons. First, the
+    # token buffer is shared across sources — `buf` carries the tail of one
+    # document into the next — so a single chunk can legitimately contain
+    # tokens from two corpora and there is no honest single label for it.
+    # Second, MixedDataset is the live training data path that distill.py and
+    # sft.py both run on; a measurement tool should not reach into it.
+    ds = MixedDataset(tok, seq_len, rank=0, world_size=1, seed=0,
+                      mix_ratios=mix_ratios)
     it = iter(ds)
 
     best_hist: Counter = Counter()
@@ -125,6 +135,88 @@ def probe(model, tok, device: str, n_loops: int, chunks: int,
     }
 
 
+def _by_domain(model, enc, args, step: int) -> None:
+    """
+    Per-corpus headroom — is depth benefit a property of the SUBJECT?
+
+    The aggregate probe answers "does a depth policy exist"; it cannot answer
+    "for whom". Growing depth for the topics that benefit (docs/roadmap.md)
+    presumes the benefit VARIES by topic, and that presumption has never been
+    measured. This measures it, read-only, no training.
+
+    READ THE SPREAD, NOT THE LEVEL. Absolute CE differs across corpora for
+    reasons that have nothing to do with depth — code is more predictable than
+    prose, so its CE is lower everywhere. What matters is whether the HEADROOM
+    (CE at trained depth minus CE at the oracle exit) and the best-exit
+    DISTRIBUTION differ. Similar headroom everywhere => one global depth policy
+    is the right shape and per-subject depth is a dead end.
+    """
+    from mythouro.training_utils import _MIX_RATIOS
+
+    domains = args.domains or list(_MIX_RATIOS)
+    rows, failed = [], []
+    for d in domains:
+        if d not in _MIX_RATIOS and not args.domains:
+            continue
+        print(f"  probing {d} ...", flush=True)
+        try:
+            r = probe(model, enc, args.device, args.n_loops, args.chunks,
+                      args.seq_len, mix_ratios={d: 1.0})
+        except Exception as exc:                                  # noqa: BLE001
+            # One unreachable corpus must not cost the other five — the same
+            # non-fatal rule run_full_validation.sh uses.
+            print(f"    FAILED: {exc}")
+            failed.append(d)
+            continue
+        if not r["positions"]:
+            print("    no positions — corpus yielded nothing; skipping")
+            failed.append(d)
+            continue
+        ti = min(args.trained_loops, len(r["ce_per_loop"])) - 1
+        r["domain"] = d
+        r["ce_trained_depth"] = r["ce_per_loop"][ti]
+        r["headroom_nats"] = r["ce_per_loop"][ti] - r["ce_oracle_best"]
+        rows.append(r)
+
+    if not rows:
+        print("\n  no domain produced data — nothing to compare.")
+        return
+
+    print(f"\n  {'domain':16} {'CE@trained':>11} {'CE@oracle':>10} "
+          f"{'headroom':>9} {'head agr':>9}  best-exit mode")
+    for r in rows:
+        mode = max(r["best_exit_hist"].items(), key=lambda kv: kv[1])
+        pct = 100 * r["headroom_nats"] / max(r["ce_trained_depth"], 1e-9)
+        print(f"  {r['domain']:16} {r['ce_trained_depth']:11.4f} "
+              f"{r['ce_oracle_best']:10.4f} {r['headroom_nats']:8.4f} "
+              f"({pct:4.1f}%) {100*r['agreement']:7.0f}%  "
+              f"loop {mode[0]} ({100*mode[1]/r['positions']:.0f}%)")
+
+    hr = [r["headroom_nats"] for r in rows]
+    spread = max(hr) - min(hr)
+    rel = spread / max(max(hr), 1e-9)
+    hi = max(rows, key=lambda r: r["headroom_nats"])["domain"]
+    lo = min(rows, key=lambda r: r["headroom_nats"])["domain"]
+    print(f"\n  headroom spread: {spread:.4f} nats "
+          f"({hi} highest, {lo} lowest) = {100*rel:.0f}% of the largest")
+    if rel < 0.25:
+        print("  VERDICT: headroom is essentially UNIFORM across subjects. "
+              "Per-subject depth specialisation is NOT supported — one global "
+              "depth policy is the right shape. Do not grow depth for topics.")
+    else:
+        print(f"  VERDICT: headroom VARIES by subject ({hi} wants materially "
+              f"more depth than {lo}). Per-subject depth has a target worth "
+              f"training toward — but note this is teacher-forced CE, not "
+              f"generation quality.")
+    if failed:
+        print(f"  (no data: {', '.join(failed)})")
+
+    if args.json:
+        Path(args.json).write_text(json.dumps(
+            {"step": step, "by_domain": rows, "failed": failed}, indent=2))
+        print(f"  wrote {args.json}")
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     p.add_argument("-c", "--checkpoint", required=True)
@@ -144,6 +236,18 @@ def main() -> None:
     p.add_argument("--chunks", type=int, default=12)
     p.add_argument("--seq-len", type=int, default=256)
     p.add_argument("--json", default=None)
+    p.add_argument("--by-domain", action="store_true",
+                   help="Run the probe SEPARATELY per corpus and compare the "
+                        "headroom. THE QUESTION THIS EXISTS FOR: the aggregate "
+                        "number cannot say whether some SUBJECTS want more "
+                        "depth than others, which is the whole premise of "
+                        "training loops past 4 for the topics that benefit "
+                        "(docs/roadmap.md). If every domain reports the same "
+                        "headroom, depth specialisation is disconfirmed before "
+                        "a single training step is spent on it.")
+    p.add_argument("--domains", nargs="+", default=None,
+                   help="Subset of corpora for --by-domain (default: all of "
+                        "_MIX_RATIOS). Each runs as a PURE stream.")
     args = p.parse_args()
 
     from mythouro.tokenizer import MythOuroTokenizer
@@ -152,6 +256,10 @@ def main() -> None:
     model.eval()
     print(f"checkpoint step {step} | n_loops {args.n_loops} | "
           f"{args.chunks} chunks x {args.seq_len} tok\n")
+
+    if args.by_domain:
+        _by_domain(model, enc, args, step)
+        return
 
     r = probe(model, enc, args.device, args.n_loops, args.chunks, args.seq_len)
     tot = r["positions"]

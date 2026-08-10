@@ -716,6 +716,48 @@ run stopped, checkpoint discarded, restart required with the fix.
 
 ## Near-term: next 1–3 overnights
 
+### 🔵 CURRENT ORDER OF WORK (2026-08-10) — read this before the June entries below
+
+Everything under "Immediate (v4 + v5…)" further down predates the corrected-data
+pour and is kept for history. This is the live queue. It is ordered
+**cheapest-and-most-informative first**, and every rung has a stated gate, so a
+null result stops the chain instead of quietly costing a night.
+
+**The through-line:** three separate failures this fortnight — SFT collapse,
+best-of-trajectory, the depth policy — all trace to signals that were only ever
+trained at the FINAL loop, or only ever trained TEACHER-FORCED. The queue
+attacks those two roots, not the symptoms.
+
+| # | Work | Cost | Gate / success criterion |
+|---|------|------|--------------------------|
+| 0 | **Big-batch SFT A/B** (`checkpoints_v8_bigbatch`, effective batch 256 vs 8) | RUNNING, ~8.8h | `code_eval` @pen1.15 vs base **75.0%**. Any movement off 0.0% ⇒ gradient noise was part of the collapse. Still 0.0% ⇒ exposure bias stands with batch ruled out. Either way it is decided, not argued. |
+| 1 | **Per-domain best-exit headroom** — `best_exit_probe --by-domain` | instrument, ~20 min, no training | Does depth benefit VARY by subject? Spread <25% of the largest headroom ⇒ **per-subject depth is disconfirmed**; do not grow depth. Built 2026-08-10. |
+| 2 | **`--unc-loop-weighting uniform`** — calibrate the UncertaintyHead at every loop | 1 overnight | Loop-0 ECE falls from **0.288** (`tools/per_loop_calibration.py`). The head currently predicts 1.68% error where it makes 30.4% — 18x overconfident. Run ALONE, not with #3. |
+| 3 | **`--loop-loss-weighting uniform`** — distil against every loop | 1 overnight | Closes the Ouro divergence. `uniform` FIRST, not `exit_pdf`: depth-reg pulls the halt distribution toward uniform, so `exit_pdf` is confounded from step one. Judge on `code_eval` / `math_eval`, not CE. |
+| 4 | **Resume the pour** to 140,000 (`run_newmix_pour.sh`) | continuous | The base is still the binding constraint on everything else; every rung above is a better *objective* on the same weak base. |
+| 5 | **Grow depth 4→8** (`grow_depth.py`, SHELVED) | 2 sessions | ⚠ Gated on **#1 showing real per-subject variation** AND **#2 landing**. A budget increase is worthless while the allocator is broken — the model already declines extra passes, and repeating an identical contraction converges to the same fixed point. |
+| 6 | **On-policy SFT** — the actual cure for 2026-08-10 | multi-session build | `docs/onpolicy_plan.md`: "more offline tokens — continued OR fresh — only sharpen the attractor. The cure is a different objective, not more data." Generate from the student, correct against the target. |
+
+**Blocking prerequisites for any future SFT** (both found 2026-08-10, neither fixed):
+`clean_code` rejects ~52% of OpenCodeInstruct (adapter demands EVERY unit test
+pass; median score 0.90), and sampling ratios are not gradient ratios —
+loss-bearing token fraction is 65.9% general vs 12.7% math vs 8.2% pubmedqa, so
+general gets ~5x math's gradient at a near-identical sample ratio.
+
+**Unclaimed and cheap, slot in whenever:** the `--compile` A/B (+10% measured,
+never banked); `run_full_validation.sh` on the current base for a whole picture
+rather than two probes.
+
+**Explicitly NOT next, and why:** RLTT / RL on latent trajectories (arXiv
+2602.10520) needs non-zero pass rate to produce gradient — ours is 5.0% math L3+
+and 0.0% L4, so reward would be near-constant zero. It un-parks after the base can
+solve some problems. Best-of-trajectory as a *win* is gated the same way: #2 fixes
+its calibration, but the echo pathology is a weak-base phenomenon and 2601.10242
+found even Ouro — which trains every loop — has linguistically inaccessible
+intermediate loops. Expect calibration to improve and selection to still not beat
+a fixed final depth.
+
+
 ### Immediate (v4 + v5 both done — MoE growth tapped out)
 
 v4 validated (all 3 halt mechanisms fire, 4/4 prompts halt cleanly) and v5 (2nd
