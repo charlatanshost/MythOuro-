@@ -28,7 +28,10 @@ sys.path.insert(0, "tests")
 from test_depth_regulariser import _tiny_cfg          # noqa: E402
 
 from mythouro.main import MythOuro                    # noqa: E402
-from mythouro.training_utils import distillation_loss  # noqa: E402
+from mythouro.training_utils import (                  # noqa: E402
+    distillation_loss,
+    uncertainty_calibration_loss,
+)
 from training.distill import _loop_weights            # noqa: E402
 
 B, T, K = 2, 8, 4
@@ -177,6 +180,81 @@ class TestForwardLoopStates:
         assert model.recurrent.collect_trajectory is False
         logits_traj, _ = model.forward_trajectory(ids, n_loops=K)
         assert logits_traj.requires_grad is False
+
+
+class TestUncertaintyTokenWeights:
+    """
+    Per-loop calibration of the UncertaintyHead.
+
+    The head is trained only on final-loop states today, which is why per-loop
+    calibration reads ECE 0.013 at loop 3 and 0.288 at loop 0 — loop 3 is the
+    only depth it has ever seen. Everything that consumes shallow-loop
+    confidence inherits that: ACT halting, BestOfTrajectoryGenerator (which
+    preferred loops 1-2 and RAISED the copy rate 41.2% -> 50.0%), and exit_pdf
+    weighting itself.
+    """
+
+    def test_none_is_bit_identical(self):
+        torch.manual_seed(0)
+        logits = torch.randn(B, T, 23)
+        unc = torch.rand(B, T)
+        y = torch.randint(0, 23, (B, T))
+        assert torch.equal(
+            uncertainty_calibration_loss(logits, unc, y),
+            uncertainty_calibration_loss(logits, unc, y, token_weights=None),
+        )
+
+    @pytest.mark.parametrize("n_loops", [2, 4])
+    def test_uniform_weights_reconstruct_the_plain_mean(self, n_loops):
+        torch.manual_seed(0)
+        logits = torch.randn(B, T, 23)
+        unc = torch.rand(B, T)
+        y = torch.randint(0, 23, (B, T))
+        base = uncertainty_calibration_loss(logits, unc, y)
+        w = torch.full((B, T, n_loops), 1.0 / n_loops)
+        total = sum(
+            uncertainty_calibration_loss(logits, unc, y, token_weights=w[..., k])
+            for k in range(n_loops)
+        )
+        assert torch.allclose(total, base, atol=1e-5)
+
+    def test_shape_mismatch_raises(self):
+        with pytest.raises(ValueError, match="token_weights"):
+            uncertainty_calibration_loss(
+                torch.randn(B, T, 23), torch.rand(B, T),
+                torch.randint(0, 23, (B, T)),
+                token_weights=torch.ones(B, T + 1),
+            )
+
+    def test_error_target_follows_the_logits_it_is_given(self):
+        """
+        The point of the whole exercise: loop k's error target must come from
+        loop k's OWN logits. If a shallow loop were scored against the final
+        loop's correctness it would keep inheriting confidence it hasn't earned,
+        which is exactly the miscalibration being fixed.
+
+        Asserted directly, with logits constructed to be right vs wrong, rather
+        than via the model — on an untrained model every loop is wrong at every
+        position, so real per-loop error rates are all 1.0 and could not
+        distinguish "used loop k" from "used loop K-1".
+        """
+        y = torch.randint(1, 20, (B, T))
+        right = torch.zeros(B, T, 23).scatter_(-1, y.unsqueeze(-1), 10.0)
+        wrong = torch.zeros(B, T, 23).scatter_(-1, ((y + 1) % 23).unsqueeze(-1), 10.0)
+        confident = torch.full((B, T), 0.01)      # "I will be correct"
+
+        # Confident + right = low loss; confident + wrong = high loss. If the
+        # target ignored the logits these would be equal.
+        assert (uncertainty_calibration_loss(right, confident, y)
+                < uncertainty_calibration_loss(wrong, confident, y))
+
+    def test_per_loop_states_are_distinct(self, model, ids):
+        """A per-loop target is only meaningful if the loops actually differ."""
+        states, _ = model.forward_loop_states(ids, n_loops=K)
+        for k in range(K - 1):
+            assert not torch.allclose(states[..., k, :], states[..., k + 1, :]), (
+                f"loop {k} and {k+1} produced identical states"
+            )
 
 
 class TestEndToEnd:

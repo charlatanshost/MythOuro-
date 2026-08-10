@@ -204,6 +204,26 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "MEMORY: K sets of logits stay live for the backward "
                         "(~805MB each at micro-batch 8 / seq 1024 / vocab "
                         "49,152); drop --micro-batch if this OOMs.")
+    p.add_argument("--unc-loop-weighting",
+                   choices=["off", "match", "uniform", "progressive", "exit_pdf"],
+                   default="off",
+                   help="Train the UncertaintyHead at EVERY recurrent loop "
+                        "instead of the final one. 'off' (default) = current "
+                        "behaviour. 'match' reuses --loop-loss-weighting. "
+                        "WHY IT IS SEPARATE from --loop-loss-weighting: the two "
+                        "fix different heads and are worth measuring apart. The "
+                        "head is trained only on final-loop states today, which "
+                        "is exactly why per-loop calibration reads ECE 0.013 at "
+                        "loop 3 and 0.288 at loop 0 — loop 3 is the only depth "
+                        "it has ever seen. Every consumer of shallow-loop "
+                        "confidence inherits that: ACT halting, "
+                        "BestOfTrajectoryGenerator (which preferred loops 1-2 "
+                        "and RAISED the copy rate 41.2%% -> 50.0%%), and "
+                        "exit_pdf weighting itself. "
+                        "CAUTION: this retrains a head that "
+                        "train_depth_policy.py already touched once and made the "
+                        "task WORSE (halt 2.00 -> 3.60). Run it with its own "
+                        "control arm; do not assume it composes.")
     p.add_argument("--loop-loss-alpha", type=float, default=1.0,
                    help="Exponent for --loop-loss-weighting progressive: "
                         "w_t proportional to (t+1)^alpha, normalised. 0 = "
@@ -855,7 +875,16 @@ def main():
                     t_logits = teacher_logits(teacher_fwd, x_in).to(device)
 
                 # ── Student forward ──
-                if args.loop_loss_weighting == "off":
+                # The per-loop path is needed when EITHER head is trained across
+                # loops. Keeping them independent is deliberate: running
+                # --unc-loop-weighting alone isolates "does calibrating the head
+                # at every depth help" from "does supervising the LM at every
+                # depth help", and those are separate claims about separate
+                # heads. Confounding them would repeat the mistake of the
+                # depth-policy run, which moved two things and could not say
+                # which one hurt.
+                unc_l_loop = None
+                if args.loop_loss_weighting == "off" and args.unc_loop_weighting == "off":
                     with prof.region("student_fwd"):
                         s_logits, unc = student_fwd(x_in, n_loops=n_loops)
 
@@ -882,37 +911,77 @@ def main():
                             x_in, n_loops=n_loops,
                         )
                     K = states.shape[2]
-                    w = _loop_weights(
-                        args.loop_loss_weighting, K, halt,
-                        alpha=args.loop_loss_alpha,
+                    _mk = lambda mode: _loop_weights(                # noqa: E731
+                        mode, K, halt, alpha=args.loop_loss_alpha,
                         shape=states.shape[:2], device=states.device,
                     )
+                    w = _mk(args.loop_loss_weighting) \
+                        if args.loop_loss_weighting != "off" else None
+                    unc_mode = (
+                        args.loop_loss_weighting
+                        if args.unc_loop_weighting == "match"
+                        else args.unc_loop_weighting
+                    )
+                    if unc_mode == "off" or is_onpolicy:
+                        # On-policy micro-steps never train the uncertainty head:
+                        # y_in is the student's OWN sample, so the target would be
+                        # "did my sample match my argmax" = sampling noise (P1,
+                        # 2026-07-01). That rule is depth-independent.
+                        w_unc = None
+                    else:
+                        w_unc = _mk(unc_mode)
 
                     distill_total = None
                     soft_sum = hard_sum = 0.0
                     for k in range(K):
                         logits_k = student.head(states[..., k, :])
-                        loss_k, metrics_k = distillation_loss(
-                            logits_k, t_logits, targets=distill_targets,
+                        if w is not None:
+                            loss_k, metrics_k = distillation_loss(
+                                logits_k, t_logits, targets=distill_targets,
+                                temperature=args.temperature,
+                                alpha=args.alpha,
+                                divergence=args.divergence,
+                                jsd_beta=args.jsd_beta,
+                                token_weights=w[..., k],
+                            )
+                            distill_total = (
+                                loss_k if distill_total is None
+                                else distill_total + loss_k
+                            )
+                            soft_sum += metrics_k["soft"]
+                            hard_sum += metrics_k["hard"]
+                        if w_unc is not None:
+                            # Loop k's OWN logits set the error target, so a
+                            # shallow loop learns to report that IT is wrong
+                            # rather than inheriting the final loop's confidence.
+                            # This is the defect behind ECE 0.288 at loop 0.
+                            u_k = uncertainty_calibration_loss(
+                                logits_k.detach(),
+                                student.uncertainty(states[..., k, :]),
+                                y, token_weights=w_unc[..., k],
+                            )
+                            unc_l_loop = (
+                                u_k if unc_l_loop is None else unc_l_loop + u_k
+                            )
+                        if k == K - 1:
+                            # Final loop stays the reference output: every
+                            # downstream metric is defined against the depth
+                            # inference actually emits.
+                            s_logits = logits_k
+                    unc = student.uncertainty(states[..., K - 1, :])
+
+                    if w is None:
+                        # --unc-loop-weighting running ALONE: the LM objective is
+                        # untouched (final loop only), exactly as before.
+                        distill_total, distill_metrics = distillation_loss(
+                            s_logits, t_logits, targets=distill_targets,
                             temperature=args.temperature,
                             alpha=args.alpha,
                             divergence=args.divergence,
                             jsd_beta=args.jsd_beta,
-                            token_weights=w[..., k],
                         )
-                        distill_total = (
-                            loss_k if distill_total is None
-                            else distill_total + loss_k
-                        )
-                        soft_sum += metrics_k["soft"]
-                        hard_sum += metrics_k["hard"]
-                        if k == K - 1:
-                            # Final loop stays the reference output: the
-                            # uncertainty head and every downstream metric are
-                            # defined against the depth inference actually emits.
-                            s_logits = logits_k
-                    unc = student.uncertainty(states[..., K - 1, :])
-                    distill_metrics = {"soft": soft_sum, "hard": hard_sum}
+                    else:
+                        distill_metrics = {"soft": soft_sum, "hard": hard_sum}
 
                 # ── Auxiliary losses (keep MoE / uncertainty / sparsity healthy) ──
                 router_buf = collect_router_logits(student)
@@ -928,6 +997,11 @@ def main():
                 # silently reintroduce the pollution.
                 if is_onpolicy:
                     unc_l = torch.tensor(0.0, device=s_logits.device)
+                elif unc_l_loop is not None:
+                    # Already accumulated across every loop above, with weights
+                    # summing to 1, so it is on the same scale as the final-loop
+                    # term it replaces and --unc-coeff keeps its meaning.
+                    unc_l = unc_l_loop
                 else:
                     unc_l = uncertainty_calibration_loss(s_logits.detach(), unc, y)
                 sparse = sparse_activation_loss(router_buf)

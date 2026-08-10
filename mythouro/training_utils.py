@@ -494,6 +494,7 @@ def uncertainty_calibration_loss(
     logits: torch.Tensor,
     uncertainty: torch.Tensor,
     targets: torch.Tensor,
+    token_weights: "Optional[torch.Tensor]" = None,
 ) -> torch.Tensor:
     """
     Binary cross-entropy between predicted uncertainty and realised error.
@@ -523,7 +524,23 @@ def uncertainty_calibration_loss(
     # Computed in fp32 (p was `.float()`-cast above) so it stays safe
     # under bf16/fp16 autocast.
     bce = -(target_unc * torch.log(p) + (1.0 - target_unc) * torch.log(1.0 - p))
-    return bce.mean()
+    if token_weights is None:
+        return bce.mean()
+    # Per-token weights for per-loop calibration (default None = unchanged).
+    # The caller invokes this once per recurrent loop k, passing that loop's OWN
+    # logits — so `target_unc` above is "was loop k wrong here", which is what
+    # teaches a shallow loop to report LOW confidence instead of inheriting the
+    # final loop's. Weighted sum over the position count, not a weighted mean,
+    # for the same reason as distillation_loss: with Σ_k w_k = 1 per position
+    # the K calls add up to one properly-scaled loss, whereas per-call
+    # normalisation would restore each loop to full strength.
+    w = token_weights.to(bce.dtype)
+    if w.shape != bce.shape:
+        raise ValueError(
+            f"token_weights {tuple(token_weights.shape)} does not match the "
+            f"uncertainty grid {tuple(bce.shape)}; refusing to broadcast."
+        )
+    return (bce * w).sum() / bce.numel()
 
 
 # ---------------------------------------------------------------------------
