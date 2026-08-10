@@ -205,6 +205,16 @@ def main() -> None:
                         "depth was never taken'. Reported halt depth tells you\n"
                         "which happened.")
     p.add_argument("--repetition-penalty", type=float, default=1.0)
+    p.add_argument("--chat-template", action="store_true",
+                   help="Wrap each prompt in the SFT chat template "
+                        "(apply_chat_template, add_generation_prompt=True). "
+                        "REQUIRED for scoring an SFT checkpoint: SFT trains on "
+                        "<|im_start|>user ...<|im_end|><|im_start|>assistant, so "
+                        "feeding a raw continuation measures the format it was "
+                        "trained AWAY from and understates it. Leave OFF for base "
+                        "checkpoints — they never saw the template. A base-raw vs "
+                        "SFT-raw comparison measures the FORMAT change, not the "
+                        "capability change.")
     p.add_argument("--seed", type=int, default=None,
                    help="Seed the sampler so re-measuring a checkpoint is "
                         "REPRODUCIBLE. Omitting it means a rerun draws fresh "
@@ -229,12 +239,21 @@ def main() -> None:
     print(f"checkpoint step {step} | {args.samples} samples/task | "
           f"T={args.temperature} | seed={args.seed} | "
           f"n_loops={args.n_loops} | force_full_depth={args.force_full_depth} | "
-          f"decoder={args.decoder}\n")
+          f"decoder={args.decoder} | chat={args.chat_template}\n")
 
     names = {0: "L0 nothing", 1: "L1 a number", 2: "L2 right form",
              3: "L3 buried", 4: "L4 CORRECT"}
     rows, hist, all_samples = [], {k: 0 for k in names}, []
     for name, prompt, answers, n_exp, kind in _TASKS:
+        # The scorer must see the SAME string the model continued, but
+        # copied_from_prompt compares against the ORIGINAL question — the
+        # template's boilerplate contains no task numbers, so echo detection
+        # is unaffected either way.
+        raw_prompt = prompt
+        if args.chat_template:
+            prompt = enc.apply_chat_template(
+                [{"role": "user", "content": prompt}],
+                tokenize=False, add_generation_prompt=True)
         best, best_txt, samples = 0, "", []
         for _ in range(args.samples):
             chosen = None
@@ -254,7 +273,7 @@ def main() -> None:
                                 args.n_loops, args.temperature,
                                 args.repetition_penalty)
             s = score_sample(comp, [float(a) for a in answers], n_exp, kind,
-                             prompt=prompt)
+                             prompt=raw_prompt)
             hs = getattr(block, 'last_halt_step', None) if block is not None else None
             s['halt_depth'] = round(float(hs.float().mean()), 2) if hs is not None else None
             if chosen:
@@ -310,6 +329,7 @@ def main() -> None:
             {"step": step, "temperature": args.temperature, "seed": args.seed,
              "samples": args.samples,
              "repetition_penalty": args.repetition_penalty, "tasks": rows,
+             "chat_template": args.chat_template,
              "decoder": args.decoder,
              "n_loops": args.n_loops,
              "force_full_depth": args.force_full_depth,

@@ -355,6 +355,16 @@ def main() -> None:
                         "checkpoint: if L3/L4 jump under 'file', the L4=0 wall is "
                         "a format mismatch, not a capability limit — which "
                         "changes whether growing the model is the right spend.")
+    p.add_argument("--chat-template", action="store_true",
+                   help="Wrap each prompt in the SFT chat template "
+                        "(apply_chat_template, add_generation_prompt=True). "
+                        "REQUIRED for scoring an SFT checkpoint: SFT trains on "
+                        "<|im_start|>user ...<|im_end|><|im_start|>assistant, so "
+                        "feeding a raw continuation measures the format it was "
+                        "trained AWAY from and understates it. Leave OFF for base "
+                        "checkpoints — they never saw the template. A base-raw vs "
+                        "SFT-raw comparison measures the FORMAT change, not the "
+                        "capability change.")
     p.add_argument("--seed", type=int, default=None,
                    help="Seed the sampler so RE-MEASURING A CHECKPOINT IS "
                         "REPRODUCIBLE. Added 2026-07-31 after an unseeded rerun "
@@ -374,7 +384,7 @@ def main() -> None:
         torch.manual_seed(args.seed)        # sampling is on CPU, so this is enough
     print(f"checkpoint step {step} | {args.samples} samples/task | "
           f"T={args.temperature} | rep_penalty={args.repetition_penalty} | "
-          f"seed={args.seed} | framing={args.framing}")
+          f"seed={args.seed} | framing={args.framing} | chat={args.chat_template}")
     if args.framing == "file":
         print("  prompts wrapped in file context — NOT comparable to bare-framing "
               "reports; compare the two on the SAME checkpoint")
@@ -388,6 +398,10 @@ def main() -> None:
         # the identical prompt or the ladder scores a different string than the
         # model continued.
         prompt = _FILE_PREAMBLE + prompt if args.framing == "file" else prompt
+        if args.chat_template:
+            prompt = enc.apply_chat_template(
+                [{"role": "user", "content": prompt}],
+                tokenize=False, add_generation_prompt=True)
         best, best_txt, samples = 0, "", []
         for _ in range(args.samples):
             comp = generate(model, tok, prompt, args.device, args.max_new,
@@ -474,6 +488,7 @@ def main() -> None:
              "repetition_penalty": args.repetition_penalty,
              "seed": args.seed,
              "framing": args.framing,
+             "chat_template": args.chat_template,
              "samples": args.samples, "tasks": rows,
              "reached": {f"L{r}+": reach(r) for r in (1, 2, 3, 4)},
              "diagnostics": diag}, indent=2))
