@@ -823,6 +823,63 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-10 (later) — 🔧 THE SFT MIX IS NOT THE MIX WE CONFIGURED
+
+Chasing ~200,000 unattributed rejections in the big-batch run's dataset
+diagnostic. Three findings, only one of which is a defect in the data.
+
+### The diagnostic was structurally unable to show the top reject reason
+
+`MixedSFTDataset` counts adapter rejections in `stats[key]["no_messages"]` and
+prints only `stats[key]["reject_reasons"]`. The two never met, so the largest
+rejection category was invisible while the log line's own comment claimed it
+showed "the top rejection reason for each source". It hid 103,939 general
+rejections behind an attributed 3,929, and 101,975 code rejections behind 8.
+**Fixed:** `adapter_rejected` is merged into the printed breakdown, plus an
+`UNACCOUNTED=` term so the counts must now reconcile against
+`attempted - yielded`.
+
+### Why each source rejects — one is policy, one is quality, neither is a bug
+
+* **clean_general 59.2% accept.** `_to_messages_tulu` drops Tulu-3's
+  OpenAI-derived subsets (`_TULU_EXCLUDED_SOURCES`). That is the clean-data
+  constraint working exactly as required — not a defect, and not to be
+  "fixed".
+* **clean_code 38.2% accept.** `_to_messages_opencode` requires EVERY unit test
+  to pass. Defensible: execution verification is that dataset's whole quality
+  signal.
+* Earlier today I recorded code at ~52% rejection and general at 97.3%
+  acceptance. Both wrong — the 97.3% came from an early window that was not
+  representative of the run. Corrected here.
+
+### 🔴 THE ACTUAL DEFECT: ratios are applied BEFORE rejection
+
+Sources are drawn by configured weight and only *then* filtered, so acceptance
+rate silently re-weights the corpus. Measured over 750,000 draws:
+
+| source | drawn | kept | accept | configured | REALIZED | drift |
+|---|---|---|---|---|---|---|
+| clean_general | 254,989 | 151,050 | 59.2% | 34.0% | 27.8% | −6.2pp |
+| clean_math | 239,940 | 239,688 | 99.9% | 32.0% | **44.1%** | **+12.1pp** |
+| clean_code | 164,949 | 62,974 | 38.2% | 22.0% | **11.6%** | **−10.4pp** |
+| clean_pubmedqa | 90,122 | 90,090 | 100.0% | 12.0% | 16.6% | +4.6pp |
+
+**Code was configured at 22% and delivered 11.6% — very nearly halved — while
+math ran 38% hotter than intended.** Every SFT run to date trained on this
+distorted mix, and it compounds with the separately-measured loss-bearing-token
+skew (65.9% general vs 12.7% math vs 8.2% pubmedqa), which pulls gradient share
+further from the configured intent.
+
+### The fix is NOT to loosen the filters
+
+Today's other result is that 36,202 offline SFT steps made the model strictly
+worse, so **data volume is not the lever** and trading correctness for quantity
+would be the wrong direction — particularly on code, where the filter is the only
+thing certifying the target actually runs. The correct fix is to make the DRAW
+weights compensate for measured acceptance so the realized mix matches the
+configured one, leaving the quality bar untouched. Not yet built.
+
+
 ## 2026-08-10 — 🔴 SFT CANNOT WORK ON A STRONG BASE: more dose SHARPENS the attractor, exactly as documented
 
 Continuation to **36,202 cumulative SFT steps** — 5.6x v4's known-good ~6.5k, the dose the

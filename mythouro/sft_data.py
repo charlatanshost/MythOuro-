@@ -831,13 +831,28 @@ class MixedSFTDataset(IterableDataset):
                         100.0 * st["yielded"] / st["attempted"]
                         if st["attempted"] > 0 else 0.0
                     )
-                    reasons = st["reject_reasons"]
+                    # `no_messages` — the ADAPTER rejecting the row — was
+                    # counted but NEVER PRINTED, so the single largest reject
+                    # reason was structurally invisible while this line claimed
+                    # to show "the top rejection reason". On 2026-08-10 that hid
+                    # ~200,000 rejections: clean_general 103,939 rejected with
+                    # only 3,929 attributed, clean_code 101,975 with only 8.
+                    # Merged into the same breakdown so the counts now reconcile
+                    # against `attempted - yielded`.
+                    reasons = dict(st["reject_reasons"])
+                    if st["no_messages"]:
+                        reasons["adapter_rejected"] = st["no_messages"]
                     reasons_str = (
                         " ".join(f"{r}={c}" for r, c in sorted(
                             reasons.items(), key=lambda kv: -kv[1]
                         ))
                         if reasons else "-"
                     )
+                    unaccounted = (
+                        st["attempted"] - st["yielded"] - sum(reasons.values())
+                    )
+                    if unaccounted:
+                        reasons_str += f" UNACCOUNTED={unaccounted}"
                     lines.append(
                         f"{k}: {st['yielded']}/{st['attempted']} "
                         f"({rate:.1f}% accept) [{reasons_str}]"
