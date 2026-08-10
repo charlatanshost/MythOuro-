@@ -57,6 +57,146 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
   **Does NOT address** exposure bias, on-policy learning, distillation or mode
   collapse — none appear in the paper.
 
+### ⚔️ 2026-08-10 — THE LOOP-SUPERVISION CONTRADICTION (read before running rung 3)
+
+Two sources in this batch make **opposite claims about the exact question
+`--loop-loss-weighting` tests**, and a third (our teacher) sits on one side. This
+is recorded as an open contradiction, not a settled point, because rung 3 is the
+experiment that resolves it for our model.
+
+| source | claim | evidence offered |
+|---|---|---|
+| **recurrent-depth-ttc** (repo, below) | **Supervise EVERY loop.** Iterative-target supervision extrapolates **up to 24x beyond trained depth**; **final-only supervision causes ACCURACY WALLS** | small-scale, seed-pinned chain tasks |
+| **Ouro** (our teacher, 2510.25741) | per-step loss weighted by exit probability, `L = Σ_t p(t\|x)·L^(t)` | 1.4B/2.6B production models |
+| **RLTT** (2602.10520) | credit to every loop beats terminal-only | +5.8%/+10.9% on Ouro |
+| **"Thinking Deeper, Not Longer"** (2603.21676, below) | **Supervise ONLY the final step.** The "Silent Thinking Objective" computes loss at the final recurrence step *"eliminating intermediate shortcuts"*, and rejecting intermediate supervision is called **critical for genuine multi-step reasoning** | compositional tasks, 20+ recurrence steps |
+| **MythOuro today** | final-only (`h_K`) | chosen to stop the λ₀→1 ACT collapse |
+
+**Why this matters more than a literature disagreement.** Our own 2026-07-31
+depth sweep was FLAT at 4/6/8 loops, and we read that as "depth is not a lever."
+The `recurrent-depth-ttc` result offers a competing explanation: **final-only
+supervision produces an accuracy wall at the trained depth**, which is precisely
+the shape we measured. If that transfers, depth is not dead — it is walled, and
+the wall is our objective, not our architecture. That would also mean rung 5
+(grow depth) is attacking the symptom while rung 3 attacks the cause.
+
+**The counter-case is equally concrete.** 2603.21676 argues intermediate
+supervision lets the model take shortcuts rather than genuinely iterate — and we
+have our OWN instance of that failure: the ACT-weighted-sum output gave the
+optimiser a lever to pin λ₀≈1 and collapse depth, which is what returning `h_K`
+fixed. So "supervise every loop" is not free; it is the thing that already broke
+once here.
+
+⇒ Run rung 3 (`--loop-loss-weighting uniform`) as a genuine two-sided experiment.
+Watch the halt distribution and `loop_efficiency` alongside the evals: if depth
+collapses toward loop 0 again, 2603.21676's shortcut objection is the live one;
+if the flat-depth wall lifts, `recurrent-depth-ttc`'s is.
+
+---
+
+- **Teaching Pretrained Language Models to Think Deeper with Retrofitted
+  Recurrence** — McLeish, Li, Kirchenbauer et al. (UMD / NYU / LLNL), arXiv
+  **2511.07384**. *Same group as Huginn (2502.05171).* **⭐ CLOSEST TO OUR
+  ARCHITECTURE OF ANYTHING FILED** — explicit **prelude / recurrent block / coda**
+  surgery, which is our exact layout, and a **recurrence schedule** that ramps
+  depth during training, which is our `LoopCurriculum`.
+  Converts fixed-depth pretrained models (TinyLlama 1.1B, OLMo-2-1B,
+  Llama-3.2-1B) into depth-recurrent ones by continued training on 50B tokens.
+  TinyLlama recurrent hits **51.2% GSM8K vs 46.2% baseline at test
+  recurrence = 32** — note 32, against our 4. Reports pretrained init needs
+  ~950B fewer tokens than random init to reach parity.
+  **Actionable for us:** (a) they switched **AdamW → Muon** specifically for
+  recurrent stability — a cheap, untested lever on a rig where stability has been
+  the recurring problem; (b) a *data* curriculum (general "healing" phase, then
+  task data) which we do not do; (c) it is the strongest external evidence that
+  test-time recurrence far beyond the trained depth can pay, which bears directly
+  on rung 5. **Gate:** they retrofit strong pretrained bases; we distil a weak
+  one, so the healing phase may not transfer.
+
+- **Beyond Memorization: Extending Reasoning Depth with Recurrence, Memory and
+  Test-Time Compute Scaling** — Rodkin et al. (MBZUAI / MIPT / AIRI), arXiv
+  **2508.16745**. 1-D cellular automata with **disjoint train/test rule sets**, so
+  it measures rule generalisation rather than memorisation. Compares
+  Transformers, LSTM, Mamba, ARMT.
+  **The number worth remembering: ACT buys about ONE extra reasoning step.**
+  4-layer baseline ~95% at k=1 collapsing below 25% at k≥2; ARMT reaches k=2;
+  **ACT ≈ +1 step**; GRPO reaches k=3 with no intermediate supervision; CoT
+  exceeds 99% through k=4. Also: *"Depth — not width — drives multi-step
+  accuracy"*, with embedding width giving minimal gains.
+  **Why it matters here:** it is a sober prior on how much our halting work can
+  possibly return. We have spent three efforts on the depth/halting axis; this
+  says the ceiling for ACT specifically is ~1 step, and that *training method*
+  (GRPO, CoT) moved depth further than architecture did. Consistent with our own
+  finding that the objective, not the budget, is the binding constraint.
+
+- **T2MLR: Transformer with Temporal Middle-Layer Recurrence** — Cai, Zhu, Dong,
+  He, **Arora** (Princeton), arXiv **2607.15178v2**. Recurrence over a *middle
+  slice* of layers, carrying cached representations from a deeper layer of the
+  previous token into an earlier layer of the current one via gated fusion —
+  i.e. recurrence **across positions**, where ours is across depth.
+  135M/361M/1B on 10B FineWeb-Edu. Retrofit of SmolLM2-1.7B-Instruct:
+  **GSM8K 35.78 → 39.88, MATH500 12.80 → 18.00**. Looping only ~20% of layers
+  beat full recurrence on downstream reasoning, at **~8% inference overhead**
+  rather than the multiplied cost of full looping.
+  **Relevance:** "loop a SLICE, not everything" is a live architectural question
+  for us — our recurrent block is the whole middle. Also the same family as
+  Coconut in `ideas.md` (across-position latent reasoning), and the same "right
+  family, wrong phase" gate applies: retrofitting an *instruct* model is not our
+  situation. File as architecture-rev input, not a near-term lever.
+
+- **The Recurrent Transformer: Greater Effective Depth and Efficient Decoding** —
+  Oncescu, Morwani, Jelassi, Meterez, Kwun, **Kakade** (Harvard), arXiv
+  **2604.21215**. Layers attend to KV pairs from *their own* activations rather
+  than the previous layer's, giving layerwise recurrent memory at no extra
+  decoding cost. Ships an exact tiling algorithm cutting HBM traffic
+  **Θ(N²) → Θ(N log N)**. 150M/300M on C4: better CE than baseline with fewer
+  layers, smaller KV cache, lower latency.
+  **Relevance:** efficiency/architecture shelf. The tiling result is the
+  interesting part for a latency-bound single card, but it is a pretraining-scale
+  architectural change — not adoptable without a fresh distil. Same shelf as
+  oFFN and linear-CE.
+
+- **Thinking Deeper, Not Longer: Depth-Recurrent Transformers for Compositional
+  Generalization** — Hung-Hsuan Chen (National Central University), arXiv
+  **2603.21676**, 2026-03. "Vertical chain-of-thought": iterate a shared block in
+  latent space instead of emitting reasoning tokens, at **20+ recurrence steps**.
+  Three stabilisers: the **Silent Thinking Objective** (loss at the FINAL
+  recurrence step only, *"eliminating intermediate shortcuts"*), **LayerScale
+  init at 1e-4**, and an **identity-biased gated recurrence** (GRU-like gate,
+  bias −2.0, ≈88% retention of the previous state). Graph reachability, nested
+  boolean logic, relational composition; reports a sharp "computational frontier"
+  and 1.6–1.75x OOD generalisation beyond trained depth. No ACT, no early exit.
+  **⚔ THIS IS THE COUNTER-CASE to loop-weighted supervision — see the
+  contradiction table above.** Two mechanisms are independently interesting
+  regardless of which side wins: identity-biased gating (88% retention) is a
+  principled way to make deep recurrence stable, and it is the same instinct as
+  our `ρ(A)<1` contractivity tracking; LayerScale at 1e-4 is a close cousin of
+  our depth-aware init.
+
+- **duongtrongnguyen123/recurrent-depth-ttc** (GitHub, MIT, 2026) — controlled
+  small-scale experiments on **prelude → core → coda** looped transformers, i.e.
+  our layout. Seed-pinned, deliberately narrow. Three results:
+  **(1) ⭐ iterative-target supervision (supervising EVERY loop) extrapolates up
+  to 24x beyond trained depth, while final-only supervision causes ACCURACY
+  WALLS** — the direct empirical case for `--loop-loss-weighting`, and a
+  competing explanation for our flat 4/6/8 depth sweep;
+  (2) after LoRA fine-tuning, inference depth is configurable per example via a
+  **hardcoded halt rule** — adaptive test-time compute with **no learned stopping
+  head at all**, which is a pointed counterpoint to three failed efforts on ours;
+  (3) on real text at sub-1B, recurrent models showed **higher loss and sharper
+  minima** than dense at the same token budget.
+  **Caveat, stated plainly:** unreviewed, small-scale, synthetic chain tasks. The
+  24x figure is not a claim about language. But (1) is testable on our stack this
+  week and (2) suggests a cheap fallback if the halting head stays unfixable.
+
+- **PrathibhaDevkar/rdt_transformer** (GitHub, MIT) — educational from-scratch RDT
+  implementation in three phases (GPT baseline → recurrent core → finetune/CoT/
+  tools), with the update rule `h(t+1) = A·h(t) + B·e + Transformer(h(t), e)`,
+  the same LTI-injection shape as ours. **7 commits, 0 stars — teaching material,
+  not a result.** Logged for completeness; nothing to adopt. Its benchmark claims
+  are unvalidated and should not be cited.
+
+
 - **Prioritize the Process, Not Just the Outcome: Rewarding Latent Thought Trajectories
   Improves Reasoning in Looped Language Models** — arXiv **2602.10520**, 2026-02
   (Princeton PLI talk listing). *Trained on **Ouro-1.4B and Ouro-2.6B-Thinking** — our
