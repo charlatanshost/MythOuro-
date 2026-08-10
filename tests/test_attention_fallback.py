@@ -63,13 +63,23 @@ class TestCapabilities:
         # PyTorch ≥ 2.0 exposes F.scaled_dot_product_attention. The whole
         # test suite assumes a modern torch — if this fails the cascade
         # has lost its middle tier and would always fall to manual.
-        # EXCEPT on XPU hosts: Intel's SDPA kernel segfaults (Max 1100,
-        # torch 2.13+xpu), so CAPABILITIES deliberately disables it there
-        # and the cascade is EXPECTED to sit on the manual tier.
+        #
+        # UPDATED 2026-08-10. This previously asserted `has_sdpa is False` on
+        # XPU, from when SDPA was disabled there wholesale. It has since been
+        # RE-ENABLED for GQA and split into two gates, so the old assertion
+        # failed on every XPU run and had to be deselected to see real results
+        # — a test that cries wolf gets ignored, which is worse than no test.
+        assert CAPABILITIES.has_sdpa is True
+
+    def test_sdpa_disabled_for_mla_on_xpu(self):
+        # The split gate: GQA keeps SDPA on XPU, MLA does not. MLA's head-dim
+        # mismatch (Dk=80, Dv=48) costs SDPA its fused path and measured
+        # 25.40ms vs 9.08ms manual at B8/T1024 — ~3x SLOWER. Guards against
+        # someone collapsing the two gates back into one.
         if CAPABILITIES.is_xpu:
-            assert CAPABILITIES.has_sdpa is False
+            assert CAPABILITIES.sdpa_ok_for_mla is False
         else:
-            assert CAPABILITIES.has_sdpa is True
+            assert CAPABILITIES.sdpa_ok_for_mla is CAPABILITIES.has_sdpa
 
     def test_fa2_requires_compute_capability_8(self, monkeypatch):
         # The whole point of §1: flash-attn imports cleanly on Volta

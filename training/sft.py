@@ -400,6 +400,22 @@ def main():
         f"sft: student={args.student_variant} params={n_params:,} "
         f"vocab={vocab_size} device={device} amp={amp_dtype}"
     )
+    # Full args, one line, at startup. There is no run_sft.sh, so an SFT run's
+    # settings were previously reconstructable only by reverse-engineering
+    # tok/s and step timing from the log — which is how effective batch 8 (the
+    # argparse default, and ~960x below the batch size arXiv 2412.13337 found
+    # best) went unnoticed across two runs. Cheap insurance; distill.py runs
+    # are recoverable from their run scripts, these were not.
+    logger.info(
+        "sft: args | "
+        + " ".join(f"{k}={v}" for k, v in sorted(vars(args).items()))
+    )
+    logger.info(
+        f"sft: effective batch = micro_batch {args.micro_batch} x grad_accum "
+        f"{args.grad_accum} = {args.micro_batch * args.grad_accum} sequences "
+        f"x seq_len {args.seq_len} = "
+        f"{args.micro_batch * args.grad_accum * args.seq_len:,} tokens/step"
+    )
 
     # ------------------------------------------------------------------
     # Aux heads
@@ -688,6 +704,12 @@ def main():
         save_checkpoint(
             student, optimizer, step, cfg, vocab_size,
             args.ckpt_dir, ddp=False, master=True,
+            # `keep_milestone_every` was missing here while both other call
+            # sites passed it, so a run ending on a step not divisible by
+            # --ckpt-every left its FINAL checkpoint unprotected and rotation
+            # (keep_last=3) could delete it. Same fix-where-noticed pattern
+            # that lost 15 of 18 checkpoints on 2026-08-09.
+            keep_milestone_every=args.ckpt_milestone_every,
         )
     if shutdown.requested:
         logger.warning("sft: stopped via signal — resume by re-running.")

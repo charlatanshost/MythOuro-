@@ -13,9 +13,20 @@ steps learning:
     recurrent.injection.scheduler.log_scale   (4,)
 
 41,008 elements, 0.012% of 341.9M. Bumping the config without expanding them
-makes every one shape-mismatch, and `load_state_dict(strict=False)` — which the
-loader uses — DROPS mismatched keys SILENTLY. The run would start with that
-adaptation freshly reinitialised and nothing in the logs would say so.
+makes every one shape-mismatch.
+
+CORRECTED 2026-08-10 — this previously claimed `load_state_dict(strict=False)`
+"DROPS mismatched keys SILENTLY" and that the run would start with the
+adaptation freshly reinitialised with nothing in the logs. **That is wrong, and
+believing it would misjudge the risk of growing depth.** Verified on torch
+2.13.0+xpu: `strict=False` suppresses MISSING and UNEXPECTED keys, but a SHAPE
+mismatch still raises `RuntimeError: size mismatch for <key>`. On top of that,
+`mythouro/checkpointing.py` calls `_assert_clean_state_load` after every load,
+which raises on any unexpected key and on any missing key beyond the RoPE
+buffers (P1, 2026-07-01). So a config bump without this tool fails LOUDLY at
+load, twice over. Growing depth is still a deliberate act — the per-loop
+adaptation is real and must be expanded on purpose — but the failure mode is a
+crash, not silent corruption.
 
 WHY DEPTH IS WORTH GROWING. The @70,500 --n-loops budget sweep was flat at
 4/6/8 (L4 0% throughout, median rel_err 0.400/0.400/0.400) while n_loops=2 was
