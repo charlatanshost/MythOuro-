@@ -1,0 +1,831 @@
+{
+  "step": 2000,
+  "temperature": 0.4,
+  "repetition_penalty": 1.15,
+  "seed": 1234,
+  "framing": "bare",
+  "chat_template": true,
+  "samples": 8,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1184,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\nThe The The The The The The How many times is likelikeence,\n\n\n\n\n--based on the the original original original original_class_____ _ _ _ _ ) ) ) ) 444499999988888_, _   .     | |The 3DTheTheTheHowHow manyAn Anananannn-_.\u00a0\u00a0--\u2013\u2013 \u2013"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.108,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\nThe TheThe The The The The : 22222,\n\n\n\n\n, and and and & & &The The One-based on on the the the the two of of of Of Of Of For all-based based In In In In terms two two two different different different different than3:::   A :The The Two Two Two TwoTwo OneTwo244444\n\n*, and and andand On"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1542,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\nb,      - - - - - - - - \u2014 \u2014 \u2014 \u2014 \u2014 \u2014\u2014\u2014\u2014;;;;; ; ; ; \u2013 \u2013\u2013\u2013\u2013\u2013\u2026\u2026\u2014\u2014\u2014because because because because because,, and and and and \u2013 \u2013 \u2026 \u2013 \u2013\u2013\u2013\u2212 \u2212 \u2212 than,\u201d.\n- of of of\u2026--? as as as as as -- -- ---------->->"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0521,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n-2, 4444455667777889999\n355511122376687770880000032222211336666789,8))))) 3444449513978899"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0823,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\nThe The The The The The [ ] ] ] } } } );;\n\n\n\n\n\n- - - - - : : : : ; ; ; ; ; ; ;;;;;;;oror, and and &TheTheTheThe The The The The One OneOneOneTwo than than the the the thetheor, which This ThisThisThisThisLet \n Two An An An AnAnanve as:\n ---re"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1368,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\n, 33344455555777888999\n2666666624750057711222222. The The The The TheTheTheore44, 8889.3\n----s3446600017778889"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.08,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\nThe The\n\n\n\n, and and and and and, which is not only only only one one one of the same same same than than than 2222223) as as as as as as as:: 4. The The The 33334445) isisisisisis|: |\n|| | | - 44400055) is is is is has been"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1179,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\nThe The The The The The : : : ; ; ; ;;;;;;;;;\n\nTheTheTheThethethethe_class,,,,,, the same same same same same same same. TheTheTheWhatWhatHowHowardardardantantantantant: the two of of of of this: This What Is IsIsIsIsInletardtttttentes the original\n\nThisThisThis"
+        }
+      ]
+    },
+    {
+      "task": "double_it",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1788,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def\n\n\n\n\n, and and, 222222555555 = defdefdefdefdefccccggxxxxff66667777 isttggggvbzhhhhHH48 = DefDefDefDefDefl_ttttkk443$Lll"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0504,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef defnvvvvv_kxxxxxzzzzzddddgggggfvVVZZZZ Z Z ZNnnh vwwwmdsdsdsdsffvsVVVGGGG G zNnkkkjjlmvveasasamambXXXZZ\u0437\u0437az zDldmm"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1542,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def defdef_class__fromfrom,\n\n\n\n\n\n, and and and and and and isdefdefdef\\nnnnn,, 3dddd, or or or or or or noososososososenenl,, n njjjdg = DefDefDef DefDefint_tttttt4l,\nisisis"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1667,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def\n\n*tgggg,\n\n\n\n\nLlllgg g = hhhhHHHH H H H H h h hhhhLLLL L L L L l l l l l t t t HH H L L L G GfLldefdefdefdefxtkkkdjjjh H H h h h h"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0854,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def def,\n\n\n\n- - - - - - - \u2014;;;;;;; ; ; ; ; ; # \n\n, and and and and and & & \u2014.;););););();();. The The TheTheTheTheThe_____ _ _ _ : \u2014 \u2014 , , , , , ;. The TheTheTheThisThisThis-* \u2013 \u2013 \u2013\u2013\u2013\u2013\u2013\u2014.;];];};"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1517,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def\n\n\n\n\n, and and, 11111122223 = selfdefdefdefdefdeftotototo be 00008754444444 +tgggggf to be 00008997 def DefDefDefDef number:isisisisisisafeTo_1122"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0941,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def hhh\n\n\n\n\n, hh,, and and and then h hhHHHH H H H H H H H L L L L l l l l l l l LLLLLLlllhh h h h h h L L y l l g ggg tlllnnnn\n\n, so f f t t-M M m m m m"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0696,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def fx__s, and then then then use the same, but not not not not always always be used with fewer than x__s0000000-repepepepepepesesesesesisisisis_sresresresresresr1-rerererararapeselselselselselsels\u00e9ses_s33333d/tranininin"
+        }
+      ]
+    },
+    {
+      "task": "get_first",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1039,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def def defdefdefdefdef\n\n\n\n, and and, 333333000000defdef. 8888899999776645555555 +44444489996777666 =!fromfromss:\n, and and and and and1233 are22"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.053,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\ndef def to the,, and and\n\nTheoreterterterter, which is is is also also also not necessarily a regular regular normal $ and of the same same same same opposite opposite-based on on on on this one's own own own to to to be:444444leftright-rererererere) also also and and with with with sometertertingererererisis) repspsps"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.057,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get__classclass_ininininoutoutout, 22222444444444.\n-edededononis, 3 ` ` ` `s````'' '3classclassclasswithwithwithwithto-self, self selfselfselfget__fromclassfieldfield fieldininoutoutout out out"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0842,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def f_sosos, and and and and andesesesesesesesEsEsasasasasasaasosososusususususuououraraararararisisisisisisIsIsoososenenenenanuououraraatatatd isasoooooIsnOSOSOSOSNANAJanamaualalal"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1513,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def defdef\n#'nnnvvvvxxxzzzkkkkkt t t t t v v v v v vvvhhhhHHdjjjlll l l l l L L L L LVVVffffgzdgdefdefdefdefint nn nmmmm m x Vvpggg"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1608,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def defdefdefdefgvvvvvxxxxxxff\n\n||&t = =00000000mf,\n{{rrf}}} = = { {_11111223Vbbbbbbdg, defdefdefdefgvh v v v v v v45Xnf\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1667,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def defdef\n\n\n\n\n, and and, 22222233333 = defdefdefdef,     44444444689999900000000-8557777766defdefgggg\n-s111115825233"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0743,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def\n\n\n\n\n, and and and and and and, which is is is is not not not necessarily necessarily a different than than as as. The The The The TwoTwoTwo-likelikelikelikelikenotnot-t t t t t t t:::: : : : TwoTwo-ssssisis not-t   T T T T: : : : : ; ; are two not in a a a"
+        }
+      ]
+    },
+    {
+      "task": "sum_list",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1549,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def defdefdefdefintinin,\n\n\n\n\n\n\nThe The The The The The TheTheisis is is is is is has been used in in in in the the 3330000, 1111124in-rerererere's own, selfdefdefdefc =self.ususesesesesosin-sss"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1462,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def\n```<|im_end|>\n\n\n,, and,      222222, self.size_____\\_#'' ' ' ' ' '|'''['['['']']']')')')', ', ', '', None None None None None None None - max = selfdefdefdefdef\\]]}}}}}- _## '('('"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1435,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def class_**.*....;\n\n\n\n\n\n\n- - - - - = self self.getgettexttexttexttexttext_sosososososesesesesesesasasasisisisisisIsIsIsent,,,,, and ands aredefdefdefdefininin isISISISIS IS ISare:\n\nsosos os"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2254,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def f(self.xxx_\n\n\n\n\n\n\n- - - - - +,, 33333324444444455777999, 2222238X6666665 = defdefdefdefdefn.xxxvvv}|::\n--"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1444,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def\n\n#'' ' ' ','', '', '', '', '', '' '' , 8888,, 777776655550000', [], [], [], [])())())(), 44444665559999, and$,defdefdefdefimport_s ' ' '('('')+', '')s3\t\t\t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1713,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def\n\n\n\n, and and,\n\n\n,,,, and and and to to bedefdefdefdef = = = = = = 1110000. The The TheTheTheTheTheLlllgggg_s1112224. The L l lll\nMmmmmnn/_s:::):"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0984,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get__classclass_11111000000000, 2222233, 44488565559999, 3333337classclassclassinininin-88, \n\n\nnew_s4 class class class classifieses byself. The The"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1587,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def _;;\n\n\nThe following is is also still still still in the the the\n\n\n-1000000055999998 still out. The The The The The. 33____s44444498 remains un un un ununun-s:222::3 also already already already already already alreadyUn8 remains out out out of"
+        }
+      ]
+    },
+    {
+      "task": "count_items",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1475,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def\nTheTheHHHH H H H H H H h h hhhhhHH h hh\n\nLLLLL L L L L l l l l,,,,, and and and defdefllllllL L L L R R R R l isdefdefdefgggMMMM M M M M H W W W w w t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1918,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def size_sxxxxxf\n\n\n\n\n\n\n- - - - - = def defdefdefdeftttttggggggvvhhHHHH H H h hhhhhvpTllllllvvhh2LLL L L2srrrrrnTmnmmm"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1051,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def def,,, and, and and and and how much much more than than than than than than than 44444, or even even as as as as as as much less less less less less less for than 222222, 3333337 much more\n\n\n\n\nto the other. The The The Theorees are much much more in in two6 un very very very large"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0531,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def to:_fromfromcount_repepepepepespesignensensensensenenenenenelelelelesesesesesesasasasposios es es es des des des deresisisisisisisaisaiseageageage age age ageteusiosososos enensensanaminininininsepesegeiospesposelselsunselsiososos en en"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.08,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self.get_listlist(self, self)\n\n\n\n\n\n- - - - - - - 11111222, 33333444444555, 7777882, 666669999990058 1, and and and:\n  \n  \" \"--"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1421,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def number of the\n\n\n, and, the the_classclassclassclass. The The The TheTheLLLlllllgggggg g g gGm$$$defdefdefdefhhhvvvvvfgsddddddGmdef Def DefDefDefDefrxxxxyyy_fgsf}}of"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1273,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def sizeofoflllgg,,\n\n\n\n\n\nThe The The The The The How Much Of Of Of of of ofOfOfLLLLL L L L is Is IsIsIsIsIsWas Was Was IsisisisisasOfGlhhhhH L isdef Def DefDefDefDefli muchAnNnnnnas:MlgTheThe"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.14,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def sizeofinininininout,\n\n\n\n\n\n-10000, defdefdefdefdefggggg,, 1 has has has has. The The The The L L llllllnnnm,, is is is is is not. So Def DefDefDefDefLLmmmmmf}\n-, self11"
+        }
+      ]
+    },
+    {
+      "task": "is_even",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0381,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def _:\n\n\n\n-4444488556677779999900055555222886637771333.1112, 88882266666779;3,  ' ''4248880034', 799"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1193,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def\n\n\n\n\nThe following example example is is 300000000, and the the the the the the 444444455557777866666688999999925558887782223#### 19 nine nine ten ten ten.3133, and"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1378,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def\n\n\n\n\n, and and, 111333555556 = defdefdefdefdefintintint&s444488300000000,isisisisis is is| to be in in in as as3 are selfdef DefDefDefDefininininininineinelylys3355"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0619,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def def\n\n\n\n\nThe following example is also used used for the the the the other two of of these two different ways that are also also not only only only only one one one of a a a a a a a::: The The The TheThe) - - - - - - - 33,    4,\n-----s) not not not not always always \u2013 Some23,, while"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0795,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def def def\n\n\n\n- - - - - - - 11112222999990\n\nTheoreoreoreoretertertert|||{222,333defdefdefdefselfselfselfsssspertert***1114,3.7777884 \u2013 888655:499"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1069,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, 3333344444555556666782222000009999877758889999\neven even even even-s104411133758,  { 3332}44446575756"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1047,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\ndef def\n\n\n\n\n\n, and and and and and and, the,      3333344467888899, the same same same same #  22222222. The The The The The One One's, the_____o; \n\n\nTheTheThemageinginginginginged49  # # ##"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0917,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def def,\n\n\n\n- - - - - - 40000000005555577899999984822333166677888422221198466677746, 3333-4:144449875225"
+        }
+      ]
+    },
+    {
+      "task": "reverse_string",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1077,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\ndef def def f f f f \n\nLet me go go do do do not have have have have has has has a a a a a in in in the same same same same same same same is not not not not not not still?esesesesesesesosososososososs) does does does does does has has also dofgggggtssasasasasasasis): Does doesn doesn doesn doesn"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0822,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get__texttext)\n\n\n\n\n\n\n- - - - - -  33334444:::222225-889999 33000057:::[[[ []1-####'in_s3xxxx54. The The The The"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0992,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def def\n\n\n\n\n#. - - - - - 11112222333334\n\n-1000000, 88855567777766, 44444999888125569. The The The The6; 777719222233"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0754,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\ndef def def,,, and and then, which is also used with with the\n\n\n\n\n\n\n- - - - - -;;;;;; ; ; ; ;;;;););););};. The TheTheTheTheTheThe______ _ _ : : | 11111. The The The The ThisThisThis is_****|/: \n---"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0763,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def_f_cgg_sxrrrgg,\n\n\n\n\n--shorhorhorhororuvvvvvllllg,, and4444-yzzzzddkhhhhhhHlg,, 2224-cggsdsdsdsrkrnnnnnhLm/ssop"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0734,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef defs____\n\n#'\n\n\n--based,     p p p _ _ _ _ _'' ' ' ' ' ' ' * *- - - - - - - --s'''')')')'['['['']']']']`-based on on on on on the-__._.'.'.'.'.}.'('('('');'); 8; re re re re"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1101,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndefdef_\n\n\n\n\n- - - - - - - 1000000000111122333344445559998876677776223334448559999886,222:: 4.7  # # #s[s]sss"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0904,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get__functionfunction), which is is not not not not necessarily considered considered considered considered as as as as as is is has has has has been used in in in in as not only only only only only one one one:\n\n\n----s function function can be be not at least less than, but but but butget__functionfunctionfunctionfunc func(not not a a a a"
+        }
+      ]
+    },
+    {
+      "task": "max_of_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0521,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n-555222244446666899990\n\n333333228778867678990000,11115522877766665844455523220004,89.887,1,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1064,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nsamp,, and and and and, 222223344444\n\n-11111100000088833666999. The The expressiontttt:s000088535777ww*\n   TheTheTheTheTheThe252(3344553"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2147,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nThe number number number number number numbers numbers, and and and and and and and, 888800000000774444455599999996222223377544666659.333338211111177544446859"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0799,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n, and and, and and and, which is is is typically typically only only only only one one one \n\n- or or or or or or or not not not not not just just just as as as as:::: The The The TheTheTheTheThe. - - - - - - + typically than 22222, the the the the the the the original value of no no no no no than exactly as"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0992,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nfrequent, 222211111000000088\n\n333344445557998866677777.3333444955561189. The The The TheTheTheore(322224,  #s0000898"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0696,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nbacteriaonsonsonsonsonon, and and and and and,, while whilewhile publicerserserserseseseseseseseseenenenenenenensensosososososusususisisisisis isasasineonininininininterresasasasasararonesonesisatatatatatanneanunllllungensuns"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0722,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nA, 222230000000011555557999999884443766871122333.44444488666678877\n|| |[[32]9333358570016757"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.097,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nbobs;;;;;;, and,     2222223344444444. The The The Two Two two two-333-basededed_onononononony5. TheTheTheTheTheThe 8\n\n\nBss:3dddddg:   - The The The TwoTwoTwo28"
+        }
+      ]
+    },
+    {
+      "task": "fibonacci",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0604,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n\ndef def_vfkkk, and then then again again as as is is is is not just kkkkgkgkgkghhhHHHHH H H H H h h hhhhthtzzzzzvvvhchchchch ch ch h H H hhsesesesesctgkkjjjjlhththththth Th\n- W hss"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.093,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\n\ndef def def,,,, and and to be true true true true;;\n\n\n\n\n-- and and with with with with the the: 111222, 333444-899999967777788556666654-8. The The TheTheores88;;;1055*-re"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0847,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\ndef def + + + + + +++++wwwxzvvvvvvVVVVV V V v vxzzzznnnkk----vvaRVVvveveasas3333344nmhh\n\nmmjlg VNNNNZd234yyyyfvvfg//"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0559,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\ndef def,\n\n, and and. The The 222230000000055555, and to the the un-sss1111114489999999788888776467333346, which and and its its 682222375475_"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1497,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\ndef def def def def def def def intiTTTT T T T T T T F F F F\nL L L L L H HHHHHHHhh L l l l l l l n H H h h h h h H H H H W WWWWL L K K K K K kl\ndef Def Def DefDefDefLLBBBBBG R R N G G G"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.069,
+          "lines_dropped": 38,
+          "body_stmts": 0,
+          "completion": "\n\ndef def def f=@@@: - - -;;;;\n\n\n\n\n\n****//********\n  \n  \n \n \n \n \n\n \n\n \n\n \n\n  The The The TheTheThe.333defdefdef defnkkkkkkk\n  \n\n \n\n\nTheTheTheTheTheLl$$$$>> -n||||| |  |\n \n\n.."
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0968,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n\ndef def\n\n,,, and and to be be a a or or, the the\n\n\n-- and and and and to to be more than than than than than   10000000-4444444. The The The TheTheTheThe 11112225-3, which of of of are two The two or or or or - \n--s"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0584,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\ndef def_\n\n, and and, which is is the___;;;;;;;; ; 1111,, 3333334.555577778899999, 2222234-766666878 and and the the the following are:_ _ _ _ _    4.5!!"
+        }
+      ]
+    },
+    {
+      "task": "is_prime",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0976,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def def def defdefdefdef, which can be easily easily easy easy way, and and and and and and:\n\n\n\nl =defdefggggggsgsdsdsdddddvh,esesesesesesososososososogsdsdsmsssssdzh\\rrrrrrepsrosasasasasastsgsdsdsccc"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0927,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def def,,, and and\n\n#'' ' ' ';;;;;;',', '', '', '', '', '', [], [], [], []));}}}}}}|)')')')')''', {}, {}, {},(),(),},}, [], [] [] [] [] []()() ||::::::|\",>,.,.,?,!,!|/, '' '' '''''''}};\n  \n  ;', ', ',"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.069,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def f_ss0\n\n\n\n\n, and and,      { { } };;;_xx444444445555000068899992x333333475566677088799992x22,2224 -15556"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0504,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\ndefdef\n\n\n\n\n...: 00000, 1111133222444\n\n-1199998, 32222335555577. So|\u2022<|im_end|>\n0098, 6666643887777899|||||||{##18.3322"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0853,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def def,,, and and\n\n\n\n\n\n, or to be be be used used in in the same same same same same true true of of the the the the the the original_s00000. The The TheTheTheTheThe244444445 or to be be be beenre-in. If and & & 123, which is is is not a-based on on on"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0791,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\ndef def def def,,,\n\nTheoreoreterterterter/selfselfselfself self self self.get_data__ss44444444aratatatatatat at 3mmm m m m333333228,111100 at the3,  isTheThe*s[tikikikikzyx@@@@"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.062,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def so ifoplanMG_\n\n\n\n\nHH, the the the_mmmfvvvvvggggggffffkktttttnhhhhhhHHgmMGGGG G GfkklllllnhArgLLLL L LnMgsdddd6_xkrrr"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0881,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def def def,,,\n\nTheoreterterterteror;;;;;;;?????erer,,\n\n-:::::esesesesesesesesasasasasasaaa, 333332s/isisisisisISedatatatatatadadin(selftertttt4s/usususus"
+        }
+      ]
+    }
+  ],
+  "reached": {
+    "L1+": 0,
+    "L2+": 0,
+    "L3+": 0,
+    "L4+": 0
+  },
+  "diagnostics": {
+    "samples_total": 80,
+    "looped": 0,
+    "per_sample_l3plus": 0.0,
+    "per_sample_l3plus_ci95": 0.0,
+    "looped_frac": 0.0,
+    "median_max_line_repeat": 1,
+    "median_lrs_frac": 0.097,
+    "char_degenerate": 0,
+    "line_metric_blind": 0,
+    "l3_samples": 0,
+    "l3_looped": 0,
+    "l3_looped_frac": null
+  }
+}

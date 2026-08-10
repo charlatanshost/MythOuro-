@@ -1,0 +1,831 @@
+{
+  "step": 3000,
+  "temperature": 0.4,
+  "repetition_penalty": 1.15,
+  "seed": 1234,
+  "framing": "bare",
+  "chat_template": true,
+  "samples": 8,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0765,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\nThe The the the the the number of the other two of which which is not just one one one that that would be not necessarily necessarily equal to be used only only only only only only one of that that that that either same same than than than than its its its its own own own own own9999,, and, as as this same than 33333 other five different ways to to.987,\n\n\n\n- This"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1152,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\nThe original_\n\n\nbtw, the twoofof that is not just one one of of that, and or any any other than than than than than than than   44444yyy-inoutboundboundboundboundtontontonlandlandlandlandlandlands. The useinininoutoutif-onononenenentotentenilililichichusas The_____end"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0647,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n, the\n\n\n\nbilinearialialialialialialousousousousoususususicicicualualualualallylylylylyfulfulalueesesesislesslesslessusicicololulululeneleltentententenynianalososososensensinranococococrocrocinalralielalsalupenenungian,ososacacucric"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1437,
+          "lines_dropped": 7,
+          "body_stmts": 0,
+          "completion": ", the same are also also used for the same than than than than than 30000000011667 also has been used to to. ThisThis is a a a aaaa24445555) has been used with with with withThis is not not not not not always be28 also also have had had no-also potentially potentially potentially potentially potentially more2, which can be more less likely"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0683,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n, the\n\n\n\nbattery Data Example Input Input File Paths, which are not only only onlychannelsericericericericericeseseseszzzz z zzznnndndndnd -nodesonsonsonsonsonesonesesesososososenenazxknnththstd +noselselselsantsantstenisusususuuuemazxggpuskenkenud"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0526,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": ", 2222335667888459999905444442761100088555733336171100086777668,55,\n[[] are22. The The In Inverse's8866669, 5,3443"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1062,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": ", the\n\n\n\n, b, and and and and, 100000000999998875554444762233367825599887566661476223338981111) | 45.776251222334"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1366,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\nThe The the the the the nearest nearest number number number number of of the 33333325555500000000, and, 44444462779999882222216, 11344866889997857777516, 31346"
+        }
+      ]
+    },
+    {
+      "task": "double_it",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1056,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n    \"\"\" \"\"\" \"\"\" \"\"\" \"\"\" \n    def def def defdefdef defdef\\nthyyyxxm-sxxxxzzzvvvvhh\\fggggggdkkkkkqqzzttttfhh\\f___llnjjjjbbwqzztt t t"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0704,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get__self.\n\n\n\n\nThe The The The The The One OneOneoneone way, and and and and the the same: \n \n  22, two of of the two two twosoutoutoutboundboundboundbound;. This This ThisThisThisThis2, TwoTwoTwoTwoTwotwooutless_inclclclascentes. This This ThisThis"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.12,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.class__from_system_s):\n\n\n\n-444555: 7788800-system-s):): pass pass through the new.unusedusedused: 3333325_system system system system systems systems are not not as as as449_oldold,,2225_system system system systems"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1116,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef'n',', ' ' '.' , , ', '', '', '', '', '' )\n\n\n,,, and and & & & &  34444445', ';;;;oror, and and and and and and and 22226665', '', '', [], [], [], [],],), the two of of of of size None(), \"\",(),(),?,675),='', {}, {},...,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0568,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self)\n\n\n, self.get_s(self):):::::::[[{{{}}}}}, 2222223]#33__subsubsub_sresresresres res resultestesteststststst]##\\,,isisis\n\n-ededededb_ultesttttt"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0345,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def p__cmpm_sxvvvvvhggggfqqzzzzzknnmhhhddvpqlllllnkxkkkjjjdnmmchchchbVpgaLLLLL Lnxcmpmpm mbvvayywwststVtgaL lll"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0762,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndefines are not hold hold hold hold, soeeeeuuuuuuauauauaiisisisisishasmodmodsqrtsqrtnnnnnkzzxxxaaoiososososeseses mod mod mod mod mod quant quant quantyzzvvvvbtofresresresresresresenmod grad grad gradgradgradgradienizzggff"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0783,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def to be able__s, which is not yet yet;;;\n\n\n\n.........: : : : 10000000999, the same same same same true true. The TheThe.888422233779, the the the the the original 1133344 not yetyetoneoneoneone679, which are: :"
+        }
+      ]
+    },
+    {
+      "task": "get_first",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0625,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, class___name, self)\n\n\n\nisisisisisisf____classname=''----sasasasasasas as iseseseseseseses_classclassininininin-basedlylylylytenen as isosososososos_allococococicicy, beisIshashas"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1263,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef __init__(self, self, 30000, the\n\n\n\n\nThe The The The The The The One One OneOne-based on the the the22, 333444.\n22225588999999578666644. ThisThisBBBB103, the same same same.51. TheTheThe"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0806,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get_name111000000005555776899999982432436684324444687777881623322258333355\n_811119576200x"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.099,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get_name='=' '\n\n\n\n\n--inline' ' ' ' ' 44444445='.'')')' ' ' \u2018s', '', '', '', '', '', None 33333335='['['']''' \u2018\u2019s',', ', ', ', ''_name('('('{\n   25='', --inin"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0724,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef __init__(self, self, None)\n\n\n\n, and the the the other two are both both, and and. The The The The TheTheTheTheTheTwoTwoTwo, 33444425599999.\n\n20000Aly; 33444628557)\n- This two are in the the the followinglyas as two34"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0775,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self)\n\n\n, self.get_list(xxxfvvvvvvpqqzzzzzzyyyyyxrrkhhgggdvpjjjjttwzkyhhhHlrnnnmmmm}\nLlllggd zkxxbb"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0517,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, 33344455):\n\n\n\n\n-222222065557744899999986881111106667774855000098688777332444557589\n*-s"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0482,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self):\n\n\n, the following are also already here is a a way of of of this second second second-classlesslylylylylylylylyfullyfullyfullyelyely. ThisThisThisWearearearetentententententenTenTenlessmostallybebeBeereereouslyesTheTheTheInInIncludedteteestestestesthestnyousmostallyaspleple"
+        }
+      ]
+    },
+    {
+      "task": "sum_list",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1879,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def ltgvvvvvxxxxzzzzddggggdefdefdefmaximfqqvVlnnmmmhh,sososososesesisisisisisisasasVyyyyyyhL,lclclclclClb vpvvkkkcVtzzdd"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2294,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def def_c__allococococxxxx,\n\n\n\nclassclassclassofofof of ofin__sososososososesesesesesesasasasclassifif                                                                 includes include includeed_outoutinininininitsy,isisisIsIsas classformofofofexococxxx xvvvintesty,classonon"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.075,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, class_**.*....;\n\n\n\n\n\n-;;;; the the the the. The following:::[...]' ' ' ' '   22223333, 444444555'''\n    \"  22223x_*}^-oooo4555--re"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0709,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def def def do do do do so that can be used used used with the, and and, but no no, and and and and and, or or or to be be be been been called as as as as as as as.\n\n\n\n,,, 24444445 with more than than than than than 7 do do do so that can't not have been called by by of35 with some of of of"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0749,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self)\n\n\n, self.get_allocateizeizeizeizeizeifyifyifyifyressressress to the the the the the thexxxx5 takes takes take-readtentententententenressesesesesesensensenininininoutoutoutuseiseiseiseseseseseresistososososasasensakesintoninputaddto"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0854,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def [s in the, and and,\n\n\n\n\n\n,, and and;;;; may be used as follows follows follows also has has been used as as as shown shown shown in the same same same same same equal is used with given given by by by the original_classclassclassclassclass 20defdefdefdefin_unununununun un in the original_ininin"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1037,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get_list(self)\n\n\n\n\n\n\n- - - - - - - - 10000001) );;;;;:: 222224455555571333333;:8844499_6777665813}^{"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1292,
+          "lines_dropped": 39,
+          "body_stmts": 0,
+          "completion": "\ndef solve_allocososos:\n \n \n \n  \n  \n  \n     \n     \n   \n   \n   \n   \n   \n    \n     \n \n  \n \n \n\n \n\n \n\n \n\n  222233334455788856699999,esesesesesess454557889bxosososenenon,\n\n\n\n110354bxx"
+        }
+      ]
+    },
+    {
+      "task": "count_items",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0894,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, class___classclassclassname)\n\n\n\n\n\n-1000000, 555557. The The The The TheTheThe.\n\n1112224, 33344999888895.26777_;_classclassclassfieldfieldfield4999\n-1"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1149,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get__list(self, self, self):):):\n\n||*;;; 1000000:::5557:19999888; 2224443(3)7777:19999886__new(self) )43): #): :6"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0455,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef \\text{\\texttext{%}}}}}}\n\n**\n\n\n\n\\\\bx^2222233444444555576668999900013388777755508866199998}},\n  33, 117755xxx"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0817,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def to the the the the other way we are not yet. The The\n\n\n\n\n, and and and or or or not not be been used as as as as as asas;;;;orororor, but also had had had had been found so so so sosososolylylylylyereereerere-based also already already already already not yet. TheTheTheTheSoif veryperperperperper"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0952,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self.name='='='('', ' ': ' ' ',','','','','', '', '', '', '', '', '', '' '' '' '' ', ', ', ', '/''''),'), ), ),', [], [], [], [], [], {}, {},(),:,...,...,,...===>', '/':'')'),'),), compared], ], [])())())();='',='',='', , , , ; ; ;), }, /':','(','],"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1007,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.self\n\n\n\n- the the the original___classclassificableableableableable(1000000) are all possible possibleiableiableiable. ThisThisThisTheTheOneOnewise*;;;;ororlesslylylylylylesslessiable. ThisThisThisTheTheOneoneasareself as as asasinnoesesesesen"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0651,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get__classclass_andandandandandananenenenenenonononononununununininclllggggg,enenamamamhhoutoutoutoutperperperperincllllvvvg,nininininintto_reclassclassfieldfieldfieldingingclclLLL"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0526,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.classclassname=' ','', ' ' ', '', '', '', 33334445555578=''', ', ' '.'.'.'.'), which are used as as as as24666668=&', ', '' );;'.'),), and and and and.2className='('['['['9':'],'], '', '', None"
+        }
+      ]
+    },
+    {
+      "task": "is_even",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0968,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def _:\n\n\n\n, 333444556677778999998255550044882667771099998821111334486226779;0. The The The The_344,, while while558,122"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0748,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def fvvvv_s_fkkddgggggffqllgg gxxxmzzzzkkkd/tnhhhh,yyybbbbxmmjjjnkrd/ttttcH,ywwwww_nkgld444.rd/*ll"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0685,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.self.get_key_by_inoutoutoutout, 11122234999998555576664, 30000284449998557776664,22111338_keykeykeyt-appletxxxx"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0557,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def get_from_froms, then, and then find the the same, and and and and and, then also have been used with the.\n\n- to be be be be more than than than than as as as;\n\nThe The The The The_classclassclassclassmethodmethodmethodname = 22222: The_newinininin(t) is a a a methodofname = 333"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0769,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get_idididlnnnnndndndtgggggqqmndlllvvvzzzxxwwwndtkkkxrrqmmhhhhvvdzyyyyyfsttttTTTb_djjlllvVdzzcc"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.123,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef from the number, the the, and then determine whether whether whether they are not necessarily supposed supposed supposed want to be given as as as a a the the same way. The The The TheThems are considered considered considered considered considered regardedesesesesesesese,, but even even even evenevenlytstssssasasisisisisisisIsIsIsnandandamamamamententststsss"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0744,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self.resresresesesesesesesesasasasasasatatatatosososososenenenenenenememeeeusisisisisisIsIsAttenininininininocEnEnananalalalnusasarearearererereAttenonoutoutoutoutoficEn En EnEnAl"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0522,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, 10000, 11112225554444368999997,223876685599888367775567,233176485556610300, \n\n# 22245"
+        }
+      ]
+    },
+    {
+      "task": "reverse_string",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0938,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, 2222)\n\n\n\n\n\n\n-4444455678888923) | | | |. .55667777509999993331111165500000843222398|\n  \n  *--"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0595,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get_name_class_inclclclcl cl clClClClClClCccggggddddllllclclCLCLCL clLGGGGG Gfvvvvvbbdelll clglglglmlct ltpHHHHN_mjllnnciocllt clblBl"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0947,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get__idid)\n\n\n\n\n\n\nThe The The The The The TheTheTheTheOriginalInputs__idt, the the the the the the 2222233. ThisThisOneAnother than than 5tht, which which that that's 3. There Are Are AreIn__ididininin-rejtttt"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0674,
+          "lines_dropped": 18,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get_name(), [], [])\n\n\n\n\n\n\n- - - - - - - 66888899], []);;;;.org|| | | | | | | 33333449], []){{\n   \n   \n   org||,,222get_s77())())()49}, [])();::"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1071,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, 00000)\n\n\n\n\n---shorr(112224444455)\n\nTheTheTheTheThe. The The The The The TwoTwo23333999566888792. ThisThisarearearereval_s4) is iss556___op"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0533,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.new_function_class_inininininoutout,selfdef\n\n\n\n\n-s00000_classofofofenenenenout,enonononononooooooosos_classoveroveroveroverfromenenoutoutemamamamamm...x_classfieldfieldfieldingedinforallococ"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0556,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndefdef_\n\n\n\n\nThe following is are also used used for the same, but not only only only give a a different different than than than 3000000 to be in the same same same same than than 2.222, 3333445 to be in in in in the original number. The The The TheTheTwo are also used with with more445 to be not not not"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0548,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.get__function_inclclclcl cl cl cl l l l l l l t t t c c c c___classclassdefdefdefggg cl cl clclClClClClCLCLCLCLCCCc,classgenllclccccg Cl Cl ClClClClCuNcctialLlglglclercmodgen genlenlen"
+        }
+      ]
+    },
+    {
+      "task": "max_of_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0521,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\na, 22222, 33333355578844666999980007544475788881466799990011122465577778946220091501355x, 8"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1354,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\na, 2222446668888999990005557773254636888141339900555777325466688,141133322424477320, 16699."
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0707,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nx, 22223000000008999995571444442368871776665555534888874236867179,6bzzzz. The22333401360177399"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2331,
+          "lines_dropped": 58,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nbattery Data      \n \n \n \n \n  \n  \n  \n  \n  \n  \n \n \n\n \n\n \n\n \n\n \n\n  \n\n  \n\n  \n\n  \n\n  - - - - -;;\n     \n     \n     \n     \n     \n    |\n         \n             \n             \n             \n             \n             \n          ;;;.; ; ; ; ; 2222assassassininininoutoutmemorymemory_       | | |     \n         ,##\n    \n    \tdefint64"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0619,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\na, 222445000000013558886799999775563468811322244671666778543322881134455997666eE,85x__*[CE]1"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0448,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nbacteriaonsonsonsonsonon, which are are both the the the same of that, as is, and and and other types are are regions regionsononinininininout-upupup up up up up in terms of ofmpspspsosenenenenenenanout-upupupupslandslandsonsonsesesatatatimososEnunununununinemin-"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0625,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\na, 2220000000, 111555557999998884463733376688444.799996852266723376614442378551185221175337"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0804,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\na, 222200000000, and the the 33\n34444446655558777,199999986655886711112377,1999992234888867611\n\nTheTheore3D"
+        }
+      ]
+    },
+    {
+      "task": "fibonacci",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0542,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\ndef eval_cgffv_list of the the same than than the original_ofofofofof of of of this this isffvxxxnnnnkkkkvvvvzwwwwxxrfggggggggsgsmjzhhhhvlg f fqqngngl2mmjjjddsm,ztt"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0643,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\ndeficientious;;;;;;;);';(); ; ; ;};\n\n\n, and and and and the same same same equal equal equal to the same of of of of of the same equal equal than than than than. The The The two two two twofoldlylylylylylyless, the, which are are greater larger than. TheTheTheTheTheThisOneoneasasasasasareless, the, which are"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0611,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\ndefinesinesesesesesesesenenentententententenenenenEnEnEnEnEn En En En En enososisisisisisishashasranranranrenrenrenienienRanananananininasasasasatatatexposeranranamamhenhenhenainoaasasand en enoninusresresresresresynineamucacac"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1135,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\ndef def, the,, and and other than than than 22200000000\n\n\nThe The The The The 5555544678899991333666677884454127889999133333867722245416788"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0429,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\ndef def _:eoooosiiii i i i;tttsts,,,\n\nttetetetstsdgggggggsdxxxxwww,sdsdsdsesesesmsmsmsdxdxdxdx dxdudzzzvvvh,aososososenmpssfsfsfffdtdsdzyy"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0735,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n\ndef int_toenenenen:\n \n \n \n \n  \n  \t\t;;;;;orororononononininenen, 22222,inoutoutoutoutoutout ofelelelananananenEnEnEnEn En En Enrenrenren\u00e9n\u00e9nannannanninunem en en en en enaunEnENENENENEN Enranrenronronron"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0592,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n\ndef def\n\n,,, and the most likely likely to be the the same is also also used as other other than than than than 66655888999999977775444422235000 likely likely therefore. The Newlylyalsoalso potentially un544444 likely unlikely to be the same same same necessarily also very The Newlyly"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1138,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n\ndef def_b,, and, and to be used in the same same of the original_all of the the right hand way. The The TheTheoreoreorettttt\n\n\n\nTTTT is also also already already already already already been used as as as asasasx\n\n--rereunTt) are are are being being given in addition to to to bebeinx_\\\\\\"
+        }
+      ]
+    },
+    {
+      "task": "is_prime",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0669,
+          "lines_dropped": 18,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.self.get_out of the the original_classclassclassname=' ' ' ' '''\n\nThe The The The TheThe classclassofofofofinin\\n'\n   \n   \n   \n   \n   \n;;;;. . .The_tranranranranranint\\nnnn n nself.get_outoutoutout of the classfieldclclcl"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1172,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def _:_from_x, so x y y y y y, the, and the same same same same of of the 22_444444400.\n\n\n\nyyx2255555_3333344000\n\n--d:x2_bbzz689999998770000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0797,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, 'x',', '', '', '', [], [])\n\n\n\n\n\n- - - - - - - - [], [], []));\");\");\";\"; \"\";);\"; ; ; ;;;;;.;();();();();; other than than than than thanthan';\"\"\",);');};};}; //;;.; ; ; 'x',', '', \"\",(),(), {}, {},), including \"\"\",), ), )."
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0442,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndefdef_referrr(n)\n\n\n\ncgf,     v vvvvvkdddgggGGGG GdggxxxrrzllngngllmDDDDDD D DGdghhhhhfadcccbbb\nBmjnnnN D Gdzttt"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0538,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\ndef def def,,, and and, but only only 22255668877999999,\n450000034558688771331111244444403256868877.333), which are 2222440585699"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0606,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.self.get_idlelelelele le le le le leplepleplepleLeLeinegegegegeenenenilleslesesessesese en en enueieieieietentenesesesesensensinidilelelelelarde de de de dededeDeDeEntenreidililimeniniflostesteste"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0829,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def so all, and and, but only only only be used as the\n\n\n\n. The The The One Another Another Another One One One of the\n- - - - - 2224999855555556444400087733399988666770644 as a a0x17. The The Two"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0708,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def def,,, and and to determine the the two of of of the\n\n\n\n\n, and then use their own own own than than than than 1111100000000 to be used with with a a a 2233333555544456 to be as as as in in terms of two different ways. TheThe2559999"
+        }
+      ]
+    }
+  ],
+  "reached": {
+    "L1+": 0,
+    "L2+": 0,
+    "L3+": 0,
+    "L4+": 0
+  },
+  "diagnostics": {
+    "samples_total": 80,
+    "looped": 0,
+    "per_sample_l3plus": 0.0,
+    "per_sample_l3plus_ci95": 0.0,
+    "looped_frac": 0.0,
+    "median_max_line_repeat": 1,
+    "median_lrs_frac": 0.0749,
+    "char_degenerate": 0,
+    "line_metric_blind": 0,
+    "l3_samples": 0,
+    "l3_looped": 0,
+    "l3_looped_frac": null
+  }
+}

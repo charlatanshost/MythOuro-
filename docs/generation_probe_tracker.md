@@ -823,6 +823,79 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-10 — ❌ SFT @3k COLLAPSED THE MODEL — and the roadmap already said it would
+
+First SFT on the current line. `checkpoints_newmix/step_0108471.pt` → 3,000 steps,
+`--data-mix clean`, `--seq-len 1024`. Result: **catastrophic**.
+
+| scored in the format each model was TRAINED on | base (raw) | SFT (chat) |
+|---|---|---|
+| code per-sample L3+ @ pen 1.15 | **75.0%** | **0.0%** |
+| math per-sample L3+ | 5.0% | 1.2% |
+| math copied-from-prompt | 30/80 | 1/80 |
+
+Output is token-doubled degenerate prose — `def def __init__(self, self)`,
+`The The the the the`, `def def def def def def` — on a prompt of `def add_two(a, b):`.
+Code generation is simply gone.
+
+### 🔑 THE CAUSE WAS ALREADY IN THE ROADMAP
+
+> *"v4 (more cumulative SFT) generates varied, domain-relevant word-salad;
+> **`small_sft` (one SFT pass) mode-collapses to repetition** — same size, same code."*
+> *"`small_sft` was **under-SFT'd — one 3k pass vs v4's ~6.5k**."*
+
+**Tonight was one 3k pass.** That is the exact configuration recorded as mode-collapsing,
+and "mode-collapses to repetition" describes `def def def def` precisely. Owner identified
+this from memory ("SFT has worked fine in the past… I believe we poured a lot more SFT tokens
+than we did tonight"); it was then confirmed verbatim in `docs/roadmap.md`.
+
+Checkpoint sweep 2,000 / 2,500 / 3,000 is **flat at 0.0%** — the damage is present by step
+2,000, so there is no good checkpoint hiding inside the first pass. Consistent with the whole
+first pass sitting inside the collapsed regime.
+
+### Hypotheses killed by measurement (three of them, none survived)
+
+* **learning rate** (mine) — 2e-5 is the tuned default that produced usable June checkpoints.
+* **format shock** (mine) — plausible, but not what the record says.
+* **truncated stop tokens** (owner's) — genuinely good hypothesis, since the builder truncates
+  at `seq_len` and the `<|im_end|>` teaches the model to halt. **Measured: only 2.9% of
+  examples lose their terminator at seq_len 1024** (0.5% at 2048). Not the cause; and it
+  removed the reason to stack RoPE extrapolation onto a dose experiment.
+* **off-by-one in the SFT targets** (mine) — the doubling looked exactly like predicting the
+  current token. **Verified false**: every loss-bearing position teaches next-token correctly
+  (`sees 'The' → predict ' answer'`). Good thing to have checked rather than reported.
+
+### Two real defects found on the way, neither the primary cause
+
+1. **`clean_code` rejects ~52% of OpenCodeInstruct.** The adapter requires EVERY unit test to
+   pass; median `average_test_score` is 0.90, so most samples have one failure. Confirmed live
+   by the run's own diagnostic: `clean_code: 631/1316 (47.9% accept)` against 97.7% / 99.8% /
+   100% for the other three. Effective code share **0.22 → ~0.10**. Accepting
+   `average_test_score >= 0.9` would roughly double it. **Not fixed mid-experiment.**
+2. **Sampling ratios are NOT gradient ratios.** Loss-bearing token fraction differs wildly by
+   source — clean_general **65.9%**, clean_math 12.7%, clean_pubmedqa 8.2% — so gradient share
+   is ~0.22 / 0.04 / 0.01 against nominal ratios of 0.34 / 0.32 / 0.12. **General gets ~5x the
+   gradient of math despite a near-identical sample ratio.** A model trained overwhelmingly on
+   Tulu-3 instruction-following is what answers `def add_two(a, b):` with chatty English.
+
+### ⚠ INSTRUMENT: `--chat-template` was REQUIRED to measure this at all
+
+SFT wraps every example with `apply_chat_template`, so the model answers
+`<|im_start|>user …<|im_end|><|im_start|>assistant`. Every probe fed raw continuations.
+Scoring an SFT checkpoint with raw prompts measures the format it was trained AWAY from —
+the same trap as the code framing test. Added to `math_eval` and `code_eval`; must stay OFF
+for base checkpoints, which never saw the template.
+
+### In flight
+
+Continuation from `step_0003000` → 40,000 steps (Ctrl-C in the morning), `--micro-batch 8
+--grad-accum 1`. **That batch change alone gave 2.2x — 20.4k tok/s vs 9.2k at the same
+depth** — because `micro_batch 1` was sized for a 12GB card, not a 48GB one. Same
+tokens/step, same math. Expect ~29–33k cumulative SFT steps by 05:30, i.e. 4–5x v4's 6.5k.
+Read the spread, not the endpoint: the trajectory to look for is
+**repetition → word-salad → phrases → coherence**.
+
+
 ## 2026-08-09 — 📊 FULL VALIDATION BATTERY @108,471: next-token accuracy DOUBLED, code capability 49% → 75%
 
 First run of `run_full_validation.sh` — all eleven runs across nine instruments on one

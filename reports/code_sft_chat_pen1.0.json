@@ -1,0 +1,831 @@
+{
+  "step": 3000,
+  "temperature": 0.4,
+  "repetition_penalty": 1.0,
+  "seed": 1234,
+  "framing": "bare",
+  "chat_template": true,
+  "samples": 8,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5797,
+          "lines_dropped": 89,
+          "body_stmts": 0,
+          "completion": "\nThe The the the the the number of the the two of the the\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2124,
+          "lines_dropped": 7,
+          "body_stmts": 0,
+          "completion": ", which are also not not not necessarily helpful tool, or or or or not have have been used to be be used as as as as as not not not always be used with with with with no no no no no no no no. The The The The The The The not not not not not not not not used with no no no no no no no. The The The The The The The not not not not not not not been used with no no no no no no"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.48,
+          "lines_dropped": 94,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\n\n\nbmpm\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nm m m m\n\n\n\n\n\n\n\n\n\n\n\n\n\nmm\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2265,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\nThe same are also also used for the same than than than than than than than than than than than than than than than than than than than than also used as than than than than than than than than than than than than than than than than than than than than than than also also than than than than than than than than than than than than than the than than also also used used with with than than than than than than than than than than than than than than than than than"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2764,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\nTheresa, the the, and the, and the, and the, and, which are both, and the, and and and and the the, and and and and and and and, and and and and and and and, and and and and and and and, and and and and and and and, the, and and and and and.\n\nThe The The The The The The, and the the the the and, the, and the the the and"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2514,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "The first, the the the the b, which is also used for the\n\n\n\n\n\n\n\n\nThe The The The The The The The The The The The The The The The The The The The The The The. The The The The The The The The The The The The The The The The The The The The TheThe The The The The The The The The The The are also  the the the the The The The The The The The The The"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2819,
+          "lines_dropped": 73,
+          "body_stmts": 0,
+          "completion": "\nThe New York\n\n\n, which is, the new, and, the\n\n\n\n\n\n\n\nfrom the same same same same of the following two two two two two different ways.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.625,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\nThe The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The The TheTheThe The The The The The The TheThe The The The The The The The The The The The The The The The TheThe The The The The The The The The"
+        }
+      ]
+    },
+    {
+      "task": "double_it",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4964,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self,,,, self,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2626,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, self, self, self, self, self,, self, self, self, self self, self, self,,,, self,,,,,,,,,,,,,,,,,,,,,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4959,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, 11, 22222222222222222222222222222222222222222222222222222222222222\n22112222222222"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9263,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef'n',',', ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' '"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2568,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, self, self, self, self, self,, self, self, self, self self, self, self,,,, self, self,,,,,,,,,,,,,,,,,,,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7692,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def p__cmpd_c_cmpdggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4685,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def defdefdefdefdef def def def def def def def def def def def def def defdefdef def def def def def def defdefdef def def def def defdefdefdef def def def def def def def def def defdefdefdefdef"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3174,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, self, self, self,, self, self, self, self, self,,,, self, self,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        }
+      ]
+    },
+    {
+      "task": "get_first",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2686,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, self, self, self, self, self,, self, self, self,,, self, self,,,,, self, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, self,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3947,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef __init__(self,, self, self, self,, self, self, self, self, self, self,, self,,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2626,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, self, self, self, self, self,, self, self, self,,, self, self,,,,, self,,,,,,,,,,,,,,,,,,,,,,,, self,,,,,,,,,,,,,,,,,,,,,, self, self,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5878,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4545,
+          "lines_dropped": 81,
+          "body_stmts": 0,
+          "completion": "\ndef __init__(self,, self.__repr__(self.get_name,\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n_classclassclassclass\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5303,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def defdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdef"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3217,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, 33333322222222222222222222223322222222222222222222222332222222222222 3333333222322222"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.439,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, 100000000000000000000000010000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "task": "sum_list",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8434,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def func_defdefdefdefdef_func__func_defdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdef"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6587,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def defdef def def def def def def def def def def def def def defdefdefdef def def def def def def def defdef def def def def def"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6371,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, class____class________________________________________________________________________________"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5029,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def defdefdefdef def def def def def def def defdefdefdefdefdefdefdefdefdef def def def def defdefdefdef def defdefdefdefdefdefdefdefdefdefdefdefdefdefdefdef def def defdefdef"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5878,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4834,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def defdefdefdef def def def def def def def def def def def def def def defdef def def def def def defdefdef def def def def def defdefdef defdefdefdefdefdefdefdefdef def def def defdefdef"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3871,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self, self, self, self, self,, self,,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2602,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef solve_allococococ_basososososososososososososososososososososococococococococococososososososososososososososososocococococococococososososososososocococococococococococococococococososososos"
+        }
+      ]
+    },
+    {
+      "task": "count_items",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4964,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self,,,, self,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5878,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8515,
+          "lines_dropped": 96,
+          "body_stmts": 0,
+          "completion": "\ndef \\text{{{\n}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5306,
+          "lines_dropped": 87,
+          "body_stmts": 0,
+          "completion": "\ndef def to the the the the the count of the total number of the the\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.626,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, 111000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5878,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3871,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self, self, self, self, self,, self,,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5878,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        }
+      ]
+    },
+    {
+      "task": "is_even",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8824,
+          "lines_dropped": 99,
+          "body_stmts": 0,
+          "completion": "\ndef def _:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7455,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def def\n\n\n\n\n\nThe same than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than than The The than than than than than than than than than than than than than than than"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3174,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self, self, self, self, self, self, self,,, self, self,,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6552,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def defdef def def def def def def def def def def def def def def def def def def def def def def def def defdef def def def defdef"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4044,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def def def def def def def def def def def def def def def def def def def defdefdefdefdefdefdefdefdefdefdefdefdef def defdefdefdefdefdefdef def def def defdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdefdef"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7905,
+          "lines_dropped": 98,
+          "body_stmts": 0,
+          "completion": "\ndef from the\n\n\n\n\n\n*'\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1606,
+          "lines_dropped": 30,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, ifif Sum of the,,\n\n\n\n\n\n, the,,,, 2,     2,      \n\n\n\n\n\n\n\n,, 22222 2,     3\n\n\n\n\n\n\n\n,, 22222 2,   "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3252,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self, self, self, self, self,, self,,,,, self, self,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        }
+      ]
+    },
+    {
+      "task": "reverse_string",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3174,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, self, self, self,, self, self, self, self, self,,,, self, self,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3174,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self, self, self, self, self, self, self,,,, self, self,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4797,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,\n\n\n\n,,,,,,,,,,,,,,,\n\n\n,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1931,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def,,,, and then, and and, and,, and, and and and and and and, and and and and and and and and and and and and and and and, and and and and and and and and, and and and and and and, and and and and and and and and, and, and and and and and and, and and and and and and, and, and and and and and and, and, and and"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6063,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self,,,, self, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5333,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self,, self, self,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6525,
+          "lines_dropped": 92,
+          "body_stmts": 0,
+          "completion": "\ndefdef_\n\n\n\n\n\n, and and and and and and,\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3212,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self.self.self, self, self, self, self,, self, self, self,,, self, self,,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        }
+      ]
+    },
+    {
+      "task": "max_of_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9062,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\na, 2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9062,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\na, 2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1799,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\ninto another another another another another another another, which is not not not not not necessarily considered considered considered considered considered considered considered as as as as as as as as as as as as as as as as not not as as as as as as as as as as as as as as as as as as as as as as as not not as as as as as as one another another another another that that not not as as as as as as as as not"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.601,
+          "lines_dropped": 88,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nbattery Data        \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n  Device Device Output          \n \n \n \n \n \n \n \n \n \n \n \n \n "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8333,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\na, 22222, 222222222222222222222222222222222222222222222222222222222222222222222222222222222"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4963,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\nbacteriaonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsonsesesesesesesesonsonsonsonsonsonsonsonsonsesonsonsonsonsonseroserosonsonsesesonsonsonsonsonsonsonsonsonsonsonsonsonsonsons"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9062,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\na, 2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8333,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n\n\n\n\na, 22222, 222222222222222222222222222222222222222222222222222222222222222222222222222222222"
+        }
+      ]
+    },
+    {
+      "task": "fibonacci",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3039,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\ndef eval_c_c_c_c_c_c_c_c_c_ccc_c_c_c__c_ccc__c_ccccccc_c_cccc__cccccc_c_ccccccc_c_cccc__cccccc_c_ccc"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3158,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\ndeficientious;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;lesslesslesslesslylylylylylylylyly;;;;;lessless;;;;;forforforlesslylylylylylylylylyly;;;"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9333,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\ndefinesineseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseseses"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9184,
+          "lines_dropped": 100,
+          "body_stmts": 0,
+          "completion": "\n\ndefn,\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6176,
+          "lines_dropped": 90,
+          "body_stmts": 0,
+          "completion": "\n\ndef def _:\n\n\n\n\ni____\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nii_\n_\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9271,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\n\ndef int_toonononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononononon"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2208,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\n\ndef def\n\n\n\n\n\n\n, which are all of the same is also have have been used in in the same same same same same same same as as as as as as as as the same same same same same same same than the same same same same same same same same same same same same same same as the same same same same same same same than the same same same same same same same of the same same same same as been used as in the"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3645,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\n\ndef def_\n\n\n\n\n\n, and and, and and and, and, and and and and and and and and and and and and and, and and and and and and and and and and and and and and and and and and and and and and and, and and and and and and and and and and and and and and and and and, and and and and and and, and and and and and and and and and and and and"
+        }
+      ]
+    },
+    {
+      "task": "is_prime",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4825,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, self, self, self,, self,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9485,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8458,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' '"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8058,
+          "lines_dropped": 99,
+          "body_stmts": 0,
+          "completion": "\ndefdef\n\n\n\n\n\n\n, the\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4704,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def def defdefdefdef def def def def def def def def def def def def def def defdefdef def def def def def def def def def def def def defdefdef def def def def def def def def defdef def def def def def"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3174,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self, self, self, self, self,, self, self, self, self, self,,,, self, self,,,, self,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1973,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\ndef def def soeeee, then, and and and and and, and and and and and and and, and and and and and and and/ororororororor and, and and and and and and and, and and and and and andeandandandandandandandor and, and and and and and and andeeeeee, and and and and and and and and and and, and and and"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3577,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\ndef def def def,,,\n\nThe next,,,,, and,,,,,,,,,,,,,,, and,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TheThe,,,,,,,,,,,,,,,"
+        }
+      ]
+    }
+  ],
+  "reached": {
+    "L1+": 0,
+    "L2+": 0,
+    "L3+": 0,
+    "L4+": 0
+  },
+  "diagnostics": {
+    "samples_total": 80,
+    "looped": 0,
+    "per_sample_l3plus": 0.0,
+    "per_sample_l3plus_ci95": 0.0,
+    "looped_frac": 0.0,
+    "median_max_line_repeat": 1,
+    "median_lrs_frac": 0.4963,
+    "char_degenerate": 55,
+    "line_metric_blind": 55,
+    "l3_samples": 0,
+    "l3_looped": 0,
+    "l3_looped_frac": null
+  }
+}
