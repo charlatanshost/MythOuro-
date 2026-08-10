@@ -80,7 +80,7 @@ def probe(model, tok, device: str, n_loops: int, chunks: int,
     best_hist: Counter = Counter()
     head_hist: Counter = Counter()
     agree = total = 0
-    ce_best = ce_final = ce_head = 0.0
+    ce_best = ce_final = ce_head = ce_rand = 0.0
     per_loop_ce_sum = [0.0] * n_loops
 
     for _ in range(chunks):
@@ -116,6 +116,20 @@ def probe(model, tok, device: str, n_loops: int, chunks: int,
         agree += int((best_k == head_k).sum())
         total += best_k.numel()
 
+        # RANDOM-EXIT CONTROL. `ce_oracle_best` is a MINIMUM over K noisy
+        # per-loop CEs, and min-of-K is biased low by construction: a model with
+        # NO genuine per-token depth preference still shows positive "headroom"
+        # purely from that selection. Without this control the headroom number
+        # cannot distinguish real depth structure from noise — and it would look
+        # roughly equal across domains either way, which is exactly the
+        # ambiguity the 2026-08-10 --by-domain run hit.
+        #
+        # A uniformly random exit is the honest floor: it captures none of the
+        # selection bias and none of the signal. Interpretation:
+        #   oracle much better than random  => real per-token structure exists
+        #   oracle ~ random                 => the "headroom" is selection noise
+        rand_k = torch.randint(0, K, best_k.shape, device=ce.device)
+        ce_rand += float(ce.gather(-1, rand_k.unsqueeze(-1)).mean())
         ce_best += float(ce.gather(-1, best_k.unsqueeze(-1)).mean())
         ce_head += float(ce.gather(-1, head_k.unsqueeze(-1)).mean())
         ce_final += float(ce[:, :, K - 1].mean())
@@ -129,6 +143,7 @@ def probe(model, tok, device: str, n_loops: int, chunks: int,
         "head_exit_hist": dict(sorted(head_hist.items())),
         "agreement": agree / total if total else 0.0,
         "ce_oracle_best": ce_best / n,
+        "ce_random_exit": ce_rand / n,
         "ce_head_choice": ce_head / n,
         "ce_final_loop": ce_final / n,
         "ce_per_loop": [c / n for c in per_loop_ce_sum],
@@ -182,15 +197,30 @@ def _by_domain(model, enc, args, step: int) -> None:
         print("\n  no domain produced data — nothing to compare.")
         return
 
-    print(f"\n  {'domain':16} {'CE@trained':>11} {'CE@oracle':>10} "
-          f"{'headroom':>9} {'head agr':>9}  best-exit mode")
+    print(f"\n  {'domain':16} {'CE@trained':>11} {'CE@oracle':>10} {'CE@random':>10} "
+          f"{'headroom':>9} {'vs RANDOM':>10} {'agr':>5}")
     for r in rows:
-        mode = max(r["best_exit_hist"].items(), key=lambda kv: kv[1])
         pct = 100 * r["headroom_nats"] / max(r["ce_trained_depth"], 1e-9)
+        r["oracle_vs_random"] = r["ce_random_exit"] - r["ce_oracle_best"]
         print(f"  {r['domain']:16} {r['ce_trained_depth']:11.4f} "
-              f"{r['ce_oracle_best']:10.4f} {r['headroom_nats']:8.4f} "
-              f"({pct:4.1f}%) {100*r['agreement']:7.0f}%  "
-              f"loop {mode[0]} ({100*mode[1]/r['positions']:.0f}%)")
+              f"{r['ce_oracle_best']:10.4f} {r['ce_random_exit']:10.4f} "
+              f"{r['headroom_nats']:8.4f} ({pct:4.1f}%) "
+              f"{r['oracle_vs_random']:9.4f} {100*r['agreement']:4.0f}%")
+
+    # The control decides whether the headroom column means anything AT ALL,
+    # so it is checked BEFORE the per-domain spread. A spread computed over
+    # numbers that are mostly selection bias is a spread in the noise.
+    sig = [r["oracle_vs_random"] for r in rows]
+    if max(sig) < 0.02:
+        print("\n  ⚠ VERDICT (control failed): the oracle barely beats a RANDOM "
+              "exit in ANY domain. The headroom column is dominated by min-of-K "
+              "selection bias, so neither the levels NOR the per-domain spread "
+              "support a depth policy. Do not grow depth on this evidence.")
+        if args.json:
+            Path(args.json).write_text(json.dumps(
+                {"step": step, "by_domain": rows, "failed": failed}, indent=2))
+            print(f"  wrote {args.json}")
+        return
 
     hr = [r["headroom_nats"] for r in rows]
     spread = max(hr) - min(hr)
@@ -285,7 +315,16 @@ def main() -> None:
     print(f"  CE at last scored loop  {r['ce_final_loop']:.4f}   (off-distribution "
           f"if > trained depth — NOT the baseline)")
     print(f"  CE at head choice       {r['ce_head_choice']:.4f}")
+    print(f"  CE at RANDOM exit       {r['ce_random_exit']:.4f}   <- the control: "
+          f"min-of-K selection bias with NO signal")
     print(f"  CE at ORACLE exit       {r['ce_oracle_best']:.4f}")
+    _signal = r["ce_random_exit"] - r["ce_oracle_best"]
+    _bias = ce_trained - r["ce_random_exit"]
+    print(f"  oracle beats random by  {_signal:.4f} nats   "
+          f"(random vs trained depth: {_bias:+.4f})")
+    if _signal < 0.02:
+        print("  ⚠ the oracle barely beats a RANDOM exit — the headroom above is "
+              "mostly min-of-K selection bias, NOT learnable structure.")
     print(f"  headroom vs trained depth: {gap:.4f} nats "
           f"({100 * gap / max(ce_trained, 1e-9):.1f}%)")
     if r["ce_head_choice"] > ce_trained:
