@@ -160,6 +160,65 @@ def _max_line_repeat(src: str) -> int:
     return max(Counter(lines).values(), default=0)
 
 
+def _adjacent_repeat(src: str) -> "tuple[float, int]":
+    """
+    Immediate-repetition rate and longest run. 0.0 = clean.
+
+    WHY THIS EXISTS — the 2026-08-10 blind spot. Every degeneracy metric we had
+    scored this completion as HEALTHY (`max_line_repeat` 1, `lrs_frac` 0.071,
+    `char_degenerate` 0, `looped_frac` 0.013):
+
+        is is is not only only one one one one one of them:):
+        ThisThisThis_is_tweakcasecasecase(1000) as as as many, but but then
+
+    It is plainly degenerate. `_max_line_repeat` counts identical LINES;
+    `_lrs_frac` finds the longest substring occurring twice and reads LOW here
+    precisely BECAUSE the repeats are short and local — a 4-char unit repeated
+    three times is a tiny fraction of the whole string. Neither fires on
+    ADJACENT duplicates, which is the actual failure mode of a collapsing SFT
+    run, so the collapse was certified clean on four independent signals.
+
+    Two patterns, both counted:
+      * whitespace-separated repeats -- "is is is", "one one one one one"
+      * within-token periodicity     -- "ThisThisThis", "casecasecase"
+        (a token that is one short unit repeated 3+ times)
+
+    CALIBRATION on real code: correct answers score 0.0 — `return a + b`,
+    iterative fibonacci, list comprehensions have no adjacent duplicate tokens.
+    The completion above scores ~0.5. 0.10 is the flag threshold: far above real
+    code, far below this. The continuous value is the statistic; the flag is for
+    the summary line.
+
+    Returns (fraction of tokens that repeat their predecessor, longest run).
+    """
+    s = src.replace("\\n", "\n").replace("\\t", "\t")
+    toks = s.split()
+    if not toks:
+        return 0.0, 1
+    reps, run, best = 0, 1, 1
+    # NOTE: the single-token case must still reach the periodicity loop below.
+    # An earlier version returned early on len(toks) < 2, which made the lone
+    # token "casecasecase" — the exact pattern this metric was written for —
+    # score a perfectly clean 0.0.
+    for a, b in zip(toks, toks[1:]):
+        if a == b:
+            reps += 1
+            run += 1
+            best = max(best, run)
+        else:
+            run = 1
+    # Within-token periodicity: "casecasecase" == "case" * 3. Requires 3+ units
+    # so ordinary doubled morphemes ("banana", "indentation") do not trip it.
+    for t in toks:
+        n = len(t)
+        for p in range(1, n // 3 + 1):
+            if n % p == 0 and t == t[:p] * (n // p):
+                reps += 1
+                best = max(best, n // p)
+                break
+    return round(reps / len(toks), 4), best
+
+
 def _lrs_frac(src: str) -> float:
     """Longest substring occurring twice, as a fraction of length. 0=clean, 1=degenerate.
 
@@ -228,6 +287,7 @@ def score_sample(prompt: str, completion: str, fname: str,
              completion.replace("\\n", "\n").replace("\\t", "\t")),
          "lrs_frac": round(_lrs_frac(completion), 4),
          "lines_dropped": 0, "body_stmts": 0, "completion": completion}
+    d["adj_repeat_frac"], d["adj_repeat_run"] = _adjacent_repeat(completion)
     code, dropped = _truncate_to_parseable(raw)
     d["lines_dropped"] = dropped
     if code is None:
@@ -463,7 +523,19 @@ def main() -> None:
     char_deg = sum(1 for s in all_samples if s["lrs_frac"] >= 0.35)
     blind = sum(1 for s in all_samples
                 if s["max_line_repeat_completion"] < 3 and s["lrs_frac"] >= 0.35)
+    adj = sorted(s["adj_repeat_frac"] for s in all_samples)
+    med_adj = adj[len(adj) // 2] if adj else 0.0
+    adj_deg = sum(1 for s in all_samples if s["adj_repeat_frac"] >= 0.10)
+    # Samples BOTH older metrics call clean while adjacent-repetition flags
+    # them. This is the count that was 0-by-construction before 2026-08-10 and
+    # is the reason the flag exists at all.
+    adj_only = sum(1 for s in all_samples
+                   if s["adj_repeat_frac"] >= 0.10
+                   and s["max_line_repeat_completion"] < 3
+                   and s["lrs_frac"] < 0.35)
     diag = {"samples_total": tot, "looped": looped,
+            "median_adj_repeat_frac": round(med_adj, 4),
+            "adj_degenerate": adj_deg, "adj_only_degenerate": adj_only,
             "per_sample_l3plus": round(p_l3, 4), "per_sample_l3plus_ci95": round(ci95, 4),
             "looped_frac": round(looped / tot, 3) if tot else 0.0,
             "median_max_line_repeat": med_rep,
@@ -478,6 +550,12 @@ def main() -> None:
     if blind:
         print(f"    ({blind} of those are INVISIBLE to the line metric — "
               f"within-line nesting or character runs)")
+    print(f"  repetition, ADJACENT TOKENS: {adj_deg}/{tot} degenerate "
+          f"(adj_repeat_frac>=0.10), median {med_adj:.3f}")
+    if adj_only:
+        print(f"    ⚠ {adj_only} of those are INVISIBLE to BOTH other metrics — "
+              f"'is is is', 'one one one', 'casecasecase'. Before 2026-08-10 "
+              f"these scored perfectly clean.")
     if l3s:
         print(f"  of L3 samples, {l3_looped}/{len(l3s)} were SALVAGED from a loop "
               f"({100 * l3_looped / len(l3s):.0f}%) — the rest were finished code.")
