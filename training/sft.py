@@ -151,6 +151,14 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                    help="No effect when resuming (weights are loaded); present "
                         "for parity with distill.py.")
     p.add_argument("--ckpt-dir", default="checkpoints_sft")
+    p.add_argument("--ckpt-milestone-every", type=int, default=2000,
+                   help="Keep EVERY checkpoint at a multiple of this step count, "
+                        "exempt from keep-last rotation. distill.py gained this "
+                        "after rotation ate steps 40,002 and 8,668; sft.py never "
+                        "got it, and on 2026-08-10 rotation destroyed 15 of 18 "
+                        "checkpoints from a 36k-step run — the dose TRAJECTORY "
+                        "was the entire point of that run and is unrecoverable. "
+                        "0 disables.")
     p.add_argument("--ckpt-every", type=int, default=500)
     p.add_argument("--log-every", type=int, default=10)
     p.add_argument("--random-depth", action="store_true",
@@ -643,6 +651,7 @@ def main():
             save_checkpoint(
                 student, optimizer, step, cfg, vocab_size,
                 args.ckpt_dir, ddp=False, master=True,
+                keep_milestone_every=args.ckpt_milestone_every,
             )
 
         if (
@@ -671,6 +680,7 @@ def main():
             save_checkpoint(
                 student, optimizer, step, cfg, vocab_size,
                 args.ckpt_dir, ddp=False, master=True,
+                keep_milestone_every=args.ckpt_milestone_every,
             )
             break
 
