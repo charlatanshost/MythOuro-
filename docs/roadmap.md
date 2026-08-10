@@ -733,9 +733,9 @@ attacks those two roots, not the symptoms.
 | 0 | ~~**Big-batch SFT A/B**~~ | ✅ **DONE 2026-08-10** | **0.0% code L3+, 0.0% math L3+** at batch 256 on 544k samples — more data than any prior SFT run. Batch was NOT the mechanism; exposure bias stands with batch RULED OUT. Rung 6 (on-policy SFT) is now the only live path for SFT. |
 | 1 | **Per-domain best-exit headroom** | ⚠️ **RUN 2026-08-10 — PARTLY INCONCLUSIVE** | Random-exit control PASSES decisively (random 0.72 vs trained 0.27 CE on general), so the trained depth is genuinely much better than an arbitrary loop. But that is the EASY question: random draws from all 8 loops, most of them bad, so the control cannot speak to the 0.05-0.07 nats of headroom vs the best FIXED loop, which is where min-of-K bias lives. **Only a trained policy settles it** — i.e. rungs 2-3, not another probe. One signal survived: `oracle-random` is LOWEST on instruct-shaped data (0.219/0.223) and HIGHEST on discourse (0.506 general, 0.436 medical), so loops differ LEAST where text is most predictable — which argues AGAINST per-subject depth specialisation, since the domains with the most depth variance are the discourse ones. |
 | 2 | **`--unc-loop-weighting uniform`** — calibrate the UncertaintyHead at every loop | 1 overnight | Loop-0 ECE falls from **0.288** (`tools/per_loop_calibration.py`). The head currently predicts 1.68% error where it makes 30.4% — 18x overconfident. Run ALONE, not with #3. |
-| 3 | **`--loop-loss-weighting uniform`** — distil against every loop | 1 overnight | ⚔ **THE LITERATURE CONTRADICTS ITSELF HERE — run it two-sided.** `recurrent-depth-ttc` reports final-only supervision causes ACCURACY WALLS and per-loop supervision extrapolates 24x beyond trained depth (a competing explanation for our flat 4/6/8 sweep); 2603.21676's "Silent Thinking Objective" argues the opposite, that final-only is CRITICAL and intermediate supervision creates shortcuts — and we have our own instance of that failure (ACT-weighted-sum let the optimiser pin λ₀≈1). Watch the halt distribution and loop_efficiency alongside the evals: depth collapsing toward loop 0 ⇒ the shortcut objection is live; the flat-depth wall lifting ⇒ per-loop supervision is. |
+| 3 | **`--loop-loss-weighting uniform`** — distil against every loop | 1 overnight | ⚔ **THE LITERATURE CONTRADICTS ITSELF HERE — run it two-sided.** `recurrent-depth-ttc` reports final-only supervision causes ACCURACY WALLS and per-loop supervision extrapolates 24x beyond trained depth (a competing explanation for our flat 4/6/8 sweep); 2603.21676's "Silent Thinking Objective" argues the opposite, that final-only is CRITICAL and intermediate supervision creates shortcuts — and we have our own instance of that failure (ACT-weighted-sum let the optimiser pin λ₀≈1). Watch the halt distribution and loop_efficiency alongside the evals: depth collapsing toward loop 0 ⇒ the shortcut objection is live; the flat-depth wall lifting ⇒ per-loop supervision is. **If uniform COLLAPSES depth, the successor is LoopFormer's shortcut-consistency** ([2602.11451](https://arxiv.org/abs/2602.11451), ICLR 2026): align SHORT trajectories TO THE LONGEST one rather than supervising each independently — which cannot produce the shortcut Silent Thinking warns about, because the long trajectory IS the target. |
 | 4 | **Resume the pour** to 140,000 (`run_newmix_pour.sh`) | continuous | The base is still the binding constraint on everything else; every rung above is a better *objective* on the same weak base. |
-| 5 | **Grow depth 4→8** (`grow_depth.py`, SHELVED) | 2 sessions | ⚠ Gated on **#1 showing real per-subject variation** AND **#2 landing**. A budget increase is worthless while the allocator is broken — the model already declines extra passes, and repeating an identical contraction converges to the same fixed point. |
+| 5 | **Grow depth 4→8** (`grow_depth.py`, SHELVED) | 2 sessions | ⚠ **READ [DeepLoop 2607.13491](https://arxiv.org/abs/2607.13491) FIRST** — it adjusts the Post-LN DeepNorm exponent 1/4 → 1/2 AS RECURRENT DEPTH INCREASES. `grow_depth.py` expands four per-loop tensors and changes NO normalisation scaling, which is a concrete candidate explanation for Ouro's own "tried 8, dropped to 4 after loss spikes and gradient oscillations". Also [2604.07822](https://arxiv.org/abs/2604.07822): depth extrapolation has an OPTIMUM — excessive iterations cause "overthinking" that degrades performance.
 | 6 | **On-policy SFT** — the actual cure for 2026-08-10 | multi-session build | `docs/onpolicy_plan.md`: "more offline tokens — continued OR fresh — only sharpen the attractor. The cure is a different objective, not more data." Generate from the student, correct against the target. |
 
 **⏱ Timing these runs — estimate at FULL depth, not from warmup.** The 2026-08-10
@@ -745,6 +745,21 @@ step 1260 and settled at **20.4 s/step**, i.e. ~12h — a 3-hour miss straight i
 evening Windows window. Any wall-clock estimate for a run that starts below
 `max_loop_iters` must use the rate AFTER the curriculum tops out, or it understates
 by ~40%.
+
+**➕ NEW CANDIDATE RUNG (2026-08-10): HALT ON GEOMETRY, NOT ON A LEARNED HEAD.**
+Three independent 2026 sources converge on halting from the loop's own dynamics rather
+than a trained confidence signal: [2509.23314](https://arxiv.org/abs/2509.23314)
+(second-order differences in latent step size, reported to beat KL-based early exit on
+performance, stability AND efficiency), [2606.18206](https://arxiv.org/abs/2606.18206)
+(fixed-point convergence as the halt), and recurrent-depth-ttc (a hardcoded halt rule,
+no learned stopping head at all). We have failed THREE times on the learned-head route —
+ACT thresholding, `BestOfTrajectoryGenerator`, and `train_depth_policy.py` — with the head
+measurably overconfident exactly where it is consumed (ECE 0.288 at loop 0: predicts 1.68%
+error, makes 30.4%). A decode-time geometric rule needs NO TRAINING, so it is measurable
+against the existing evals in an afternoon and never competes with rung 2 for a night.
+⇒ Slot after rung 3, or sooner if rung 2 also fails. 2509.23314 doubles as new
+instrumentation for `tools/collapse_metrics.py`, which tracks scalar proxies (ρ(A), rank,
+top_share) and has no notion of step-size geometry across loops.
 
 **Blocking prerequisites for any future SFT** (both found 2026-08-10, neither fixed):
 `clean_code` rejects ~52% of OpenCodeInstruct (adapter demands EVERY unit test
