@@ -823,6 +823,53 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-10 (final) — ✅ RUNG 0 DECIDED: batch size was NOT the mechanism
+
+`checkpoints_v8_bigbatch/step_0002127.pt`, effective batch **256** (32x the prior
+runs), stopped early at 2,127 of 2,500 steps.
+
+| scored in each model's own format | base | SFT 3k @b8 | SFT 36.2k @b8 | **SFT 2127 @b256** |
+|---|---|---|---|---|
+| code per-sample L3+ @pen1.15 | **75.0%** | 0.0% | 0.0% | **0.0%** |
+| math per-sample L3+ | 5.0% | 1.2% | 0.0% | **0.0%** |
+| math copied-from-prompt | 30/80 | 2/80 | 1/80 | 12/80 |
+| math median rel_err | 0.400 | — | — | 0.857 |
+
+**This run saw the MOST data of the three** — 2,127 x 256 = 544k samples, against
+24k (3k@8) and 290k (36.2k@8). 32x the batch, ~2x the samples of the longest
+prior run, same 0.0% floor. arXiv 2412.13337's batch-size lever does not rescue
+SFT here, and the exposure-bias reading of 2026-08-10 stands with batch **ruled
+out** rather than merely unexamined.
+
+Batch changed the FLAVOUR of the collapse, not its destination:
+
+    SFT 3k     def def __init__(self, self):
+    SFT 36.2k  - - - - : : : : | | | = = = conclude:
+    SFT 2127   is is is not only only one one one one one of them:):
+       @b256   ThisThisThis_is_tweakcasecasecase(1000) as as as many, but but then
+    math       "12 + 7 =" -> "11 ... 211 ..." then newline spam
+
+Word-salad with token doubling rather than punctuation spam — arguably the
+roadmap's v4 stage rather than 36.2k's endpoint — but still L0 on every code task.
+
+### 🔬 EVERY DEGENERACY METRIC SAID THIS WAS HEALTHY
+
+    looped_frac 0.013 | char_degenerate 0 | median_lrs_frac 0.071 | max_line_repeat 1
+
+All four look fine. The text is plainly degenerate. The pathology here is
+**immediate ADJACENT-TOKEN repetition** (`is is is`, `one one one one one`,
+`ThisThisThis`, `casecasecase`), and every degeneracy metric we own measures
+either LINE repetition or longest-repeated-SUBSTRING — neither of which fires on
+adjacent duplicates. `lrs_frac` in particular is near-zero precisely because the
+repeats are short and local.
+
+⇒ **Fourth instance of metrics pointing the wrong way** (after math answers,
+medical abstracts, the alpha-ladder spike). This one is a concrete instrument
+gap, not a judgement error: `tools/code_eval.py` needs an adjacent-token-repeat
+rate alongside `lrs_frac`. Until it exists, the degeneracy verdict from these
+tools is only valid for the failure modes it was built for.
+
+
 ## 2026-08-10 (later) — 🔧 THE SFT MIX IS NOT THE MIX WE CONFIGURED
 
 Chasing ~200,000 unattributed rejections in the big-batch run's dataset

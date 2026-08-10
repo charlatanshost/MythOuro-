@@ -730,7 +730,7 @@ attacks those two roots, not the symptoms.
 
 | # | Work | Cost | Gate / success criterion |
 |---|------|------|--------------------------|
-| 0 | **Big-batch SFT A/B** (`checkpoints_v8_bigbatch`, effective batch 256 vs 8) | RUNNING, **~12h** (2,500 steps @ 20.4 s/step at full depth) | `code_eval` @pen1.15 vs base **75.0%**. Any movement off 0.0% ⇒ gradient noise was part of the collapse. Still 0.0% ⇒ exposure bias stands with batch ruled out. Either way it is decided, not argued. |
+| 0 | ~~**Big-batch SFT A/B**~~ | ✅ **DONE 2026-08-10** | **0.0% code L3+, 0.0% math L3+** at batch 256 on 544k samples — more data than any prior SFT run. Batch was NOT the mechanism; exposure bias stands with batch RULED OUT. Rung 6 (on-policy SFT) is now the only live path for SFT. |
 | 1 | **Per-domain best-exit headroom** — `best_exit_probe --by-domain` | instrument, ~20 min, no training | Does depth benefit VARY by subject? Spread <25% of the largest headroom ⇒ **per-subject depth is disconfirmed**; do not grow depth. Built 2026-08-10. |
 | 2 | **`--unc-loop-weighting uniform`** — calibrate the UncertaintyHead at every loop | 1 overnight | Loop-0 ECE falls from **0.288** (`tools/per_loop_calibration.py`). The head currently predicts 1.68% error where it makes 30.4% — 18x overconfident. Run ALONE, not with #3. |
 | 3 | **`--loop-loss-weighting uniform`** — distil against every loop | 1 overnight | Closes the Ouro divergence. `uniform` FIRST, not `exit_pdf`: depth-reg pulls the halt distribution toward uniform, so `exit_pdf` is confounded from step one. Judge on `code_eval` / `math_eval`, not CE. |
