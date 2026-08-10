@@ -57,6 +57,51 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
   **Does NOT address** exposure bias, on-policy learning, distillation or mode
   collapse — none appear in the paper.
 
+- **Prioritize the Process, Not Just the Outcome: Rewarding Latent Thought Trajectories
+  Improves Reasoning in Looped Language Models** — arXiv **2602.10520**, 2026-02
+  (Princeton PLI talk listing). *Trained on **Ouro-1.4B and Ouro-2.6B-Thinking** — our
+  exact teacher.* Code released.
+  **Method (RLTT).** Standard RL on looped LMs (GRPO) "only considers the terminal
+  latent state's distribution", so credit never reaches the intermediate loops that did
+  the computation. RLTT instead forms the policy-gradient objective from the
+  log-probabilities of **every loop iteration**, combined with weights `ω_t` that sum
+  to 1, plus a KL term against a reference policy to protect language modelling. Three
+  weightings tried: **uniform**, **progressive** (`∝ t^α`, later loops weigh more), and
+  **exit PDF** (weights taken from the model's own **early-exit / halting
+  distribution**). Drop-in replacement for GRPO, no external verifier or learned reward
+  model; memory grows linearly in `T_max`.
+  **Results vs GRPO:** +5.8% mean accuracy at 1.4B, +10.9% at 2.6B over MATH-500 /
+  AIME24-26 / BeyondAIME. Per-benchmark gains reported at 2.6B: GSM8K +34.3,
+  GPQA +18.7 (zero-shot, non-math), AIME24 +16.6, MATH-500 +14.4, BeyondAIME +10.0,
+  MMLU-ST +3.5, MBPP +3.3, ARC-C +0.7. Trains to *shorter* responses, keeps Pass@k
+  diversity, reaches higher reward earlier.
+
+  **⇒ THE IMMEDIATELY ACTIONABLE PART IS NOT THE RL.** Our distillation loss has the
+  identical defect the paper attacks. `training/distill.py:777-781` computes the
+  divergence on `s_logits` from `student_fwd(x_in, n_loops=n_loops)` — **final-loop
+  logits only** — so loops 0..K-2 receive gradient only indirectly through the
+  recurrence. The paper's mechanism (weight the loss across all loop steps, `Σω_t = 1`,
+  optionally with the halting distribution as the weights) transfers to a **KD
+  objective with no rewards, no verifier and no RL at all**.
+  **And it reframes "depth is dead" (2026-07-31, 2026-08-09).** Everything we killed was
+  depth as an *inference-time exit-selection* lever — forced budgets, best-of-trajectory,
+  a trained depth policy. We have **never** used depth as a *distribution over the
+  training signal*. Those are different claims and only the first is measured. The exit
+  PDF weighting also gives `ACTHalting` / `last_halt_distribution` a job that does not
+  depend on the head being well-calibrated at shallow loops — which per-loop calibration
+  says it is not (ECE 0.288 at loop 0 vs 0.013 at loop 3), and which is exactly why the
+  exit-selection use failed. Corroborated by 2601.10242: intermediate loops are not
+  linguistically accessible, so *reading* them fails while *training* them may not.
+
+  **Gate on the RL half: a base that sometimes succeeds.** Policy gradient needs non-zero
+  pass rate to produce gradient, and their base is Ouro-2.6B-Thinking, already strong on
+  MATH-500. Ours is 5.0% math L3+ / 0.0% L4 — reward would be near-constant zero. RLTT
+  proper un-parks only after the base can solve some problems; verifiable rewards
+  themselves are available (OpenMathInstruct-2 ships `\boxed` answers).
+  **Implementation note:** logits are `micro_batch × seq × 49,152`; at 8×1024 that is
+  ~805 MB per loop in bf16, so four loops is ~3.2 GB if materialised together —
+  accumulate the weighted loss loop-by-loop instead of stacking trajectories.
+
 - **Loop as a Bridge: Can Looped Transformers Truly Link Representation Space and
   Natural Language Outputs?** — Chen, Liu, Shao (Shanghai AI Lab / SJTU), 2026-01.
   arXiv **2601.10242**. *Measured ON OURO (1.4B and 2.6B, 1-8 loop steps) — our
