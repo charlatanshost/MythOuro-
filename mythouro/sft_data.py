@@ -66,6 +66,16 @@ from torch.utils.data import IterableDataset, get_worker_info
 # running at seq_len=512, set the general ratio to 0 and rebalance —
 # the iterator's diagnostic logger will warn if rejection rates spike
 # anyway.
+# Acceptance compensation (opt-in, see MixedSFTDataset.compensate_acceptance).
+# _AFTER: minimum draws before a source's measured acceptance is trusted — below
+#   this, one unlucky early rejection would inflate its weight enormously.
+# _MAX:   ceiling on the correction. clean_code at 38.2% acceptance needs ~2.6x;
+#   the cap keeps a source that rejects nearly everything (a broken adapter, a
+#   corpus whose schema changed) from monopolising the stream instead of failing
+#   visibly.
+_COMPENSATE_AFTER = 500
+_COMPENSATE_MAX = 4.0
+
 _SFT_MIX_RATIOS = {
     "general": 0.30,
     "math":    0.40,
@@ -591,6 +601,7 @@ class MixedSFTDataset(IterableDataset):
         mix_ratios: Optional[dict] = None,
         contamination_filter: "Optional[bool]" = None,
         seed: int = 0,
+        compensate_acceptance: bool = False,
     ):
         """
         mix -- "clean" (default since 2026-06-11: zero OpenAI-output
@@ -602,6 +613,12 @@ class MixedSFTDataset(IterableDataset):
                (data/contamination.py). Default: ON for the clean mix
                (OpenMathInstruct-2 is augmented FROM GSM8K-style problems),
                OFF for legacy (preserves v2/v4 reproduction byte-for-byte).
+        compensate_acceptance -- scale each source's DRAW weight by 1/observed
+               acceptance so the REALISED mix matches `mix_ratios`. Off by
+               default: it changes the training distribution, so existing runs
+               must reproduce exactly. See the block comment at the weighted
+               pick in `__iter__` for the measured skew this corrects (code
+               configured at 22% delivered 11.6%).
         """
         if mix not in ("clean", "clean_chat", "legacy"):
             raise ValueError(
@@ -624,6 +641,7 @@ class MixedSFTDataset(IterableDataset):
             is_clean if contamination_filter is None else contamination_filter
         )
         self.seed = seed
+        self.compensate_acceptance = compensate_acceptance
 
     def _open_source(
         self,
@@ -772,7 +790,45 @@ class MixedSFTDataset(IterableDataset):
         while True:
             # Weighted pick. Renormalises naturally as failed sources are
             # dropped on the fly.
-            weights = [s["weight"] for s in active]
+            #
+            # ACCEPTANCE COMPENSATION (2026-08-10). Weights select which source
+            # to DRAW from, but a draw is not a yield: every source is then
+            # filtered, at wildly different rates. Measured over 750,000 draws
+            # of the `clean` mix, the realised corpus was NOT the configured one:
+            #
+            #   source          accept   configured   REALISED   drift
+            #   clean_general    59.2%        34.0%      27.8%   -6.2pp
+            #   clean_math       99.9%        32.0%      44.1%  +12.1pp
+            #   clean_code       38.2%        22.0%      11.6%  -10.4pp
+            #   clean_pubmedqa  100.0%        12.0%      16.6%   +4.6pp
+            #
+            # Code was configured at 22% and delivered 11.6% — nearly halved —
+            # while math ran 38% hotter than intended. Every SFT run to date
+            # trained on that skew. The rejections themselves are CORRECT and
+            # deliberate (Tulu-3's OpenAI-derived subsets for the clean-data
+            # constraint; OpenCodeInstruct rows whose unit tests do not all
+            # pass), so the fix is to draw MORE from heavily-filtered sources,
+            # never to lower the quality bar — 36,202 offline SFT steps made the
+            # model strictly worse on 2026-08-10, so volume is not the lever.
+            #
+            # Dividing by observed acceptance makes the YIELD ratio match the
+            # configured ratio. Guarded three ways: only after `_COMPENSATE_AFTER`
+            # draws for a source, so early noise cannot blow a weight up; the
+            # correction is clamped to `_COMPENSATE_MAX`, so a source that
+            # rejects ~everything cannot monopolise the stream; and it is off
+            # entirely unless `compensate_acceptance` is set, so existing runs
+            # reproduce exactly.
+            if self.compensate_acceptance:
+                weights = []
+                for s in active:
+                    st = stats[s["key"]]
+                    if st["attempted"] >= _COMPENSATE_AFTER and st["yielded"] > 0:
+                        acc = st["yielded"] / st["attempted"]
+                        weights.append(s["weight"] * min(1.0 / acc, _COMPENSATE_MAX))
+                    else:
+                        weights.append(s["weight"])
+            else:
+                weights = [s["weight"] for s in active]
             src = rng.choices(active, weights=weights, k=1)[0]
             key = src["key"]
             stats[key]["attempted"] += 1

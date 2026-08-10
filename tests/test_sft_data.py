@@ -504,3 +504,85 @@ class TestCleanMixWiring:
         import pytest
         with pytest.raises(ValueError):
             MixedSFTDataset(tok, 128, mix="bogus")
+
+
+class TestAcceptanceCompensation:
+    """
+    The realised mix is not the configured mix unless draws compensate for
+    filtering (2026-08-10).
+
+    Weights choose which source to DRAW from, but a draw is not a yield: each
+    source is then filtered at a very different rate. Measured over 750,000
+    draws of the `clean` mix, `clean_code` was configured at 22.0% and delivered
+    11.6% (38.2% acceptance) while `clean_math` ran 44.1% against a configured
+    32.0%. Every SFT run before this change trained on that skew.
+
+    The rejections themselves are CORRECT — Tulu-3's OpenAI-derived subsets are
+    dropped for the clean-data constraint, and OpenCodeInstruct rows whose unit
+    tests do not all pass are dropped for quality. So the fix draws MORE from
+    heavily-filtered sources; it never lowers the bar.
+    """
+
+    def test_off_by_default(self, tok=None):
+        from mythouro.sft_data import MixedSFTDataset
+        from mythouro.tokenizer import MythOuroTokenizer
+        t = tok or MythOuroTokenizer("ByteDance/Ouro-2.6B-Thinking")
+        assert MixedSFTDataset(t, 128).compensate_acceptance is False
+        assert MixedSFTDataset(t, 128, compensate_acceptance=True).compensate_acceptance
+
+    def test_compensation_recovers_the_configured_mix(self):
+        """
+        Simulates the weighted pick with the MEASURED acceptance rates. Without
+        compensation the drift must reproduce what was observed in the real run;
+        with it, the realised mix must return to the configured one.
+        """
+        import random
+        from mythouro.sft_data import _COMPENSATE_AFTER, _COMPENSATE_MAX
+
+        cfg = {"general": 0.34, "math": 0.32, "code": 0.22, "pubmedqa": 0.12}
+        accept = {"general": 0.592, "math": 0.999,
+                  "code": 0.382, "pubmedqa": 1.000}
+
+        def run(compensate: bool) -> dict:
+            rng = random.Random(0)
+            att = {k: 0 for k in cfg}
+            yld = {k: 0 for k in cfg}
+            keys = list(cfg)
+            for _ in range(200_000):
+                if compensate:
+                    w = [
+                        cfg[k] * (min(1.0 / (yld[k] / att[k]), _COMPENSATE_MAX)
+                                  if att[k] >= _COMPENSATE_AFTER and yld[k] > 0
+                                  else 1.0)
+                        for k in keys
+                    ]
+                else:
+                    w = [cfg[k] for k in keys]
+                k = rng.choices(keys, weights=w, k=1)[0]
+                att[k] += 1
+                if rng.random() < accept[k]:
+                    yld[k] += 1
+            tot = sum(yld.values())
+            return {k: yld[k] / tot for k in keys}
+
+        off, on = run(False), run(True)
+        # Uncompensated: code must land far below its configured share, which is
+        # the defect. If this stops holding, the premise has changed.
+        assert off["code"] < 0.15, off
+        assert off["math"] > 0.40, off
+        # Compensated: every source within 1.5pp of configured.
+        for k in cfg:
+            assert abs(on[k] - cfg[k]) < 0.015, (k, on[k], cfg[k])
+        drift_off = sum(abs(off[k] - cfg[k]) for k in cfg)
+        drift_on = sum(abs(on[k] - cfg[k]) for k in cfg)
+        assert drift_on < drift_off / 10
+
+    def test_correction_is_capped(self):
+        """
+        A source rejecting nearly everything (broken adapter, changed schema)
+        must not monopolise the stream — it should fail visibly instead.
+        """
+        from mythouro.sft_data import _COMPENSATE_MAX
+        assert min(1.0 / 0.001, _COMPENSATE_MAX) == _COMPENSATE_MAX
+        # clean_code's real 38.2% needs ~2.6x, comfortably under the cap.
+        assert 1.0 / 0.382 < _COMPENSATE_MAX

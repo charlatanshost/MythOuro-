@@ -173,6 +173,17 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "checkpoints. 'legacy' = the v2/v4-era OpenHermes/"
                         "Magicoder/MetaMathQA mix (reproduction only; carries "
                         "the OpenAI-ToS constraint).")
+    p.add_argument("--compensate-acceptance", action="store_true",
+                   help="Scale each source's DRAW weight by 1/observed "
+                        "acceptance so the REALISED mix matches --data-mix's "
+                        "configured ratios. Sources are filtered at very "
+                        "different rates, so drawing by weight does not deliver "
+                        "by weight: measured over 750,000 draws of the clean "
+                        "mix, clean_code was configured at 22.0%% and delivered "
+                        "11.6%% (38.2%% acceptance) while clean_math ran 44.1%% "
+                        "against a configured 32.0%%. Every SFT run before "
+                        "2026-08-10 trained on that skew. OFF by default "
+                        "because it changes the training distribution.")
     p.add_argument("--no-contamination-filter", action="store_true",
                    help="Disable the eval-benchmark contamination guard "
                         "(GSM8K/ARC 13-grams). On by default for the clean "
@@ -507,6 +518,7 @@ def main():
         mix=args.data_mix,
         contamination_filter=(False if args.no_contamination_filter else None),
         seed=args.seed,
+        compensate_acceptance=args.compensate_acceptance,
     )
     # num_workers=0 runs data loading in the main process. Many of the
     # popular instruction datasets (OpenHermes, Magicoder, MetaMathQA)
