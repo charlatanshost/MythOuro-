@@ -26,6 +26,37 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
 
 ---
 
+- **Unveiling the Secret Recipe: A Guide For Supervised Fine-Tuning Small LLMs** —
+  Pareja, Nayak, Wang, Killamsetty et al. (Red Hat AI Innovation / MIT-IBM Watson AI
+  Lab / IBM Research), 2024-12. arXiv **2412.13337**. Models: Granite 3B & 7B,
+  Mistral 7B, LLaMA 3.2 3B. Data: TULU, a taxonomy-driven set (825k samples), and a
+  Math/Reasoning/Coding set. Evals: MMLU, MTBench, Open LLM Leaderboard v2.
+  **Findings, in order of relevance to us:**
+  1. **Batch size is the dominant lever.** "Larger batch sizes paired with lower
+     learning rates lead to improved model performance." Tested 128 / 3,840 / 7,680
+     samples per optimizer step; 7,680 beat 128 on MTBench 6.83 vs 6.41.
+  2. **lr 2e-5 consistently best** across benchmarks — which is exactly what our SFT
+     ran at, so the learning-rate hypothesis stays dead.
+  3. "Early-stage training dynamics, such as **lower gradient norms and higher loss
+     values**, are strong indicators of better final model performance."
+  4. Stacked training beats phased; warmup steps and LR decay can be omitted without
+     harm. (We use warmup 100; per this, harmless either way.)
+  **Why it matters here — it names an untested confound in our SFT autopsy.** Our runs
+  were at **effective batch 8 sequences** (`--micro-batch 1 --grad-accum 8`, the
+  argparse defaults; inferred from 20.2k tok/s at ~0.40 s/step, seq-len 1024, since
+  sft.py does not log its args). That is 16x below the WORST setting they tested and
+  ~960x below their best — and with mean `resp_frac` 0.179, only ~1,460 tokens per
+  step actually carried loss. Our loss also fell to 0.04 by step 150 with gnorm
+  decaying 0.88 -> 0.15, which is the inverse of (3).
+  **Caveat, stated plainly:** their batch-size effect is worth ~0.4 MTBench points on
+  well-behaved 3B-7B instruct bases. Ours is 75% -> 0% code L3+. An effect that size
+  does not explain a total collapse, so this is unlikely to be the whole mechanism —
+  but batch is a re-allocation rather than extra compute (fixed throughput means a
+  6.5h window is ~460k samples at any batch size), so it costs one night to rule out.
+  ⇒ Test logged as the `checkpoints_v8_bigbatch` A/B at effective batch 256.
+  **Does NOT address** exposure bias, on-policy learning, distillation or mode
+  collapse — none appear in the paper.
+
 - **Loop as a Bridge: Can Looped Transformers Truly Link Representation Space and
   Natural Language Outputs?** — Chen, Liu, Shao (Shanghai AI Lab / SJTU), 2026-01.
   arXiv **2601.10242**. *Measured ON OURO (1.4B and 2.6B, 1-8 loop steps) — our

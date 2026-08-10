@@ -898,6 +898,42 @@ off-by-one (the doubling looked exactly like predicting the current token; verif
 The surviving answer came from the docs both times the owner pointed at them — the standing
 lesson, now on its third instance.
 
+### ⚠️ ONE CONFOUND I DID NOT TEST — effective batch size (added 2026-08-10, arXiv 2412.13337)
+
+The conclusion below was written before reading *"Unveiling the Secret Recipe: A Guide For
+Supervised Fine-Tuning Small LLMs"* (Red Hat AI / MIT-IBM, arXiv 2412.13337). Its headline
+finding is that **batch size is the dominant SFT lever** — "larger batch sizes paired with
+lower learning rates lead to improved model performance", tested at 128 / 3,840 / 7,680
+samples per optimizer step.
+
+**Both of our SFT runs were at effective batch 8.** `--micro-batch 1 --grad-accum 8` — the
+argparse defaults, never overridden. `sft.py` does not log its args, so this was inferred
+from the log: 20.2k tok/s at ~0.40 s/step and seq-len 1024 ⇒ ~8 sequences per optimizer
+step. That is **16x below the worst setting the paper tested and ~960x below its best**, and
+with mean `resp_frac` **0.179** across 724 logged steps, only **~1,460 tokens per step
+actually carried loss**. A very noisy gradient, and micro-batch 1 also badly underuses 48GB.
+
+Their diagnostic points the same way: *"lower gradient norms and higher loss values are
+strong indicators of better final model performance."* Ours went the other way — loss fell to
+0.04 by step 150 and `gnorm` decayed 0.88 → 0.15.
+
+Confirmed dead by the same paper: **lr 2e-5 consistently outperformed higher rates**, and
+2e-5 is what we ran.
+
+**Why this is not a retraction.** The paper's batch-size effect is worth ~0.4 MTBench points
+(6.41 → 6.83) on well-behaved 3B–7B instruct bases. Ours is 75% → 0%. An effect that size
+does not explain a total collapse, and neither the dose monotonicity nor the text *regressing*
+from Python-shaped tokens to punctuation spam is what gradient noise alone predicts. The
+exposure-bias reading still fits the evidence better.
+
+**Why it is still worth a night.** Batch is a re-allocation, not extra compute: at fixed
+throughput a 6.5h window is ~460k samples regardless of batch, so batch only changes how many
+optimizer steps they are sliced into. ⇒ `checkpoints_v8_bigbatch`, effective batch 256
+(`--micro-batch 8 --grad-accum 32`), same lr/data, ~2,500 steps. If code L3+ is still 0.0%,
+exposure bias stands with batch ruled out. If it moves at all, SFT is salvageable without the
+on-policy rebuild. Early read: `ce` staying HIGHER than last night's 0.04–0.11 with moderate
+`gnorm` is the paper's better-final-model signature.
+
 ### Consequence
 
 **SFT as implemented cannot be used on this base.** It needs on-policy treatment — generate
