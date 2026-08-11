@@ -170,6 +170,106 @@ _BOILERPLATE = re.compile(
     r"WITHOUT WARRANTIES|redistribut", re.I)
 
 
+# ---------------------------------------------------------------------------
+# Instruction framing (--chat-template)
+# ---------------------------------------------------------------------------
+#
+# WHY THIS EXISTS. Until 2026-08-11 every teacher row was a CONTINUATION: 48
+# tokens of real text, teacher writes the next 768. That means the student has
+# never once seen an instruction -> response pair from its teacher. Its whole
+# training history is raw web text plus teacher continuations of raw web text —
+# and the ONLY instruction-shaped data it ever met was SFT, applied all at once,
+# in a ChatML format it had never seen, to a model with zero instruction prior.
+# SFT then collapsed it at 3k, 36.2k and at 32x batch (docs/generation_probe_
+# tracker.md 2026-08-10). Routing instruction-following through the TEACHER
+# instead puts it on the one channel that demonstrably works on this model:
+# on-policy distillation took code L3+ from 51.2% to 75.0%.
+#
+# GROUNDED, NOT INVENTED. The instruction wraps a REAL corpus snippet, so the
+# teacher supplies the FORM and the corpus supplies the CONTENT. This also
+# attacks a known defect: free continuation is what produced the medical
+# harvest's fabrications ("the PAWL study", 30-mg ibuprofen — real dosing is
+# 200-400mg). Summarising a real abstract is anchored in a way continuing from a
+# 48-token seed is not.
+#
+# FIXED-LENGTH PROMPTS on purpose. Variable-length prompts would need left
+# padding and attention masks through _generate_xpu_safe, which is the fragile
+# hand-rolled XPU path. Truncating the snippet so every prompt is exactly
+# --prompt-len tokens keeps the existing fixed-size batching working unchanged.
+_SYSTEM = "You are a helpful assistant."
+
+_INSTRUCTION_TEMPLATES = {
+    "general": [
+        "Explain the following passage in your own words.\n\n",
+        "What is the main idea of this text? Answer in a few sentences.\n\n",
+        "Summarise the following passage.\n\n",
+    ],
+    "medical": [
+        "Summarise the key clinical findings in this abstract.\n\n",
+        "Explain the following medical passage in plain language.\n\n",
+        "What condition and treatment does this passage describe?\n\n",
+    ],
+    "math": [
+        "Explain the mathematics in the following passage, step by step.\n\n",
+        "What problem is being solved here, and how? Show the reasoning.\n\n",
+    ],
+    "math_instruct": [
+        "Solve the following problem. Show your reasoning, then give the answer.\n\n",
+        "Work through this problem step by step.\n\n",
+    ],
+    "code": [
+        "Explain what the following code does.\n\n",
+        "Describe this code, then write a corrected or completed version.\n\n",
+    ],
+    "code_instruct": [
+        "Write the code this describes, and explain it briefly.\n\n",
+        "Complete the following task. Give the code, then a short explanation.\n\n",
+    ],
+}
+
+
+def _chat_prompt(tok, snippet_ids: list[int], source: str, prompt_len: int,
+                 rng) -> "list[int]":
+    """
+    One fixed-length ChatML prompt of EXACTLY `prompt_len` tokens.
+
+    Layout:  <|im_start|>system ... <|im_end|>
+             <|im_start|>user {instruction}\n\n{snippet}<|im_end|>
+             <|im_start|>assistant\n
+
+    The snippet is truncated to whatever budget remains after the framing, so
+    the total is always `prompt_len` and the caller's batching is unchanged.
+    Falls back to the `general` templates for any source without its own.
+    """
+    templates = _INSTRUCTION_TEMPLATES.get(source) or _INSTRUCTION_TEMPLATES["general"]
+    instruction = templates[rng.randrange(len(templates))]
+    prefix = tok.encode(
+        f"<|im_start|>system\n{_SYSTEM}<|im_end|>\n<|im_start|>user\n{instruction}"
+    )
+    suffix = tok.encode("<|im_end|>\n<|im_start|>assistant\n")
+    budget = prompt_len - len(prefix) - len(suffix)
+    if budget < 16:
+        raise ValueError(
+            f"--prompt-len {prompt_len} leaves only {budget} tokens for the "
+            f"snippet after {len(prefix)}+{len(suffix)} of ChatML framing. "
+            f"Raise it; a prompt with no content teaches nothing."
+        )
+    if len(snippet_ids) < budget:
+        # NEVER pad. An earlier version padded to `budget` with pad/eot ids,
+        # which put up to 161 <|endoftext|> tokens between the snippet and the
+        # `assistant` cue — the teacher would be asked to answer a question
+        # whose context trails off into end-of-document markers. The caller
+        # draws seeds of exactly --prompt-len tokens, so budget (prompt_len
+        # minus framing) is ALWAYS satisfied; this is an invariant check, not a
+        # fallback.
+        raise ValueError(
+            f"snippet has {len(snippet_ids)} tokens but the prompt budget is "
+            f"{budget}. Seeds must be drawn at --prompt-len; padding here would "
+            f"put end-of-document markers between the question and the answer."
+        )
+    return prefix + snippet_ids[:budget] + suffix
+
+
 def _reject_reason(cont_ids: list[int], min_new: int, min_distinct1: float,
                    max_top_share: float, text: str = "") -> "str | None":
     """None = passes; else which filter rejected (for the tuning telemetry)."""
@@ -195,6 +295,25 @@ def main() -> None:
                    help="Stop after this many ACCEPTED continuation tokens.")
     p.add_argument("--batch", type=int, default=12)
     p.add_argument("--seed-len", type=int, default=48)
+    p.add_argument("--chat-template", action="store_true",
+                   help="Harvest INSTRUCTION -> RESPONSE pairs instead of raw "
+                        "continuations. Wraps a real corpus snippet in a ChatML "
+                        "instruction and keeps the teacher's answer, so the "
+                        "corpus supplies the CONTENT and the teacher supplies "
+                        "the FORM. Until 2026-08-11 every teacher row was a "
+                        "continuation, so the student had NEVER seen an "
+                        "instruction/response pair from its teacher — the only "
+                        "instruction-shaped data it ever met was SFT, which "
+                        "collapsed it at every dose and batch size. This routes "
+                        "instruction-following through on-policy distillation "
+                        "instead, the one channel proven on this model.")
+    p.add_argument("--prompt-len", type=int, default=256,
+                   help="Fixed ChatML prompt length in tokens for "
+                        "--chat-template. Every prompt is truncated/padded to "
+                        "exactly this, which keeps the existing fixed-size "
+                        "batching (and the fragile hand-rolled XPU generate "
+                        "path) working with no left-padding or attention masks. "
+                        "~30 tokens go to framing; the rest is the snippet.")
     p.add_argument("--max-new", type=int, default=768)
     p.add_argument("--temperature", type=float, default=0.9)
     p.add_argument("--top-p", type=float, default=0.95)
@@ -318,6 +437,11 @@ def main() -> None:
     if teacher is None:
         raise SystemExit("teacher failed to load")
     eot = tok.convert_tokens_to_ids("<|endoftext|>")
+    # In chat mode the response terminates at <|im_end|>, NOT <|endoftext|>.
+    # Truncating on the wrong token would keep the teacher's next turn —
+    # a second <|im_start|>user block — inside the "response", teaching the
+    # student to write both halves of the conversation.
+    stop_id = tok.convert_tokens_to_ids("<|im_end|>") if args.chat_template else eot
 
     cache_factory = None
     if args.prealloc_cache:
@@ -336,12 +460,17 @@ def main() -> None:
     existing = sorted(out.glob("shard_*.jsonl"))
     shard_idx = int(existing[-1].stem.split("_")[1]) + 1 if existing else 0
 
-    streams = _seed_streams(tok, args.seed_len, random.Random(args.seed),
+    # Chat mode needs a snippet long enough to fill the prompt budget;
+    # _chat_prompt truncates down to whatever the framing leaves.
+    _stream_len = args.prompt_len if args.chat_template else args.seed_len
+    streams = _seed_streams(tok, _stream_len, random.Random(args.seed),
                             stream_seed=stream_seed,
                             stream_buffer=args.stream_buffer)
     keys = list(seed_mix)
     weights = [seed_mix[k] for k in keys]
     rng = torch.Generator().manual_seed(args.seed)
+    _tmpl_rng = random.Random(args.seed + 1)   # template choice, independent of seeds
+    _prompt_tokens = args.prompt_len if args.chat_template else args.seed_len
 
     accepted_tok = accepted_n = rejected_n = 0
     reject_reasons: Counter = Counter()
@@ -439,6 +568,9 @@ def main() -> None:
             torch.tensor(weights, dtype=torch.float), 1, generator=rng).item()]
             for _ in range(args.batch)]
         seeds = [next(streams[s]) for s in sources]
+        if args.chat_template:
+            seeds = [_chat_prompt(tok, sd, src, args.prompt_len, _tmpl_rng)
+                     for sd, src in zip(seeds, sources)]
         input_ids = torch.tensor(seeds, device=args.device)
         if dev.backend(args.device) == "xpu":
             # HF generate() segfaults on XPU (on-device topk/multinomial);
@@ -455,9 +587,9 @@ def main() -> None:
                     temperature=args.temperature, top_p=args.top_p,
                     pad_token_id=tok.pad_token_id or eot or 0)
         for row, src in zip(gen.tolist(), sources):
-            cont = row[args.seed_len:]
-            if eot is not None and eot in cont:
-                cont = cont[:cont.index(eot)]
+            cont = row[_prompt_tokens:]
+            if stop_id is not None and stop_id in cont:
+                cont = cont[:cont.index(stop_id)]
             reason = _reject_reason(cont, args.min_new, args.min_distinct1,
                                     args.max_top_share,
                                     tok.decode(cont[:300]))
@@ -482,10 +614,26 @@ def main() -> None:
                 continue
             accepted_n += 1
             accepted_tok += len(cont)
-            rows.append({
-                "text": tok.decode(row[:args.seed_len] + cont),
-                "source": src, "seed_len": args.seed_len,
-            })
+            if args.chat_template:
+                # Keep the FULL ChatML exchange in `text`, terminator included:
+                # the student has to learn the format, not just the prose. The
+                # <|im_end|> is re-appended because it was stripped above to
+                # measure the response.
+                # skip_special_tokens=False is LOAD-BEARING: the default
+                # decode strips <|im_start|>/<|im_end|>, which would write rows
+                # with the prose but NO ChatML markers — the student would learn
+                # the content and never the format, which is the entire purpose
+                # of this mode.
+                rows.append({
+                    "text": tok.decode(row[:_prompt_tokens] + cont + [stop_id],
+                                       skip_special_tokens=False),
+                    "source": src, "seed_len": _prompt_tokens, "chat": True,
+                })
+            else:
+                rows.append({
+                    "text": tok.decode(row[:args.seed_len] + cont),
+                    "source": src, "seed_len": args.seed_len,
+                })
         if len(rows) >= ROWS_PER_SHARD:
             flush()
         if tele is not None:
