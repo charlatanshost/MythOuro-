@@ -823,6 +823,92 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-11 — ❌ RUNG 3 DECIDED: uniform loop weighting DESTROYS the model
+
+`--loop-loss-weighting uniform`, 8,706 steps from the 108,471 base. Not a
+transient. Not a redistribution. The model is gone.
+
+| loop | base accuracy | loop-weighted | Δ | base ECE | new ECE |
+|---|---|---|---|---|---|
+| 0 | 0.6957 | 0.1559 | **−0.540** | 0.2875 | 0.1237 |
+| 1 | 0.8959 | 0.1115 | **−0.784** | 0.0940 | 0.1712 |
+| 2 | 0.9623 | 0.0867 | **−0.876** | 0.0305 | 0.1963 |
+| 3 | 0.9801 | 0.0750 | **−0.905** | 0.0132 | 0.2490 |
+
+5,120 positions per loop. Next-token accuracy at the emitted depth fell from
+**98.0% to 7.5%**.
+
+**And the trajectory INVERTED.** Base accuracy rises with depth (0.696 → 0.980);
+loop-weighted it FALLS (0.156 → 0.075). Deeper loops are now worse than shallower
+ones — a shape no exit policy, halting head or best-exit selector can repair.
+
+math_eval agrees: L3+ 5.0% → 0.0% at every depth, `rel_err` 0.429 → 0.929, and the
+depth sweep stayed flat at 4/6/8, so **the accuracy wall did not lift.** The
+`copied_from_prompt` collapse 30 → 1 matches the SFT-collapse signature (3k: 2/80,
+36.2k: 1/80) — the model stopped echoing because it stopped producing
+prompt-shaped text at all, not because it learned to compute.
+
+### The "expected transient" explanation is FALSIFIED
+
+Before the readout I argued final-loop degradation was expected, since uniform
+weighting hands loop 3 only ¼ of the gradient it used to get, and I stated the
+test that would kill that explanation: **loops 0–2 must rise.** They did not.
+Loop 0 fell 0.54 and loop 1 fell 0.78. Nothing was redistributed; everything was
+destroyed.
+
+### Where the judgement went wrong: uniform is the HARSHEST arm, not the control
+
+I chose `uniform` first and called it "the honest control arm, not a strawman".
+That was backwards. Of the three weightings, uniform puts the **most** weight on
+the shallow loops:
+
+* `exit_pdf` concentrates on the halt depth (~2–3)
+* `progressive` (`t^α`) favours later loops
+* `uniform` gives loop 0 — a waypoint that has never been an output state in
+  108,471 steps of training — a full 25% of the distillation gradient
+
+Forcing an intermediate latent to behave as a finished output is precisely the
+Silent Thinking objection ([2603.21676](https://arxiv.org/abs/2603.21676)),
+arriving as destruction rather than as shortcut-taking. Ouro pairs per-step
+weighting with an exit-probability distribution for exactly this reason; we
+applied the weights *without* that concentration.
+
+### 🔬 THE INSTRUMENT DECLARED THIS HEALTHY
+
+`tools/per_loop_calibration.py` printed:
+
+> *VERDICT: per-loop ECE roughly uniform (final 0.249, worst 0.249) —
+> uncertainty-based per-loop selection is defensible.*
+
+on a model at 7.5% accuracy. Worse, **loop-0 ECE IMPROVED, 0.288 → 0.124** —
+because the head had correctly learned to predict "I will be wrong" (mean
+uncertainty 0.72 against an error rate of 0.84). Calibration genuinely improved
+while the model was destroyed. ECE measures agreement between confidence and
+error, which a uniformly broken model satisfies trivially.
+
+**Fixed:** the verdict is now gated on accuracy and withheld entirely when best
+per-loop accuracy < 0.5, or when accuracy decreases with depth. Replayed against
+both checkpoints: base → "calibrated at final loop only"; loop-weighted →
+"WITHHELD (accuracy floor)". Fifth instance of metrics pointing the wrong way,
+and the second that is a genuine instrument defect rather than a misreading.
+
+### Consequence
+
+Rung 3 as specified is **dead**. The base `checkpoints_newmix/step_0108471.pt` is
+untouched and remains the line; `checkpoints_loopweighted` is kept only as the
+negative result. If per-loop supervision is revisited it must NOT be uniform —
+the candidate is LoopFormer's shortcut-consistency
+([2602.11451](https://arxiv.org/abs/2602.11451)), which aligns short trajectories
+**to the long one** so the deep computation stays the target, rather than making
+every depth an independent output. `progressive` with a high α, or `exit_pdf` with
+`--depth-reg-coeff` lowered so the halt distribution is not dragged toward
+uniform, would be gentler tests of the same idea.
+
+Cost: one overnight. The literature contradiction that motivated it
+(docs/looped_lm_landscape.md §0.1) is now resolved *for this model, at this
+capability*: final-only supervision is load-bearing here.
+
+
 ## 2026-08-11 — rung 3 leg 1: 8,706 steps loop-weighted, NO depth collapse, ρ(A) UNMOVED
 
 `checkpoints_loopweighted/step_0117206.pt` — `--loop-loss-weighting uniform` from

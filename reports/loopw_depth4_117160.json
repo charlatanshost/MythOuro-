@@ -1,0 +1,936 @@
+{
+  "step": 117160,
+  "temperature": 0.4,
+  "seed": 1234,
+  "samples": 8,
+  "repetition_penalty": 1.0,
+  "tasks": [
+    {
+      "task": "add",
+      "prompt": "12 + 7 =",
+      "answers": [
+        19
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.0526,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.2025,
+          "completion": " the \nsum to the the the the the\n\n, the,\n\nfor\n\nand,\n\n-1,\n\n,\n\nthe,\n\n,\n\n,\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.8947,
+          "max_line_repeat_completion": 8,
+          "lrs_frac": 0.2712,
+          "completion": " \n2, which.1, _\n\n-1.\n\nWait,\n\n,\n\n,\n\n, and,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.9474,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.1714,
+          "completion": " 1.\n\nWait.1, which,\n\n,\n\n\n, and,\n\nreturn, and,\n\n,\n\n\n,\n\n,\n\n,\n\n,\n\n, and,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9421,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.2453,
+          "completion": " 1.1.\n\n\n\n\n,\n\n, and.\n\nF is,\n\n\n\n?,\n\nF,\n\n\n,\n\n,\n\n,\n\n,\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9474,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.2464,
+          "completion": " 1. and, and, which, \nto,\n\nand, and,\n\nthe\n\n,\n\nand,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.8947,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.1667,
+          "completion": " 1.\n\nnum.2.\n\nthe the the \noutput, which,\n\nthe the the the\n\n,\n\nthe the\n\n.\n\n\n\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9474,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.2907,
+          "completion": " the \nm, the the the the the the the \n, and, and,1,\n\n, the.\n\nthe\n\n`,\n\n, and,\n\n,\n\n,\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1553,
+          "completion": " the the the the \nx: the the the the.\n\n\n, and, and,\n\nthe,\n\nthe the the the\n\n\n,\n\nWe, and,\n\nthe the the\n\n",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "sub",
+      "prompt": "45 - 18 =",
+      "answers": [
+        27
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.963,
+          "max_line_repeat_completion": 10,
+          "lrs_frac": 0.5577,
+          "completion": " the \n**.\n\n`,\n\n1.\n\n-\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2066,
+          "completion": " the the the \nc and the the other,\n\nthe the the the the,\n\nthe the the the the,\n\n- the the the\n\nthe the.\n\nthe the, and,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.8519,
+          "max_line_repeat_completion": 8,
+          "lrs_frac": 0.2549,
+          "completion": " the 4.\n\n\n2,\n\n,\n\n2,\n\n,\n\n,\n\n,,\n\n,\n\n,\n\n,\n\n,\n\n,,,\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.9259,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1717,
+          "completion": " the 2, which. the 2, and, the the , then, and, the the the,\n\nthe the\n\n,\n\nthe the,\n\nthe the,\n\n,,,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.1429,
+          "completion": " the the the in, the the  array,\n\nand,\n\nthe the the,\n\nthe the the the\n\n,\n\n,\n\nthe,\n\n,\n\n,\n\nthe the,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9259,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1485,
+          "completion": " the .output.\n\n. the the the the.2,\n\n, and,\n\nthen, which, which,\n\nis,\n\nthe the\n\n\n,\n\nthe the the the\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.8889,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.2794,
+          "completion": " the s, 1. 1.1.\n\n2, which,\n\nThe the the\n3, and,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.963,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.186,
+          "completion": " the the the the the\n\n1, then, and.\n\nx,\n\n,\n\nThe the the the\n\n,,\n\n,\n\nx,\n\nthe the\n\n\n\n\n,\n",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "mul",
+      "prompt": "6 * 7 =",
+      "answers": [
+        42
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9286,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.1899,
+          "completion": " the  ` _ _3.\n\nany.\n\n\n\n.\n\nthe the\n\n`.\n\n`\n\n. the the the\n\nthe\n\nthe\n\nthe\n\nand has",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.1795,
+          "completion": " \nb.\n\n.\n\nfind, and, and,\n\nthe the the,\n\n.\n\nThe\n\n.\n\nThe the the the,\n\n\n\n\n\n\n,\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.95,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.18,
+          "completion": " 2.1. \n, which, the the, and,\n\nThe the the the the the\n\n, but,\n\n, which,\n\n,\n\nthe the\n\n,\n\nthe the the",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9524,
+          "max_line_repeat_completion": 8,
+          "lrs_frac": 0.2453,
+          "completion": " _2.\n\n\n# is = \n:\n\n,\n\nthe\n\n\n,\n\n.,\n,\n\n:,\n\n,\n\n,\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9524,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1948,
+          "completion": " the _2.\n\n.\n\n`. and.\n\nthe the the\n\n`.\n\nthe\n\n`,\n\nthe the\n\n,\n\nthe the the\n\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.9286,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.125,
+          "completion": " the _3, and, which.1, and, and, the the the , and., and, and,\n\n,\n\n,\n\n, the,\n,\n\n,\n\nthe,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9524,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.1017,
+          "completion": " .2, and.\n\n.\n\n**.\n\n\n\n\n\n,\n\nand.\n\n/.\n\n,\n\n:\n\nthe the\n\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9524,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.1831,
+          "completion": " .2. the the the the .\n\n.\n\n.\n\n,\n\n, and,\n\n,\n\nthe.\n\n,\n\n,\n\n, and, and,\n\n,\n",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "div",
+      "prompt": "84 / 4 =",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.9524,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1495,
+          "completion": " the the the.1. the the the the the. \nthe the, which. the the the.\n\n:, and.1.\n\n, and.\n\nfor the the\n\n,\n\nand,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.8571,
+          "max_line_repeat_completion": 10,
+          "lrs_frac": 0.2833,
+          "completion": " 1, and, but,\n\n3, and, and,\n\n3,\n\n,\n\n,\n\n,\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9524,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.2211,
+          "completion": " the the the the the the  values, which, and, .1.\n\nthe the the, the,\n\n,\n\n.\n\n`.,\n\n,\n\n, and,\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.9476,
+          "max_line_repeat_completion": 8,
+          "lrs_frac": 0.3725,
+          "completion": " \\\n1.1.\n\nd is.\n\n1.\n\n\n,\n\nn,\n\n\n\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.9476,
+          "max_line_repeat_completion": 9,
+          "lrs_frac": 0.2373,
+          "completion": " 1.1.1, and, , and,\n\n,\n\n,\n\n,\n\nthe\n\n,\n\nthis,\n\n,\n\n,\n\n,\n\n,\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9048,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.134,
+          "completion": " the the 2, and, which, the the the the, and, and, the the the,\n\n, and, and,\n\nand,\n\n,\n\n,\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9524,
+          "max_line_repeat_completion": 9,
+          "lrs_frac": 0.274,
+          "completion": " 1.\n\nThe the the the the the\n\n,\n\nthe the\n\n\n,\n\n and,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.1205,
+          "completion": " the the the \nvalue, and.\n\n.\n\nThe the\n\nthe\n\n,\n\n,\n\n,\n\n, and,\n,\n\nreturn,\n\nthe\n\n,\n\nthe",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "pct",
+      "prompt": "10% of 250 is",
+      "answers": [
+        25
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 1,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.896,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.1739,
+          "completion": " the the the the\n\n2.6, and,\n\nthe,\n1,\n\n,\n\nthe\n\n\n,\n\nand,\n\n,\n\n,\n\n,\n\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.96,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.2024,
+          "completion": " the the the the the 1. the the.\n\nIf, and,\n\nthe\n\n,\n\nthe the\n\nthe,\n\nthe\n\n,\n\n,\n\n,\n\n.,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.2429,
+          "completion": " the the the \nc is.\n\n, which.\n\n\n\n\n\n,\n\n, and,\n\n,\n\n,\n\n,\n\n,\n\n, and,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.96,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.1528,
+          "completion": " the the\n1.\n\nThe.\n\nc.\n\nthe\n\n\n\n\n1.\n\n\n\n\n\n.\n\nthe the\n\nthe the\n\n,\n\nand.\n\nthe",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.956,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1461,
+          "completion": " the the 1.1.1. \nall.\n\nthe the the the \nthe the,\n\nthe the the,\n\nthe.\n\nthe.\n\nthe the\n\n\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.956,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.1948,
+          "completion": " the 1.1.\n\n `, which, \nc is,\n\nthe the the the the\n\n\n,\n\nthe the\n\n,\n\n\n,\n\n,\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.96,
+          "max_line_repeat_completion": 8,
+          "lrs_frac": 0.1944,
+          "completion": " 1, and,\n\nthe the the the\n\nThe the the \n, to,\n\n,\n\n,\n\n,\n\n,\n\n\n,\n\n,\n\n,\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.96,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1619,
+          "completion": " the the the the the 1.\n\n,,\n\nthe the the \nthe the the the,\n\nthe,\n\nthe the the\n\n\n,\n\nThe the\n\nthe the the,\n",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "avg",
+      "prompt": "The average of 4, 8, and 12 is",
+      "answers": [
+        8
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.875,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1707,
+          "completion": ". \nx.1. \nThe the the the.\n\nthe the the the,\n\n,\n\n,\n.\n\nthe the the,\n\nthe,\n\nthe,\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.625,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.1364,
+          "completion": " 1.\n\n 3,\n. the the the\n\n` and, and,\n\n,\n\n\n,\n\n,\n\n,\n\nh,\n\n,\n\n, and,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 9,
+          "lrs_frac": 0.2295,
+          "completion": ". \n.\n\n\n\n\n\n, the\n\n,\n\n, which,\n\n,\n\nthe the,\n\n,\n,\n\n,\n\n,\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 8,
+          "lrs_frac": 0.2073,
+          "completion": " the the the the the \n, the the the the,\n\nthe \n,\n\n,\n\nand,\n\n,\n\nthe,\n\n\n,\n\n,\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.75,
+          "max_line_repeat_completion": 8,
+          "lrs_frac": 0.1935,
+          "completion": " the the the the,\n\n,\n\nthe\n\n\n,\n\n2,\n\n,\n\n\n,\n\n,\n\n,\n\n,,,\n\n,,\n,\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.875,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1809,
+          "completion": ", and, and, and,1, and, , the the the the, and, and, and, and, \n, ,\n\n,\n\nthe the,\n\n, which,\n\n(\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.875,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.1856,
+          "completion": " the 1,\n\nthen, and, and,\n\nand, the the\n\nThe\n\nthe the the\n\nthe the the\n\n,\n\nthe the the\n\n,\n\n\n, and.",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.1932,
+          "completion": " the the the the \nhas, and, the the the \nand, and, and, and,\n\n,\n\n,\n\n,\n\n, and,\n\n,\n\n,\n\n,\n\n",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "linear",
+      "prompt": "Solving 3x + 6 = 21 gives x =",
+      "answers": [
+        5
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.8,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.2262,
+          "completion": " the the the \n1,\n\nThe the \n, but,\n\nthe the the the the the\n\n,\n\n,\n\nthe,\n\n,\n\n,\n\n,\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.78,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1379,
+          "completion": " 1.1, 1.1, the.1, and, and,1, and, and, and, \n, and, and, , and, and,\n\n, the the the\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.8,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.1067,
+          "completion": " the \nthe the the 1.\n\n, and,\n\n, and.\n\n,\n\n:\n\n,\n\nand, the\n\n\n,\n\nthe the\n\n,\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.1512,
+          "completion": " the the the \nthe \n`.\n\n.\n\nthe the\n\n.\n\n.\n\nthe the the the\n\nthe\n\nthe the\n\n=\n\n.\n\nthe\n\nthe",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.1452,
+          "completion": " \noutput.\n\n\n\n\n\n\n\n\n\n,\n\nC,\n\n,\n\nC is, which,\n\n\nand,\n\n,\n\n,\n\n,\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.1772,
+          "completion": " the the the \nthe the the,\n\n:\n\n.\n\nthe the the the\n\n\n\n\n.\n\n, the\n\n,\n\n,\n\n,\n\n,\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.1287,
+          "completion": " the the \nvalue.\n\nE is, the the\n\nthe the the the,\n\nthe the the\n\nthe, and, and, the the, \n\n,\n\n,\n,\n\nthe",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1604,
+          "completion": " the the the the the a, and, the the the the \nis, \n, and,\n\nthe the the the, and,\n, the, and, the,\n\n,\n\n:\n\n,",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "quadratic",
+      "prompt": "To solve the quadratic equation x^2 - 5x + 6 = 0, we find x =",
+      "answers": [
+        2,
+        3
+      ],
+      "rung": 1,
+      "label": "L1 a number",
+      "samples": [
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 8,
+          "lrs_frac": 0.2297,
+          "completion": " and, and, and, and, \nx,\n\nthe the the the\n\n,\n\n, and,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 9,
+          "lrs_frac": 0.2951,
+          "completion": " .\n\n\n\n\n.\n\n\n,\n\nthe the the the.\n\n,\n\n...,\n\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.1266,
+          "completion": " 1, which,\n\nthe the [\n\n, the the the\n\n\n\n\n, the\n\n, and,\n\n,\n\n,\n\n,\n\nthe the\n,\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 7,
+          "lrs_frac": 0.1778,
+          "completion": " the the the the the.\n\nThe the the the, which, which.\n\n, and,\n\n, and,\n\n,\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 9,
+          "lrs_frac": 0.2051,
+          "completion": " the the \nx, which, and,\n\n\n,\n\nthe the\n\n,\n\nthe the the the\n\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2381,
+          "completion": " the the the the the the the \nthe., , the,\n\nthe\n\n, the the the\n\n, the,\n\nthe the the the,\n\n, and, the,\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.45,
+          "max_line_repeat_completion": 9,
+          "lrs_frac": 0.1579,
+          "completion": " the the the the.1.1, and, \n,\n\n,\n,\n\n.\n\noutput,\n,\n\nthe the the\n\n,\n\n,\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.1798,
+          "completion": " the the the \nx, the the the the the, the, and,\n\n, and,\n\n, and, and,\n\nthe\n\n,\n\n\n\n,\n\n,\n\n,\n\n",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "area",
+      "prompt": "The area of a rectangle 7 cm by 3 cm is",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.2143,
+          "completion": " the the the the the the \nthe\n\nthe the the\n\n\nthe the the\n\nthe\n\nthe the the\n\n`,\n\nthe\n\n-,\n\n\n\n,\n\nand,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.1979,
+          "completion": " the the the \n.\n\nthe the the the the the,\n\nthe\n\nthe\n\nthe the the the\n\n,\n\nthe\n\nthe\n\n, the\n\n,\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 6,
+          "lrs_frac": 0.2727,
+          "completion": " the the the the the the the, which, and, the the,\n\n.\n\n.\n\n,\n\n, and,\n\n,\n\n,\n\n,\n\nand,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.1667,
+          "completion": " the the the the \nthe \nthe the the \nA,\n\nthe the the the\n\n\n\n\n,\n\n,\n\nthe\n\nthe the\n\n\nand,\n\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1652,
+          "completion": " the the \\ the the the the \nx, and.\n\nThe the the \nthe, and,\n\nthe the the\n\nthe the the the the the,\n\nthe,\n\nthe, and\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.2115,
+          "completion": " the \nthe the the the, and, the the the \n, the the the the, and, and,\n\n, which,\n\n,\n\nthe the,\n\nthe\n\n,\n\n,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.4286,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1753,
+          "completion": " the the 1.1.30.\n\nthe the the the.\n\nthe the\n\nthis, and,\n\n,\n\nthe the the the,\n.\n\nthe the\n\nthe the,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": true,
+          "rel_err": 0.8571,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.16,
+          "completion": "\n3, the the the the the, and.\n\nand, the\n\nand,\n\nthe the the the\n\n\n\n, the the\n\n,\n\n, and,\n\nthe the\n\nthe",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "frac",
+      "prompt": "1/2 + 1/4 =",
+      "answers": [
+        0.75
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 9,
+          "lrs_frac": 0.2206,
+          "completion": " the other.1.\n\n, which.\n\n\n,\n\nvalue.\n\n,\n\n,\n\n,\n\n,\n\n,\n\n, and,\n\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.2198,
+          "completion": ", the the the the the the.\n\n, and, and,\n\nthe the the,\n\n, and, and,\n\nthe\n\n, and,\n\n,\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.1507,
+          "completion": " 1, and, \n, the the the s,\n\n, , the \n(1,\n\n, and, and,\n,\n\n,\n\n,\n\n,\n\n, and,\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.6667,
+          "max_line_repeat_completion": 11,
+          "lrs_frac": 0.3286,
+          "completion": " the the the the the the\n\n2, and, \nif,\n\n,\n\n,\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.4667,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2247,
+          "completion": " 1.1.\n\n\n. the the the the the the.\n\nand.\n\n, and is,\n\nthe the the\n\nthe the\n\n\n\n, and,\n\n,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.2128,
+          "completion": " the the the the the the, so, and, , , and,\n\nWait, the the the the,\n\nand,\n\n,\n\n,\n\n,\n\n\n, and,\n\n,",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.4667,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.1829,
+          "completion": " the the the 1.1.\n\nB is, and, and,\n\nis, and, and,\n\nthe the the\n\n,\n\n,\n\nThe,\n,\n\n\n,\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.1348,
+          "completion": " the the the n.\n\n, and is.1, and, and.\n\nThe the the the,1,1,\n\n, and,\n\n, and,\n\n,\n\n, and,\n\n",
+          "halt_depth": 2.0
+        }
+      ]
+    }
+  ],
+  "chat_template": false,
+  "decoder": "act",
+  "n_loops": 4,
+  "force_full_depth": true,
+  "mean_halt_depth": 2.0,
+  "copied_from_prompt": 1,
+  "median_rel_err": 0.9286,
+  "within_10pct": 0,
+  "per_sample_l4": 0.0,
+  "per_sample_l3plus": 0.0,
+  "reached": {
+    "L1+": 10,
+    "L2+": 9,
+    "L3+": 0,
+    "L4+": 0
+  }
+}

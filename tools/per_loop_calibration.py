@@ -181,7 +181,29 @@ def main():
     last = result["per_loop"][-1]["ece"]
     worst = max(r["ece"] for r in result["per_loop"])
     print("-" * 56)
-    if worst > 2.5 * max(last, 1e-6) and worst - last > 0.05:
+    # ACCURACY GATE, ahead of any calibration verdict (added 2026-08-11).
+    # ECE measures whether the head's confidence MATCHES its error rate — which a
+    # uniformly BROKEN model satisfies trivially, by being confidently wrong
+    # everywhere. On the loop-weighted checkpoint this printed "per-loop ECE
+    # roughly uniform — uncertainty-based per-loop selection is defensible" while
+    # next-token accuracy had collapsed 0.980 -> 0.075 at the final loop and loop-0
+    # ECE had IMPROVED 0.288 -> 0.124, precisely BECAUSE the head had correctly
+    # learned to predict "I will be wrong" (mean unc 0.72, err rate 0.84).
+    # A calibration verdict on a model that cannot predict tokens is meaningless
+    # and actively misleading, so it is refused rather than qualified.
+    accs = [r["accuracy"] for r in result["per_loop"]]
+    best_acc = max(accs)
+    if best_acc < 0.5:
+        print(f"VERDICT WITHHELD: best per-loop accuracy is {best_acc:.3f} — the "
+              f"model cannot predict tokens, so calibration says nothing useful.")
+        print("-> a uniformly WRONG model is trivially well-calibrated when the head "
+              "reports low confidence. Fix accuracy before reading ECE.")
+    elif accs[-1] < accs[0]:
+        print(f"VERDICT WITHHELD: accuracy DECREASES with depth "
+              f"({accs[0]:.3f} at loop 0 -> {accs[-1]:.3f} at loop {len(accs)-1}). "
+              f"The trajectory is inverted; deeper loops are worse than shallower "
+              f"ones, which no exit policy can repair.")
+    elif worst > 2.5 * max(last, 1e-6) and worst - last > 0.05:
         print(f"VERDICT: head is calibrated at the final loop (ECE {last:.3f}) but "
               f"NOT at shallower loops (worst {worst:.3f}).")
         print("-> use per-loop CE, not uncertainty-argmin, as the MoDr best-exit target.")
