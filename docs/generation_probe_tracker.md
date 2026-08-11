@@ -823,6 +823,49 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-11 — rung 3 leg 1: 8,706 steps loop-weighted, NO depth collapse, ρ(A) UNMOVED
+
+`checkpoints_loopweighted/step_0117206.pt` — `--loop-loss-weighting uniform` from
+the 108,471 base. 13h23m, 8,650 logged steps, **5.57 s/step vs the pour's 5.00 —
+only 1.11x**, not the 2x predicted. Four codas and four head+loss passes cost ~11%.
+
+**The abort condition did NOT fire.** `n_loops` held at 4 for every logged step;
+no collapse toward loop 0, so the λ₀→1 shortcut failure that Silent Thinking
+(2603.21676) predicts, and that we hit once with the ACT-weighted sum, did not
+recur under uniform per-loop weighting. `gnorm` median 0.96, 3 of 174 above 5.
+
+### ρ(A) is unchanged, and that is a second explanation for the flat depth sweep
+
+    step 108,500   ρ(A) ∈ [0.220824, 0.265697]
+    step 117,000   ρ(A) ∈ [0.220296, 0.270053]
+
+8,706 steps of per-loop supervision moved the contractivity of
+`recurrent.injection` essentially not at all. At ρ ≈ 0.245 the LINEAR part of the
+update converges geometrically — residual 0.36% of initial by loop 4, 0.001% by
+loop 8 — so loops 5-8 have almost nothing left to change.
+
+⇒ A mechanistic account of the flat 4/6/8 sweep **independent of the supervision
+question**. If the loop is this contractive, no change of objective produces depth
+extrapolation without also changing the contraction.
+
+**Caveat, stated because it limits the claim:** this is `recurrent.injection`
+only — the linear `A·h + B·e` term. The Transformer term in the same update is
+not in that number and may do substantial per-loop work. Suggestive, not
+decisive; the depth sweep is still the readout.
+
+**Connects to DeepLoop ([2607.13491](https://arxiv.org/abs/2607.13491)) more
+directly than noted when filing it:** that paper adjusts residual scaling *as a
+function of visit count*, and ours does not vary with loop count at all. Worth
+re-reading before rung 5, and possibly before rung 3 leg 2.
+
+**Ended on the documented XPU teardown hang** (max1100_field_notes §168): the
+checkpoint saved at 12:31 and verified loadable (step 117206, 160 tensors,
+optimizer present), then the SYCL runtime deadlocked in teardown holding its
+allocation. `kill -9` is the remedy and the next job OOMs without it. The run
+scripts say "Ctrl-C is safe" without mentioning the cooperative delay, the
+double-signal trap, or this hang — a doc gap that has now cost time twice.
+
+
 ## 2026-08-10 (final) — ✅ RUNG 0 DECIDED: batch size was NOT the mechanism
 
 `checkpoints_v8_bigbatch/step_0002127.pt`, effective batch **256** (32x the prior

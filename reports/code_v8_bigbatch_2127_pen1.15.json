@@ -1,0 +1,831 @@
+{
+  "step": 2127,
+  "temperature": 0.4,
+  "repetition_penalty": 1.15,
+  "seed": 1234,
+  "framing": "bare",
+  "chat_template": true,
+  "samples": 8,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.069,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\nIf any the the\n\ndef __init__(self, b):\n\nThe classifies how both, __init__(self) is is is not only only one one one one one of them:):\nThisThisThis_is_tweakcasecasecase(1000) as as as many, but but then probably probably not. 22Flicklick: 1000)()\nAsFor___rerepe"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0809,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\nThe other other\n\n, b, b, b, b, cdefc_b(b)cg):\n\ndef get_one_cmp(a):):\n    defggg = c1:b233333_d444499855666778:2077778811244999550dcdcdw"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1358,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\nIf you are not necessarily not only of the same of the original, but with a differentiableiable, or or or or any any any another one; and then possibly possibly possibly possibly possibly;;\n\nThis might be as than than 100000+111333444872227565555846999993344688779"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0507,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef solve_two(b):\n\nThe same:\n\n- ** ** ( ** ** ) ); and and the other:: : 10000, 511223334446588762445999756888773444555526333999176877779"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0347,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef __init__(self, b):):\n\nThe a:\n\n_classify_from, and and then use the b b b (bz)\n2bbzzzzwx,y,x0000babd4445556333688899,d1177722244455633bz+c17"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1002,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\nWhen you are not necessarily always less than than than than than 1000000, and then infinite many more than less less less likely to be a greater greater greater greater by a, and many more more more than one more like like as as as 22, or or or or fewer fewer fewer than of of of of many.\n\n\n\n- in both two two different different different different different from multiplethanthan, and both between several"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0504,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\nHospital in a\n\n, b, b, b; and a\n\n. 111225334449988766675010033522889974955777664500003892333334687.pngffffabb1ddeaaaef"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0575,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "\nWe can also use the def from the other, and other more than, which are usually easier than than than the two of of several two two different ways to be less than than 22, 44444566558883377776659999999810333008157777565122_334"
+        }
+      ]
+    },
+    {
+      "task": "double_it",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0781,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndeficient_newest:\n\n#\n\n{:20011, 3655788944121136, 99735444880523, 992.777666533, 400885999998. \n\nI hope hope hopefullylylylylyly"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0927,
+          "lines_dropped": 18,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self, self):\n\ndef __init__(self, self):):\n        self.name = None None None None None  # 000000\n        \"\"\"\n        \"\"\"\n\n        def def_self(self):\n            return return None  # # \" \" \" \"1\"\n\n----81224455556333399876244"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0591,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\ndef compute_self, self,\n\nclass_class_of:\n\nThe class that is not a class, but also also also be be be used to class.\n\n222334445567689988817000111323444556789999986 of::\n\nThe newton'ss333"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0534,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef __init__(self, self):\n\nclass_self:\n\t...;\n\n# class. 1/1233385678544999200012766445558, 71667998200001733333)\n\t:: # # # # 499988"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1271,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n\nclass_name = self.get_name()(self)):\n\tdef __init__(self, self.__class__,__)__)())():():()()()(n) should: 1111124455333852009998633444467887777)#50000"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.038,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def lhs_cmp_\n\nclass_\n\nThe cnf, the function, but not in the, so we have been called by f:\n\n- - - - 1000000. 112333445888999776666255743333554999998741222"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0382,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndeficient_self,user,\n\nThe following 30000\n\nIframe:\n\nThe: 12222446688137559998715781544733236668955899941433777688110007.5.5The The"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.065,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\ndef defn_n, n=100, 2123454886465977323\n\nThis is not a number number 100008976645999815677778664455598333333, 22222.7988:::"
+        }
+      ]
+    },
+    {
+      "task": "get_first",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0556,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef get_first_\n\n\ndef get_first(self, self):\n    def __init__(self, self):):\n        self.name = self.getname()()(self) );;;;;;,, but not not not in inclusively-based based on on the the entire 44444455500000 to be a non-zero integer integer. The 333):"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1171,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef __init__(self, self):):\n{self.name='self': self.get_name()():\n\treturn None None None None None: 100000\n\t}\n\t\t##self\n```<|im_end|>\n) as as one of the same same same same same None (not necessarily necessarily necessarily necessarily possibly not not a a a a a not not only than than than than than as 31; or or or"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0616,
+          "lines_dropped": 38,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n\ndef get_name():\n\tiframe_s:::\n\tself.get_shelf(self) is not None None:):\n\t\tif we have have been successful.\n\n\n\n\n\n\n\n\n\n\n\n\n\n*[]]]]**\n  \n \n \n \n  \n  \n  \n  \n ;;;;;;;\n|*/====0. \n, as as as"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0348,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef get_fancy_by_10:\n\nThe original 1000\n\n, 2233, 2244, 56888779976653, 115485999988577734446.36777758466600853.722"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1126,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef __init__(self, self):\n\tself.id, self.__name__ = self.get_id(self)\n\tiframe_id:\n\t\treturn None None None None None None\n\t\t\n\t\t\n\t\tifname_class=NoneNoneNoneNone.get_valuevaluevaluevaluevalvalval00000011223333445555998614778"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0769,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\ndef get_first_name(self):\n\n#.self: name, which is not a name, but but. But wait, no no no, or not necessarily necessarily necessarily possibly possibly possibly not necessarily necessarily necessarily solely solely strictly than than any any without without without without any other than than as as as as less likely than otherwise otherwise potentially potentially potentially relatively than then hence hence presumably presumably presumably least least fewerthanthanthan while while greater less likely possibly even even mostly"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0333,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef get_id_12(...12):\n\nThe following\n\n, 200, 345, 663587799984449771, 88888365500009994446661231757732,  #   # #5132224"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1238,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "def def def_s:\n\ndef def f(self):\ndef def __init__(self, self, self, self):\n        self.self.id = None None None None None None 1000000000  # not not a.id=NoneNoneNoneNoneNone None 11133399555444288226679887166"
+        }
+      ]
+    },
+    {
+      "task": "sum_list",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0526,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def func():\n\n, if you have a number, but also be able to the function, and then is a different of many many many. They can do so that that that two two than than than 444455000000. \n\n- - - - -1778889965533333267777778196899"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0446,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "def def \ufffd      \n\n#\n\ndef _: ( 100, 22, 33, 544227667981458617799980685411053334445807777791222233, 55566689883,  "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1304,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef func(int,\n\n#\n\ndef func(int,\n) 10000001123447688995335622447725189999568848832567777714533333,56,  \n...:: #xxxx"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1195,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef def my_list_from_list(int,list):\n\ndef def def def def def def def\ndef __init__(self, self, self):\n    self.to = self.getget()()()():\n\n\nclass class(self):)::[[]]]::; get get get get get(): 33333344):): # # # #2.81defdefdef"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.049,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n\nclass_1: self.name = self.__name__(self)): # 10000000\n\n#133222448855577999999666854333774888444465122222675533)"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0975,
+          "lines_dropped": 19,
+          "body_stmts": 0,
+          "completion": "\ndef func_list_12(int, int, int, \ndef def def def def def def def, and and to 100\ndef __main__\":\n\nclass, like like, then carbohydogenicogenicis_new_classclassclassclass.\n    \"\"\"\n        self.typetypeof;;;;;\n\n   \n\n    classlesslylylylybyby::\n    class classifififinininindefdefc"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0838,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n\tself.set_dict(self)\n```<|im_end|>\n\n** ** ** ** ** ****** \n\n* * * * * * ** **** ) ) \n \n \n 3333322224444445555577788666668899999901055557"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0417,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef solve_one:\n\n\ndef def 10000\n\nThe function 1111234455220.x1.2387669998543777768449998855666667853333448,555999, 2.002"
+        }
+      ]
+    },
+    {
+      "task": "count_items",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0443,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n    def __name__():\n        self.add_func(self) -> : : : 1:: 10000005\n\n[1]]\n-44558882333777699924444568999998633777758623 -> ->"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0701,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef get_numero:\n\nThe answer is:\n\nThis is a different than than than 1000000. The 244, 223, and 555771999888863466677399455571.99998843311227774, and and and"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0415,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef main():\n\n#\n\n# self.name = self.self.__name__;;;;;; ; ;; ; ;;';();();,););};\";\";\";.;);';';';;';'',%;];();();););};\";;\";\";\"\");\");\";\"\"\"\" \"\"\"\"\"\".\".\".\":\",%;.;.;.;%;];];\":,\",\",\",\"\",\"),\")\" \"|||||"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1111,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\ndef def to__\n\ndef __init__(self, self):\n    def __init__(self, self):\n        self.name = self.self.__class__.__name__\n        self.__class__()()\n        class method method:\n        class_name = { { 1 } } ) )  2.get(() as as as object:::::;;;\n\n- - - - - 2.get():():():"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1094,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef get_total_list(self):\n\n# 10000\n\ndef get_total():\n\treturn 1112357444896655288739999768334444487222555697333308867777645.12:["
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0756,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n\ndef def def _self, self):\nclass __name__:\n\t\tself.classclass_name = self.get_id(name) \t\t\t\t*1000000, 333344588)\n###44122222567779996558) as as"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0714,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef func(self, self, self):\n\ndef def def def __init__(self):): self.self::()()\n\n#\n\nclass_class():():()::::::():(): []()(), 10000334555448886677755222999683334444559888"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0857,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n\tself.name = self.get_class(self, self)\n\t}:\n\n\n-10000012, 1223346445558889999776463555748844455138666673922, \n"
+        }
+      ]
+    },
+    {
+      "task": "is_even",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0702,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def _:\n\n** ** ** **\n** \n\n** **\n, 12, 12, 33344578990001826699754867776855544440182333395000111685566224832122"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1103,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def\n\n#'\n\n] ];\n\nThe following: The exclusructructructructruct.../..//\u2026, in the. 11122233044777865539988.0000498655623388644449979977778563.3_"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0813,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def\n\nLambda, def def\n\ndef def\n\nI hope, 2.3.100112237569984485406785749999886:500063345577777812334446255112234.  # # #"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0552,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def\nto_the\n\nThe new, and the new, the new.\nThe same. The The Newest_the:::: 1000000112233335447688846999986557777775482221113446666859...;;;"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.177,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def\nfrom_fancy_122345610130788399954577668800121142334459877666, \nThis is is is is not a1, but but but but then...;&##???:\n\nThis might be be be not necessarily necessarily necessarily necessarily possibly"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0337,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef from_fancy:\n\nThe following\n\n- the same one, which is not just like, but of. Because Of 100 to be less than than 15000.4444563328882555777799913333468999988224466678787 of of"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0741,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def\n\n:\n\ndef def_int:\n2000, 2, 3.15, 7633643548889996477128917766544457788999900012555552:\n3444668899130"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0396,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def:\n\n#'\n\n#{100000, 5533224581276899997, 445633178869981162, 75334.28517749, 6666822444433177222"
+        }
+      ]
+    },
+    {
+      "task": "reverse_string",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 1,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0765,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n        self.self.__name__ = self.get_name(self)\n        self.name = None None\n\nclass_name:():(): 1000000\n}\n-100, 33355554879999966444448873388552267122"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.122,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef my_name_1234457635216089200986771128935443):\n\n**slowerlowerlowerlowerz+811, 204455599, \n[[]nindyyyyyxxx^33666679, \n{--"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0798,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n    self.name = self.name + self.__class_name + self._id_self_class;\n\n```<|im_end|>\n\n**** ** ** ** ** **   * * 1000000, 1222335444455586999988677777736532443"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1318,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n\nclassify_self:\n\ndef def def def def def __init__(self, self):):\n\treturn self.name = self.__name__()()(...) );;;;;; ; ;: : : : : : : ;|| |__|||| | | | | | | * * by:::::::*||||||...defdefdef"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 5,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.0863,
+          "lines_dropped": 23,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self): # #.\n\nclass_self: self, self.self.__name__ = self.name, self.__name__ = None None None None\n        \"\"\"\n        \"\"\"\n           \n           \n           \n            \"\"\"\n        \"\"\"\n        \"\"\"\n       \n        \n       \n        \n        __init__(__(s),),), including as as as as as as as than than than than than than than compared then use a a more more more more thanthanthan by by by by"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0548,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n\tself.name = self.get_value()()\n```<|im_end|>\nThe `self`'` classifies its own own`` `class`: `-classclass`,`, which is a non-zero integer integer  classically than than than than 2, but more more more than than than two two two two of of of the  classicallyicallylylylylylyly::::"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0697,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\ndef func:\n\n#\n\ndef __init__(self, self, self):\n    def __init__(self):):\n        self.name = self.get_name()()()(self)())())()(s));\n\n#_classclassclass_allococococcc_classclass_dictdictdictdict(int,)) as asasasasasasqccccccdef classclscls clscls"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0711,
+          "lines_dropped": 20,
+          "body_stmts": 0,
+          "completion": "\ndef def __init__(self, self):\n\tself.name = self.__class____(self, self)):\n\tif(s):\n\t\treturn None\n\t\tdef def def_():\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\t\n\t\t\t\tiframe_inininin.get_valuevaluevaluevalueval.get_ununununrereuseuseuseuseuselessless,self.__name__''nohay.\n\n-underunder"
+        }
+      ]
+    },
+    {
+      "task": "max_of_two",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0485,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n, and then\n\n, 3244485761101523986996730057892284076,39, \n\n-4455551188222233668777779045555_18893333016"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.103,
+          "lines_dropped": 98,
+          "body_stmts": 0,
+          "completion": "\n, b, b):\n\n** ** ** ** (a, b)**:\n \n \n \n  \n  \n  \n \n \n \n  \n  \n\n \n\n \n\n  *  \n  \n\n  \n\n  \n\n  \n\n\n\n\n     \n     \n     \n     \n     \n         \n         \n         \n             \n             \n             \n             \n          \n          \n          \n        \n       \n       \n       \n       \n       \n      \n      \n        \n        \n        \n        \n       \n        \n       \n        \n       \n         \n           \n           \n           \n           \n           \n            \n            \n            \n          \n              \n              \n              \n               \n               \n               \n       \n    \n      \n      \n    \n    \n    \n      \n    \n    \n        \n       "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0526,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n, b, a b, b, b):\n\n**\n\n(b, a b) 2b:b bb c11112334466887556799990455887773440001d9a2babbcbcbc5e55ddedede33446666378"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.065,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n, a, b, c1233344557712061889978645000665120b3d9b4eafefebfabb_cdefdefbdddeaedededededadadddggggfdf\n\nclassqqzzvvvxxxwwfcdcdd"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.042,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\n, a, b):\n\nThe same a a. The following 3000000: 244435888122556796819457766613123999954777781923333648711220,544.855:\nM"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1091,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\n** ** ** ** ** ( )\n\n** ** 22 4443335589677811102209768959761988000466555887376222374344440, 33333098111\n\n[{9,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0932,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\n, b, a, b, b):\n\ndef __init__(self): self.b = self.__class__name__; __init__(self)):): pass_class_obj(self) as::: 11112333344455688999702222001678554445560777988"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0431,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\n, 2(a, b):\n\n\nThe same:\n\n. 112344576355488961260087779930000b35e4ddedede9998666e+1b3dcdcdcddg445edededdzdggxxbe4cdef"
+        }
+      ]
+    },
+    {
+      "task": "fibonacci",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0296,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndeficient_user_self.\n\nThis is not always. 101100\n\nThe The 2nd: 222356887649997788847339955453777664553444486120000,5, 1112, 3, the the"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1186,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\n** ** ** ** ** **\n** \n\n**\n** 22256483334445479765713021099887166102015883557777699988***[\n# # # # # # 344444...;89966"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0446,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndeficient_self.html.\n\nnou,n, n.\n\n-n, n!:n/123446855799811223440001667799985553333122300008886667798744444697555"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0368,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndeficient_self.\n\n,\ndef g():\nThe problem of the same is not necessarily not less than than 2: 10000000.12244555663877899997344445888653333172.   & g886355999988755"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1211,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef defn.\n\n#\n\n: is not in the same:\nThe new, which is not necessarily necessarily, or or by an an an an empty, but without any any any any other than than than than than than than several of the other non-zero integer 3444444555666668999999788333320251012"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0654,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\nself.n:\n\n,\n\nfibonacci(n)\n, n=2223344115667883579990010587764463099988555587791422233446667778144400019112_"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.04,
+          "lines_dropped": 15,
+          "body_stmts": 0,
+          "completion": "\ndef defn_fancy:\n\n```<|im_end|>\n\nThe same:\n\n, the classifier, and that` classroom. 1223448663315894777559999002345588864100000781122226,34444678.1,\n  "
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0775,
+          "lines_dropped": 17,
+          "body_stmts": 0,
+          "completion": "\ndeficiency\n\nMy_user_def (101232525489765963422014788978014133,10, \n\nHIGHIGHIGHIGHING 44499657683330685557768:\n  \n  \n \n \n  def defighighighigh"
+        }
+      ]
+    },
+    {
+      "task": "is_prime",
+      "rung": 0,
+      "label": "L0 nothing",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0448,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef def_str(self, self):\n\nself.name = self.get_value()()()\n\n]\nThe value is is is not used by the original original_name, and the function is as as as than 100000115555778899999984433332664444477882222"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0631,
+          "lines_dropped": 13,
+          "body_stmts": 0,
+          "completion": "\ndef my_nice:\n\n* * * 224\n\n**\n(113) + 44455549876663780099975887823014666677538000997te's's's's''|#3422223555110"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0791,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef __init__(self, self):\n\treturn self.self.\n\n- ** ** ** ** **** ) )\n\tif __name__ == '__ '__': ' ' ' ', ', ', '', '', '', '', '' '' ''')', '__|'|'|'|'-'+', '[ '[ '[ ] ] ] , }, }, [], [], [], [], [], [] \"\"'', ', '/ '//'/'-'+', '- '- '-'-'-|-|-/-,-,--,-,"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0867,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndeficient_system_122350354776871409983255610889993246,1007763423110,\n\n}\n\nThe The The New York. This This ThisThisThis is not in the the the the the second-based on on an an an integer 8. In In In"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0871,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef def_to_k:\n(n, n):\n\n```<|im_end|>\nThe function name is not a valid integer number. The function is is not just a non-zero integer integer number. The value is not less than than than 00000: 2. The The The \\ 444445571333333568899999846444"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0791,
+          "lines_dropped": 12,
+          "body_stmts": 0,
+          "completion": "\ndef my_wanted:\n\nThe other\n\nThe other more than the the, and then. 100.23.23445098957687845613123576448999078, 119986^3444776255666078, 110"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0385,
+          "lines_dropped": 14,
+          "body_stmts": 0,
+          "completion": "\ndef def\n\n(n, n):\n{:n}\n\nI hope I'm not sure that is:\nThe number 1000+1300122244455987983333644557778866666699899999,84445556781222"
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0723,
+          "lines_dropped": 16,
+          "body_stmts": 0,
+          "completion": "\ndef def\ntest_func:def_func,\n\n,\nThe function is not in the other, and func(int)\n{::\n}));;;;;; ;);););\n```<|im_end|>\nThe rest of of as as as as. Then there are are are are usually mostly mostly mostly mostly mainly mainly mainly than than one or or with with with many or more than than than than as not necessarily necessarily very very very very"
+        }
+      ]
+    }
+  ],
+  "reached": {
+    "L1+": 0,
+    "L2+": 0,
+    "L3+": 0,
+    "L4+": 0
+  },
+  "diagnostics": {
+    "samples_total": 80,
+    "looped": 1,
+    "per_sample_l3plus": 0.0,
+    "per_sample_l3plus_ci95": 0.0,
+    "looped_frac": 0.013,
+    "median_max_line_repeat": 1,
+    "median_lrs_frac": 0.0711,
+    "char_degenerate": 0,
+    "line_metric_blind": 0,
+    "l3_samples": 0,
+    "l3_looped": 0,
+    "l3_looped_frac": null
+  }
+}

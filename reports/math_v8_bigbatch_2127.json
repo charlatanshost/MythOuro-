@@ -1,0 +1,936 @@
+{
+  "step": 2127,
+  "temperature": 0.4,
+  "seed": 1234,
+  "samples": 8,
+  "repetition_penalty": 1.0,
+  "tasks": [
+    {
+      "task": "add",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n12 + 7 =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        19
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.4211,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6667,
+          "completion": "\n\n\n\n11\n\n\n\n\n\n211\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.4211,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4833,
+          "completion": "\n\n\n11 + 11\n\n\nThe following\n\n\n\n111111111111111111111111111111",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 4.8421,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.541,
+          "completion": "\n\n\nThe following 111\n\n\nThe 1111111111111111111111111111111111",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": false,
+          "rel_err": 0.4211,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5102,
+          "completion": "\n\n\n11 + 11\n\n\n, 2, 111, 11111111111111111111111111",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 0,
+          "lrs_frac": 0.9792,
+          "completion": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.6667,
+          "completion": "\n\n\n\n\n\n**\n\n**\n\n**\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 0,
+          "lrs_frac": 0.9792,
+          "completion": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 10,
+          "lrs_frac": 0.2241,
+          "completion": "\n**\n\n**\n\n**\n\n\n**\n**\n\n\n**\n\n**\n\n\n\n**\n\n**\n\n\n\n\n\n\n\n**\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "sub",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n45 - 18 =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        27
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 8.037,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4862,
+          "completion": "\n\n244\n\n\n**\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n\n\n\n** ** ** ** ** ** ** ** ** ** ** **",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4312,
+          "completion": "\n\n**\n** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.4314,
+          "completion": "\n**\n\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n** ** ** ** ** ** ** ** ** ** **\n\n**\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 0.5556,
+          "max_line_repeat_completion": 5,
+          "lrs_frac": 0.2292,
+          "completion": "\n\n242\n\n\n,\n\n, 12, \n, \n\n\n, \n\n, \n\n\n\n\n, \n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9412,
+          "completion": "\n\n**\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3853,
+          "completion": "\n**\n\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ]\n\n\n\n** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n\n** ** **\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 12,
+          "lrs_frac": 0.25,
+          "completion": "\n**\n**\n**\n\n**\n**\n**\n\n**\n\n**\n\n\n\n**\n\n**\n\n**\n\n\n\n\n**\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3939,
+          "completion": "\n\n**\n\n** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "mul",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n6 * 7 =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        42
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1875,
+          "completion": "\nThe new\n\n\nIf any the the\n\n\n, then\n\n\nThe same\n\n\n\n\n, and\n\n, or or\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.4393,
+          "completion": "\n**\n**\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n\n\n\n**\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.9259,
+          "completion": "\n**\n**\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 11,
+          "lrs_frac": 0.3051,
+          "completion": "\n**\n**\n**\n**\n\n**\n**\n**\n\n\n**\n\n**\n\n\n**\n\n**\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1471,
+          "completion": "\n, which is a good way to be a\n\n\n, but then, but also also\n\n\n\n\n, and and, and and then\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.459,
+          "completion": ", \n\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.9286,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6071,
+          "completion": "\n, which is a.\n\n\n\n\n\n3\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4836,
+          "completion": "\n, which is not necessarily not necessarily necessarily necessarily necessarily necessarily necessarily necessarily necessarily necessarily necessarily necessarily necessarily necessarily directly necessarily, or possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "div",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n84 / 4 =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9493,
+          "completion": "\n**\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 10,
+          "lrs_frac": 0.3276,
+          "completion": "\n**\n\n**\n\n**\n\n**\n**\n**\n\n**\n\n**\n\n\n**\n\n**\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2273,
+          "completion": "\nThe\n\n\nThe following is not\n\n\nThe following\n\n\nThe same\n\n\n\n\n\nThe the\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": true,
+          "rel_err": 0.8095,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.625,
+          "completion": "\n\n\n\n\n\n\n,\n\n\n\n, 4, \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6119,
+          "completion": "\nThe\n\n\nThe number should not be found, but not necessarily necessarily necessarily necessarily necessarily possibly possibly; or possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly possibly",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.463,
+          "completion": "\n**\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n** ** ** ** ** ** ** ** **\n\n** ** ** **\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": true,
+          "rel_err": 0.8095,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.3148,
+          "completion": "\n\n\n\n\n\n, and the\n\n\n, 4, \n\n, \n\n\n, \n\n, \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": true,
+          "rel_err": 0.8095,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1667,
+          "completion": "\nThis is not always helpful, but also also also4\n\nThe\n\nThe same is,\n\n\n, and and\n\n\nThe\n\n\n\n\n, and and and and and and\n\n\n\n\n",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "pct",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n10% of 250 is<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        25
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.4e+45,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": "110000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.4e+45,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": "110000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.4e+45,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": "110000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.56,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.4706,
+          "completion": "11\n\n\n#\n\n\n**\n\n\n\n**\n\n\n\n\n\n\n**\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.4e+45,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": "110000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.4044e+45,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.875,
+          "completion": "110110000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4e+44,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9375,
+          "completion": "\n10000000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.532e+45,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8958,
+          "completion": "113300000000000000000000000000000000000000000000",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "avg",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\nThe average of 4, 8, and 12 is<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        8
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2376,
+          "completion": "\n, and then, and then then also also also be\n\n\n\n\n\n\n, and and and and and and and\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4333,
+          "completion": "\nThe the average, 4, 88, 12, 22, 444444444444444444444444444",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4958,
+          "completion": "\n**\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.5279152777777778e+41,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6545,
+          "completion": "\n, and then 1222332222222222222222222222222222222222222",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": true,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4545,
+          "completion": "\n, and then 12, 1122\n\n\n\n\n, 1122222222222222222222222222",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.124,
+          "completion": "\n, and then then and then then then also also also also have have been used in the\n\nThe other\n\n\n\n\n\nThe following\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": false,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2258,
+          "completion": "\n, and then, 122, and then, 12, 12, 11111111111112111111111111",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 9,
+          "copied_from_prompt": false,
+          "rel_err": 0.5,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1923,
+          "completion": "\n- ** ** 2, 3, 12, 12, 22, 22, 12, 2222, 22222222222",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "linear",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\nSolving 3x + 6 = 21 gives x =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        5
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8571,
+          "completion": "\n\nSo someone who is someone, but we have already already already already already already already already already already already already already already already already already already already already already already already already already already already already already already already already already already already already already",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.444444444444445e+41,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7636,
+          "completion": "\n\nThe final 2222222222222222222222222222222222222222222",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 3.4,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2065,
+          "completion": "\n\nWe need to find a way way different than than 22x, and then x + 22222x\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.6,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4667,
+          "completion": "\nSolving 2x + 22y, 22x, and then x y y y y y y z z z z z z z z z z z z z z z z z z z z z z",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7636,
+          "completion": "\n\n\nThe other\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.444444444444445e+41,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7119,
+          "completion": "\n\nThe following 2222222222222222222222222222222222222222222",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 4.4444444444444446e+35,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4865,
+          "completion": "\n\nThe same is not only one than than 2222222222222222222222222222222222222",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7778,
+          "completion": "\n\n\nThe only\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "quadratic",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\nTo solve the quadratic equation x^2 - 5x + 6 = 0, we find x =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        2,
+        3
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.7059,
+          "completion": "\n\n**\n\n\n\n**\n\n**\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 1,
+          "n_numbers": 3,
+          "copied_from_prompt": true,
+          "rel_err": 1.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4158,
+          "completion": "\nIf x is not possible, then x = 0x + 0, and then x + 0xxx + + + + + + + + + + + + + + + + + + + + + +",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7925,
+          "completion": "\nLet x = x\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": true,
+          "rel_err": 0.0,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6207,
+          "completion": "\nSo the the x 2x + + + 1666222x + + + + + + + + + + + + + + + + + + + + + + + + + + + +",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.6154,
+          "completion": "\n\n**\n\n\n\n**\n\n**\n\n\n**\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.82,
+          "completion": "\nIf you are not provided as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as as",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.7059,
+          "completion": "\n\n**\n\n\n\n**\n\n**\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.7912,
+          "completion": "\nIf x, y, y, y y, z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "area",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\nThe area of a rectangle 7 cm by 3 cm is<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        21
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.1163915343915343e+39,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5932,
+          "completion": "\n\nThe the area of 44444222222222222222222222222222222222222",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8632,
+          "completion": "\n\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": false,
+          "rel_err": 4.8095,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1962,
+          "completion": "\n\nThe the area of the area of of the the 122\n\nThe the of the other other other other other other 122\n\n\n\nThe other, and and and and and other other other other",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 2.1232787725820106e+42,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.6667,
+          "completion": "\n\n\n\n44588854224222222222222222222222222222222222",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8632,
+          "completion": "\n\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9313,
+          "completion": "\n\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 4,
+          "copied_from_prompt": true,
+          "rel_err": 0.8571,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2771,
+          "completion": "\n\nThe the area of the area of of the the 3 cm of 3m^2, and 444444444444444444444444",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 0,
+          "n_numbers": 0,
+          "copied_from_prompt": false,
+          "rel_err": null,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.8522,
+          "completion": "\n\n** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        }
+      ]
+    },
+    {
+      "task": "frac",
+      "prompt": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n1/2 + 1/4 =<|im_end|>\n<|im_start|>assistant\n",
+      "answers": [
+        0.75
+      ],
+      "rung": 2,
+      "label": "L2 right form",
+      "samples": [
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 1.4948148148148148e+47,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.9167,
+          "completion": "112111111111111111111111111111111111111111111111",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.42,
+          "completion": "1/2 + 1/1\n\n+1\n\n\n1/2\n\n\n11\n\n**\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 2,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2131,
+          "completion": "1/4 + 1\n\n\nThe following is the the same one\n\n\n\n\nThe the the the the other other\n\n\n\n\n\n\n\n\n\n\n\nThe the the the the the the the",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 8,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4286,
+          "completion": "1. 2 + 1\n\n# 1: 1\n\n# 2, 11, 3333333333333333333333",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 11,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.2333,
+          "completion": "1/2 + 1\n\n\nThe following\n\n\n\n1/2, 1, 1, 2, 1, 1, 1, 2, 1,     ",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 5,
+          "copied_from_prompt": true,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.3673,
+          "completion": "1/4 + 8\n\n\n. 1\n\n\n\n\n\n\n\n\n, 1, 2, \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 3,
+          "copied_from_prompt": false,
+          "rel_err": 0.3333,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.4375,
+          "completion": "\n\n2.1\n\n\n\n= 1\n\n\n\n\n\n\n\n\n\n\n\n-1\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        },
+        {
+          "rung": 2,
+          "n_numbers": 1,
+          "copied_from_prompt": false,
+          "rel_err": 0.4667,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.5079,
+          "completion": "\n\n1.1\n\n\n\nPlease I need to be a\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+          "halt_depth": 2.0
+        }
+      ]
+    }
+  ],
+  "chat_template": true,
+  "decoder": "act",
+  "n_loops": 4,
+  "force_full_depth": false,
+  "mean_halt_depth": 2.0,
+  "copied_from_prompt": 12,
+  "median_rel_err": 0.8571,
+  "within_10pct": 1,
+  "per_sample_l4": 0.0,
+  "per_sample_l3plus": 0.0,
+  "reached": {
+    "L1+": 10,
+    "L2+": 10,
+    "L3+": 0,
+    "L4+": 0
+  }
+}
