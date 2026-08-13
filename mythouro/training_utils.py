@@ -712,6 +712,38 @@ _DATASET_SPECS = [
 ]
 
 
+def extract_field_text(sample: dict, field) -> str:
+    """
+    Text for one dataset row. `field` is a column name, or a TUPLE of them.
+
+    The tuple form joins several columns with a blank line, which is how the
+    task-shaped instruct sets are fed: ("problem", "generated_solution") becomes
+    "problem\\n\\nsolution". That concatenation IS the supervision — raw-continuation
+    distillation has no chat template, so the model learns the shape "a problem is
+    followed by a worked solution ending in an answer" purely from adjacency.
+    `open-web-math` never demonstrates that (only 2% of documents mark an answer
+    at all; see tools/check_math_data).
+
+    MODULE-LEVEL SINCE 2026-08-13, and that is the point. This logic lived only
+    inside `MixedDataset._extract_text`, while `tools/gen_teacher_corpus._seed_streams`
+    did a bare `sample.get(field, "")`. A dict `.get()` with a TUPLE key always
+    misses, so both instruct corpora returned "" on every row, hit
+    `if not text: continue`, and spun forever inside the stream's `while True`
+    epoch loop. math_instruct + code_instruct are 26.5% of the mix, so with
+    --batch 30 essentially every batch drew at least one dead stream and the
+    FIRST batch never completed: a 6-hour harvest burned 87% CPU and produced
+    zero rows. Latent from 2026-07-31 (when the shape split added those sources)
+    until the next harvest was attempted on 2026-08-12 — the classic
+    fixed-where-noticed failure. One implementation, two callers, from here on.
+    """
+    if not field:
+        return ""
+    if isinstance(field, (tuple, list)):
+        parts = [str(sample.get(f, "") or "").strip() for f in field]
+        return "\n\n".join(p for p in parts if p)
+    return sample.get(field, "") or ""
+
+
 class MixedDataset(IterableDataset):
     """
     Interleaves three streaming HF datasets at fixed proportions.
@@ -849,22 +881,8 @@ class MixedDataset(IterableDataset):
             return None
 
     def _extract_text(self, sample: dict, field) -> str:
-        """Text for one row. `field` is a column name, or a TUPLE of them.
-
-        The tuple form joins several columns with a blank line, which is how the
-        task-shaped instruct sets are fed: ("problem", "generated_solution")
-        becomes "problem\\n\\nsolution". That concatenation IS the supervision —
-        raw-continuation distillation has no chat template, so the model learns
-        the shape "a problem is followed by a worked solution ending in an
-        answer" purely from adjacency. `open-web-math` never demonstrates that
-        (only 2% of documents mark an answer at all; see tools/check_math_data).
-        """
-        if not field:
-            return ""
-        if isinstance(field, (tuple, list)):
-            parts = [str(sample.get(f, "") or "").strip() for f in field]
-            return "\n\n".join(p for p in parts if p)
-        return sample.get(field, "") or ""
+        """Text for one row — see `extract_field_text`, which this delegates to."""
+        return extract_field_text(sample, field)
 
     def __iter__(self):
         worker = get_worker_info()

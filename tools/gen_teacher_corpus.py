@@ -37,6 +37,7 @@ import mythouro.device as dev                  # noqa: E402
 from mythouro.training_utils import (          # noqa: E402
     _DATASET_SPECS,
     _MIX_RATIOS,
+    extract_field_text,
     _teacher_cache_usable,
     load_distillation_teacher,
     teacher_logits,
@@ -147,9 +148,31 @@ def _seed_streams(tok, seed_len: int, rng: "random.Random",
                 ds = ds.shuffle(seed=stream_seed + epoch,
                                 buffer_size=stream_buffer)
             epoch += 1
+            skipped = 0
             for sample in ds:
-                text = sample.get(field, "")
+                # extract_field_text, NOT sample.get(field): `field` is a TUPLE
+                # for the instruct corpora (("problem","generated_solution")),
+                # and a dict .get() with a tuple key ALWAYS misses. That bare
+                # .get returned "" on every row of math_instruct and
+                # code_instruct — 26.5% of the mix — so those streams spun
+                # forever in this `while True` and the harvest's first batch
+                # never completed. 6 hours at 87% CPU, zero rows.
+                text = extract_field_text(sample, field)
                 if not text:
+                    skipped += 1
+                    if skipped % 50_000 == 0:
+                        # A stream that yields nothing used to be SILENT. Now it
+                        # says so, because the failure mode is an invisible hang.
+                        print(f"  [seed-stream] {repo}: {skipped:,} rows with no "
+                              f"usable text (field={field!r}) — check the field spec",
+                              flush=True)
+                    continue
+                # Cheap pre-filter BEFORE tokenizing: a `seed_len`-token document
+                # needs roughly 3 characters per token, so anything far shorter
+                # cannot possibly qualify. Skips the majority of rejects without
+                # paying for a 2048-token tokenize, which is what made a raised
+                # --prompt-len so expensive.
+                if len(text) < seed_len * 3:
                     continue
                 # Tokenize a generous prefix so there is room to pick a window.
                 ids = tok(text, truncation=True, max_length=2048)["input_ids"]
