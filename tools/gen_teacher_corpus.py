@@ -77,7 +77,8 @@ def _sample_top_p(probs: torch.Tensor, top_p: float, on_device: bool) -> torch.T
 def _generate_xpu_safe(teacher, input_ids: torch.Tensor, *, max_new: int,
                        temperature: float, top_p: float,
                        cpu_sampling: bool = False,
-                       cache_factory=None) -> torch.Tensor:
+                       cache_factory=None,
+                       should_stop=None) -> "torch.Tensor | None":
     """
     Manual batched decode for XPU, where HF `generate()` segfaults (on-device
     topk/multinomial — workaround list, docs/max1100_field_notes.md). Mirrors
@@ -95,6 +96,15 @@ def _generate_xpu_safe(teacher, input_ids: torch.Tensor, *, max_new: int,
     inv_t = 1.0 / max(temperature, 1e-5)
     with torch.no_grad():
         for i in range(max_new):
+            # Ctrl-C responsiveness. Before 2026-08-13 the stop flag was polled
+            # ONLY at the top of the main while-loop, i.e. once per BATCH — so
+            # Ctrl-C waited out every remaining decode step (~2 min at
+            # --max-new 512, ~6 min at 1536) before anything happened. distill.py
+            # polls after each optimizer step, which is why training stops
+            # responsively and this did not. Abandoning the batch is safe: its
+            # rows were never accepted, and the caller flushes what already was.
+            if should_stop is not None and should_stop():
+                return None
             if cached:
                 cur = seq if i == 0 else seq[:, -1:]
                 start = 0 if i == 0 else seq.shape[1] - 1
@@ -630,7 +640,19 @@ def main() -> None:
         sources = [keys[torch.multinomial(
             torch.tensor(weights, dtype=torch.float), 1, generator=rng).item()]
             for _ in range(args.batch)]
-        seeds = [next(streams[s]) for s in sources]
+        # Interruptible seed fetch. A stream that yields nothing spins forever
+        # inside its own `while True` (that is exactly what the tuple-field bug
+        # did on 2026-08-12, for six hours), and with the flag polled only at the
+        # batch boundary Ctrl-C could not break out of it. Checking between
+        # sources means the worst case is one document, not one batch — and not
+        # infinity.
+        seeds = []
+        for _s in sources:
+            if stop_requested["v"]:
+                break
+            seeds.append(next(streams[_s]))
+        if stop_requested["v"] or len(seeds) != len(sources):
+            break
         if args.chat_template:
             seeds = [_chat_prompt(tok, sd, src, args.prompt_len, _tmpl_rng)
                      for sd, src in zip(seeds, sources)]
@@ -642,7 +664,10 @@ def main() -> None:
                 teacher, input_ids, max_new=args.max_new,
                 temperature=args.temperature, top_p=args.top_p,
                 cpu_sampling=args.cpu_sampling,
-                cache_factory=cache_factory)
+                cache_factory=cache_factory,
+                should_stop=lambda: stop_requested["v"])
+            if gen is None:                 # Ctrl-C mid-batch: drop it and exit
+                break
         else:
             with torch.no_grad():
                 gen = teacher.generate(
