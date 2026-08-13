@@ -453,6 +453,25 @@ def main() -> None:
     from transformers import AutoTokenizer
     tok = AutoTokenizer.from_pretrained(
         args.teacher_id, trust_remote_code=args.trust_remote_code)
+    # FAIL FAST on config, BEFORE the teacher loads and the cache gates run.
+    # The prealloc mis-sizing and a too-small --prompt-len both used to surface
+    # ~2.5 minutes in, after a 2.6B teacher load and two equivalence probes had
+    # already burned GPU time. Building one throwaway prompt here costs
+    # milliseconds and catches both.
+    if args.chat_template:
+        _probe = list(range(args.prompt_len))          # dummy ids, right length
+        for _src in list(_INSTRUCTION_TEMPLATES) + ["__unknown__"]:
+            _p = _chat_prompt(tok, _probe, _src, args.prompt_len,
+                              random.Random(0))
+            if len(_p) != args.prompt_len:
+                raise SystemExit(
+                    f"chat prompt for source {_src!r} built {len(_p)} tokens, "
+                    f"expected {args.prompt_len} — batching requires exact length"
+                )
+        print(f"chat-template preflight OK: {args.prompt_len}-token prompts, "
+              f"{len(_INSTRUCTION_TEMPLATES)} template sets, "
+              f"cache will size to {args.prompt_len + args.max_new + 8}")
+
     teacher = load_distillation_teacher(
         args.teacher_id, student_vocab_size=tok.vocab_size,
         device=args.device, dtype=torch.bfloat16,
@@ -470,7 +489,13 @@ def main() -> None:
     if args.prealloc_cache:
         from tools.prealloc_ut_cache import (
             make_prealloc_cache, validate_cache_equivalence)
-        total = args.seed_len + args.max_new + 8
+        # Size from the ACTUAL prompt length. In --chat-template mode the
+        # prompt is --prompt-len, not --seed-len; sizing from seed_len gave
+        # max_len 568 (48+512+8) for a 256+512 workload and the cache
+        # overflowed at token 569 — after the teacher had loaded and both
+        # equivalence gates had passed, i.e. ~2.5 minutes in, every time.
+        _prompt_max = args.prompt_len if args.chat_template else args.seed_len
+        total = _prompt_max + args.max_new + 8
         probe_ids = torch.randint(
             0, tok.vocab_size, (1, 12), device=args.device)
         if validate_cache_equivalence(teacher, probe_ids, max_len=total):
