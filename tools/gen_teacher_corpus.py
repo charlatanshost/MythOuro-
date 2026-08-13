@@ -109,7 +109,8 @@ def _generate_xpu_safe(teacher, input_ids: torch.Tensor, *, max_new: int,
 
 def _seed_streams(tok, seed_len: int, rng: "random.Random",
                   *, stream_seed: "int | None" = None,
-                  stream_buffer: int = 1000):
+                  stream_buffer: int = 1000,
+                  from_head: bool = False):
     """
     Per-corpus generators yielding fixed-length token seeds from a RANDOM
     WINDOW of each document.
@@ -178,9 +179,22 @@ def _seed_streams(tok, seed_len: int, rng: "random.Random",
                 ids = tok(text, truncation=True, max_length=2048)["input_ids"]
                 if len(ids) < seed_len:
                     continue
-                hi = len(ids) - seed_len
-                start = rng.randint(0, hi) if hi > 0 else 0
-                yield ids[start:start + seed_len]
+                # Random mid-document window (the default) exists to dodge
+                # boilerplate: seeding from the head made 57% of code samples a
+                # teacher faithfully continuing an Apache header (2026-07-21).
+                # But for INSTRUCTION framing it is wrong — it hands the model a
+                # fragment starting mid-sentence and asks it to "summarise this
+                # passage". Measured on the first chat harvest: 75-90% of
+                # passages began mid-sentence, and math_instruct was being fed a
+                # slice of someone's SOLUTION under the prompt "work through this
+                # problem". Chat mode seeds from the head, where the problem
+                # statement actually is.
+                if from_head:
+                    yield ids[:seed_len]
+                else:
+                    hi = len(ids) - seed_len
+                    start = rng.randint(0, hi) if hi > 0 else 0
+                    yield ids[start:start + seed_len]
 
     return {
         key: stream(repo, config, split, field)
@@ -513,7 +527,8 @@ def main() -> None:
     _stream_len = args.prompt_len if args.chat_template else args.seed_len
     streams = _seed_streams(tok, _stream_len, random.Random(args.seed),
                             stream_seed=stream_seed,
-                            stream_buffer=args.stream_buffer)
+                            stream_buffer=args.stream_buffer,
+                            from_head=args.chat_template)
     keys = list(seed_mix)
     weights = [seed_mix[k] for k in keys]
     rng = torch.Generator().manual_seed(args.seed)
@@ -636,7 +651,15 @@ def main() -> None:
                     pad_token_id=tok.pad_token_id or eot or 0)
         for row, src in zip(gen.tolist(), sources):
             cont = row[_prompt_tokens:]
-            if stop_id is not None and stop_id in cont:
+            # Did the model TERMINATE, or did we just run out of budget? In chat
+            # mode this is the difference between a complete answer and a
+            # sentence cut in half. The first harvest (2026-08-13) appended
+            # <|im_end|> unconditionally, so 100% of rows — every one pinned at
+            # the 512-token cap, 67% with an unclosed <think> — looked complete.
+            # That teaches "stop mid-thought after N tokens" as a valid ending,
+            # which is worse than having no data at all.
+            terminated = stop_id is not None and stop_id in cont
+            if terminated:
                 cont = cont[:cont.index(stop_id)]
             reason = _reject_reason(cont, args.min_new, args.min_distinct1,
                                     args.max_top_share,
@@ -656,6 +679,18 @@ def main() -> None:
                         round(len(Counter(cont[:n])) / n, 4)
                         if len(cont) >= n else None)
                 tele.write(json.dumps(rec) + "\n")
+            if args.chat_template and not terminated:
+                # Ran to --max-new without emitting <|im_end|>. Unrecoverable:
+                # the answer is mid-sentence and there is no honest way to close
+                # it. Raise --max-new if this reject count is large.
+                rejected_n += 1
+                reject_reasons["unterminated"] += 1
+                continue
+            if args.chat_template and "<think>" in tok.decode(cont) \
+                    and "</think>" not in tok.decode(cont):
+                rejected_n += 1
+                reject_reasons["unclosed_think"] += 1
+                continue
             if reason is not None:
                 rejected_n += 1
                 reject_reasons[reason] += 1
