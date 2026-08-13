@@ -24,6 +24,19 @@
 # FINISHES early leaves the card idle, which is the failure mode being fixed —
 # so overshoot and Ctrl-C in the morning. Stopping is free: checkpoints flush
 # and re-running resumes.
+#
+# STOPPING (corrected 2026-08-13). "Ctrl-C is safe" is true but INCOMPLETE, and
+# the gap has cost hours twice:
+#   * The handler is COOPERATIVE — it sets a flag, the loop notices at the next
+#     safe point, then writes a ~3.3GB checkpoint. Nothing appears for 30-60s.
+#     The terminal looks frozen. It is not.
+#   * Do NOT press Ctrl-C twice. A second signal forces KeyboardInterrupt and
+#     SKIPS the graceful save.
+#   * The XPU/SYCL runtime frequently DEADLOCKS IN TEARDOWN after the work is
+#     already done and the checkpoint is written (max1100_field_notes.md). If the
+#     process lingers with the GPU idle, it has finished: `kill -9 <pid>`, then
+#     confirm memory returned with `xpu-smi dump -d 0 -m 18 -n 1`. A half-dead
+#     process holds its allocation and the NEXT job OOMs on a "free" card.
 set -uo pipefail
 cd "$(dirname "$0")"
 source ../venv-xpu/bin/activate
