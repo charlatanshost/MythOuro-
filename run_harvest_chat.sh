@@ -35,12 +35,22 @@
 #                   1500-token CoT, and training on traces teaches rambling.
 #                   ⚠ VERIFY THE TEACHER COMPLIES — if it opens a second <think>,
 #                   the flag does nothing. That check is a 2-minute run.
-#   --max-new 512   Enough for a direct answer once reasoning is suppressed.
+#   --max-new 1024  MEASURED, not guessed: with --no-think the teacher's answers
+#                   run median ~1400 chars (~470 tok), max ~2455 (~820 tok).
+#                   512 truncated a third of them. 1024 covers the median
+#                   comfortably and most of the tail.
 #   --min-new 32    Direct answers are legitimately short.
-#   --batch 30      lane = 256+512+8 = 776 tok; 30 x 776 = 23,280 lane-tokens
-#                   ~42.7 GB against the measured 24,720 = 45.3 GB envelope. The
-#                   batch-12 figure was for max_new 1536; short answers buy the
-#                   lanes back.
+#   --batch 18      lane = 256+1024+8 = 1288 tok; 18 x 1288 = 23,184 lane-tokens
+#                   ~42.5 GB against the measured 24,720 = 45.3 GB envelope.
+#
+# EXPECT ~40-60 accepted tok/s, NOT the 118 of the continuation harvest, and
+# that gap is structural rather than a bug. Continuations all run to the full
+# --max-new and every token is kept. Instruction answers vary in length, and
+# batched decode cannot stop until the LONGEST row in the batch finishes — so
+# short answers idle in their lanes. Continuous batching (lane eviction and
+# refill) is the real fix and is unbuilt; harvest_speedup_plan.md demoted it
+# after measuring EOS waste at 7.8%, which was correct for continuations and
+# is wrong here. Plan 2-3 nights for 5M tokens, or lower --target-tokens.
 #   --prompt-len 256  ~30 tokens of ChatML framing, ~226 of passage. NOT a
 #                   throughput lever — measured 118 tok/s at 256, which beat the
 #                   best continuation harvest (116.7).
@@ -86,8 +96,8 @@ echo "=== if that line does NOT appear, stop: config is wrong, no GPU time spent
 
 python -u -m tools.gen_teacher_corpus \
   --device xpu:0 --teacher-id "$TEACHER" --trust-remote-code \
-  --chat-template --no-think --prompt-len 256 --max-new 512 --min-new 32 \
-  --batch 30 --prealloc-cache \
+  --chat-template --no-think --prompt-len 256 --max-new 1024 --min-new 32 \
+  --batch 18 --prealloc-cache \
   --target-tokens "$TARGET" --out-dir "$DIR" --stream-seed 1 \
   2>&1 | tee "$LOG" || true          # exit code NOT trusted (XPU teardown)
 
