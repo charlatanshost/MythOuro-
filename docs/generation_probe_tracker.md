@@ -823,6 +823,68 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-14 — ❌ GEOMETRY HALTING DEAD, and the per-loop CE curve KILLS DEPTH GROWTH
+
+`tools/step_geometry_probe.py` on `checkpoints_newmix/step_0108471.pt`, 3,072
+positions, 8 loops scored (chance 12.5%).
+
+| selector | agrees with oracle | CE |
+|---|---|---|
+| ORACLE (argmin per-loop CE) | 100.0% | **0.1541** |
+| **fixed depth 3 (what inference emits)** | — | **0.2124** |
+| second_diff (2509.23314) | 14.6% | 0.3142 |
+| min_step | 10.4% | 0.4214 |
+| UncertaintyHead | 22.2% | 0.4935 |
+| converge<0.01 / 0.02 / 0.05 | ~6.3% | ~0.639 |
+
+### 1. Halting on latent dynamics buys nothing
+
+The best geometric rule is WORSE than doing nothing (0.3142 vs 0.2124). It does
+beat the trained head (0.4935) — so the head is the worst selector of the three —
+but the bar is a fixed depth, and nothing clears it. **Do not build the decode
+rule.** Caveat retained: this measures POST-CODA states, not the raw recurrent
+iterates 2509.23314 studies, so the idea is not fully cleared — but it is not
+supported here.
+
+### 2. EVERY selector we have built is worse than doing nothing
+
+    fixed depth 3   0.2124   <- just use the trained depth
+    second_diff     0.3142   (+48%)
+    min_step        0.4214   (+98%)
+    UncertaintyHead 0.4935   (+132%)
+
+Four routing attempts — ACT thresholding, `BestOfTrajectoryGenerator`,
+`train_depth_policy.py`, and now geometry — and not one beats emitting from loop
+3. The oracle at 0.1541 says **27% of per-token headroom genuinely exists**;
+nothing we have tried captures any of it. That is the honest state of the depth
+axis: the target is real, every estimator of it is worse than a constant.
+
+### 3. 🔴 THE CE CURVE KILLS DEPTH GROWTH (rung 5)
+
+    loop:  0      1      2      3      4      5      6      7
+    CE:    1.358  0.531  0.298  0.212  0.230  0.288  0.422  0.640
+                                ^min   ^degrades monotonically
+
+CE bottoms exactly at the trained depth and rises monotonically after —
+**3x worse by loop 7**. Depth beyond 4 is not neutral, it is actively harmful.
+This is independent of the supervision question (rung 3) and of ρ(A)
+contractivity: whatever the loop is doing past its trained depth, it is
+destroying the representation rather than refining it.
+
+⇒ `tools/grow_depth.py` moves from SHELVED to **DEAD** on current evidence.
+Ouro's own "tried 8, dropped to 4 after loss spikes" is the same finding from the
+other direction. Revisit only if the trained depth itself is retrained deeper —
+extrapolating past it is measured to hurt.
+
+### What survives
+
+Use a **fixed depth of 4** and stop routing. The machinery (ACT, halting head,
+best-of-trajectory) is not costing accuracy — [mythouro/main.py:1955] returns
+`h_K` at inference, so ACT is telemetry plus a rarely-firing halt-all break — but
+it is not buying anything either. It is dead weight until a selector exists that
+beats a constant.
+
+
 ## 2026-08-14 — ✅ FIRST INSTRUCTION CORPUS: 2,545 verified teacher exchanges
 
 `data_teacher_chat_clean/` — 2,545 rows, ~540k words of assistant text, ~1.0M

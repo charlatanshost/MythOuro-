@@ -735,7 +735,7 @@ attacks those two roots, not the symptoms.
 | 2 | **`--unc-loop-weighting uniform`** — calibrate the UncertaintyHead at every loop | 1 overnight | Loop-0 ECE falls from **0.288** (`tools/per_loop_calibration.py`). The head currently predicts 1.68% error where it makes 30.4% — 18x overconfident. Run ALONE, not with #3. |
 | 3 | ~~**`--loop-loss-weighting uniform`**~~ | ❌ **DEAD 2026-08-11** | Per-loop accuracy collapsed at EVERY depth (loop 3: 0.980 -> 0.075) and the trajectory INVERTED — deeper loops now worse than shallower. math L3+ 5.0% -> 0.0%, depth sweep still flat at 4/6/8. The "expected transient" story was falsified by its own stated test: loops 0-2 did not rise. **uniform is the HARSHEST arm, not the control** — it gives loop 0, never an output state, 25% of the gradient. If revisited: LoopFormer shortcut-consistency (2602.11451), or progressive/exit_pdf with depth-reg lowered. |
 | 4 | **Resume the pour** to 140,000 (`run_newmix_pour.sh`) | continuous | The base is still the binding constraint on everything else; every rung above is a better *objective* on the same weak base. |
-| 5 | **Grow depth 4→8** (`grow_depth.py`, SHELVED) | 2 sessions | ⚠ **READ [DeepLoop 2607.13491](https://arxiv.org/abs/2607.13491) FIRST** — it adjusts the Post-LN DeepNorm exponent 1/4 → 1/2 AS RECURRENT DEPTH INCREASES. `grow_depth.py` expands four per-loop tensors and changes NO normalisation scaling, which is a concrete candidate explanation for Ouro's own "tried 8, dropped to 4 after loss spikes and gradient oscillations". Also [2604.07822](https://arxiv.org/abs/2604.07822): depth extrapolation has an OPTIMUM — excessive iterations cause "overthinking" that degrades performance.
+| 5 | ~~**Grow depth 4→8**~~ | ❌ **DEAD 2026-08-14** | Per-loop CE bottoms at the trained depth and rises MONOTONICALLY beyond it — 0.212 at loop 3 → 0.640 at loop 7, 3x worse. Depth past 4 is not neutral, it is actively harmful, independent of the supervision question. Ouro's own "tried 8, dropped to 4 after loss spikes" is the same finding from the other side. Revisit only if the TRAINED depth is itself retrained deeper; extrapolating past it is measured to hurt. |
 | 6 | **On-policy SFT** — the actual cure for 2026-08-10 | multi-session build | `docs/onpolicy_plan.md`: "more offline tokens — continued OR fresh — only sharpen the attractor. The cure is a different objective, not more data." Generate from the student, correct against the target. |
 
 **⏱ Timing these runs — estimate at FULL depth, not from warmup.** The 2026-08-10
@@ -746,7 +746,14 @@ evening Windows window. Any wall-clock estimate for a run that starts below
 `max_loop_iters` must use the rate AFTER the curriculum tops out, or it understates
 by ~40%.
 
-**➕ NEW CANDIDATE RUNG (2026-08-10): HALT ON GEOMETRY, NOT ON A LEARNED HEAD.**
+**❌ HALT ON GEOMETRY — CLOSED 2026-08-14.** Measured: the best geometric rule
+(second_diff, 2509.23314) gives CE 0.3142 against 0.2124 for a fixed trained depth.
+It beats the UncertaintyHead (0.4935) but loses to doing nothing. Every selector
+ever built here — ACT, best-of-trajectory, the depth policy, geometry — is worse
+than emitting from loop 3. The oracle (0.1541) says 27% of per-token headroom is
+real; nothing captures it. Use a fixed depth of 4 and stop routing.
+
+, NOT ON A LEARNED HEAD (superseded).**
 Three independent 2026 sources converge on halting from the loop's own dynamics rather
 than a trained confidence signal: [2509.23314](https://arxiv.org/abs/2509.23314)
 (second-order differences in latent step size, reported to beat KL-based early exit on
