@@ -823,6 +823,62 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-14 — ✅ FIRST INSTRUCTION CORPUS: 2,545 verified teacher exchanges
+
+`data_teacher_chat_clean/` — 2,545 rows, ~540k words of assistant text, ~1.0M
+tokens. The first instruction-shaped data this model has ever had access to.
+Before this, every teacher row was a CONTINUATION and the only instruction data
+it ever met was SFT, which collapsed it at every dose and batch size.
+
+| check | result |
+|---|---|
+| malformed (not exactly 3 `<\|im_start\|>`) | **0** / 2,545 |
+| unclosed `<think>` | **0** |
+| missing final `<\|im_end\|>` | **0** |
+| reopened `<think>` | **0** (168 dropped from the raw 2,713) |
+| answer length | median 1,344 chars, p90 ~2,975, max 5,860 — well under the cap |
+
+**Content verified by reading, not just structure.** A PubMed abstract came back
+as a structured summary (objective, methodology) with the numbers drawn from the
+passage. A code passage produced an accurate component-by-component explanation
+grounded in the actual imports. Grounding the instruction in a real corpus snippet
+is also why this should hallucinate less than the continuation harvest, which
+produced "the PAWL study" and 30-mg ibuprofen.
+
+**Settings that got there**, each measured rather than guessed: `--chat-template
+--no-think --prompt-len 256 --max-new 1024 --min-new 32 --batch 18
+--prealloc-cache`. `--no-think` prefills a CLOSED empty reasoning block; verified
+0/18 compliance on a 2-minute probe before committing a night, and 94% across the
+full run (the 6% failures are the 168 dropped rows).
+
+**Throughput: 24 accepted tok/s**, against 118 for the continuation harvest.
+Acceptance 70.5%; `unterminated` was 22% of all attempts even at `--max-new 1024`.
+The gap is structural — batched decode cannot stop until the LONGEST row in the
+batch finishes, so short answers idle in their lanes.
+
+### Continuous batching: costed, and DECLINED
+
+Modelled properly (lognormal fitted to the measured median 430 / max 1024, B=18):
+perfect continuous batching is worth **2.0x**, not the 3.9x an earlier
+`mean × (1+ln B)` heuristic suggested. Cheap alternatives were simulated and do
+not work: stopping at a completion quantile is **1.02x**, and shorter answers
+alone are **0.83x** — cutting the mean without cutting the variance makes the
+max-to-mean ratio worse.
+
+2x costs per-lane cache cursors plus per-row attention masks inside Ouro's
+`eager_attention_forward` — dynamically-loaded remote code, where a subtle masking
+bug corrupts every harvested token while passing every structural check. That is
+the same failure class as the unconditional `<|im_end|>` (2026-08-13). **Owner's
+call — "whatever will not harm the model" — and declined on that basis.** Revisit
+only if chat data is shown to help and more of it is wanted.
+
+**⇒ The open question is now a TRAINING question, not a harvest one:** does
+instruction-shaped teacher data change this model's behaviour at all? 1.0M tokens
+is small — at `--teacher-data-ratio 0.2` a 10k-step leg would re-read it many
+times — so the first test should be SHORT and judged on whether output shape moves
+toward ChatML at all, not on eval scores.
+
+
 ## 2026-08-11 — ❌ RUNG 3 DECIDED: uniform loop weighting DESTROYS the model
 
 `--loop-loss-weighting uniform`, 8,706 steps from the 108,471 base. Not a
