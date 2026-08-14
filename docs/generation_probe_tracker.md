@@ -823,7 +823,7 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
-## 2026-08-14 — ❌ GEOMETRY HALTING DEAD, and the per-loop CE curve KILLS DEPTH GROWTH
+## 2026-08-14 — ⏸ DEPTH ROUTING IS PHASE-GATED, NOT DEAD (corrected same day)
 
 `tools/step_geometry_probe.py` on `checkpoints_newmix/step_0108471.pt`, 3,072
 positions, 8 loops scored (chance 12.5%).
@@ -859,31 +859,45 @@ Four routing attempts — ACT thresholding, `BestOfTrajectoryGenerator`,
 nothing we have tried captures any of it. That is the honest state of the depth
 axis: the target is real, every estimator of it is worse than a constant.
 
-### 3. 🔴 THE CE CURVE KILLS DEPTH GROWTH (rung 5)
+### 3. ⚠️ CORRECTION — the CE curve does NOT kill depth growth
 
     loop:  0      1      2      3      4      5      6      7
     CE:    1.358  0.531  0.298  0.212  0.230  0.288  0.422  0.640
-                                ^min   ^degrades monotonically
+                                ^min   ^-- LOOPS 4-7 WERE NEVER TRAINED --^
 
-CE bottoms exactly at the trained depth and rises monotonically after —
-**3x worse by loop 7**. Depth beyond 4 is not neutral, it is actively harmful.
-This is independent of the supervision question (rung 3) and of ρ(A)
-contractivity: whatever the loop is doing past its trained depth, it is
-destroying the representation rather than refining it.
+**This was first written up as "depth beyond 4 is actively harmful ⇒ grow_depth
+is DEAD". That conclusion is wrong.** `max_loop_iters` is 4, so with `--n-loops
+8` loops 4-7 reuse slot 3's per-loop adaptation
+(`t_idx = min(loop_t, max_loops-1)`, mythouro/main.py). They are off-distribution
+BY CONSTRUCTION. The curve measures **untrained depth EXTRAPOLATION**, which was
+already known to fail (2026-07-31 sweep) and which `grow_depth.py` never
+proposed: that tool EXPANDS the four per-loop tensors and then you TRAIN them.
 
-⇒ `tools/grow_depth.py` moves from SHELVED to **DEAD** on current evidence.
-Ouro's own "tried 8, dropped to 4 after loss spikes" is the same finding from the
-other direction. Revisit only if the trained depth itself is retrained deeper —
-extrapolating past it is measured to hurt.
+⇒ The curve says nothing about **trained** deeper loops. `grow_depth.py` stays
+**SHELVED and phase-gated**, not dead. What would actually test it is expanding
+to 8 and training, which needs a base worth spending the nights on.
 
-### What survives
+### 3b. The same gate applies to every selector result above
 
-Use a **fixed depth of 4** and stop routing. The machinery (ACT, halting head,
-best-of-trajectory) is not costing accuracy — [mythouro/main.py:1955] returns
-`h_K` at inference, so ACT is telemetry plus a rarely-firing halt-all break — but
-it is not buying anything either. It is dead weight until a selector exists that
-beats a constant.
+The oracle's 27% headroom, the head's 0.4935, geometry's 0.3142 — all measured on
+a checkpoint at **5.0% math L3+ / 0.0% L4**. A selector cannot beat the constant
+when the constant is the only trained-good option, and per-loop CE differences on
+a model this weak are differences between degrees of wrong. **These are
+phase-gated results, not closed questions** — the owner's framing, and the
+correct one: depth routing is not a capability lever at this capability, so it
+cannot be evaluated here either way.
 
+### What this DOES establish
+
+Use a **fixed depth of 4 for now** — not because routing is impossible, but
+because no selector beats a constant *on this model*, and the machinery costs
+nothing to leave in place (mythouro/main.py:1955 returns `h_K` at inference, so
+ACT is telemetry plus a rarely-firing break).
+
+**Do not re-run any of this until the base is materially stronger.** Four
+selector attempts have now been evaluated against a floor, and a fifth would tell
+us the same nothing. The gate is capability, and the lever for capability is
+tokens and objective — not depth.
 
 ## 2026-08-14 — ✅ FIRST INSTRUCTION CORPUS: 2,545 verified teacher exchanges
 
