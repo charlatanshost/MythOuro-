@@ -32,9 +32,13 @@
 #                   answer. 512 truncated 100% of responses.
 #   --min-new 64    Real answers to "summarise this abstract" are legitimately
 #                   short; the 128 default was tuned for 768-token continuations.
-#   --batch 16      The prealloc cache sizes to 256+1536+8 = 1800 tokens per lane.
-#                   Batch 30 at that length exceeds 48 GB. Raise it if the first
-#                   minutes show comfortable headroom in `xpu-smi`.
+#   --batch 12      The prealloc cache scales as batch x (prompt+max_new+8) =
+#                   12 x 1800 = 21,600 lane-tokens ~ 39.6 GB, against a measured
+#                   envelope of 24,720 lane-tokens = 45.3 GB on this 48 GB card
+#                   (batch 30 at seq 824, harvest_speedup_plan.md). --batch 16
+#                   was tried on 2026-08-13 and OOM'd at 47.1 GiB: 28,800
+#                   lane-tokens ~ 52.8 GB. A memory preflight now refuses to
+#                   start above ~44 GB estimated, before the teacher loads.
 #   --prompt-len 256  ~30 tokens of ChatML framing, ~226 of passage. NOT a
 #                   throughput lever — measured 118 tok/s at 256, which beat the
 #                   best continuation harvest (116.7).
@@ -81,7 +85,7 @@ echo "=== if that line does NOT appear, stop: config is wrong, no GPU time spent
 python -u -m tools.gen_teacher_corpus \
   --device xpu:0 --teacher-id "$TEACHER" --trust-remote-code \
   --chat-template --prompt-len 256 --max-new 1536 --min-new 64 \
-  --batch 16 --prealloc-cache \
+  --batch 12 --prealloc-cache \
   --target-tokens "$TARGET" --out-dir "$DIR" --stream-seed 1 \
   2>&1 | tee "$LOG" || true          # exit code NOT trusted (XPU teardown)
 

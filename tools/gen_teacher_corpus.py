@@ -496,6 +496,30 @@ def main() -> None:
               f"{len(_INSTRUCTION_TEMPLATES)} template sets, "
               f"cache will size to {args.prompt_len + args.max_new + 8}")
 
+    # MEMORY PREFLIGHT, also before the teacher loads. The prealloc UT cache
+    # scales as batch x (prompt + max_new), and on 2026-08-13 a --batch 16 /
+    # max_new 1536 config OOM'd at 47.1 GiB — AFTER a 2.6B teacher load and 2.5
+    # minutes of cache validation. Known-good measured point
+    # (harvest_speedup_plan.md): batch 30 at seq 824 = 24,720 lane-tokens =
+    # 45.3 GB resident on a 48 GB card. Linear in lane-tokens, so a ratio is
+    # enough to catch the obvious overshoot cheaply.
+    if args.prealloc_cache:
+        _lane = (args.prompt_len if args.chat_template else args.seed_len) \
+            + args.max_new + 8
+        _lt = args.batch * _lane
+        _est = 45.3 * _lt / (30 * 824)
+        print(f"memory preflight: batch {args.batch} x {_lane} tok/lane = "
+              f"{_lt:,} lane-tokens ~ {_est:.1f} GB "
+              f"(measured envelope: 24,720 = 45.3 GB)")
+        if _est > 44.0:
+            raise SystemExit(
+                f"refusing to start: ~{_est:.1f} GB estimated, which will OOM a "
+                f"48 GB card. Lower --batch to about "
+                f"{int(44.0 * (30*824) / (45.3 * _lane))}, or lower --max-new / "
+                f"--prompt-len. (Estimate is linear in batch x sequence; the "
+                f"measured point is batch 30 at 824 tokens = 45.3 GB.)"
+            )
+
     teacher = load_distillation_teacher(
         args.teacher_id, student_vocab_size=tok.vocab_size,
         device=args.device, dtype=torch.bfloat16,
