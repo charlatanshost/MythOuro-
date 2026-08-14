@@ -28,17 +28,19 @@
 # --max-new without terminating are now REJECTED, not relabelled.
 #
 # SETTINGS, and why they are not the defaults:
-#   --max-new 1536  A THINKING teacher needs room to close its reasoning AND
-#                   answer. 512 truncated 100% of responses.
-#   --min-new 64    Real answers to "summarise this abstract" are legitimately
-#                   short; the 128 default was tuned for 768-token continuations.
-#   --batch 12      The prealloc cache scales as batch x (prompt+max_new+8) =
-#                   12 x 1800 = 21,600 lane-tokens ~ 39.6 GB, against a measured
-#                   envelope of 24,720 lane-tokens = 45.3 GB on this 48 GB card
-#                   (batch 30 at seq 824, harvest_speedup_plan.md). --batch 16
-#                   was tried on 2026-08-13 and OOM'd at 47.1 GiB: 28,800
-#                   lane-tokens ~ 52.8 GB. A memory preflight now refuses to
-#                   start above ~44 GB estimated, before the teacher loads.
+#   --no-think      Prefills a CLOSED <think></think> so the teacher answers
+#                   DIRECTLY. At --max-new 1536 WITHOUT it, 50% of responses never
+#                   finished reasoning (rejected as unterminated) at ~9 tok/s. It
+#                   is also the better corpus: a 278M student cannot execute
+#                   1500-token CoT, and training on traces teaches rambling.
+#                   ⚠ VERIFY THE TEACHER COMPLIES — if it opens a second <think>,
+#                   the flag does nothing. That check is a 2-minute run.
+#   --max-new 512   Enough for a direct answer once reasoning is suppressed.
+#   --min-new 32    Direct answers are legitimately short.
+#   --batch 30      lane = 256+512+8 = 776 tok; 30 x 776 = 23,280 lane-tokens
+#                   ~42.7 GB against the measured 24,720 = 45.3 GB envelope. The
+#                   batch-12 figure was for max_new 1536; short answers buy the
+#                   lanes back.
 #   --prompt-len 256  ~30 tokens of ChatML framing, ~226 of passage. NOT a
 #                   throughput lever — measured 118 tok/s at 256, which beat the
 #                   best continuation harvest (116.7).
@@ -84,8 +86,8 @@ echo "=== if that line does NOT appear, stop: config is wrong, no GPU time spent
 
 python -u -m tools.gen_teacher_corpus \
   --device xpu:0 --teacher-id "$TEACHER" --trust-remote-code \
-  --chat-template --prompt-len 256 --max-new 1536 --min-new 64 \
-  --batch 12 --prealloc-cache \
+  --chat-template --no-think --prompt-len 256 --max-new 512 --min-new 32 \
+  --batch 30 --prealloc-cache \
   --target-tokens "$TARGET" --out-dir "$DIR" --stream-seed 1 \
   2>&1 | tee "$LOG" || true          # exit code NOT trusted (XPU teardown)
 

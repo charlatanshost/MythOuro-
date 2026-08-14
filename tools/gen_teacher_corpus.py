@@ -78,7 +78,8 @@ def _generate_xpu_safe(teacher, input_ids: torch.Tensor, *, max_new: int,
                        temperature: float, top_p: float,
                        cpu_sampling: bool = False,
                        cache_factory=None,
-                       should_stop=None) -> "torch.Tensor | None":
+                       should_stop=None,
+                       stop_id: "int | None" = None) -> "torch.Tensor | None":
     """
     Manual batched decode for XPU, where HF `generate()` segfaults (on-device
     topk/multinomial — workaround list, docs/max1100_field_notes.md). Mirrors
@@ -94,6 +95,9 @@ def _generate_xpu_safe(teacher, input_ids: torch.Tensor, *, max_new: int,
     # sized for prompt + max_new so update() can never overflow.
     past = cache_factory() if (cache_factory and cached) else None
     inv_t = 1.0 / max(temperature, 1e-5)
+    # Per-row completion tracking for the early exit below.
+    done = torch.zeros(seq.shape[0], dtype=torch.bool, device=seq.device) \
+        if stop_id is not None else None
     with torch.no_grad():
         for i in range(max_new):
             # Ctrl-C responsiveness. Before 2026-08-13 the stop flag was polled
@@ -114,6 +118,18 @@ def _generate_xpu_safe(teacher, input_ids: torch.Tensor, *, max_new: int,
             probs = torch.softmax(logits[:, -1, :].float() * inv_t, dim=-1)
             nxt = _sample_top_p(probs, top_p, on_device=not cpu_sampling)
             seq = torch.cat([seq, nxt.to(seq.device)], dim=1)
+            # EARLY EXIT once every row has emitted the stop token. Without this
+            # the loop always ran the full --max-new, so short answers paid for
+            # decode steps that produced nothing: with --no-think an answer of
+            # ~150 tokens still cost 512 steps, i.e. ~70% of the GPU time
+            # discarded. harvest_speedup_plan.md measured EOS waste at only 7.8%
+            # and demoted continuous batching on that basis — correctly, for
+            # CONTINUATIONS, which run to the full length. Instruction answers
+            # are short, which inverts that finding entirely.
+            if done is not None:
+                done |= (nxt.to(seq.device).squeeze(-1) == stop_id)
+                if bool(done.all()):
+                    break
     return seq
 
 
@@ -710,7 +726,8 @@ def main() -> None:
                 temperature=args.temperature, top_p=args.top_p,
                 cpu_sampling=args.cpu_sampling,
                 cache_factory=cache_factory,
-                should_stop=lambda: stop_requested["v"])
+                should_stop=lambda: stop_requested["v"],
+                stop_id=stop_id)
             if gen is None:                 # Ctrl-C mid-batch: drop it and exit
                 break
         else:
