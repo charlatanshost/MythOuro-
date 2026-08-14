@@ -276,7 +276,7 @@ _INSTRUCTION_TEMPLATES = {
 
 
 def _chat_prompt(tok, snippet_ids: list[int], source: str, prompt_len: int,
-                 rng) -> "list[int]":
+                 rng, no_think: bool = False) -> "list[int]":
     """
     One fixed-length ChatML prompt of EXACTLY `prompt_len` tokens.
 
@@ -293,7 +293,17 @@ def _chat_prompt(tok, snippet_ids: list[int], source: str, prompt_len: int,
     prefix = tok.encode(
         f"<|im_start|>system\n{_SYSTEM}<|im_end|>\n<|im_start|>user\n{instruction}"
     )
-    suffix = tok.encode("<|im_end|>\n<|im_start|>assistant\n")
+    # --no-think prefills a CLOSED, EMPTY reasoning block so the teacher goes
+    # straight to the answer. Ouro's chat template has no switch for this: with
+    # enable_thinking=True it prefills "<think>\n", and with it off the model
+    # opens one anyway (80% of the 2026-08-13 harvest did, and at --max-new 1536
+    # HALF still had not closed it). Suppressing it is not only a throughput fix:
+    # a 278M student cannot execute 1500-token reasoning traces, and training on
+    # them teaches rambling — the exact failure this project keeps fighting. What
+    # it needs from the teacher is the ANSWER.
+    suffix = tok.encode(
+        "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+        if no_think else "<|im_end|>\n<|im_start|>assistant\n")
     budget = prompt_len - len(prefix) - len(suffix)
     if budget < 16:
         raise ValueError(
@@ -354,6 +364,16 @@ def main() -> None:
                         "collapsed it at every dose and batch size. This routes "
                         "instruction-following through on-policy distillation "
                         "instead, the one channel proven on this model.")
+    p.add_argument("--no-think", action="store_true",
+                   help="Prefill a closed, empty <think></think> block so the "
+                        "teacher answers DIRECTLY instead of reasoning first. "
+                        "Ouro-2.6B-Thinking emits very long traces: at "
+                        "--max-new 1536, 50%% of responses never finished "
+                        "reasoning and were rejected as unterminated, at ~9 "
+                        "tok/s. Beyond throughput, a 278M student cannot "
+                        "execute 1500-token CoT — training on traces teaches "
+                        "rambling. VERIFY THE TEACHER COMPLIES before a long "
+                        "run: if it opens a second <think>, this does nothing.")
     p.add_argument("--prompt-len", type=int, default=256,
                    help="Fixed ChatML prompt length in tokens for "
                         "--chat-template. Every prompt is truncated/padded to "
@@ -486,7 +506,7 @@ def main() -> None:
         _probe = list(range(args.prompt_len))          # dummy ids, right length
         for _src in list(_INSTRUCTION_TEMPLATES) + ["__unknown__"]:
             _p = _chat_prompt(tok, _probe, _src, args.prompt_len,
-                              random.Random(0))
+                              random.Random(0), no_think=args.no_think)
             if len(_p) != args.prompt_len:
                 raise SystemExit(
                     f"chat prompt for source {_src!r} built {len(_p)} tokens, "
@@ -678,7 +698,8 @@ def main() -> None:
         if stop_requested["v"] or len(seeds) != len(sources):
             break
         if args.chat_template:
-            seeds = [_chat_prompt(tok, sd, src, args.prompt_len, _tmpl_rng)
+            seeds = [_chat_prompt(tok, sd, src, args.prompt_len, _tmpl_rng,
+                                  no_think=args.no_think)
                      for sd, src in zip(seeds, sources)]
         input_ids = torch.tensor(seeds, device=args.device)
         if dev.backend(args.device) == "xpu":
