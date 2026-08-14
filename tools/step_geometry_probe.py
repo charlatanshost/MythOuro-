@@ -106,6 +106,7 @@ def probe(model, tok, device: str, n_loops: int, chunks: int, seq_len: int) -> d
     ce_of: dict = {}
     head_agree = total = 0
     ce_oracle = ce_head = ce_final = 0.0
+    per_loop = [0.0] * n_loops
     nb = 0
 
     for _ in range(chunks):
@@ -136,6 +137,8 @@ def probe(model, tok, device: str, n_loops: int, chunks: int, seq_len: int) -> d
         ce_oracle += float(ce.gather(-1, best_k.unsqueeze(-1)).mean())
         ce_head += float(ce.gather(-1, head_k.unsqueeze(-1)).mean())
         ce_final += float(ce[:, :, K - 1].mean())
+        for k in range(K):
+            per_loop[k] += float(ce[:, :, k].mean())
 
         for name, idx in _rules(states).items():
             idx = idx.clamp(max=K - 1)
@@ -152,6 +155,7 @@ def probe(model, tok, device: str, n_loops: int, chunks: int, seq_len: int) -> d
         "ce_oracle": ce_oracle / nb,
         "ce_head": ce_head / nb,
         "ce_final_loop": ce_final / nb,
+        "ce_per_loop": [c / nb for c in per_loop],
         "rules": {k: {"agreement": agree[k] / total if total else 0.0,
                       "ce": ce_of[k] / nb} for k in agree},
     }
@@ -185,29 +189,40 @@ def main() -> None:
     print(f"  {'UncertaintyHead':18} {100*r['head_agreement']:16.1f}% {r['ce_head']:9.4f}")
     for name, d in sorted(r["rules"].items(), key=lambda kv: -kv[1]["agreement"]):
         print(f"  {name:18} {100*d['agreement']:16.1f}% {d['ce']:9.4f}")
-    print(f"\n  fixed depth {args.trained_loops - 1} (what inference emits): "
-          f"{r['ce_final_loop']:.4f}  <- the number to beat")
+    ti = min(args.trained_loops, len(r["ce_per_loop"])) - 1
+    ce_trained = r["ce_per_loop"][ti]
+    r["ce_trained_depth"] = ce_trained
+    print(f"\n  CE per loop: " + "  ".join(f"{k}:{c:.3f}"
+                                           for k, c in enumerate(r["ce_per_loop"])))
+    print(f"  fixed depth {ti} (WHAT INFERENCE EMITS): {ce_trained:.4f}  <- the number to beat")
+    print(f"  last scored loop {len(r['ce_per_loop'])-1}: {r['ce_final_loop']:.4f}  "
+          f"(off-distribution above the trained depth — NOT the baseline)")
 
-    best = max(r["rules"].items(), key=lambda kv: kv[1]["agreement"])
+    # RANK BY CE, NOT AGREEMENT. A rule can agree with the argmin less often and
+    # still produce far lower CE, because when it disagrees it picks a
+    # nearly-as-good loop. Agreement counts exact matches; CE measures what the
+    # model actually emits. Ranking by agreement on 2026-08-14 declared a rule
+    # dead (14.9% vs the head's 23.3%) whose CE was 0.309 against the head's
+    # 0.492 — the opposite conclusion.
+    best = min(r["rules"].items(), key=lambda kv: kv[1]["ce"])
     print()
-    if best[1]["agreement"] <= r["head_agreement"]:
-        print(f"  VERDICT: no geometric rule beats the trained head "
-              f"({100*best[1]['agreement']:.1f}% vs {100*r['head_agreement']:.1f}%). "
-              f"Halting on latent dynamics is NOT supported here — do not build "
-              f"the decode rule. (See the caveat in the module docstring: this "
-              f"measures POST-CODA states, not the raw recurrent iterates.)")
-    elif best[1]["ce"] >= r["ce_final_loop"]:
-        print(f"  VERDICT: {best[0]} agrees more than the head "
-              f"({100*best[1]['agreement']:.1f}%) but its CE ({best[1]['ce']:.4f}) "
-              f"is no better than simply always using the trained depth "
-              f"({r['ce_final_loop']:.4f}). Better SELECTION, no better OUTPUT — "
-              f"not worth a decode-path change.")
+    if best[1]["ce"] >= ce_trained:
+        print(f"  VERDICT: no geometric rule beats a FIXED trained depth "
+              f"({best[0]} {best[1]['ce']:.4f} vs {ce_trained:.4f}). Halting on "
+              f"latent dynamics buys nothing here — do not build the decode rule. "
+              f"(Caveat in the module docstring: POST-CODA states, not the raw "
+              f"recurrent iterates.)")
     else:
-        print(f"  VERDICT: {best[0]} beats both the head "
-              f"({100*best[1]['agreement']:.1f}% vs {100*r['head_agreement']:.1f}%) "
-              f"AND a fixed trained depth ({best[1]['ce']:.4f} vs "
-              f"{r['ce_final_loop']:.4f}). A geometric halt is worth wiring into "
-              f"decode — no training required.")
+        gain = 100 * (1 - best[1]["ce"] / max(ce_trained, 1e-9))
+        vs_head = ("and beats the UncertaintyHead"
+                   if best[1]["ce"] < r["ce_head"] else
+                   "though the UncertaintyHead is lower")
+        print(f"  VERDICT: {best[0]} gives CE {best[1]['ce']:.4f} vs "
+              f"{ce_trained:.4f} at the fixed trained depth — {gain:.0f}% lower "
+              f"{vs_head} ({r['ce_head']:.4f}). Worth wiring into decode; needs "
+              f"NO training. NOTE it agrees with the oracle only "
+              f"{100*best[1]['agreement']:.1f}% of the time, which is fine: "
+              f"exact-match agreement is not the objective, emitted CE is.")
 
     if args.json:
         Path(args.json).write_text(json.dumps({"step": step, **r}, indent=2))
