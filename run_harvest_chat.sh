@@ -35,16 +35,32 @@
 #                   1500-token CoT, and training on traces teaches rambling.
 #                   ⚠ VERIFY THE TEACHER COMPLIES — if it opens a second <think>,
 #                   the flag does nothing. That check is a 2-minute run.
-#   --max-new 1024  MEASURED, not guessed: with --no-think the teacher's answers
-#                   run median ~1400 chars (~470 tok), max ~2455 (~820 tok).
-#                   512 truncated a third of them. 1024 covers the median
-#                   comfortably and most of the tail.
+#   --max-new 512   MEASURED FROM THE 2,713-ROW CORPUS, not guessed. Accepted
+#                   answer lengths: p50 320, p80 554, p90 709, mean 374 tok. 512
+#                   covers 77% of them. Going to 1024 to cover 100% costs 1.9x
+#                   throughput, because it forces batch 18 instead of 30 AND runs
+#                   twice the decode steps for the same kept tokens.
 #   --min-new 32    Direct answers are legitimately short.
-#   --batch 18      lane = 256+1024+8 = 1288 tok; 18 x 1288 = 23,184 lane-tokens
-#                   ~42.5 GB against the measured 24,720 = 45.3 GB envelope.
+#   --batch 30      lane = 256+512+8 = 776; 30 x 776 = 23,280 lane-tokens ~42.7 GB
+#                   against the measured 24,720 = 45.3 GB envelope — the same
+#                   batch the continuation harvest validated.
 #
-# EXPECT ~40-60 accepted tok/s, NOT the 118 of the continuation harvest, and
-# that gap is structural rather than a bug. Continuations all run to the full
+# ⚠ THIS TRADES CORPUS COVERAGE FOR SPEED, deliberately. At 512 the longest 23%
+# of answers are rejected as `unterminated`, so the corpus skews shorter. That is
+# acceptable HERE for two reasons: a 278M student cannot use 800-token answers,
+# and the 2026-08-15 chat-mix leg failed precisely by learning to reason
+# indefinitely (80/80 samples opening <think> and never emitting code). Shorter,
+# more direct teacher answers are the supervision we actually want. --max-new 384
+# is marginally faster (51 vs 45 tok/s) but keeps only 62% — too much bias for
+# 6 tok/s.
+#
+# EXPECT ~45 accepted tok/s, NOT the 118 of the continuation harvest. The gap
+# decomposes exactly (computed 4.3x against an observed 4.9x):
+#   continuation  30 lanes x 768 kept x 0.67 /  768 steps = 20.1 tok/step
+#   chat @1024    18 lanes x 374 kept x 0.71 / 1024 steps =  4.6 tok/step
+# Three multiplicative causes: half the lanes (memory), half the kept tokens per
+# row (instruction answers are short), and a third more decode steps.
+# Continuations keep EVERY token they generate; chat keeps 374 of 1024. Continuations all run to the full
 # --max-new and every token is kept. Instruction answers vary in length, and
 # batched decode cannot stop until the LONGEST row in the batch finishes — so
 # short answers idle in their lanes. Continuous batching (lane eviction and
@@ -96,8 +112,8 @@ echo "=== if that line does NOT appear, stop: config is wrong, no GPU time spent
 
 python -u -m tools.gen_teacher_corpus \
   --device xpu:0 --teacher-id "$TEACHER" --trust-remote-code \
-  --chat-template --no-think --prompt-len 256 --max-new 1024 --min-new 32 \
-  --batch 18 --prealloc-cache \
+  --chat-template --no-think --prompt-len 256 --max-new 512 --min-new 32 \
+  --batch 30 --prealloc-cache \
   --target-tokens "$TARGET" --out-dir "$DIR" --stream-seed 1 \
   2>&1 | tee "$LOG" || true          # exit code NOT trusted (XPU teardown)
 
