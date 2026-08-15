@@ -823,6 +823,72 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-15 — CHAT-MIX LEG: costs 25pp of code, and `--chat-template` is a 0% FLOOR
+
+3,000 steps from `step_0108471`, teacher stream swapped from continuation data to
+the 2,545-row instruction corpus at the same `--teacher-data-ratio 0.2`. Training
+was healthy: `n_loops` 4 throughout, `gnorm` median 0.48, loss settled 0.757 →
+0.722. 5.09 s/step — the chat stream cost nothing extra.
+
+### The 2x2 that should have been run from the start
+
+|  | raw framing | chat framing |
+|---|---|---|
+| base 108,471 | **75.0%** | **0.0%** |
+| chatmix 111,471 | **50.0%** | **0.0%** |
+
+**My first reading compared base-RAW against chatmix-CHAT and called it a
+collapse.** Two variables at once — same error class as the off-distribution
+baseline the day before. The controls resolve it into three separate findings.
+
+### 1. 🔬 `--chat-template` IS A 0% FLOOR — nine historical evals are uninformative
+
+The BASE scores 0.0% under chat framing too. Every `--chat-template` code_eval in
+this project's history — SFT 2000/2500/3000/34000/36202, big-batch 2127, chatmix
+— returns 0.0%, across checkpoints with wildly different capability. The framing,
+not the checkpoint, is what those numbers measured.
+
+**The SFT collapse verdict still stands**, because it rested on the TEXT
+(`def def __init__(self, self)`, punctuation spam) and on raw-framed math. But the
+0.0% figures quoted alongside it were not evidence.
+
+### 2. Chat framing puts the chat-trained model into permanent reasoning mode
+
+    completions containing:   fence   <|im_end|>   <think>
+    base + RAW                   56       32          23
+    base + CHAT                  25       41          51
+    chatmix + RAW                54       39          28
+    chatmix + CHAT                3        1          80   <- 80/80
+
+Under chat framing chatmix opens `<think>` in **every sample** and never emits
+code. The base does it in 51/80. That IS a real behavioural change from training —
+the model learned to reason indefinitely instead of answering. Fluent and
+on-register (`"Okay, let's see. The user provided a Python function..."`),
+`adj_degenerate 0/80`, `lrs 0.051` — **not degenerate, just never finishing.**
+
+### 3. 🔴 The 25pp drop is REAL capability loss, not marker pollution
+
+75.0% → 50.0% in raw framing, where the baseline was set. I expected leaked ChatML
+tokens to explain it; they do not — marker counts are near-identical between
+base-RAW (56/32/23) and chatmix-RAW (54/39/28). 60/80 → 40/80 is well outside
+noise. **3,000 steps of chat-only teacher data cost a quarter of the code
+capability**, and ~10 epochs over a 0.96M-token corpus is the likely mechanism.
+
+Note the base ALREADY emits `<|im_end|>` in 32/80 raw completions — that
+contamination predates this leg and comes from on-policy distillation against
+Ouro, which emits ChatML natively.
+
+### Consequence
+
+* The instruction corpus at this dose is a **net negative**: −25pp code, no
+  measurable instruction gain (the instrument returns 0% for everything).
+* **`code_eval` cannot currently measure instruction-following at all.** It does
+  not strip markdown fences or stop at `<|im_end|>` before grading, and under chat
+  framing every model bottoms out. Building that instrument is a prerequisite for
+  any further chat-data work — otherwise the next leg is unmeasurable too.
+* `checkpoints_newmix/step_0108471.pt` remains the line, untouched.
+
+
 ## 2026-08-14 — ⏸ DEPTH ROUTING IS PHASE-GATED, NOT DEAD (corrected same day)
 
 `tools/step_geometry_probe.py` on `checkpoints_newmix/step_0108471.pt`, 3,072
