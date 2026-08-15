@@ -823,6 +823,70 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-15 (later) — ⚡ HARVEST 3.6x FASTER: 1.4B teacher + measured max_new/batch
+
+Chat harvest went 24 → 86 accepted tok/s across two changes, both measured rather
+than estimated.
+
+**1. `--max-new 512 --batch 30` (1.9x).** The gap to the continuation harvest
+decomposed exactly — computed 4.3x against an observed 4.9x:
+
+    continuation  30 lanes x 768 kept x 0.67 /  768 steps = 20.1 tok/step
+    chat @1024    18 lanes x 374 kept x 0.71 / 1024 steps =  4.6 tok/step
+
+Three multiplicative causes: `--max-new 1024` forced batch 18 instead of 30 on
+memory, instruction answers keep only 374 of 1024 decoded tokens, and it ran a
+third more steps. Swept against the ACTUAL accepted-length distribution (p50 320,
+p80 554, p90 709): 512 covers 77% at batch 30. Took 512 over the faster 384/37
+because 384 keeps only the shortest 62% and bakes a selection bias into the
+corpus.
+
+**2. Ouro-1.4B-Thinking as the harvest teacher (a further 1.9x).** Config is
+identical to the 2.6B except DEPTH: 24 layers vs 48, same hidden 2048, 16 heads,
+16 KV heads, intermediate 5632, vocab 49,152, 4 UT steps. Half the layers means
+half the kernel launches (decode is launch-bound) and half the KV cache.
+
+### Quality held — measured, not eyeballed
+
+`tools/compare_corpora.py`, 781 rows vs 2,545:
+
+| | 2.6B | 1.4B |
+|---|---|---|
+| tok/s | 45 | **86** |
+| grounding median | 0.462 | **0.473** |
+| grounding p10 | 0.280 | 0.268 |
+| copy run median / p90 | 5 / 13 | **4 / 10** |
+| answer words median | 123 | 97 |
+| malformed | 0 | 0 |
+
+**Grounding** = fraction of the answer's content words that appear in the source
+passage. It is the direct measure of the failure the continuation harvest had
+("the PAWL study", 30-mg ibuprofen against a real 200-400mg). Comparable at
++0.011. **Copy run** guards the other side — a corpus that parrots the passage
+scores perfect grounding and teaches nothing — and the 1.4B copies LESS.
+
+⚠ **Grounding measures TOPICALITY, not correctness.** It proves the teacher is not
+drifting off the passage; it cannot prove the answers are right. Spot-read still
+required before training.
+
+### A false-fail that cost a run
+
+The first 1.4B attempt ran at **3 tok/s** because
+`teacher KV-cache validation FAILED (greedy token mismatch at step 6)` silently
+dropped it to full recompute — O(n²) instead of O(n). The gate tested
+greedy-argmax equality BEFORE looking at KL and raised immediately, discarding the
+number that would explain the rejection. Six tokens after the `</think>` prefill
+is exactly where continuations are near-equally likely, and in bf16 a near-tie
+flips argmax while KL stays negligible — the failure mode
+`harvest_speedup_plan.md` already documented. The gate now reports KL and the
+reference top-2 gap; the second run PASSED at max KL 2.68e-03. **Nothing was
+loosened — it still fails closed, it just says what it saw.**
+
+⇒ At 86 tok/s a 12-hour night yields ~3.7M tokens, against 1.0M before. The
+chat-mix leg failed on DOSE (10 epochs over 0.96M tokens); this is what makes a
+corpus large enough for the question to be askable.
+
+
 ## 2026-08-15 (later) — 🔧 `--extract`: the 0% floor was PARTLY an artifact, and the leg is a clear negative
 
 `code_eval --extract` normalises a completion before grading: end the turn at

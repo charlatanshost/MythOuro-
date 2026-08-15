@@ -28,13 +28,22 @@
 # --max-new without terminating are now REJECTED, not relabelled.
 #
 # SETTINGS, and why they are not the defaults:
+#   TEACHER 1.4B    Ouro-1.4B-Thinking, NOT the 2.6B. Identical config except
+#                   DEPTH — 24 layers vs 48, same hidden 2048 / 16 heads /
+#                   intermediate 5632 / vocab 49,152 / 4 UT steps. Measured
+#                   2026-08-15 on a 781-row A/B: 86 tok/s vs 45 (1.9x), with
+#                   GROUNDING comparable (0.473 vs 0.462 median, 0.268 vs 0.280
+#                   p10) and LESS verbatim copying (copy-run p90 10 vs 13).
+#                   Answers are shorter (97 vs 123 words), which is also what we
+#                   want — the chat-mix leg failed by learning to ramble.
+#                   ⚠ Grounding measures TOPICALITY, not correctness. It proves
+#                   the teacher is not drifting off the passage; it cannot prove
+#                   the answers are right. Spot-read before training.
 #   --no-think      Prefills a CLOSED <think></think> so the teacher answers
 #                   DIRECTLY. At --max-new 1536 WITHOUT it, 50% of responses never
 #                   finished reasoning (rejected as unterminated) at ~9 tok/s. It
 #                   is also the better corpus: a 278M student cannot execute
 #                   1500-token CoT, and training on traces teaches rambling.
-#                   ⚠ VERIFY THE TEACHER COMPLIES — if it opens a second <think>,
-#                   the flag does nothing. That check is a 2-minute run.
 #   --max-new 512   MEASURED FROM THE 2,713-ROW CORPUS, not guessed. Accepted
 #                   answer lengths: p50 320, p80 554, p90 709, mean 374 tok. 512
 #                   covers 77% of them. Going to 1024 to cover 100% costs 1.9x
@@ -54,7 +63,8 @@
 # is marginally faster (51 vs 45 tok/s) but keeps only 62% — too much bias for
 # 6 tok/s.
 #
-# EXPECT ~45 accepted tok/s, NOT the 118 of the continuation harvest. The gap
+# EXPECT ~86 accepted tok/s with the 1.4B teacher (was 24 before the
+# --max-new/--batch fix, 45 after it, 86 with the smaller teacher = 3.6x total). The gap
 # decomposes exactly (computed 4.3x against an observed 4.9x):
 #   continuation  30 lanes x 768 kept x 0.67 /  768 steps = 20.1 tok/step
 #   chat @1024    18 lanes x 374 kept x 0.71 / 1024 steps =  4.6 tok/step
@@ -87,7 +97,7 @@ cd "$(dirname "$0")"
 source ../venv-xpu/bin/activate
 export SYCL_CACHE_PERSISTENT=1 PYTORCH_ALLOC_CONF=expandable_segments:True TRITON_DEFAULT_BACKEND=intel
 
-TEACHER=ByteDance/Ouro-2.6B-Thinking
+TEACHER=ByteDance/Ouro-1.4B-Thinking
 DIR=data_teacher_chat
 TARGET=5000000
 LOG="logs/harvest_chat_$(date +%Y%m%d_%H%M).log"
