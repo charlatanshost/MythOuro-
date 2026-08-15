@@ -48,6 +48,7 @@ import argparse
 import ast
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -268,15 +269,70 @@ def _body_stmts(tree: ast.AST, fname: str) -> int:
     return 0
 
 
+def _extract_answer(prompt: str, completion: str) -> "tuple[str, bool]":
+    """
+    Normalise a completion into something scoreable. Returns (code, standalone).
+
+    WHY THIS EXISTS. Before 2026-08-15 the scorer parsed `prompt + completion`
+    verbatim. Under `--chat-template` that is unscoreable for EVERY model: the
+    base itself returns 0.0%, as do all nine chat-framed evals in project
+    history, across checkpoints from 2,000 to 111,471 steps. The framing, not the
+    checkpoint, was being measured — so instruction-following has never actually
+    been evaluated here.
+
+    Three things get in the way, all of them the model behaving REASONABLY:
+      * `<|im_end|>` — the turn ends. Anything after it is a new turn the model
+        hallucinated, not part of the answer. 41/80 base chat completions contain
+        one.
+      * `<think>...</think>` — reasoning, not code. 80/80 chatmix chat
+        completions open one; the base 51/80. Ouro emits these natively and the
+        student learned it through on-policy KL.
+      * ```python fences — a chat-style answer writes the WHOLE function inside a
+        fence rather than continuing the stub. Concatenating the prompt in front
+        of that duplicates the signature and breaks the parse.
+
+    `standalone=True` means the fenced block already contains a full definition,
+    so the caller must NOT prepend the prompt.
+    """
+    c = completion.replace("\\n", "\n").replace("\\t", "\t")
+    # 1. the turn ends at <|im_end|>
+    if "<|im_end|>" in c:
+        c = c.split("<|im_end|>", 1)[0]
+    # 2. drop reasoning. Regex, not split(): a stray "</think>" can appear
+    #    BEFORE any "<think>" (the model emits them out of order), which made a
+    #    naive split-based loop raise IndexError on real completions.
+    c = re.sub(r"<think>.*?</think>", "", c, flags=re.S)
+    if "<think>" in c:            # opened and never closed = reasoning to the end
+        c = c.split("<think>", 1)[0]
+    c = c.replace("</think>", "")  # orphaned closer, no content to drop
+    # 3. a fenced block holding a full definition stands alone
+    if "```" in c:
+        parts = c.split("```")
+        for blk in parts[1::2]:                     # odd indices are fenced
+            body = blk.split("\n", 1)[1] if "\n" in blk else ""
+            if "def " in body:
+                return body, True
+    return c, False
+
+
 def score_sample(prompt: str, completion: str, fname: str,
-                 checks: str, timeout: float = 5.0) -> dict:
+                 checks: str, timeout: float = 5.0,
+                 extract: bool = False) -> dict:
     """Score one generation: ladder rung 0-4 plus repetition diagnostics.
 
     Returns a dict rather than a bare int so every run records WHY a rung was
     reached. Re-analysis then costs no card time — the old version kept only the
     rung and 110 truncated characters, so any new question meant regenerating.
     """
-    raw = (prompt + completion).replace("\\n", "\n").replace("\\t", "\t")
+    if extract:
+        # Normalise before scoring: end the turn at <|im_end|>, drop <think>
+        # reasoning, and use a fenced full definition on its own rather than
+        # concatenating the prompt in front of it. See _extract_answer.
+        body, standalone = _extract_answer(prompt, completion)
+        raw = body if standalone else (
+            prompt.replace("\\n", "\n").replace("\\t", "\t") + body)
+    else:
+        raw = (prompt + completion).replace("\\n", "\n").replace("\\t", "\t")
     # Two repetition figures. `max_line_repeat` counts the whole prompt+completion
     # and is what every report before 2026-07-31 used — keep it for continuity.
     # `max_line_repeat_completion` counts ONLY what the model produced, which is
@@ -415,6 +471,14 @@ def main() -> None:
                         "checkpoint: if L3/L4 jump under 'file', the L4=0 wall is "
                         "a format mismatch, not a capability limit — which "
                         "changes whether growing the model is the right spend.")
+    p.add_argument("--extract", action="store_true",
+                   help="Normalise the completion before grading: end the turn "
+                        "at <|im_end|>, strip <think> reasoning, and score a "
+                        "fenced full definition on its own. WITHOUT this, "
+                        "--chat-template is a 0%% FLOOR for every model — the "
+                        "BASE scores 0.0%% under it, as do all nine chat-framed "
+                        "evals in project history. Off by default so every "
+                        "pre-2026-08-15 number stays comparable.")
     p.add_argument("--chat-template", action="store_true",
                    help="Wrap each prompt in the SFT chat template "
                         "(apply_chat_template, add_generation_prompt=True). "
@@ -467,7 +531,8 @@ def main() -> None:
             comp = generate(model, tok, prompt, args.device, args.max_new,
                             args.n_loops, args.temperature,
                             args.repetition_penalty)
-            d = score_sample(prompt, comp, fname, checks)
+            d = score_sample(prompt, comp, fname, checks,
+                             extract=args.extract)
             samples.append(d)
             if d["rung"] > best:
                 best, best_txt = d["rung"], comp

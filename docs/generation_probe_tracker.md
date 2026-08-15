@@ -823,6 +823,55 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-15 (later) — 🔧 `--extract`: the 0% floor was PARTLY an artifact, and the leg is a clear negative
+
+`code_eval --extract` normalises a completion before grading: end the turn at
+`<|im_end|>`, strip `<think>` reasoning, and score a fenced full definition on its
+own rather than concatenating the prompt in front of it.
+
+**Validated offline on the four saved cells — no GPU, because the reports store
+every completion:**
+
+| model | framing | as scored | EXTRACTED |
+|---|---|---|---|
+| base 108,471 | raw | 75.0% | **75.0%** |
+| chatmix 111,471 | raw | 50.0% | **50.0%** |
+| base 108,471 | chat | 0.0% | **6.2%** |
+| chatmix 111,471 | chat | 0.0% | **2.5%** |
+
+**Exact no-op in raw framing**, so every number recorded before today stays
+comparable — that was the design requirement.
+
+### The 0% floor was real but only PARTLY an artifact
+
+Extraction lifts the base off the floor, to 6.2% — not to 75%. So `--chat-template`
+genuinely costs these models most of their code capability; the scorer was hiding
+a small signal, not a large one. Nine historical chat-framed evals were measuring
+a floor, but the underlying capability under chat framing was also low.
+
+### 🔴 The chat-mix leg is a clear negative on BOTH axes
+
+    raw framing   75.0% -> 50.0%   (-25pp: lost general code capability)
+    chat framing   6.2% ->  2.5%   (WORSE at the thing it was trained for)
+
+Training on instruction data made the model **worse at instruction framing**. That
+is the outcome that settles it — not the raw-framing loss, which could have been
+argued as a fair trade for instruction-following. There is no trade here.
+
+Mechanism, from the marker counts: under chat framing chatmix opens `<think>` in
+**80/80** samples and never emits code (base: 51/80). ~10 epochs over a
+0.96M-token corpus taught it to enter reasoning mode reliably and never leave.
+
+### Consequence
+
+* The corpus at this dose is a **net negative**; `checkpoints_chatmix` is kept as
+  the negative result only. Base `step_0108471` remains the line.
+* If instruction data is revisited it needs to be **much larger and much less
+  repeated** — the failure is 10 epochs on 1M tokens, not the idea.
+* `--extract` is OFF by default. Turn it on for any chat-framed comparison; a
+  0.0% without it is uninformative.
+
+
 ## 2026-08-15 — CHAT-MIX LEG: costs 25pp of code, and `--chat-template` is a 0% FLOOR
 
 3,000 steps from `step_0108471`, teacher stream swapped from continuation data to
