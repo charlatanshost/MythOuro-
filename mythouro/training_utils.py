@@ -2103,7 +2103,24 @@ def _validate_teacher_cache(
             max_kl = max(max_kl, kl)
             ref_tok = ref.argmax(dim=-1, keepdim=True)
             if not torch.equal(ref_tok, got.argmax(dim=-1, keepdim=True)):
-                raise RuntimeError(f"greedy token mismatch at step {i}")
+                # REPORT WHY, do not just fail. A greedy flip is a PROXY for
+                # distributional divergence; KL is the direct measure. In bf16 a
+                # near-tie between the top two tokens flips argmax while KL stays
+                # negligible — the documented false-fail mode
+                # (harvest_speedup_plan.md: "greedy-argmax gates FALSE-FAIL ...
+                # flat distributions -> bf16 near-ties"). Without these numbers
+                # there is no way to tell a tie-break from real divergence, and
+                # the run silently drops to full recompute at ~1/15th the speed
+                # (measured on Ouro-1.4B-Thinking, 2026-08-15: 3 tok/s).
+                rp = F.softmax(ref, dim=-1).flatten()
+                top2 = rp.topk(2).values
+                gap = float(top2[0] - top2[1])
+                raise RuntimeError(
+                    f"greedy token mismatch at step {i}: KL={kl:.3e} nats "
+                    f"(tol {kl_tol:g}), reference top-2 probability gap="
+                    f"{gap:.3e} — a gap this small with KL under tolerance is a "
+                    f"bf16 tie-break, not divergence"
+                )
             if not (kl < kl_tol):               # NaN-safe: NaN fails too
                 raise RuntimeError(
                     f"distribution divergence KL={kl:.3e} nats "
