@@ -45,6 +45,16 @@
 #     confirm memory returned with `xpu-smi dump -d 0 -m 18 -n 1`. A half-dead
 #     process holds its allocation and the NEXT job OOMs on a "free" card.
 set -uo pipefail
+# ── SIGNAL FORWARDING (2026-08-15) ────────────────────────────────────────────
+# Without this the WRAPPER dies on Ctrl-C while the python child survives,
+# orphaned, still holding the GPU. Observed in production on 2026-08-15: the user
+# pressed Ctrl-C, reports/harvest_chat_FAILED was written at 22:26, and the
+# harvest kept generating until it was signalled by PID. "Ctrl-C did nothing" was
+# true from the terminal and false from the GPU. Reproduced in a toy harness:
+# under the old pattern the child was still alive after a process-group SIGINT.
+# The children here handle SIGINT COOPERATIVELY (flag, finish the step, flush),
+# so they need the signal delivered and then time — not a dead parent.
+trap 'pkill -INT -P $$ 2>/dev/null; true' INT TERM
 cd "$(dirname "$0")"
 source ../venv-xpu/bin/activate
 export SYCL_CACHE_PERSISTENT=1 PYTORCH_ALLOC_CONF=expandable_segments:True TRITON_DEFAULT_BACKEND=intel

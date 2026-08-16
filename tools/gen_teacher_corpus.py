@@ -798,11 +798,19 @@ def main() -> None:
                     "text": tok.decode(row[:_prompt_tokens] + cont + [stop_id],
                                        skip_special_tokens=False),
                     "source": src, "seed_len": _prompt_tokens, "chat": True,
+                    # PER-ROW PROVENANCE. The MANIFEST records the teacher per
+                    # SESSION, but sessions append into shared shards — after
+                    # 2026-08-15 data_teacher_chat held 2,713 rows from the 2.6B
+                    # and 5,031 from the 1.4B with no way to tell them apart.
+                    # Without this you can never answer "did the smaller
+                    # teacher's rows hurt?" once they are interleaved.
+                    "teacher": args.teacher_id,
                 })
             else:
                 rows.append({
                     "text": tok.decode(row[:args.seed_len] + cont),
                     "source": src, "seed_len": args.seed_len,
+                    "teacher": args.teacher_id,
                 })
         if len(rows) >= ROWS_PER_SHARD:
             flush()
