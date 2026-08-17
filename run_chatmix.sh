@@ -65,12 +65,15 @@ source ../venv-xpu/bin/activate
 export SYCL_CACHE_PERSISTENT=1 PYTORCH_ALLOC_CONF=expandable_segments:True TRITON_DEFAULT_BACKEND=intel
 
 SRC=checkpoints_newmix/step_0108471.pt
-DIR=checkpoints_chatmix
+DIR=checkpoints_chatmix2
 TEACHER=ByteDance/Ouro-2.6B-Thinking
 FILES='data_teacher_chat/shard_*.jsonl'
-START=108471
 STEPS=3000
-TARGET=$((START + STEPS))
+# TARGET is computed AFTER seeding, from the checkpoint actually loaded — see
+# below. Hardcoding START=108471 made the 2026-08-16 launch a 7-second no-op:
+# checkpoints_chatmix already held step_0111471 from the previous leg, so it
+# resumed there while TARGET was still 108471+3000=111471. "training complete."
+TARGET=0
 LOG="logs/chatmix_$(date +%Y%m%d_%H%M).log"
 OK=reports/chatmix_DONE; FAIL=reports/chatmix_FAILED
 mkdir -p logs reports "$DIR"
@@ -100,7 +103,11 @@ echo "=== chat corpus: $rows rows ==="
   echo "cannot seed $DIR from $SRC"; echo "seed failed $(date)" > "$FAIL"; exit 1; }
 
 at=$(step_of "$(latest "$DIR")")
-echo "=== CHAT-MIX LEG: $at -> $TARGET  (teacher stream = INSTRUCTION data @0.2) ==="
+TARGET=$((at + STEPS))
+if [ "$at" -ge "$TARGET" ]; then
+  echo "already at step $at >= target $TARGET — nothing to do"; exit 1
+fi
+echo "=== CHAT-MIX LEG: $at -> $TARGET ($STEPS steps, INSTRUCTION data @0.2) ==="
 echo "=== control: checkpoints_newmix, same 0.2 ratio with CONTINUATION data ==="
 echo "=== log: $LOG ==="
 
