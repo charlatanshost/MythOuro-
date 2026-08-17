@@ -887,6 +887,65 @@ chat-mix leg failed on DOSE (10 epochs over 0.96M tokens); this is what makes a
 corpus large enough for the question to be askable.
 
 
+## 2026-08-17 — CHAT-MIX RETRY: dose theory CONFIRMED on capability, REFUTED on behaviour
+
+3,000 steps from `step_0108471` on the 26,130-row corpus (~7.3M tokens) —
+**1.35 epochs** against the first attempt's 10.3. Training healthy: `n_loops` 4
+throughout, `gnorm` median 0.52, loss 0.777 → 0.715.
+
+|  | RAW | CHAT (extracted) | `<think>` | fence | `<\|im_end\|>` |
+|---|---|---|---|---|---|
+| base 108,471 | **75.0%** | **6.2%** | 51/80 | 25 | 41 |
+| chatmix 1M / 10 epochs | 50.0% | 2.5% | 80/80 | 3 | 1 |
+| **chatmix2 7.3M / 1.35 epochs** | **68.8%** | **0.0%** | 79/80 | 3 | 2 |
+
+### ✅ Dose was the right diagnosis for CAPABILITY LOSS
+
+Cutting epochs 10.3 → 1.35 cut raw code loss from **−25pp to −6.2pp**, roughly
+proportional. The corpus-size work (2 harvest nights, 1.4B teacher switch, the
+3.6x throughput fixes) did exactly what it was meant to.
+
+### ❌ Dose is NOT the cause of the "never answers" behaviour
+
+`<think>` appears in **79/80** chat-framed samples at 1.35 epochs, against 80/80
+at 10.3. A 7.6x dose reduction moved it by ONE SAMPLE. Fences and `<|im_end|>`
+stay at 3 and 2. The model opens a reasoning block, writes fluent coherent prose
+about the problem, and never emits code — `adj_degenerate 0/80`, so this is not
+degeneracy, it is *never finishing*.
+
+**The base already does this in 51/80 with no chat training at all.** So the
+corpus does not create the behaviour; it amplifies an existing one from 64% to
+99%.
+
+### 🔬 HYPOTHESIS: the on-policy teacher is fighting the corpus
+
+Every corpus row is `<think>\n\n</think>\n\n` + answer — an EMPTY reasoning
+block. Training on it should teach "open, close immediately, answer". Instead the
+student opens and rambles. Simultaneously the same leg runs
+`--onpolicy-lambda 0.7` against **Ouro-2.6B-Thinking**, which reasons at length by
+default. So the corpus teaches the MARKER while the on-policy KL teaches what to
+put INSIDE it, at strength 0.7 — and the base's pre-existing 51/80 is exactly what
+prior on-policy distillation against a Thinking teacher would produce.
+
+⇒ **Testable:** a short leg at reduced `--onpolicy-lambda` (0.2, or 0) on the same
+corpus. If the `<think>` rate falls toward the corpus's own shape, the on-policy
+teacher is the cause and the fix is either a lower λ for chat legs or suppressing
+reasoning in the rollout teacher. ⚠ On-policy is what CURED the repetition
+attractor (2026-06-29), so lowering it risks that returning — watch
+`adj_repeat_frac` and `lrs_frac`, not just the ladder.
+
+### math: ambiguous
+
+L3+ 5.0% → 6.2%, copied 30/80 → 26/80, but `rel_err` 0.4286 → 0.8095. Slightly
+more answers present, materially worse ones.
+
+### Consequence
+
+The corpus is fine and the dose is now right; the residual −6.2pp is a real but
+modest cost. What blocks instruction-following is a mechanism the corpus cannot
+fix on its own. `checkpoints_newmix/step_0108471.pt` remains the line.
+
+
 ## 2026-08-15 (later) — 🔧 `--extract`: the 0% floor was PARTLY an artifact, and the leg is a clear negative
 
 `code_eval --extract` normalises a completion before grading: end the turn at
