@@ -709,6 +709,10 @@ run stopped, checkpoint discarded, restart required with the fix.
 - **Checkpoint inspector** ([inspect_checkpoint.py](../inspect_checkpoint.py)) — per-prompt diagnostics incl. best-of-trajectory A/B + forced-depth probe
 - **Calibration audit** ([tools/per_loop_calibration.py](../tools/per_loop_calibration.py)) — per-loop ECE (the P0.5 tool)
 - **Step benchmark** ([tools/bench_step.py](../tools/bench_step.py)) — achieved tok/s on the real model, CUDA/XPU/CPU
+- **Halting geometry probe** ([tools/step_geometry_probe.py](../tools/step_geometry_probe.py)) — scores decode-time halt rules (second_diff, fixed-point, ACT, oracle) by **CE**, against a fixed-trained-depth baseline. ⚠ The baseline must be a TRAINED depth (≤3); loop 7 is off-distribution extrapolation and using it flatters every rule — that bug was written once and caught once.
+- **Fabrication probe** ([tools/fabrication_probe.py](../tools/fabrication_probe.py)) — does the teacher invent definitions the source passage never gave? Grounding measures TOPICALITY, not correctness; this is the check that grounding cannot do.
+- **Corpus comparison** ([tools/compare_corpora.py](../tools/compare_corpora.py)) — A/B two harvests on grounding, answer length, verbatim copy-runs. The instrument behind the 2.6B→1.4B teacher switch.
+- **Checkpoint pruner** ([tools/prune_checkpoints.py](../tools/prune_checkpoints.py)) — reclaims disk; **dry run by default**, `_PROTECTED` refuses to touch `checkpoints_newmix`/`checkpoints_reuse8`, always keeps the newest per directory. Reclaimed 357 GB on 2026-08-17.
 - **Device abstraction** ([mythouro/device.py](../mythouro/device.py)) — `--device xpu` turnkey for Intel cards; NVIDIA path unchanged
 - **Tests**: 313+ passing (incl. the new invariant tests the review showed were missing)
 
@@ -716,7 +720,7 @@ run stopped, checkpoint discarded, restart required with the fix.
 
 ## Near-term: next 1–3 overnights
 
-### 🔵 CURRENT ORDER OF WORK (2026-08-10) — read this before the June entries below
+### 🔵 CURRENT ORDER OF WORK (updated 2026-08-17) — read this before the June entries below
 
 Everything under "Immediate (v4 + v5…)" further down predates the corrected-data
 pour and is kept for history. This is the live queue. It is ordered
@@ -728,15 +732,37 @@ best-of-trajectory, the depth policy — all trace to signals that were only eve
 trained at the FINAL loop, or only ever trained TEACHER-FORCED. The queue
 attacks those two roots, not the symptoms.
 
+**What the 2026-08-13→17 instruction-data line changed.** Rungs 7-9 below are new
+and were not anticipated when this queue was written. The short version: the model
+had never seen a single instruction→response pair from its teacher, we built the
+harvest that produces them, and training on them at a sane dose does *not* collapse
+the model — but it also does not make it answer. The `<think>`-and-never-finish
+behaviour is now measured as tracking CHAT EXPOSURE, not on-policy λ, not dose.
+**That mechanism is unidentified, and it is the most interesting open question on
+the project.** It is NOT a rung to run tonight; it is the thing to design against
+once the pour lands.
+
+**⚠ READ MILESTONES, NOT ENDPOINTS.** 2026-08-17 measured code L3+ across one leg's
+milestones and found a real U-shape (75.0 → 41.2 → 53.8 → 60.0 → 66.2 → 68.8): the
+midpoint is a *transient*, and an endpoint-only read of the same leg would have
+called a recovering run a permanent −6.2pp loss. Several conclusions in this file
+predate that finding and were drawn from endpoint pairs. When evaluating the pour,
+eval at least two milestones. Related: **L4 is not a metric at n=80** — the same
+sweep gave 1, 4, 1, 3, 2, 0 correct, which is counting noise. Use L3+ for
+direction and treat L4 as an existence check only.
+
 | # | Work | Cost | Gate / success criterion |
 |---|------|------|--------------------------|
 | 0 | ~~**Big-batch SFT A/B**~~ | ✅ **DONE 2026-08-10** | **0.0% code L3+, 0.0% math L3+** at batch 256 on 544k samples — more data than any prior SFT run. Batch was NOT the mechanism; exposure bias stands with batch RULED OUT. Rung 6 (on-policy SFT) is now the only live path for SFT. |
 | 1 | **Per-domain best-exit headroom** | ⚠️ **RUN 2026-08-10 — PARTLY INCONCLUSIVE** | Random-exit control PASSES decisively (random 0.72 vs trained 0.27 CE on general), so the trained depth is genuinely much better than an arbitrary loop. But that is the EASY question: random draws from all 8 loops, most of them bad, so the control cannot speak to the 0.05-0.07 nats of headroom vs the best FIXED loop, which is where min-of-K bias lives. **Only a trained policy settles it** — i.e. rungs 2-3, not another probe. One signal survived: `oracle-random` is LOWEST on instruct-shaped data (0.219/0.223) and HIGHEST on discourse (0.506 general, 0.436 medical), so loops differ LEAST where text is most predictable — which argues AGAINST per-subject depth specialisation, since the domains with the most depth variance are the discourse ones. |
-| 2 | **`--unc-loop-weighting uniform`** — calibrate the UncertaintyHead at every loop | 1 overnight | Loop-0 ECE falls from **0.288** (`tools/per_loop_calibration.py`). The head currently predicts 1.68% error where it makes 30.4% — 18x overconfident. Run ALONE, not with #3. |
+| 2 | **`--unc-loop-weighting uniform`** — calibrate the UncertaintyHead at every loop | ⏸ **BUILT, PHASE-GATED 2026-08-17** | The flag exists and is tested; what changed is the *reason to spend a night on it*. The head's only consumer is depth routing (ACT early-exit, best-of-trajectory), and 2026-08-14 measured that **no** selector beats a fixed trained depth at this capability — geometric 0.3142, head 0.4935, fixed 0.2124. Fixing the head's calibration makes a better selector for a decision that currently should not be made. Un-gates with rung 5/the halting block: when the base is strong enough that depth routing can win, this is the first thing to run. Loop-0 ECE 0.288 (predicts 1.68% error, makes 30.4% — 18x overconfident) still stands as the target. |
 | 3 | ~~**`--loop-loss-weighting uniform`**~~ | ❌ **DEAD 2026-08-11** | Per-loop accuracy collapsed at EVERY depth (loop 3: 0.980 -> 0.075) and the trajectory INVERTED — deeper loops now worse than shallower. math L3+ 5.0% -> 0.0%, depth sweep still flat at 4/6/8. The "expected transient" story was falsified by its own stated test: loops 0-2 did not rise. **uniform is the HARSHEST arm, not the control** — it gives loop 0, never an output state, 25% of the gradient. If revisited: LoopFormer shortcut-consistency (2602.11451), or progressive/exit_pdf with depth-reg lowered. |
-| 4 | **Resume the pour** to 140,000 (`run_newmix_pour.sh`) | continuous | The base is still the binding constraint on everything else; every rung above is a better *objective* on the same weak base. |
+| 4 | **Resume the pour** to 140,000 (`run_newmix_pour.sh`) | ▶️ **ACTIVE — at 112,155 as of 2026-08-17** | 27,845 steps left, ~39h at the measured 5.0 s/step = 3-4 evenings. **This is the only thing that should be running.** The base is still the binding constraint on everything else; every other rung is a better *objective* on the same weak base, and 2026-08-17 added a second reason — the `<think>` failure (rung 9) has no known fix, so capability is the axis that is actually movable right now. Eval at ≥2 milestones, not just the endpoint. |
 | 5 | **Grow depth 4→8** (`grow_depth.py`) | ⏸ **SHELVED, PHASE-GATED** | The 2026-08-14 per-loop CE curve (0.212 at loop 3 → 0.640 at loop 7) measures UNTRAINED extrapolation — loops 4-7 reuse slot 3's adaptation and are off-distribution by construction. It says nothing about TRAINED deeper loops, which is what this tool creates. Gated on a base worth spending nights on, plus DeepLoop's residual-scaling recipe ([2607.13491](https://arxiv.org/abs/2607.13491)). |
-| 6 | **On-policy SFT** — the actual cure for 2026-08-10 | multi-session build | `docs/onpolicy_plan.md`: "more offline tokens — continued OR fresh — only sharpen the attractor. The cure is a different objective, not more data." Generate from the student, correct against the target. |
+| 6 | **On-policy SFT** — the actual cure for 2026-08-10 | multi-session build | `docs/onpolicy_plan.md`: "more offline tokens — continued OR fresh — only sharpen the attractor. The cure is a different objective, not more data." Generate from the student, correct against the target. **Now better-posed than when written:** rungs 7-9 supply the instruction corpus it needs and rule out two candidate mechanisms, so this is the front-runner for the post-pour session. |
+| 7 | **Instruction harvest** (`--chat-template`, `run_harvest_chat.sh`) | ✅ **BUILT + RUN 2026-08-13→16** | The model's whole training history was CONTINUATIONS; it had never seen one instruction→response pair from its teacher. **26,130 rows / ~7.3M tokens** in `data_teacher_chat/`, grounded in real passages. Throughput went **24 → 86 accepted tok/s (3.6x)** via `--max-new 512`/`--batch 30` and switching to the **Ouro-1.4B-Thinking** teacher (1.9x at comparable grounding, 0.473 vs 0.462 median). First attempt produced 1.22M UNUSABLE tokens that passed every structural check — see `run_harvest_chat.sh`'s header before harvesting again. |
+| 8 | **Chat-mix legs** (`run_chatmix.sh`) | ⚠️ **RUN ×2 — SPLIT RESULT 2026-08-15/17** | The failure is two failures. **Capability loss IS dose-driven and is now solved:** 10.3 epochs cost −25pp raw code L3+, 1.35 epochs cost −6.2pp, and the milestone sweep shows even that is a recovering transient (U-shape, above). **"Never answers" is NOT dose-driven:** `<think>` opened in 79/80 chat-framed samples at 1.35 epochs vs 80/80 at 10.3 — a 7.6x dose cut moved it by ONE sample. Output is fluent and non-degenerate (adj_degenerate 0/80); it simply never finishes. |
+| 9 | ~~**λ is the `<think>` mechanism**~~ | ❌ **REFUTED 2026-08-17** | Hypothesis: the corpus teaches an empty `<think></think>` while `--onpolicy-lambda 0.7` against a *Thinking* teacher teaches length, and they pull opposite ways. At matched steps λ=0.7 gives **64/80** vs λ=0.2's **68/80** — inside noise and pointing the WRONG way. `<think>` tracks CHAT EXPOSURE alone: 51/80 at zero chat steps → ~66 at 1k → 79 at 3k. **⇒ The mechanism is still unidentified.** Note the base already opens `<think>` in 51/80 with no chat training at all, so this predates the chat corpus entirely. Method lesson: the probe changed two variables (λ *and* steps) and was only salvageable because a matched-step control existed for free as a milestone — **look for one before spending a leg.** |
 
 **⏱ Timing these runs — estimate at FULL depth, not from warmup.** The 2026-08-10
 big-batch run was called at ~8.8h from a 12.7 s/step reading taken at steps 10-40,
@@ -755,7 +781,7 @@ a selector cannot beat the constant when the constant is the only trained-good o
 Depth routing is not a capability lever at this capability. Re-evaluate on a stronger
 base; do not spend another night on a fifth selector first.
 
-, NOT ON A LEARNED HEAD (superseded).**
+**Why geometric halting was tried at all — background, SUPERSEDED by the measurement above.**
 Three independent 2026 sources converge on halting from the loop's own dynamics rather
 than a trained confidence signal: [2509.23314](https://arxiv.org/abs/2509.23314)
 (second-order differences in latent step size, reported to beat KL-based early exit on
