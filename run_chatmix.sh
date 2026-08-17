@@ -18,11 +18,13 @@
 # knob, same strength, different shape. The pour (checkpoints_newmix, 0.2 with
 # v2+med) is the control, already run.
 #
-# ⚠ REPETITION IS REAL AND ACKNOWLEDGED. 3,000 steps x 16 seq x 1024 tok x 0.2
-# draws ~9.8M tokens from a ~0.96M-token corpus — about TEN epochs. That is a lot
-# for one corpus and it caps what this can prove: a positive result here means
-# "instruction data moves output shape", NOT "this is the right dose". If it
-# works, the answer is more harvest nights, not more epochs.
+# ⚠ DOSE — the thing that sank the first attempt. 3,000 steps x 16 seq x 1024 tok
+# x 0.2 draws ~9.8M teacher tokens. Against the 0.96M-token corpus used on
+# 2026-08-15 that was TEN EPOCHS, and the model learned to memorise the pattern:
+# 80/80 chat-framed samples opened <think> and never emitted code, while raw-framed
+# code capability fell 75.0% -> 50.0%. The corpus is now 26,130 rows (~7.3M
+# tokens) after two 1.4B harvest nights, so the same leg is ~1.35 EPOCHS. That is
+# the single change that makes this attempt worth running.
 #
 # WHAT TO JUDGE IT ON — and this is the part that matters. At this dose, do NOT
 # expect code_eval or math_eval to move; the base is 5.0% math L3+ / 0.0% L4 and
@@ -65,7 +67,7 @@ export SYCL_CACHE_PERSISTENT=1 PYTORCH_ALLOC_CONF=expandable_segments:True TRITO
 SRC=checkpoints_newmix/step_0108471.pt
 DIR=checkpoints_chatmix
 TEACHER=ByteDance/Ouro-2.6B-Thinking
-FILES='data_teacher_chat_clean/shard_*.jsonl'
+FILES='data_teacher_chat/shard_*.jsonl'
 START=108471
 STEPS=3000
 TARGET=$((START + STEPS))
@@ -86,9 +88,10 @@ if pgrep -f "tools[.]gen_teacher_corpus" >/dev/null; then
 fi
 
 # Fail before the teacher loads if the corpus is missing or suspiciously small.
-rows=$(cat data_teacher_chat_clean/shard_*.jsonl 2>/dev/null | wc -l)
-if [ "${rows:-0}" -lt 1000 ]; then
-  echo "data_teacher_chat_clean has only ${rows:-0} rows — expected ~2,545."
+rows=$(cat data_teacher_chat/shard_*.jsonl 2>/dev/null | wc -l)
+if [ "${rows:-0}" -lt 20000 ]; then
+  echo "data_teacher_chat has only ${rows:-0} rows — expected ~26,000."
+  echo "Running on a small corpus is what sank the 2026-08-15 leg (10 epochs)."
   echo "seed corpus missing or truncated; refusing to start"; exit 1
 fi
 echo "=== chat corpus: $rows rows ==="
