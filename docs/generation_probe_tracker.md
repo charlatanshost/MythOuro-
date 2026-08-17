@@ -887,6 +887,60 @@ chat-mix leg failed on DOSE (10 epochs over 0.96M tokens); this is what makes a
 corpus large enough for the question to be askable.
 
 
+## 2026-08-17 (later) — λ HYPOTHESIS REFUTED; L3+ has a real U-shape; L4 is UNMEASURABLE at n=80
+
+### 1. ❌ The on-policy teacher is NOT what stops the model answering
+
+Ran the chat leg at `--onpolicy-lambda 0.2` (chat-mix used 0.7), then evaluated
+the MATCHED-STEP control that already existed as a milestone
+(`checkpoints_chatmix2/step_0109500.pt`, λ=0.7 at 1,029 steps):
+
+| arm | RAW | CHAT | `<think>` |
+|---|---|---|---|
+| base (0 chat steps) | 75.0% | 6.2% | 51/80 |
+| λ=0.2 @1,000 | 72.5% | 2.5% | 68/80 |
+| **λ=0.7 @1,029 (control)** | 41.2% | 7.5% | **64/80** |
+| λ=0.7 @3,029 | 68.8% | 0.0% | 79/80 |
+
+At matched steps λ=0.7 gives **64/80** against λ=0.2's **68/80** — four samples
+apart, inside noise, and pointing the WRONG way. The `<think>` rate tracks CHAT
+EXPOSURE alone: 51 at 0 steps → ~66 at 1k → 79 at 3k. **Hypothesis refuted.**
+
+⚠ The probe was designed badly and the control is what saved it: I ran 1,000 steps
+against chat-mix's 3,000 "to bound repetition risk", changing two variables at
+once and destroying attribution. The matched cell existed for free as a
+milestone — worth checking for one BEFORE spending a leg next time.
+
+### 2. ✅ L3+ has a REAL U-SHAPE — endpoint evals hide it
+
+    step     108471   109500   110000   110500   111000   111500
+    L3+       75.0%    41.2%    53.8%    60.0%    66.2%    68.8%
+              base     trough  ————— smooth monotone recovery —————
+
+Chat training sharply disrupts code capability early, then recovers steadily. The
+endpoint reads −6.2pp; the model actually passed through **41.2%**. Six points,
+monotone after the trough — this is a training dynamic, not sampling noise.
+
+⇒ **Every conclusion in this tracker drawn from a single endpoint eval is
+under-informed.** Milestones are already saved; evaluating three of them costs
+~20 minutes and no training.
+
+### 3. 🔬 L4 IS NOT MEASURABLE AT n=80 — and I over-read it
+
+    L4 per 80:  1 → 4 → 1 → 3 → 2 → 0
+
+No trend. At a 2-5% rate with n=80 the 95% CI is ~±5pp, so 1/80 and 4/80 are
+indistinguishable. On seeing 4/80 at the trough I wrote that it was "the most
+correct code we have measured" and that L3+/L4 were anti-correlated — the
+milestone sweep killed both claims. Correctness genuinely was produced
+(`return a + b`, `return n * 2`, `return sum(nums)`), but the RATE cannot be
+resolved by this instrument.
+
+⇒ Any future claim about L4 needs `--samples` in the hundreds, not 8. Until then
+**L4 is a existence check, not a metric** — "it can sometimes write correct code"
+is supportable; "it writes more correct code than X" is not.
+
+
 ## 2026-08-17 — CHAT-MIX RETRY: dose theory CONFIRMED on capability, REFUTED on behaviour
 
 3,000 steps from `step_0108471` on the 26,130-row corpus (~7.3M tokens) —

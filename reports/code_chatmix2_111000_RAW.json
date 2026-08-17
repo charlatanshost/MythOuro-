@@ -1,0 +1,994 @@
+{
+  "step": 111000,
+  "temperature": 0.4,
+  "repetition_penalty": 1.15,
+  "seed": 1234,
+  "framing": "bare",
+  "chat_template": false,
+  "samples": 8,
+  "tasks": [
+    {
+      "task": "add_two",
+      "rung": 4,
+      "label": "L4 correct",
+      "looped": 1,
+      "samples": [
+        {
+          "rung": 4,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0773,
+          "lines_dropped": 5,
+          "body_stmts": 1,
+          "completion": "\treturn a + b\n\n\tdef add_two(a, b):\n\t# This is a new function that adds two different numbers to the original function.\n\t# The new function will be called 'add_two' which is added to the original function.\n\t  # It's not necessary for this code, so we'll have to use a new function that takes in two parameters and returns the same as above.\n\t  # We can also do it",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0695,
+          "lines_dropped": 4,
+          "body_stmts": 1,
+          "completion": "\tif a < b:\n\t\treturn 1\n\telse:\n\t\treturn 0\n```<|im_end|>\n</think>To solve this problem where we need to find the sum of two numbers, and then return the sum of two numbers. The function `is_prime` is defined as follows:\n\n1. `check_two(a, b)` is a valid input for the given function `find_two(a, b)` which returns a list containing all",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0406,
+          "lines_dropped": 4,
+          "body_stmts": 2,
+          "completion": "\tif not isinstance(a, int):\n\t\treturn False\n\tif a == b:\n\t\treturn False\n```<|im_end|>\n</think>To solve this problem where we need to write a Python function that takes in two arguments and returns True if it's true or false, then return True if the input is an integer. The function should be able to handle both cases when there are multiple valid inputs. \n\nThe main objective of this task is to determine whether or not",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 4,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0513,
+          "lines_dropped": 5,
+          "body_stmts": 2,
+          "completion": "\treturn a + b\n\treturn a + b\n```\n<|im_end|>\n</think>To solve this problem where we need to find the sum of all the positive integer values in a and b, and then summing them using their respective sums. The function `find_two(a, b)` is given by: \n   - `find_two(a, b) = 100` (the first two are not equal to 223)\n  ",
+          "adj_repeat_frac": 0.0169,
+          "adj_repeat_run": 3
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1823,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn a + b\n\treturn a + b\n\n\ndef add_two(a, b):\n    return a + (b * (a * b) % 2 == 0) % 2 == 1 and (b % 3 != a) % 4 * (b % 3 == a)\n\n\ndef add_two(a, b):\n    return a - b - c / c / c * (c - c /",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0504,
+          "lines_dropped": 5,
+          "body_stmts": 2,
+          "completion": "\tif not isinstance(a, int):\n\t\treturn False\n\tif a == b:\n\t\treturn False\n```<|im_end|>\n</think>To solve this problem where we need to write a Python function that takes in two arguments and returns the result of the operation. The function is called `add_two` with its argument being `[1, 2]`. The function is defined as follows: \n\n```python\ndef add_two(a, b):",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0521,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\tif a == b:\n\t\treturn a + b\n\treturn a + (a - b) * (b - a) * (b - 1) * (a - b)\n```<|im_end|>\n</think>To solve this problem where we need to write two functions and return the sum of their values, along with their respective values in the original function, but also return the sum of all possible pairs of integers. The function should return an integer that is equal",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1607,
+          "lines_dropped": 2,
+          "body_stmts": 1,
+          "completion": "\tif a == b:\n\t\treturn a + b\n\tif a < b and not in the list of lists:\n\t\treturn a + (a + i) * (b - i) * (b - i) * (b - i) * (a + 1000*100*i / 256*256*(i+1)*3795*(i+38)*(379",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        }
+      ]
+    },
+    {
+      "task": "double_it",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1469,
+          "lines_dropped": 0,
+          "body_stmts": 2,
+          "completion": "\treturn n * (n + 1)\n\tif n > 0:\n\t\tresult = []\n\t\tfor i in range(len(n)-1):\n\t\t\t# If the first element is not a number, then it's a valid number.\n\t\t    if i < len(list):\n\t\t\t   # if the first element is not a number, then we can't have the same value.\n\t\t\t    return False\n\telse:\n\t     return",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0455,
+          "lines_dropped": 4,
+          "body_stmts": 2,
+          "completion": "\treturn 1\n\treturn 2\n```<|im_end|>\n</think>To solve this problem where we need to write a function called `f(x)` that returns the sum of all the numbers in a given integer, and then return the sum of all integers. The function is called `f(x) = x * x` and it is supposed to be defined as follows:\n\n1. **Function Definition**: `f(x) = x` must be equal to",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1243,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn int(n)\n\tif n == 0:\n\t\treturn -1\n\n\ndef v(x, y):\n    return (x + x * 2) / (y + x * 2) / (y + x * 2 - 1/3.5 * x ** 4) / (y + x ** 3.5 * (x**3 - 1.5*4))\n```<|im_end|>\n<think>",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0404,
+          "lines_dropped": 4,
+          "body_stmts": 2,
+          "completion": "\treturn 1\n\tif n == 0:\n\t\treturn 2\n```<|im_end|>\n</think>To solve this problem where we need to find the number of distinct ways to arrange the numbers in a certain order, such that each step is a single-digit, and then apply the same rules for each digit. Additionally, we need to find all possible combinations of two different integers. \n\nThe problem requires finding all possible pairs of numbers that are not in any of",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0692,
+          "lines_dropped": 0,
+          "body_stmts": 1,
+          "completion": "\treturn (n + 1) * (n + 1) * (n + 1)\n\t# if n == 0:\n\t#     # if n < n:\n\t#     #    print(f\"N = {n} and {m} are not in {k_list}, but it is a valid solution for the problem, and the solution is not a valid solution. We need to check whether the number of solutions",
+          "adj_repeat_frac": 0.0333,
+          "adj_repeat_run": 2
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0645,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn n * (n - 1)\n\tif n == 0:\n\t\treturn (n - 1)\n```<|im_end|>\n</think>To solve this problem where we need to find the sum of all the integers in a given integer, and then return the sum of all the numbers in a given integer. The function `is_prime` is called `is_prime`, which is not valid for any number. If there are no such numbers, then",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0667,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn int(n * (n + 1))\n\tif n >= 0:\n\t\treturn int(n)\n<|im_end|>\n</think>To solve this problem where we need to find the number of distinct prime numbers that are divisible by 2, and then return the number of distinct integers that are not in the range [0,1] and the number of unique numbers in the range [0,1], which is not a valid integer. The function should",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0787,
+          "lines_dropped": 4,
+          "body_stmts": 1,
+          "completion": "\treturn sum(n * (n + 1) / 2) * (n + 1) / 2\n\tif n == 0:\n\t\treturn sum(n - 1 - n + (n - 1)) / n + (m - m) // (m - m + ((m % n))) / n * ((m % m + (b % d)) ) )\n\t\n#      if is_prime_in",
+          "adj_repeat_frac": 0.0175,
+          "adj_repeat_run": 2
+        }
+      ]
+    },
+    {
+      "task": "get_first",
+      "rung": 2,
+      "label": "L2 defines",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0375,
+          "lines_dropped": 5,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(sorted(list(sorted(list([[1, 2], [3, 4]))), [0, 1])\n\t# This is a very large list of lists.\n```<|im_end|>\n</think>To solve this problem where we need to find the smallest integer that can be formed by adding two numbers and then add another element to each of them. The function `find_all_unique` takes a list of integers `nums`, and",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0269,
+          "lines_dropped": 3,
+          "body_stmts": 1,
+          "completion": "\treturn sorted(list(sorted([int, int, float, float])))\n\t# return the first element of the list\ndef get_first_element():\n    return [x for x in range(10) if x in [x] and x == x]\n```<|im_end|>\n<think>\nOkay, I need to write a Python function called \"get_first\" that returns a list of tuples where each element is a tuple with an index of ",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0551,
+          "lines_dropped": 12,
+          "body_stmts": 1,
+          "completion": "\treturn sorted(sorted(list_of_elements))\n\treturn list(sorted([int, int, int])\n\n\tdef get_first(items):\n\t\tif len([0] * 2) == 1:\n\t\t\treturn [int, int]\n\t    # return [int]\n\t    return [str[1], str[2]]\n\n\n# def get_maximal_length():\n```python\ndef maximal_length",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0919,
+          "lines_dropped": 5,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(list(sorted(sorted([1, 2, 3]))[0]\n\treturn sorted([1, 2])\n```<|im_end|>\nThe function `find_first_and_last` is called `f` and returns a list of tuples where each element is the first occurrence of a tuple. The function `find_first` returns the second most common element in the tuple. The second most common element in an array is not necessarily",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1458,
+          "lines_dropped": 12,
+          "body_stmts": 1,
+          "completion": "\treturn list(sorted(list(sorted_by_length)))\n\tif len(list_of_elements)) == 1:\n\t\tprint(\"List of tuples in ascending order\")\n\t\n# print(\"List of tuples (0, 0, 2) and the number of elements in the list is 100, and the number of elements in the list is 2\")\n\n\n\n\n\ndef get_first():\n    \"\"\"\n    returns a",
+          "adj_repeat_frac": 0.0227,
+          "adj_repeat_run": 3
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0727,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(list(set([[1, 2, 3]))\n\t# return [x for x in list(sorted([[0, 1], [0, 1]), [0] * (x + x) for x in range(len(list_of_elements))])\n\t# return [y for y in list_of_elements if len(_) == len(_),\n\t#     ]\n\n\n\n\n\ndef",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.036,
+          "lines_dropped": 7,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(list(sorted([str(x) for x in sorted(sorted((x, x)))])\n\tif len([x, x) == len((0, 1))):\n\t\tprint(\"The first element of the list is:\", [0, 1])\n\t\ndef get_first_element():\n    return [i for i in range (len(_lst[2])) if i not in (int)(i + 1)]",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0483,
+          "lines_dropped": 7,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(sorted(list(sorted([1, 2, 3]))),\n\t# the list is sorted in ascending order\n\t# the first element is the first element of the list\n\t# the second element of each of these lists is not used here\n```<|im_end|>\n</think>To solve this problem where we need to find out how many elements are in a single-element list that has a unique value for each of its elements. The solution involves",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        }
+      ]
+    },
+    {
+      "task": "sum_list",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0653,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\tif len(nums) > 0:\n\t\treturn sum_list(nums)\n\treturn nums[i]\n\n\ndef is_prime(num):\n    return False if (len(arr)) == 0 or (len(arr) == 1 and len([int, int]) != 1 or (len([int, int]) == 2 and not isinstance('a', int), False) and (float('a') > float_",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0368,
+          "lines_dropped": 3,
+          "body_stmts": 2,
+          "completion": "\t# Create a list of integers to be sorted in ascending order\n\tresult = []\n\n\t# Initialize the original list to store the elements in descending order based on their respective values.\n\tfor i in range(len(nums)):\n\t    if i == 0:\n\t\t    return False\n\t     else:\n\t\t   # Check if there's a single element in the list, and return True if it is not empty\n\t     # If not, then return False",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0265,
+          "lines_dropped": 3,
+          "body_stmts": 2,
+          "completion": "\treturn [i for i in nums if i == 0]\n\tif not isinstance(nums, list):\n\t\treturn []\n```<|im_end|>\n<think>\nOkay, I need to write a Python function called `find_max_length` that returns the maximum number of elements in the array that are not divisible by 2^5. The function is supposed to return an integer or a tuple where each element is a list of integers and its index is the sum",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.09,
+          "lines_dropped": 5,
+          "body_stmts": 1,
+          "completion": "\treturn [x for x in nums if x in nums]\n\tif not isinstance(nums, list):\n\t\t# If the input list is empty or contains a tuple of integers, return True if it's not a dictionary or False otherwise.\n\t\tif len(arr) == 0:\n\t\t\treturn [int(x), int(arr) for x in nums if x == 0]\n\t    # If the input list is empty, return None",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0604,
+          "lines_dropped": 3,
+          "body_stmts": 2,
+          "completion": "\treturn [num_of_elements(nums) for num in nums]\n\treturn sorted(sorted(arr))\n```<|im_end|>\n</think>\nTo solve this problem where we need to write a Python function called `find_all` which is the first occurrence of a list of integers, and then return the first occurrence of each element in the list. The function should check if any of these elements are unique, and if there are no such elements in each element in",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0547,
+          "lines_dropped": 2,
+          "body_stmts": 3,
+          "completion": "\treturn sum_list\n\tresult = [int(num) for num in nums]\n\tif len(num) == 0:\n\t\t# Check if the number is a valid integer and not a float\n\t\tif num > 1 or num < len(num):\n\t\t    return \"Invalid number\"\n\n\t   # Return True if the number is not valid\n\n\t\t\t\t\n\t\t\n<|im_end|>\n</think>To solve this problem where we need to find out whether there",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0228,
+          "lines_dropped": 9,
+          "body_stmts": 0,
+          "completion": "\t# Create a list of integers to represent the sum of all elements in the numbers\n\t# This is an example of how to use a dictionary.\n\t# The function will be called `sum_list` which is the same as before, but it will not be used because it's a list.\n```python\ndef sum_list(nums):\n    return [int(x) for x in nums]\n    \n  # For each element in the tuple (",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0592,
+          "lines_dropped": 4,
+          "body_stmts": 2,
+          "completion": "\treturn [x for x in nums if x == 0]\n\tif not isinstance(nums, list):\n\t\tprint(\"Invalid input: {}\".format(str(num_list[i])), \"invalid input\")\n\n\ndef sum_list_of_numbers(arr):\n    return sum_list([int, int], [int], [int], [int]] )\n```<|im_end|>\n</think>To solve this problem where we need to calculate the sum",
+          "adj_repeat_frac": 0.025,
+          "adj_repeat_run": 2
+        }
+      ]
+    },
+    {
+      "task": "count_items",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0865,
+          "lines_dropped": 9,
+          "body_stmts": 3,
+          "completion": "\treturn sorted(sorted(items))\n\treturn sorted(items)\n\n\tdef is_empty_list():\n\t\tif not isinstance(item, list):\n\t\t    return False\n\t\tresult = []\n\t  \t\t\t\t\n\t\t \t\t    if isinstance(item, list):\n\t\t\t  \t\t\t    return False\n\t     else:\n\t\t\t  \t\t \t\t\t\t\n\t\t \t\t\t\t\n\t\t\t\n#        print(\"List of tuples: \" + str)\n\n\t       #print(\"List of",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0324,
+          "lines_dropped": 3,
+          "body_stmts": 1,
+          "completion": "\treturn sorted(list(sorted(items)))\n```<|im_end|>\n</think>\nTo solve this problem where we need to write a function `count_elements` that takes in the list of integers and returns the count of unique elements in the list. The function should return a tuple containing two numbers, each with an integer value (i.e., 0, 1, 2), and then return the sum of all possible values from `nums` where there are no",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0361,
+          "lines_dropped": 3,
+          "body_stmts": 1,
+          "completion": "\t# Remove the elements in the list\n\treturn sorted(sorted(items))\n``` \n\nThis function will return a list of tuples containing the first element of each tuple, and then it returns a list containing all unique elements. The function will also print out all possible values for each element in `list` that are not empty, and return the sorted list as an array. If there are no such elements in `list`, return `[[[ [ [ [",
+          "adj_repeat_frac": 0.0405,
+          "adj_repeat_run": 3
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0405,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn sorted(sorted_list(items))\n\treturn sorted_list(items)\n```<|im_end|>\n</think>To solve this problem where we need to write a Python function called `count_of_elements` that takes in the input list of integers and returns the count of each element in the list. The function should return a tuple containing two elements, where each element is an integer and its corresponding value is an integer. However, there are no such elements in the",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.034,
+          "lines_dropped": 3,
+          "body_stmts": 1,
+          "completion": "\treturn sorted(sorted(list))\n```\n\nWrite a Python function that takes in the input list and returns the first occurrence of each element in the list, considering all elements in the list are non-empty and have a maximum number of occurrences. For example, if there are no such elements (e.g., `[1, 2]`, `[3]`), then it is possible to return `[10]` as `[5",
+          "adj_repeat_frac": 0.0167,
+          "adj_repeat_run": 3
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0523,
+          "lines_dropped": 19,
+          "body_stmts": 0,
+          "completion": "\treturn sorted(list(sorted(items))\n\tif len(items) == 1:\n\t\t# Check if the list is empty or not empty\n\t\t# If the list is empty, then return True if it's not empty and False otherwise else False otherwise\n\t\t\n\t\n\t\t\n\treturn True\n\n\t\t\t\n\n\t\t\t\t\n\t\t\n\t\t\n\"\"\"\n    \n<|im_end|>\n</think>To solve this problem where we need to write a function called `remove_duplicate` which returns",
+          "adj_repeat_frac": 0.0185,
+          "adj_repeat_run": 3
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0729,
+          "lines_dropped": 5,
+          "body_stmts": 2,
+          "completion": "\treturn sorted(items)\n\t# Return the list of tuples where each element is a tuple with the first element being a string\n\tresult = []\n\tfor i in range(len(items)):\n\t\tif len(list_of_elements[i]) == len(list_of_elements[i][0]):\n\t\t    # Check if all elements are in the list\n\t     # If not, return the first element of each tuple.\n\t   ",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0514,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn sorted(items)\n\treturn sorted(items)\n```<|im_end|>\n</think>To solve this problem where we need to find out how many elements in a list of integers are in the list of integers, and then return the number of unique elements that are not in the list. The function is called `count_elements` which takes a single integer as input and returns an integer that is a valid one-dimensional array with all possible values (i.e., if",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        }
+      ]
+    },
+    {
+      "task": "is_even",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 1,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.1202,
+          "lines_dropped": 2,
+          "body_stmts": 3,
+          "completion": "\treturn False\n\tif n == 0:\n\t\treturn False\n\tif n == 0:\n\t\treturn False\n\n\n\t\n\ndef is_even(n):\n    return True\n\n\n\n\n\ndef is_even(n):\n    return True\n\n\n\n\n<|im_end|>\n</think>To solve this problem where we need to find the number of distinct integers in a given range, and then determine whether or not there are any numbers that are divisible by 2^10",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0587,
+          "lines_dropped": 3,
+          "body_stmts": 2,
+          "completion": "\treturn True\n\t# Check if the number is a prime\n\tif not isinstance(n, int):\n\t\treturn False\n```<|im_end|>\n<think>\nOkay, I need to write a Python function that checks whether the number is a prime and returns True if it's an integer. The function should return False if it's not a prime and return False otherwise. If there are no numbers in the list of integers (e.g., 0 or 1),",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0391,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn False\n\tif n == 1:\n\t\treturn False\n```<|im_end|>\n</think>To solve this problem where we need to write a Python function that calculates the sum of all the numbers in a given list of integers, and then return True if it is possible for each element in the list. The function should return True if there are no elements in the input list. However, it will not be able to find any other integer values from another list of integers.",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0677,
+          "lines_dropped": 3,
+          "body_stmts": 2,
+          "completion": "\treturn True\n\tif not is_even(n):\n\t\treturn False\n```<|im_end|>\n<think>\nOkay, I need to write a Python function called \"is_even\" that returns True if there's a function that returns False if it's true or false. The function is supposed to return false and also true if it's true, and the value of the function is True. Wait, but in this case, when you check if the value of the function",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0535,
+          "lines_dropped": 7,
+          "body_stmts": 1,
+          "completion": "\treturn True\n```\n<|im_end|>\n</think>To solve this problem where we need to find the maximum number of distinct prime factors in a given integer, and then return the number of distinct values that can be formed by adding 1000 numbers. The function `count` is defined as follows: \n\n- `num_of_elements` is a positive integer. \n   - `num_even(n)` is an integer.\n   - `max_length",
+          "adj_repeat_frac": 0.0167,
+          "adj_repeat_run": 3
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1179,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn False\n\tif n < 0:\n\t\tprint(\"Error: \" + str(n))\n\t\traise ValueError(\"Error: %s\" % (n, n))\n\n\ndef is_even(num):\n    return True if is_even(num) and not isinstance(num, int) else False\n\n\ndef is_even(number):\n    return True if is_even(number) == num and not isinstance((int), int",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0366,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn True\n\tif n == 0:\n\t\treturn False\n```<|im_end|>\n</think>To solve this problem where we need to write a Python function called \"count_of_even\" that takes in the input and returns True if it's true, then return False if it is true and not False otherwise false. The function will be called `is_even` which is `True` or `False`. If there are no such numbers, then return True for",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.036,
+          "lines_dropped": 3,
+          "body_stmts": 2,
+          "completion": "\treturn True\n\tif n == 0:\n\t\treturn False\n```<|im_end|>\n</think>\nTo solve this problem where we need to find a list of integers and return the sum of the two numbers in that list. The function is called `find_numbers` which takes a number as input and returns a string containing the first three digits of each integer. The function will take an input value, and then return its first digit (the first one) in that list",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        }
+      ]
+    },
+    {
+      "task": "reverse_string",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0292,
+          "lines_dropped": 3,
+          "body_stmts": 1,
+          "completion": "\treturn \"S\"\n\t# Remove the spaces and replace all occurrences of the first character\n\tresult = ''.join(s.split(' ')[-1].strip().replace(\" \", \" \")[-1] + ' ')' + ' '.join(str(s)) + ','.join([\"\"])\n```<|im_end|><think>\nOkay, I need to write a Python function called `remove_char` that returns a string containing only the characters that are not in",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0907,
+          "lines_dropped": 5,
+          "body_stmts": 1,
+          "completion": "\treturn s.reverse_string(s)\n```<|im_end|>\n</think>\nTo solve this problem where we need to write a function called `is_valid` that returns True if the string is a valid palindrome, and then return False if it's not empty, and also return False if it's not empty, else False otherwise False. \n\nFor example: 1. The input string is \"hello world\" and its length is 2000",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0683,
+          "lines_dropped": 6,
+          "body_stmts": 0,
+          "completion": "\treturn ''.join(s.split(' ')[0] + ', '.join(s.split(' ')[-1])\n\t# Remove all the characters in the string\n\tresult = ''.join([str(x) for x in s if x not in s])\n```<|im_end|>\n</think>To solve this problem where we need to find a pattern of substrings with `'+'` and `'+'` as well as `'+'` and `'-",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0949,
+          "lines_dropped": 4,
+          "body_stmts": 1,
+          "completion": "\treturn ''.join(s)\n\t# Remove all the characters in s and return the first character of s\n\t# Replace all the characters in s and return a new string that is not empty\n\tif len(s) == 0:\n\t    # Remove any non-empty strings that contain only one character from the original string\n\t    # If there are no other characters, then add a single character to each of those with a single character.\n\t  ",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0676,
+          "lines_dropped": 2,
+          "body_stmts": 3,
+          "completion": "\treturn ''.join(s)\n\t# Remove the spaces and spaces in the string\n\tresult = s.reverse_string(s)\n\n\treturn ''.join(str(result))\n\n\ndef remove_characters_with_reversed_chars():\n    return ''.join([str(x)[0] for x in reversed([x, x]) for x in range(-1, len(' '), 1000)] for x in reversed",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1365,
+          "lines_dropped": 7,
+          "body_stmts": 1,
+          "completion": "\treturn \"s\"\n\t# Remove all the characters in the string\n\tif s.strip() == \"\":\n\t\t# Remove any whitespace in the string\n\t\ts = ''.join(str(s)) + ' ' + str(len(s)))\n\t  \t\t \t\t\t\t\t\t \n\t\t    # Remove any whitespace in the string\n\t\t  \t\t # If not, return empty list of strings.\n\t\t  \t\t\t    if not len([0]) or",
+          "adj_repeat_frac": 0.0208,
+          "adj_repeat_run": 2
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1007,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\treturn ''.'.join(s)\n\treturn ''.join(s)\n\n\ndef is_valid_string(s):\n    return True if s == 'is_valid' and s == 'is_valid' and s == 'is_invalid' else False\n\n\ndef isValid(str):\n    return True if isinstance(_, str) or not isinstance(_, str).startswith('') or not isinstance(_, str).strip() or len([str",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1661,
+          "lines_dropped": 0,
+          "body_stmts": 2,
+          "completion": "\treturn ''.join(s)\n\t# Remove all occurrences of '+' in the string\n\tif len(s) == 0:\n\t\tresult = []\n\t\tresult += ' '.join([str(s), str(len('\\\\' + str(len('\\\\' + str((0))))))]) if not isinstance('a', int) else ''\n\t\t  # Remove all occurrences of '+' in the string\n\t\t # and return a list of",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        }
+      ]
+    },
+    {
+      "task": "max_of_two",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0982,
+          "lines_dropped": 7,
+          "body_stmts": 2,
+          "completion": "\tif not isinstance(a, int):\n\t\treturn None\n\treturn None\n\n\ndef is_prime(n):\n    return True if n == 0 or not isinstance(n, int) and not isinstance(n, int) and not (not is_prime(n)):\n\t\traise ValueError(\"Invalid input. The input must be a positive integer\")\n\t\n\ndef is_prime_and_all():\n    \"\"\"Returns True if the number of elements",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0964,
+          "lines_dropped": 11,
+          "body_stmts": 0,
+          "completion": "\ndef is_prime(a, b):\n\ndef is_prime(a, b):\n\ndef is_prime(b, c):\n\n<|im_end|>\n</think>To solve this problem where we need to find the smallest integer that satisfies both the given conditions and then find the maximum value of a and b in a given set of integers. We need to determine whether a and b are integers with any non-zero integer value. \n1. The function `is",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0391,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn a + (a + b) * (b + c)\n\treturn a + (a - b) * (c - c)\n```<|im_end|>\n</think>To solve this problem where we need to find the largest possible integer that satisfies the given conditions, but only if there are no such pairs of integers in the set of integers. The smallest possible value is not necessarily an integer, so we need to check if there's any other non-zero elements in",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0921,
+          "lines_dropped": 3,
+          "body_stmts": 2,
+          "completion": "\treturn a + b\n\treturn max_of_two(a + b)\n```<|im_end|>\n</think><think>\nOkay, I need to write two functions that are part of the function f(x) = x^2 + 1. The function is called f(x) and it's supposed to be a function of x, which is called f(x). The function is called f(x). Wait, but wait, the user wants to write two",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.051,
+          "lines_dropped": 5,
+          "body_stmts": 1,
+          "completion": "\tif a < 0:\n\t\treturn a * (a + b)\n```<|im_end|>\n</think>\nOkay, I need to write two Python functions that are supposed to be part of the function call `f` and return the result of the function's argument. The function is called `f`. Here's how to write it in terms of its own definition:\n\n1. The function is named `__init__(self, x):` which is called `self",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0244,
+          "lines_dropped": 3,
+          "body_stmts": 1,
+          "completion": "\treturn max_of_two(a, b)\n```<|im_end|>\n</think>\nTo solve this problem where we need to find the maximum number of distinct permutations of a, b, and c that satisfy the conditions for each element in the list `[0, 1]` and `[0, 1]`, where `a` is a positive integer. The function returns a list containing all possible pairs of integers from which they are not in the same",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 0,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0616,
+          "lines_dropped": 10,
+          "body_stmts": 0,
+          "completion": "\ndef max_of_two(a, b):\n\nif a == 0:\n\n    return -1\n\n<|im_end|>\n</think>To solve this problem where we need to find the minimum value of a and b that satisfies the condition for all possible values of a and b, given that each element is greater than zero, and the maximum value of a and b is not equal to 1000. And if there are no such values in the set, then",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.2169,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn a + b\n\treturn max_of_two(a, b)\n\n\ndef sum_of_three(a, b):\n    return sum_of_two(a + b)\n\n\ndef sum_of_three(a, b):\n    return a + (b - 1) * (b - 1) * (2 - 3000).sum() * (b - 1) * ((c -",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        }
+      ]
+    },
+    {
+      "task": "fibonacci",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 0,
+      "samples": [
+        {
+          "rung": 0,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0361,
+          "lines_dropped": 8,
+          "body_stmts": 0,
+          "completion": "```python\ndef is_prime(n):\n    return True\n```<|im_end|>\n</think>To solve this problem where we need to find the number of distinct prime numbers that satisfy the condition for each integer in the range [0, 10^9] and then check if any of these numbers are divisible by 255. \n\nThe problem requires finding all possible integers that are not prime numbers, which can be expressed as a sum of two integers, but without",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0469,
+          "lines_dropped": 3,
+          "body_stmts": 2,
+          "completion": "\treturn [n * (n + 1) for n in range(n - 1)]\n\tif n == 0:\n\t\treturn [i]\n```<|im_end|>\n<think>\nOkay, I need to write a Python function called `is_prime` that returns True if it's a valid Python function. The function is supposed to return True if the number of times it's not in the list of numbers and returns False if there are no such numbers",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0391,
+          "lines_dropped": 3,
+          "body_stmts": 2,
+          "completion": "\treturn [n]\n\tif n == 0:\n\t\treturn [n]\n\n<|im_end|>\n</think>\nOkay, I need to write a Python function called \"reversed_list\" that returns the first element of the list that is a pair of elements in the list that are not in any of them. The function should return a new list containing all the elements from each element, but only if there are no duplicates. If there's no such element, it",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0853,
+          "lines_dropped": 6,
+          "body_stmts": 2,
+          "completion": "\treturn fibonacci(n)\n\treturn [num % 20]\n\n\ndef prime_and_prime(number):\n    \"\"\"\n    Returns the number of distinct integers that are not prime and not divisible by 3, but also the number of factors in the list.\n\n    :param int num: The number of distinct integers to be considered as a valid integer.\n    :param num: The number of unique numbers to be divisible by 3, which is",
+          "adj_repeat_frac": 0.0161,
+          "adj_repeat_run": 3
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.0497,
+          "lines_dropped": 14,
+          "body_stmts": 2,
+          "completion": "\treturn [n]\n\treturn [n]\n\n\ndef is_prime(num):\n    return True if is_prime(num) == 0 and not isinstance(num, int) else False\n\tif num == 0:\n\t\traise ValueError(\"Invalid input: {}\\n\" % (int))\n\t    # Check if the number is a valid number\n\t    return False\n\t\n\ndef check_number(numbers):\n    pass\n\n\n\n\n<|im_end|>",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 2,
+          "max_line_repeat_completion": 2,
+          "lrs_frac": 0.1653,
+          "lines_dropped": 9,
+          "body_stmts": 1,
+          "completion": "\treturn [n * (n + 1) for n in range(2, n+1)]\n\tif n == 0:\n\t\t# if not isinstance(n, int):\n\t\t# if not isinstance(n, int):\n\t\t# if n is a float and n > 0:\n\t    # return the value of the integer.\n\ndef is_prime_in_range(num, num):\n    \"\"\"\n    Returns True",
+          "adj_repeat_frac": 0.0208,
+          "adj_repeat_run": 3
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0622,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn [n]\n\t# Return the first occurrence of the first occurrence of a prime number\n\tdef is_prime(num):\n\t\treturn True if is_prime(num) else False\n```<|im_end|>\n</think>To solve this problem where we need to find the maximum number of distinct permutations that can be formed by a given integer n and then return True if it's not possible to form a valid sequence with all zeros in it. The function `is",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.1015,
+          "lines_dropped": 1,
+          "body_stmts": 1,
+          "completion": "\treturn [n]\n\t# print(f\"The sum of the numbers in the list {n} and the number of distinct integers that are divisible by 2^(n-1) and all numbers in {k} (\\) \\ (\\) for all numbers in {k}\\), 0, 1, 2, 3.\n\tprint(\"Number of distinct integers between \\( n - k \\): \", n + \" +",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        }
+      ]
+    },
+    {
+      "task": "is_prime",
+      "rung": 3,
+      "label": "L3 runs",
+      "looped": 2,
+      "samples": [
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.035,
+          "lines_dropped": 3,
+          "body_stmts": 2,
+          "completion": "\treturn len(n) == 1 and n % 2 != 0\n\tif is_prime(n):\n\t\treturn False\n```<|im_end|>\n<think>\nOkay, I need to write a Python function called `is_prime` that returns True if the number of times a certain number is divisible by 3. The function should return True if there's an integer n. If there's no such number, then it returns False if it's not a",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 2,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0459,
+          "lines_dropped": 2,
+          "body_stmts": 2,
+          "completion": "\treturn (n % 255) % 2567\n\tif not isinstance(n, int):\n\t\traise ValueError(\"Invalid input\")\n\n\ndef is_prime(num):\n    return True if is_prime(num) == False else False if not is_prime(num) else False\n```<|im_end|>\n</think>To solve this problem where we need to find the number of distinct integers that are divisible by 300 and then",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0291,
+          "lines_dropped": 3,
+          "body_stmts": 1,
+          "completion": "\treturn True\n```\n\nThis is a very simple example, but it's not the case. It's possible to use Python 2 or other Python 3. The idea that the function `is_prime` is a good way to implement it in Python 3. So, if you want to make sure that your code works correctly and you can use this as well as the code snippet provided here. But if you're using any of these functions, then you",
+          "adj_repeat_frac": 0.0133,
+          "adj_repeat_run": 3
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0443,
+          "lines_dropped": 4,
+          "body_stmts": 2,
+          "completion": "\treturn True\n\tif n is not None:\n\t\treturn False\n```<|im_end|>\n</think>To solve this problem where we need to find the smallest integer that is a prime number, and then return true if it's a prime number. The function `is_prime` has two elements: `a` and `b`, which are integers, and `c` is an integer. \n\nThe solution can be written as follows: 1) If there are no",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0203,
+          "lines_dropped": 4,
+          "body_stmts": 1,
+          "completion": "\treturn True\n```\n<|im_end|>\n<think>\nOkay, I need to write a Python function called \"reversed_prime\" that returns True if the number of times it will be divisible by 300. Wait, but wait, the problem statement says that when you're given an integer n and a number n, it's not possible to have a prime number. So maybe the user is trying to find out how many of them are in the list and then return",
+          "adj_repeat_frac": 0.0133,
+          "adj_repeat_run": 3
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 1,
+          "max_line_repeat_completion": 1,
+          "lrs_frac": 0.0431,
+          "lines_dropped": 3,
+          "body_stmts": 2,
+          "completion": "\treturn (n % 255 == 0)\n\tif not is_prime(n):\n\t\treturn (1 << 255 == 0)\n```<|im_end|>\n<think>\nOkay, I need to write a Python function called `is_prime` that checks if the number is a prime and returns True if it's an integer. The function should return False if there are any non-zero numbers in the input list, and return False",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 3,
+          "max_line_repeat_completion": 3,
+          "lrs_frac": 0.0535,
+          "lines_dropped": 10,
+          "body_stmts": 3,
+          "completion": "\treturn True\n\tif n == 0:\n\t\treturn False\n\n\tdef is_prime(n):\n\t    return False\n\n\n# Testing the function\n```python\ndef is_prime(n):\n    # Check if the number of distinct integers is a prime\n    if not isinstance(n, str) or not isinstance(n, int):\n        return False\n     else:\n        pass\n\n<|im_end|>\n<think> Okay, I need to write a Python function called",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        },
+        {
+          "rung": 3,
+          "max_line_repeat": 4,
+          "max_line_repeat_completion": 4,
+          "lrs_frac": 0.092,
+          "lines_dropped": 10,
+          "body_stmts": 3,
+          "completion": "\treturn True\n\t# Check if the number is odd\n\tif not isinstance(n, int):\n\t\treturn False\n\n\t\t\t\n\t\n\tdef is_prime(number):\n\t  \t\t   return False\n\n\t\t\t    # Check if the number is a prime\n\t\t \t\t\t\t\n\t\t  return True\n\n\t\t\t\t\n\n\t\t\t\t\t\t   # Check if the number is odd\n\t    return False\n\n\t     # If not, then it's a valid number.\n\t    return False\n",
+          "adj_repeat_frac": 0.0,
+          "adj_repeat_run": 1
+        }
+      ]
+    }
+  ],
+  "reached": {
+    "L1+": 10,
+    "L2+": 10,
+    "L3+": 9,
+    "L4+": 1
+  },
+  "diagnostics": {
+    "samples_total": 80,
+    "looped": 4,
+    "median_adj_repeat_frac": 0.0,
+    "adj_degenerate": 0,
+    "adj_only_degenerate": 0,
+    "per_sample_l3plus": 0.6625,
+    "per_sample_l3plus_ci95": 0.1036,
+    "looped_frac": 0.05,
+    "median_max_line_repeat": 1,
+    "median_lrs_frac": 0.0587,
+    "char_degenerate": 0,
+    "line_metric_blind": 0,
+    "l3_samples": 51,
+    "l3_looped": 4,
+    "l3_looped_frac": 0.078
+  }
+}
