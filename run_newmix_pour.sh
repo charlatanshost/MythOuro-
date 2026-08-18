@@ -69,7 +69,17 @@ DIR=checkpoints_newmix
 TEACHER=ByteDance/Ouro-2.6B-Thinking
 FILES='data_teacher_v2/shard_*.jsonl,data_teacher_med/shard_*.jsonl'
 TARGET=140000
+# LOGGING (added 2026-08-17). This script ran unlogged for its entire life: the
+# trainer's stdout went to the terminal and nowhere else, and distill.py writes no
+# metrics file of its own. The pour is the LONGEST job on the project (3-4 nights)
+# and the only record of it was terminal scrollback — one closed window and the ce
+# trajectory, throughput and any warnings were gone. Every diagnosis of the last
+# fortnight (the 20.4 s/step correction, the chat-mix no-op, the reject counters)
+# came from reading a log file back. Resuming appends rather than truncates, so a
+# multi-night pour accumulates into one file per night.
+LOG="logs/newmix_pour_$(date +%Y%m%d_%H%M).log"
 OK=reports/newmix_pour_DONE; FAIL=reports/newmix_pour_FAILED
+mkdir -p logs reports
 rm -f "$OK" "$FAIL"
 trap '[ -f "$OK" ] || echo "incomplete exit=$? $(date)" > "$FAIL"' EXIT
 
@@ -103,7 +113,7 @@ python -u -m training.distill \
   --onpolicy-lambda 0.7 --ckpt-dir "$DIR" \
   --ckpt-every-mins 15 --ckpt-milestone-every 2000 --keep-last 5 \
   --num-workers 0 --trust-remote-code --log-every 50 \
-  --total-steps "$TARGET" || true              # exit code NOT trusted (XPU teardown)
+  --total-steps "$TARGET" 2>&1 | tee "$LOG" || true   # exit code NOT trusted (XPU teardown)
 
 at=$(step_of "$(latest "$DIR")")
 echo "pour reached $at $(date)" > "$OK"
