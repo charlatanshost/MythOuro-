@@ -823,6 +823,124 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-18 — 🔀 PHASE TRANSITION at ~116k–120k: the pour is converting a CONTINUATION model into a CHAT model
+
+Four instruments, run in one evening on the newmix pour (108,471 → 125,181). Two
+of them appeared to contradict each other for about an hour. They don't — the
+disagreement WAS the finding.
+
+### The measurements
+
+**Raw-framed code (pen 1.15), the headline metric all year:**
+
+| step | L3+ | looped | char-degen |
+|---|---|---|---|
+| 108,471 | **75.0%** | 1/80 | 0/80 |
+| 120,000 | 60.0% | 6/80 | 0/80 |
+| 125,181 | **55.0%** | 1/80 | 0/80 |
+
+**Chat-framed code (pen 1.15, `--extract`), same weights, same prompts:**
+
+| step | L3+ | `<think>` |
+|---|---|---|
+| 108,471 | **6.2%** | 51/80 |
+| 116,000 | 10.0% | 62/80 |
+| 125,181 | **37.5%** | 56/80 |
+
+**Next-token CE at the trained depth** (`best_exit_probe`, all measured in ONE
+session — see the reproducibility note below):
+
+| step | mean CE | headroom |
+|---|---|---|
+| 108,000 | 0.348 | 0.153 |
+| 112,000 | **0.280** | 0.106 |
+| 116,000 | **0.286** | 0.108 |
+| 120,000 | 0.494 | 0.242 |
+| 125,181 | 0.561 | 0.274 |
+
+**Soft-KL to the teacher** (`kd_exhaustion`, 27 checkpoints, 72,000 → 124,000, on
+the CACHED held-out sample from 2026-07-29 so it is comparable to that series):
+mean **2.1604**, half-to-half drift **−0.0881**, step-noise rms 0.0665, sign-flips
+19/25. In the 116k–124k window the largest step is +0.0375 — against a 0.0665
+noise floor, and against the +0.0587-and-stays-elevated signature the real
+2026-07-27 mix change produced at step 52,000. **No break.**
+
+### The reading: it is a phase transition, not damage
+
+Everything after ~116,000 moves together — CE on continuation corpora up, chat
+capability up 3.75x, raw-frame code down — while soft-KL to the teacher keeps
+falling straight through. That last fact is what resolves it. The teacher is
+**Ouro-2.6B-Thinking, a chat model**. Converging on it MEANS getting worse at raw
+continuation and better at chat. All four instruments agree once you stop treating
+raw-frame code as "the" capability number.
+
+Supporting evidence from the text itself: 42/80 raw-framed completions now emit
+`<|im_end|>` unprompted and open `<think>`, with no chat data anywhere in this run.
+
+**⇒ The headline metric has been measuring the frame the model is LEAVING.** A
+local coding assistant is used in chat frame, not by continuing a function body.
+On the metric that matches the goal the pour delivered **6.2% → 37.5% with zero
+chat data** — after three SFT attempts and two chat-mix legs produced nothing.
+That also settles rung 9 for good: `<think>` went 51 → 62 → 56 (non-monotone)
+while chat capability went 6.2 → 10.0 → 37.5. The marker was never the mechanism.
+
+### What did NOT move
+
+* **Math is flat.** pen-1.0 series across five points: 1.25 / 3.75 / 11.25 / 5.0 /
+  11.25 — 11.25% was already reached at step 100,000. Overlapping intervals, no
+  trend. Also: math scores **5.0% at BOTH pen 1.0 and pen 1.15** at 108,471, where
+  code moves 48.8% → 75.0% across the same two settings. The penalty rescues code
+  and does nothing for math: two different failures, not one.
+* **Correctness.** L4 is 2/80 at 125,181. L3+ means "produces runnable Python" —
+  a sample graded L3 for `add_two` was `a = 2 + a`, which runs and does not add.
+  The failure mode has shifted from DEGENERATE to FLUENT-BUT-WRONG (pen-1.0
+  char-degenerate 67/80 → 53/80), which reads as competent output and is not.
+* **Halt depth is pinned at exactly 2.00/4** on every sample of every domain —
+  math, medical, general, all four rollout α values. ACT is not making a poor
+  routing decision; it is making no decision at all.
+
+### ⚠ Instrument note — `best_exit_probe` is within-session only
+
+Its eval text STREAMS from remote HF datasets. Re-running step 125,181 reproduced
+to **+0.0012** mean (per-domain |Δ| ≤ 0.0043), so it is deterministic within a
+session. But step 108,000 measured 0.348 here where an archived run at 108,471 —
+471 steps away — had recorded 0.2036. **Cross-session absolute CE from this tool
+is not comparable; only curves measured in one sitting are.** A cross-session
+comparison was used earlier in the evening to claim "the pour degraded the model
+1.7–3.5x"; that claim was withdrawn. `kd_exhaustion` does not have this problem —
+it caches a fixed held-out sample — and is the tool to prefer for any series.
+
+### ⚠ step_0108471.pt was rotated away — the THIRD time this class of bug has cost us
+
+The trainer's own `--keep-last 5` deleted it: 108,471 was a resume checkpoint, not
+an even-2000 milestone. `prune_checkpoints.py` never touched it — `checkpoints_newmix`
+is in its `_PROTECTED` list — so the protection everyone trusted was guarding a
+door the deletion never came through. Precedents: step 8,668, then 40,002/36,658
+(which is what `--ckpt-milestone-every` was added to fix). Milestones survived, so
+`step_0108000.pt` (471 steps away) stands in, and every baseline MEASUREMENT
+survives as JSON.
+
+**Mitigation applied:** `checkpoints_base/` now holds 108,000, 116,000 and 125,181
+outside the rotation. 116,000 (best CE, pre-transition) and 125,181 (best chat,
+post-transition) are the two most important checkpoints on the project and were
+both one rotation cycle from deletion.
+
+### Attribution, because it matters for how the next call gets made
+
+The owner's read was correct throughout and was argued against three times:
+"looking good, just a little noisy" (chat capability was rising and the series
+genuinely is noisy — 19/25 sign-flips), "read the outputs on all subjects, not
+just code" (which is what surfaced the pinned halt depth and the fluent-but-wrong
+shift), and "new material caused a spike" (there IS a real, reproducible step
+change at 116k–120k).
+
+Refuted this evening, all mine: that the CE curve showed smooth on-policy dose
+drift (it is a step change); that the pour was degrading the base (frame-relative);
+and that teacher exhaustion would show as rising soft-KL (it fell). The exhaustion
+result was reported as "your hypothesis refuted" when it was a refutation of my own
+operationalisation of it.
+
+
 ## 2026-08-15 (later) — ⚡ HARVEST 3.6x FASTER: 1.4B teacher + measured max_new/batch
 
 Chat harvest went 24 → 86 accepted tok/s across two changes, both measured rather

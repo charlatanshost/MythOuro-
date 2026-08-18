@@ -1,0 +1,94 @@
+[probe] loaded checkpoints_newmix/step_0125181.pt (step 125181) on xpu:0
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+
+  α=0.0  | top_share 0.08 [0.05-0.12] | distinct1 0.62 [0.60-0.66] | distinct2 0.89 [0.85-0.94] | n=5 | halt 2.00/4
+    e.g.: ' start building the home\n\nThe answer to this query would be:\n\nFor this first we go through an event every other from this page.\n\nTo make sure that the list is correct:\n\n(1 – "F" in the past year), the days of the day before the morning.\n\nThe second option would be "C" in the last day (2 – 3.5.4.5).\n\n12:\n\nIt'
+
+  α=0.25 | top_share 0.10 [0.06-0.15] | distinct1 0.58 [0.48-0.70] | distinct2 0.87 [0.80-0.97] | n=5 | halt 2.00/4
+    e.g.: " keep the windows open and in the next two weeks: \n\n1. What is the temperature at the 2nd day of the day?\n2. What is the temperature difference between the two days of the week and 5 days later?\n3. What is the probability that in the next 18 days, the event is 70% (70% of the day's current temperature)\n4. At 38 days, the chance of the"
+
+  α=0.5  | top_share 0.07 [0.06-0.08] | distinct1 0.67 [0.58-0.74] | distinct2 0.95 [0.87-0.99] | n=5 | halt 2.00/4
+    e.g.: ' go the zoo to visit the penguins, but it was hard to distinguish them, because they\'d all become "snowmen." As you know, it took a lot of time to get from  to , so just as to give it up and then take out the same amount of a lot of time, if it got overcast. So the weather forecast is pretty important. Therefore, to make sure that the first 24 hours of the next three or even four days we'
+
+  α=0.7  | top_share 0.09 [0.06-0.12] | distinct1 0.63 [0.58-0.70] | distinct2 0.93 [0.88-0.96] | n=5 | halt 2.00/4
+    e.g.: ' go to the outskirts of the capital of Berdram\n\n.\n\nThere was, at the time, a little bit of smoke in the air, at the time just after night had been put out.\n\nThe smoke was from the street below, and by the same time we were standing in, just a few days before, near the\n\nsame spot there were many people who had come with their children from the suburbs.\n\nOf\n\ncourse,'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.13 [0.07-0.26] | distinct1 0.50 [0.20-0.66] | distinct2 0.74 [0.27-0.94] | n=5 | halt 2.00/4
+    e.g.: ' immuno, and treatment for a bacterial infection, and is a common one. The treatment of bacterial-based antibiotic, such as the new kind of infection called CCR (CLA) or the combination of CCR. The treatment of bacterial-like strains, including the most effective treatment for CCR. The treatment of bacterial-related diseases like the CEP, C- and C-I and C-P and C-C-C and C-C-C'
+
+  α=0.25 | top_share 0.09 [0.07-0.11] | distinct1 0.57 [0.39-0.64] | distinct2 0.84 [0.58-0.93] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics and other options, but antibiotics must be evaluated thoroughly according to the FDA.\n\nThe main goal is to provide treatment for bacterial infection, particularly in cases of a bacterial strain, such as a bacteriophi (p.p.b) or a bacterial infection.\n\nThe most likely outcome is to use a low-dose combination of the following drugs (e.g., cef, a combination of a bacteri ile-type and a bacterial-based antibiotic'
+
+  α=0.5  | top_share 0.07 [0.05-0.09] | distinct1 0.64 [0.59-0.68] | distinct2 0.94 [0.86-0.99] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics, which are medications that are available from a doctor, a specialist professional. The treatment of these infections is dependent on the presence of a particular strain, and it would help if the infection is diagnosed at home or clinic before the antibiotics are administered.\n\nQuestion: What are some potential benefits of taking antibiotics for a bacterial infection? Answer: The text suggests that taking antibiotics to boost a new infection from the same strain as the source of the bacteria within the system, as well'
+
+  α=0.7  | top_share 0.11 [0.07-0.15] | distinct1 0.56 [0.45-0.72] | distinct2 0.84 [0.68-0.94] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics. For parasitic infections, you might use things like anti-proto, anti-inflammatory chemicals, or antiparasitic chemicals, which are designed to protect the skin and make a chemical difference between the patient and the disease. The term "bacteria" was coined by Paul B. Chalmers. The term used to describe different types of bacterial infections, such as malaria or other types of bacteria, are classified based on their characteristics and characteristics. In practice, the treatment for'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.18 [0.06-0.28] | distinct1 0.50 [0.32-0.62] | distinct2 0.77 [0.56-0.87] | n=5 | halt 2.00/4
+    e.g.: ' the risk of developing type 2 diabetes.\n\nQuestion: Which type of blood pressure is often associated with cardiovascular conditions like kidney or heart disease? Answer: Heart disease, cardiovascular disease, heart disease, and metabolic problems\n\nQuestion: What are some of the reasons why people with diabetes are more likely to experience a lack of exercise and other physical factors contributing to brain disease? Answer: High-resolution and high-performance performance\n\nQuestion: What is the most common cause'
+
+  α=0.25 | top_share 0.11 [0.05-0.21] | distinct1 0.64 [0.53-0.71] | distinct2 0.88 [0.72-0.98] | n=5 | halt 2.00/4
+    e.g.: ' increased thirst, frequent urination and a constant feeling of hunger, but also a lower resistance to the 80% of the time, which is now a significant factor to be able to treat many diseases.\nSome people do not get diabetes and it is less likely to have serious health problems, but to treat type 2 diabetes.\nSo how do you treat your brain problem? 1. Start with the right diet for type 2 diabetes: A good diet is what'
+
+  α=0.5  | top_share 0.12 [0.06-0.27] | distinct1 0.64 [0.48-0.75] | distinct2 0.90 [0.72-0.99] | n=5 | halt 2.00/4
+    e.g.: ":\n\n- Increased thirst\n- Frequent urination\n- Increased appetite\n- Weight loss\n- Increased fatigue\n- Impaired vision\n\nOther signs and outcomes:\n\n1. Increased risk for hypertension, dyslipidemia, and dyslipo-related diseases like heart disease and stroke.\n\nThis is not entirely clear, but there's a relationship between the development of new-onset diabetes that appears to be more likely than a diagnosis of a condition that's not"
+
+  α=0.7  | top_share 0.09 [0.05-0.14] | distinct1 0.65 [0.56-0.74] | distinct2 0.88 [0.76-0.94] | n=5 | halt 2.00/4
+    e.g.: " increased thirst, or pol or stomach\n\nBut how can I do this?\n\nFirst, let's tackle the problem:\n\nLet's start with this:\n\nYou have a function signature that might be the case, but let's think of how the user asks for it.\nWhat is the function's intention, what is the expected output, why do they need this?\n\nAh, I need to understand the problem with this.\n\nThe user"
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.12 [0.06-0.21] | distinct1 0.62 [0.50-0.73] | distinct2 0.84 [0.71-0.96] | n=5 | halt 2.00/4
+    e.g.: ' the severe and severe conditions associated with poor immune response.\n\nQuestion: Does the drug "VN3" work in the form of a combination of the same drug, as in the same chemical reaction? Why would these effects seem beneficial to prevent or prevent any kind of dangerous chemical reactions. (Sorry, there are multiple effects of "vict" and "mice" and "Morphi- or other drug) and the same chemical reaction where a large number of'
+
+  α=0.25 | top_share 0.09 [0.06-0.14] | distinct1 0.62 [0.45-0.74] | distinct2 0.86 [0.68-0.95] | n=5 | halt 2.00/4
+    e.g.: ' pain, especially in patients with high risk for heart disease.\nIn this case, the patient has to be administered without a risk of developing these different health conditions in the past weeks, but the patient can’t take any additional medications.\nThis does not mean that, without the medications, the patient’s blood pressure would drop, or his/or other related changes in which we are already living in.\n\n## C) How to use the **SUPER'
+
+  α=0.5  | top_share 0.07 [0.05-0.08] | distinct1 0.68 [0.62-0.73] | distinct2 0.95 [0.93-0.97] | n=5 | halt 2.00/4
+    e.g.: ' pain, inflammation, and fever. It works by reducing the risk of heart disease (50% or more), and in addition, can help reduce the risk of colon or colorectal cancer.\n\nHowever, there are other potential benefits which can be associated with taking 500mg per gram of a non-aspiratory condition (i.e., a low-fat diet), which is a good idea to treat and manage other chronic conditions, such as obesity, diabetes'
+
+  α=0.7  | top_share 0.06 [0.04-0.07] | distinct1 0.68 [0.65-0.72] | distinct2 0.95 [0.91-0.99] | n=5 | halt 2.00/4
+    e.g.: " pain and inflammation, but it's not used to directly cause weight loss.\n\nE-cigarette use:\nE-cigarettes contain nicotine. Some e-pens allow that nicotine to be added to the side of the body when someone takes a small puff. The side of the device may not have a higher concentration and/or increased muscle size compared to regular e-liquid nicotine products. The use of e-pens has been used as a treatment for nicotine-dependent"
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.12 [0.08-0.15] | distinct1 0.44 [0.30-0.52] | distinct2 0.72 [0.54-0.81] | n=5 | halt 2.00/4
+    e.g.: '\n    if n <= 8:\n        for i in range(2, n):\n            for i, i2 in (1, 2, 3, 6, 7, 7, 7, 9, 9.):\n                if i == 2:\n                    continue\n            # Initialize the function with parameters 3 and 4.\n\n            # Add the constraints of the function to the function 100.\n\nWait, the first'
+
+  α=0.25 | top_share 0.23 [0.06-0.74] | distinct1 0.46 [0.23-0.71] | distinct2 0.69 [0.28-0.96] | n=5 | halt 2.00/4
+    e.g.: '\n    # Calculate the sum of Fibonacci numbers\n    n = 100\n    for i in range(n):\n        if i < 2 * n ** 2:\n            # If the numbers are not in the range [n - 1] then add them to the index\n    # 1, 2, 3, 4, 5, 6,...? Not sure if this is necessary.\n    # 8, 4, 6'
+
+  α=0.5  | top_share 0.07 [0.05-0.10] | distinct1 0.58 [0.40-0.68] | distinct2 0.84 [0.69-0.93] | n=5 | halt 2.00/4
+    e.g.: '\n    # Your implementation will go as a single function with a return statement for\n    # the sum of digits only if the last digit is greater than or equal to\n    # five numbers.\n    # A list of lists to be returned will be returned by the function will\n    # be returned.\n\n    # Base64 encoded data and its own encoding\n    pass\n    \n# Call to the function\n# Output of the function\nprint(fib(1)); # Output: '
+
+  α=0.7  | top_share 0.09 [0.06-0.10] | distinct1 0.55 [0.38-0.71] | distinct2 0.82 [0.57-0.95] | n=5 | halt 2.00/4
+    e.g.: '\n\n    if n is not an integer:\n\n        return 0\n\n    def is_prime(n):\n\n        if n == 2:\n\n            return True\n\n        elif n == 1:\n\n            return False\n\n        elif ...\n\n    then, in the recursive function:\n\n        fib(n) = 0\n\n    if not is_prime(n):\n\n        return 0\n\n    if n == 1:\n\n        return 0\n\n    elif n == 2:\n\n        return...\n\n        return False'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.30 [0.12-0.96] | distinct1 0.29 [0.05-0.41] | distinct2 0.45 [0.05-0.71] | n=5 | halt 2.00/4
+    e.g.: ' 24.\n\nThe roots of the equation x^2 + 6 = 24.\n\nSolve it from 66 and 55:\n\n1. The roots of the equation x^2 + 6 = 24.\n\nThe roots of the equation x^2 + 6 = 24.\n\nThe roots of the equation x^2 + 6 = 2 * x - 4 = '
+
+  α=0.25 | top_share 0.12 [0.08-0.17] | distinct1 0.45 [0.35-0.53] | distinct2 0.70 [0.59-0.85] | n=5 | halt 2.00/4
+    e.g.: ' 0. So, we can apply the method to find the solution to the equation. We can start by simplifying the equation:\n\n\\[ (x^3 + 4) \\equiv 0 \\mod 3 \\]\n\n\\[ (3x^2 - 2\\) and -10 mod 3.\n\nSo, the solution to the equation is found by solving the quadratic equation, using the factorization of quadratic equation'
+
+  α=0.5  | top_share 0.12 [0.09-0.16] | distinct1 0.47 [0.38-0.53] | distinct2 0.80 [0.73-0.86] | n=5 | halt 2.00/4
+    e.g.: ' 18\n\n1. Write down the equation to find the product of roots to be 13\n\nAnswer: No solution exists because 17(x + 4) = 12 is a linear function only if the coefficient of the function is 16.\n\nAn equation to find the maximum value of 362 is:\n\n(y^2 - 2xy - 5y + (2x^2 + '
+
+  α=0.7  | top_share 0.08 [0.06-0.10] | distinct1 0.50 [0.42-0.67] | distinct2 0.77 [0.67-0.95] | n=5 | halt 2.00/4
+    e.g.: ' 0. The solutions should start with "Solution is a list".\n\nWait, actually in the prompt you can just do the problem, but you won’t have this question, but in the beginning prompt can\'t. Wait the user is asking:\n\n"Using Python, we want to create an AI assistant that can solve math equations. To solve this prompt, you will need to use the symp\n"""\n\nOkay, so the user wants to'
+
+wrote reports/probe_125181.json — 120 decoded samples retained (the .txt shows 6 of them)
