@@ -1,0 +1,97 @@
+[probe] loaded checkpoints_anneal045/step_0143500.pt (step 143500) on xpu:0
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-08-20 15:14:58.154 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1835 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=xpu:0). Teacher frozen.
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+2026-08-20 15:14:59.409 | WARNING  | mythouro.main:warn_once:106 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=None).
+
+  α=0.0  | top_share 0.08 [0.06-0.10] | distinct1 0.62 [0.48-0.73] | distinct2 0.92 [0.84-0.99] | n=5 | halt 2.00/4
+    e.g.: " start building the new airport. Now, we are in the winter of 2020, before the same day, and from this, we will start to make the next-day plan. The second year after the 2020 year plan will also contain all the new buildings and the whole plan to get started. But this is a simple starting point, and we don't need to think of anything. We have to make the first day at the start."
+
+  α=0.25 | top_share 0.11 [0.09-0.15] | distinct1 0.62 [0.60-0.64] | distinct2 0.89 [0.84-0.93] | n=5 | halt 2.00/4
+    e.g.: " keep the windows open.\n\nWe started a walk along the west side of the canal at the south-east side of the central wall. The west gate of the south, which is the main, is about 25% open, and the middle of the main street is in the same direction.\n\nOur next big town, I don't know, was I just think of my hometown.\n\nIn 11480, my daughter had a"
+
+  α=0.5  | top_share 0.08 [0.06-0.10] | distinct1 0.63 [0.49-0.70] | distinct2 0.92 [0.80-0.97] | n=5 | halt 2.00/4
+    e.g.: ' go the zoo to a nearby, nearby place in the woods.\n\nAnd then, we finally went away at a new town and I went to school to school and so we walked from 21 to 22.\n\nThe village has a lot of different things, a lot of beautiful, some of the first thing on the way to put this into our own home to make sure that the first thing to go here is very good, or we can also take'
+
+  α=0.7  | top_share 0.08 [0.05-0.12] | distinct1 0.67 [0.55-0.73] | distinct2 0.94 [0.91-0.96] | n=5 | halt 2.00/4
+    e.g.: ' go to the outskirts of the capital of Berdram, where the town is surrounded by n hills in the line. For each of the five consecutive days, you have to select exactly one of the five mountain. These pairs should be the most beautiful as possible. The first day you choose the first mountain is, then you have to choose the second one on each subsequent day, on the rest of the days you do nothing. The second day you can choose any mountain for the'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.10 [0.08-0.12] | distinct1 0.60 [0.56-0.64] | distinct2 0.87 [0.83-0.93] | n=5 | halt 2.00/4
+    e.g.: ' antibiotic treatment, which involves the treatment of the bacterial infection. It is important to know that the primary cause of antibiotic\n\nQuestion: Which of the following is NOT a role of vitamin C in the production of the C-based anti-inflammatory medication? A) To eliminate the natural components of C-based anti-inflammatory drugs (e.g., C-based antiviral agents)\nAnswer: B) It is the most sensitive, and the most effective approach to treat the'
+
+  α=0.25 | top_share 0.11 [0.07-0.17] | distinct1 0.54 [0.45-0.57] | distinct2 0.80 [0.62-0.88] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics, not a "tactact-like" (as in "tactact-like" in a play-out). However, it is highly beneficial if the patient receives a dose of a specific antibiotic (such as a dose of a specific antibiotic (such as the drug of the same medicine and/or a similar class of molecules and/or other forms of drug). Another study done in a study that looked at 30% of the test-takers'
+
+  α=0.5  | top_share 0.08 [0.04-0.12] | distinct1 0.61 [0.55-0.67] | distinct2 0.92 [0.85-0.96] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics, which are medications that are used for a variety of diseases related with the formation of bacteria.\n\nBacteria, both living and the non-living, can help with the development of antibiotics that prevent the infection, but there are other factors and treatments to deal with them.\n\nIt is important for people with bacterial infections to be able to receive the right amount of medical care. It is the same with other diseases like asthma, diabetes, and some other diseases.'
+
+  α=0.7  | top_share 0.08 [0.06-0.15] | distinct1 0.62 [0.54-0.68] | distinct2 0.88 [0.82-0.92] | n=5 | halt 2.00/4
+    e.g.: " antibiotics. For parasitic infections, you might use things like anti-protozoals (e.g., met-in-the-blood), but it's more specific to a parasite. I believe for the most important things in my life, in fact, I think I'm going to have to go up to the top 500. So you've probably seen a lot of people going down for food. Well, I'm going to have to check the top "
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.10 [0.05-0.15] | distinct1 0.58 [0.45-0.67] | distinct2 0.87 [0.76-0.96] | n=5 | halt 2.00/4
+    e.g.: " symptoms that have been diagnosed with a lot of illnesses such as chronic and chronic kidney disease and even some symptoms of such conditions like kidney or any type of disease such as diabetes, which the doctor might see if the symptoms were really the same as the symptoms of their illness. They are known to be more and less active than those who've been diagnosed for their health and the risk of developing diabetes. If you have a disease or a condition that you were, then you might not have"
+
+  α=0.25 | top_share 0.12 [0.07-0.29] | distinct1 0.57 [0.45-0.64] | distinct2 0.84 [0.61-0.93] | n=5 | halt 2.00/4
+    e.g.: " increased the risk of developing a disease in the form of a single, high-speed, high-dose treatment with a combination of many other medications (like 90% of the day. With a high-quality, and more-the-best-known, and the high-cost of the drug's drug.\n\nThe researchers also found that the most people with mild diabetes, and it's not unusual to us, but some of the most common symptoms. In"
+
+  α=0.5  | top_share 0.10 [0.07-0.11] | distinct1 0.62 [0.51-0.71] | distinct2 0.85 [0.66-0.96] | n=5 | halt 2.00/4
+    e.g.: ': \n\n- Increased thirst-type 2 diabetes\n- Increased sleep-type 2 diabetes\n- Increased sugar -type 2 diabetes\n- Increased body weight -type 2 diabetes \n\nand other related issues.\n\n- Increased blood pressure -type 2 diabetes (also known as "hypertel" in medical field)\n- Increased muscle and tendon (like ligaments)\n- Inflam...\n\n\n\nA typical type 2 diabetes mellitus ('
+
+  α=0.7  | top_share 0.11 [0.05-0.18] | distinct1 0.59 [0.50-0.73] | distinct2 0.83 [0.72-0.96] | n=5 | halt 2.00/4
+    e.g.: " increased consumption of sugary foods and beverages\n\nB: A person's diet is\nrich in fruits, vegetables, and even some whole grains, but the person\nalso\n\nB: A person's diet is rich in fruits, vegetables, and even some of the whole grains that she gets, but also\n\n16/12/2022\n\nThe patient needs to be checked for these symptoms, and the most common symptoms of type 2 diabetes are"
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.09 [0.06-0.12] | distinct1 0.61 [0.48-0.68] | distinct2 0.88 [0.74-0.95] | n=5 | halt 2.00/4
+    e.g.: " the condition, but it's not necessary to use the drug itself because it's not the only option. If you want to say that the other benefits include not being harmful, as well as being able to treat the disease, but it's worth knowing the best possible option. So I know that if you take an herbal supplement, then that's what you would like to achieve your desire to have the same level of stress-related features, that's why the person who is in"
+
+  α=0.25 | top_share 0.08 [0.06-0.11] | distinct1 0.62 [0.53-0.68] | distinct2 0.93 [0.87-0.99] | n=5 | halt 2.00/4
+    e.g.: ' the following conditions.\nWhich of the following is a risk factor for developing diabetes?\nA) Being in good immune response to the treatment of different health conditions in the past weeks of the treatment of a condition.\nB) Eating the same diet with a low risk of developing the diabetes, not a high amount of the food that is not able to eat, but it is not associated with the risk of dying from diabetes. C) Being in a bad diet, not doing'
+
+  α=0.5  | top_share 0.07 [0.06-0.08] | distinct1 0.65 [0.62-0.70] | distinct2 0.92 [0.88-0.97] | n=5 | halt 2.00/4
+    e.g.: ' pain, inflammation, and fever. It works by lowering the levels of the immune system to help the body reduce inflammatory conditions in the body.\n\nAdvertisement - Continue reading below\n\n\n#\n\nThe patient\'s initial, which is the first letter in the patient\'s history, is a non-inflammatory medication. The history is a non-contributory, non-inflammatory medication, so it\'s not a "good" or "bad" choice based on the'
+
+  α=0.7  | top_share 0.07 [0.05-0.08] | distinct1 0.66 [0.60-0.75] | distinct2 0.91 [0.84-0.97] | n=5 | halt 2.00/4
+    e.g.: ' pain and inflammation, but it\'s not used to directly cause weight loss.\n\nE: L-Dopa\n- L-Dopa is the precursor to several catecholamines involved in the central nervous system. Though it was not the main agent of DMT, it was used as a "carrier molecule and/or a precursor for other psychoactive compounds like drug metabolites of synthetic serotonergic compounds which are present in the body."\n\nF: DMT'
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.37 [0.08-0.77] | distinct1 0.19 [0.12-0.33] | distinct2 0.29 [0.13-0.59] | n=5 | halt 2.00/4
+    e.g.: '\n    if n % 8 == 0 or n % 9 != 0:\n        return -10000000000000000000000000000.00000000000000000000000000000000000000.000000'
+
+  α=0.25 | top_share 0.09 [0.05-0.15] | distinct1 0.54 [0.46-0.68] | distinct2 0.83 [0.75-0.93] | n=5 | halt 2.00/4
+    e.g.: '\n    # Calculate the sum of the digits of n\n    # Using a list comprehension here\n    if n < 0:\n        return None\n    n = -1\n\n    # Determine the next prime factor\n    if n == 0:\n        # Check whether the prime factor is divisible by 2\n    if n % 2 != 1:\n        # Check if n is divisible by 3?\n        # Or 1 < n + 1 for even n = 1\n       '
+
+  α=0.5  | top_share 0.08 [0.06-0.10] | distinct1 0.53 [0.42-0.69] | distinct2 0.80 [0.65-0.96] | n=5 | halt 2.00/4
+    e.g.: "\n    nums = nums1 + numsN + 1\n    return nums\n\nBut wait, maybe the function should return the original n if there are not multiple arguments (the first two digits of the list must be a Fibonacci number), and then, calculate the n-th term.\n\nSo perhaps in the case of a singleton list with one element (but it's not a valid Fibonacci number).\n\nWait, perhaps I need to think of some examples"
+
+  α=0.7  | top_share 0.10 [0.06-0.15] | distinct1 0.51 [0.33-0.66] | distinct2 0.79 [0.60-0.91] | n=5 | halt 2.00/4
+    e.g.: "\n\n    if n is 0:\n\n        return 0\n\n    elif n == 1:\n\n        return 1\n\nWait, but in Python, variables are considered by their own type. Wait, perhaps I'm supposed to write a while loop that checks if fib is 0 or 1.\n\nAlternatively, the first few lines of code should define a while loop, which continues until it stops trying to add numbers. The test condition says that the loop may have a"
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.18 [0.07-0.36] | distinct1 0.40 [0.23-0.52] | distinct2 0.63 [0.29-0.84] | n=5 | halt 2.00/4
+    e.g.: " 0 (assuming the equation is valid).\n\nSo, the polynomial x^2 - 5x + 6 can be solved by finding the solution for (x+5) + 6 = -5,x + 6, by subtracting from the original equation:\n\nx+5 = -5 --> \n\nSimilarly, in our problem, it's not a quart, but the problem says a + (x+5) - 4, so"
+
+  α=0.25 | top_share 0.14 [0.06-0.22] | distinct1 0.35 [0.16-0.56] | distinct2 0.59 [0.33-0.92] | n=5 | halt 2.00/4
+    e.g.: ' 0. So, we can apply the method to find the solution of the equation.\n\n(x - 6) + 5 = (x - 6) + 3 (x - 1)\n(x - 6) + 3 (x - 2) + 3 - k) + 3 (x - 3) + 3 - k + k) + 3(x - 2) + 3'
+
+  α=0.5  | top_share 0.11 [0.08-0.15] | distinct1 0.38 [0.18-0.56] | distinct2 0.67 [0.37-0.95] | n=5 | halt 2.00/4
+    e.g.: ' 0.\n\n1. Write down the quadratic equation and then write the system of equations.\n\n2. Compute the square root of the cubic equation.\n\n3. Rewrite f(x) = x + sqrt(25 - x) + 6x + 6.\n\nAn easy way to solve the equation 2x^2 - 3x + 6 = 22.\n\nThen, find (g o)(-x +'
+
+  α=0.7  | top_share 0.08 [0.05-0.14] | distinct1 0.48 [0.28-0.66] | distinct2 0.76 [0.53-0.91] | n=5 | halt 2.00/4
+    e.g.: ' 0. The solutions should be returned to 5 decimal places and the solutions should be sorted in ascending and descending  order.\nIn addition to the initial request, the solution should be computed in O(1) time.\n\n\nOkay, I need to solve the quadratic equation x² -5x + 6 = 0. The problem says to return the positive solutions rounded to five decimal places, sorted by ascending, and sorted by descending. Also, the'
+
+wrote reports/probe_anneal045_143500.json — 120 decoded samples retained (the .txt shows 6 of them)

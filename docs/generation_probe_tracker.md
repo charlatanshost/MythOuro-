@@ -823,6 +823,85 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-20 — ✅ α-ANNEAL 0.5 → 0.45: RAW CODE 65.0% → 82.5%, a new project record, in 3,500 steps
+
+The second α-anneal in the project's history, and the most productive single leg
+so far. 140,000 → 143,500 (~4.9h), one variable changed.
+
+### The result
+
+| step | RAW code L3+ | looped | char-degen |
+|---|---|---|---|
+| 140,000 (α=0.5 endpoint) | 65.0% | 1/80 | 0/80 |
+| 141,500 | 76.2% | 1/80 | 0/80 |
+| 142,500 | 80.0% | 1/80 | 0/80 |
+| **143,500** | **82.5%** | 1/80 | 0/80 |
+
+Monotone, and it passed the previous all-time record (**75.0% @108,471**) after only
+1,500 steps. Chat-framed code was flat — 33.8% → 31.2%, inside the ±10pp interval —
+so this is a raw-frame gain, not a frame trade. Degeneracy never moved.
+
+Whole-project arc for raw code: **75.0 → 60.0 → 55.0 → 65.0 → 82.5.** The
+116k–120k disruption is not merely recovered but beaten by 7.5 points.
+
+### The trigger, and why it fired
+
+The documented 2026-06-30 rule: capability present at high α but NOT internalized
+into α=0.0, with α=0.0 flat. It had been flat for **50,000 steps** —
+0.161 (90,351) / 0.201 (100,000) / 0.170 (108,471) / 0.155 (125,181) / 0.154 (140,000)
+— where the 0.6→0.5 anneal had moved that same metric 0.18 → 0.12 in 216 steps.
+`onpolicy_plan.md` already named 0.45 and shelved it under "HOLD 0.5, pour TOKENS";
+the pour reached its 140,000 target, so the condition the hold depended on was met.
+
+### ⚠ THREE INSTRUMENTS, THREE DIFFERENT VERDICTS — the mean was the worst one
+
+α=0.0 per seed, @140,000 → @143,500 (top_share):
+
+| seed | before | after | |
+|---|---|---|---|
+| weather | 0.100 | 0.080 | ✓ |
+| bacterial | 0.179 | 0.100 | ✓✓ |
+| diabetes | 0.194 | 0.100 | ✓✓ |
+| ibuprofen | 0.081 | 0.090 | ~ |
+| fibonacci | 0.246 | **0.370** | ✗ |
+| quadratic | 0.125 | 0.180 | ✗ |
+| **MEAN** | **0.154** | **0.153** | **flat** |
+
+1. **The six-seed MEAN said the anneal did nothing** (0.154 → 0.153). The
+   readout script's own verdict logic would have printed "FLAT — α is not the
+   lever, go to rung 6." It was wrong.
+2. **Per-seed said prose up, code down.** Prose-only across four seeds:
+   top_share 0.139 → 0.092 (−34%), distinct1 0.543 → 0.603 — the FIRST movement
+   in α=0.0 since step 90,351. The text agrees: the `C-C-C and C-C-C` letter-salad
+   mode is gone and continuations hold their topic. Meanwhile `fibonacci` went
+   from a repeated-`sum(n-1)` loop to a giant float literal.
+3. **Deployment-settings eval said capability UP, a lot** (65.0 → 82.5).
+
+The reconciliation: the rollout probe samples at T=1.0 / top_k 50 / **no repetition
+penalty**, far harsher than `code_eval` at pen 1.15. The α=0.0 code degeneracy is
+real at worst-case sampling and does NOT reach deployment behaviour. Had we stopped
+at either the mean or the rollout probe we would have concluded the anneal failed or
+cost code capability. **Neither aggregate nor worst-case sampling substitutes for
+measuring capability at the settings that will be used.**
+
+### Loss did NOT behave as the precedent predicted, and it did not matter
+
+Per-500 means: 0.6567 → 0.6717 → **0.6886** (peak) → 0.6372 → 0.6093 → 0.5937 →
+0.6133 → 0.6080. The 2026-06-30 note said to expect a RISE and treat it as good.
+It rose for ~1,000 steps and then fell well below the α=0.5 baseline (~0.69).
+Neither reading was informative — lowering α changes what the loss is computed
+over, so it is not comparable across the change. **Judge an anneal on α=0.0 and on
+capability, never on loss.**
+
+### Next
+
+α=0.40. The trigger that justified 0.45 no longer applies in the same form (α=0.0
+prose has finally moved), but the justification is now stronger — results, not a
+plateau. Watch the same abort signal: a fragile seed spiking past 0.40 at α=0.0.
+`checkpoints_newmix` remains the untouched α=0.5 control and `step_0140000.pt` the
+fallback; `checkpoints_base/` holds 108,000 / 116,000 / 125,181.
+
+
 ## 2026-08-18 — 🔀 PHASE TRANSITION at ~116k–120k: the pour is converting a CONTINUATION model into a CHAT model
 
 Four instruments, run in one evening on the newmix pour (108,471 → 125,181). Two
