@@ -63,27 +63,41 @@ from inspect_checkpoint import _load_model                      # noqa: E402
 # (name, prompt, call-and-check snippet). Deliberately EASY — the point is to
 # detect the first flicker of capability, not to rank a frontier model. Several
 # prompts match the generation-probe seeds so the two instruments line up.
+#
+# ⚠ CHECKS STRENGTHENED 2026-08-21, and L4 BEFORE THAT DATE IS INFLATED. The
+# originals were 1-3 assertions per task, which guard-clause fragments walk
+# straight through. `is_even` was two assertions on two values, so
+# `return (n % 2 == 0) and (n % 3 == 1)` passed and was graded L4 at step 149,500;
+# `double_it` and `is_prime` had false positives too. Each suite now covers zero,
+# empty, negative and identity cases, because those are exactly what a fragment
+# that returns early gets wrong.
+#
+# THIS DOES NOT BREAK THE L3+ SERIES. A sample that passed the weak tests and
+# fails the strict ones moves L4 -> L3, and both are >= 3, so every historical
+# L3+ number stays comparable. Only L4 changes, and only by becoming honest.
+# Re-grade saved completions with `tools/regrade_strict.py` rather than
+# regenerating — the reports keep full completions.
 _TASKS = [
     ("add_two", "def add_two(a, b):\n",
-     "assert add_two(2, 3) == 5\nassert add_two(-1, 1) == 0"),
+     "assert add_two(2, 3) == 5\nassert add_two(-1, 1) == 0\nassert add_two(0, 0) == 0\nassert add_two(100, -50) == 50\nassert add_two(-4, -6) == -10"),
     ("double_it", "def double_it(n):\n",
-     "assert double_it(4) == 8\nassert double_it(0) == 0"),
+     "assert double_it(4) == 8\nassert double_it(0) == 0\nassert double_it(-3) == -6\nassert double_it(7) == 14\nassert double_it(1) == 2"),
     ("get_first", "def get_first(items):\n",
-     "assert get_first([7, 8, 9]) == 7"),
+     "assert get_first([7, 8, 9]) == 7\nassert get_first([1]) == 1\nassert get_first(['a', 'b']) == 'a'\nassert get_first([3, 1, 2]) == 3"),
     ("sum_list", "def sum_list(nums):\n",
-     "assert sum_list([1, 2, 3]) == 6\nassert sum_list([]) == 0"),
+     "assert sum_list([1, 2, 3]) == 6\nassert sum_list([]) == 0\nassert sum_list([-1, 1]) == 0\nassert sum_list([5]) == 5\nassert sum_list([10, 20, 30]) == 60"),
     ("count_items", "def count_items(items):\n",
-     "assert count_items([1, 2, 3]) == 3"),
+     "assert count_items([1, 2, 3]) == 3\nassert count_items([]) == 0\nassert count_items([1]) == 1\nassert count_items(['a', 'b', 'c', 'd']) == 4"),
     ("is_even", "def is_even(n):\n",
-     "assert is_even(4) is True or is_even(4) == True\nassert not is_even(3)"),
+     "assert is_even(4) == True\nassert is_even(3) == False\nassert is_even(0) == True\nassert is_even(7) == False\nassert is_even(-2) == True\nassert is_even(1) == False\nassert is_even(100) == True\nassert is_even(99) == False"),
     ("reverse_string", "def reverse_string(s):\n",
-     "assert reverse_string('abc') == 'cba'"),
+     "assert reverse_string('abc') == 'cba'\nassert reverse_string('') == ''\nassert reverse_string('a') == 'a'\nassert reverse_string('hello') == 'olleh'"),
     ("max_of_two", "def max_of_two(a, b):\n",
-     "assert max_of_two(3, 9) == 9\nassert max_of_two(5, 2) == 5"),
+     "assert max_of_two(3, 9) == 9\nassert max_of_two(5, 2) == 5\nassert max_of_two(0, 0) == 0\nassert max_of_two(-5, -2) == -2\nassert max_of_two(7, 7) == 7"),
     ("fibonacci", "def fibonacci(n):\n",
-     "assert fibonacci(0) == 0\nassert fibonacci(1) == 1\nassert fibonacci(6) == 8"),
+     "assert fibonacci(0) == 0\nassert fibonacci(1) == 1\nassert fibonacci(2) == 1\nassert fibonacci(3) == 2\nassert fibonacci(6) == 8\nassert fibonacci(10) == 55"),
     ("is_prime", "def is_prime(n):\n",
-     "assert is_prime(7)\nassert not is_prime(8)"),
+     "assert is_prime(7) == True\nassert is_prime(8) == False\nassert is_prime(2) == True\nassert is_prime(1) == False\nassert is_prime(9) == False\nassert is_prime(13) == True\nassert is_prime(4) == False"),
 ]
 
 # ── FRAMING: does the prompt look like the data the model was TRAINED on? ──

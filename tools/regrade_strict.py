@@ -80,8 +80,10 @@ _STRICT = {
 
 def regrade(path: str) -> dict:
     d = json.load(open(path))
-    if d.get("chat_template"):
-        return {}                       # bare-framed only; chat completions are extracted
+    # Chat-framed reports store the RAW completion; extraction happens at scoring
+    # time, so re-grading them just means passing extract=True — the same path
+    # the original run used.
+    extract = bool(d.get("chat_template"))
     n = l3 = l4 = l4_old = 0
     fixed = []
     for t in d["tasks"]:
@@ -92,17 +94,19 @@ def regrade(path: str) -> dict:
         for s in t["samples"]:
             n += 1
             l4_old += s["rung"] == 4
-            r = score_sample(prompt, s["completion"], fname, checks)["rung"]
+            r = score_sample(prompt, s["completion"], fname, checks,
+                             extract=extract)["rung"]
             l3 += r >= 3
             l4 += r == 4
             if s["rung"] == 4 and r != 4:
                 fixed.append(f"{fname} (was L4, now L{r})")
-    return {"n": n, "l3": l3, "l4": l4, "l4_old": l4_old, "downgraded": fixed}
+    return {"n": n, "l3": l3, "l4": l4, "l4_old": l4_old,
+            "downgraded": fixed, "frame": "CHAT" if extract else "RAW"}
 
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[1])
-    p.add_argument("--glob", default="reports/code_*_pen115.json")
+    p.add_argument("--glob", default="reports/code_*.json")
     a = p.parse_args()
     rows = []
     for f in sorted(_glob.glob(a.glob)):
@@ -111,10 +115,10 @@ def main() -> None:
         if r:
             rows.append((int(m.group(1)) if m else 0, os.path.basename(f), r))
     rows.sort()
-    print(f"\n  {'step':>8}  {'L3+ (runs)':>11}{'L4 shipped':>12}{'L4 STRICT':>11}")
+    print(f"\n  {'step':>8}{'frame':>7}  {'L3+ (runs)':>11}{'L4 shipped':>12}{'L4 STRICT':>11}")
     for step, name, r in rows:
-        print(f"  {step:>8}  {100*r['l3']/r['n']:>10.1f}%{r['l4_old']:>9}/{r['n']}"
-              f"{r['l4']:>8}/{r['n']}")
+        print(f"  {step:>8}{r['frame']:>7}  {100*r['l3']/r['n']:>10.1f}%"
+              f"{r['l4_old']:>9}/{r['n']}{r['l4']:>8}/{r['n']}")
     print()
     for step, name, r in rows:
         for f in r["downgraded"]:
