@@ -1,0 +1,97 @@
+[probe] loaded checkpoints_anneal040/step_0149500.pt (step 149500) on xpu:0
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-08-21 08:55:03.037 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1835 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=xpu:0). Teacher frozen.
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+2026-08-21 08:55:04.317 | WARNING  | mythouro.main:warn_once:106 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=None).
+
+  α=0.0  | top_share 0.10 [0.05-0.14] | distinct1 0.59 [0.44-0.66] | distinct2 0.87 [0.64-0.94] | n=5 | halt 2.00/4
+    e.g.: " start building the wall at C.C. The main idea behind it was to look at the same pattern in the upper part of the tower to see the ground surface which is also very similar to the roof and the building on the base of the house of a large castle to be visible in the shape of the room to get more of the roof's structure. In the summer there is a small room – perhaps something different. The floor was always a lot of buildings. It is"
+
+  α=0.25 | top_share 0.13 [0.08-0.19] | distinct1 0.58 [0.47-0.67] | distinct2 0.83 [0.69-0.97] | n=5 | halt 2.00/4
+    e.g.: " keep the weather in the air here. The day will be cool but we will not reach any of the weather in the morning.\n\nSo you can see how much you have in the morning's sun, and then add that 6 days in the middle of the season. Then in the morning, you will notice that the wind is very cool and there is no room on the northern side of the city.\n\nThe weather in the afternoon will be quite a lot more"
+
+  α=0.5  | top_share 0.10 [0.06-0.16] | distinct1 0.55 [0.48-0.59] | distinct2 0.82 [0.69-0.92] | n=5 | halt 2.00/4
+    e.g.: ' go the zoo to visit the penguins, but we saw a row of a $$$N$-shaped flower at $$$(x, y)$$$. The flower has a radius $$$\\text{rad}$$$ and is painted with $$$\\text{color}\\text{B}(a, b, c)\\text{\\_t}$$$. The color of the first row is the first $$$\\text{number of}$$$s, $'
+
+  α=0.7  | top_share 0.09 [0.05-0.14] | distinct1 0.65 [0.58-0.73] | distinct2 0.91 [0.87-0.97] | n=5 | halt 2.00/4
+    e.g.: ' go to the outskirts of the capital of Berdram, where the town is known as, of course, Berdram. We need to be precise about the name of the new town - the town was named a by the first name of the first city Berdram. The name is a string of length n of length at least 1.\n\nIn the following days, we will be receiving p requests to find the k-th root of (a prefix?)'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.14 [0.07-0.32] | distinct1 0.62 [0.40-0.70] | distinct2 0.87 [0.57-0.97] | n=5 | halt 2.00/4
+    e.g.: ':\n\n- A common method is:\n   - Use a protein-striction (A.C.C.S.A.) to detect and treat the infection.\n- A third-stage treatment for C.C.C.S.A.H.F.S.C.F.T.H.C.E.F.T.R.G.T.C.E.D.G.F.T.S.C'
+
+  α=0.25 | top_share 0.08 [0.05-0.10] | distinct1 0.64 [0.52-0.72] | distinct2 0.89 [0.75-0.95] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics and proper handling of the body. Most people don\'t have a thorough understanding and/or treatment for this kind of treatment. This article is available free of charge if you want to take further care of your health.\n\n"When an infection is causing you feel uncomfortable, and if you are not feeling well, there is still more than one kind of treatment. If you\'re trying to heal in a situation where the doctor has been treating, then you\'re probably not going'
+
+  α=0.5  | top_share 0.06 [0.04-0.09] | distinct1 0.65 [0.61-0.72] | distinct2 0.92 [0.86-0.97] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics, which are medications that cause a significant amount of bacteria to be killed. The remaining bacteria to be killed are referred to as "residual bacteria." The residual bacteria can help with the infection, and antibiotics can also be used to help with other diseases and conditions, such as fungal infections, chronic damage, and infections that can be seen by someone who has had a bacterial infection to get a new infection. \n\n## Step 2: Identifying When a Bacterial Infection is Resuming'
+
+  α=0.7  | top_share 0.14 [0.06-0.28] | distinct1 0.54 [0.18-0.74] | distinct2 0.79 [0.38-0.96] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics. For parasitic infections, you might use things like anti-proto, anti-inflammatory chemicals, or antiparasitic agents, to treat.\n\nA person might look for some of the symptoms for infection, and then decide to see the doctor. Some people will choose not to use antibiotics, and would choose to use a different treatment for their infection, such as an antibiotic, an antibiotic, or a person who would choose the treatment, but would also be the one that'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.11 [0.06-0.16] | distinct1 0.59 [0.47-0.69] | distinct2 0.86 [0.73-0.97] | n=5 | halt 2.00/4
+    e.g.: ' symptoms that have a particular type of symptom. One such condition comes from the different types of symptoms, but the reason why it is believed that they can develop new medications that can be used to treat patients who have had chronic conditions. A doctor may prescribe some of the treatment options for example, one of the several ways to treat them, and the best one to do so is to make sure that the treatment is done properly on the same level as the existing treatment. In addition to'
+
+  α=0.25 | top_share 0.10 [0.04-0.23] | distinct1 0.59 [0.48-0.68] | distinct2 0.83 [0.71-0.95] | n=5 | halt 2.00/4
+    e.g.: " increased thirst, frequent pain or a tingling sensation, and unexplained weight loss in the elderly. For these cases though you're really more likely to struggle with a significant loss of your daily life when it has already been a few years and you’re always suffering with your own body as well as your own body. So your body needs to be able to handle each other’s needs, and it’s important not to worry about it all. You’re the person who has"
+
+  α=0.5  | top_share 0.07 [0.05-0.09] | distinct1 0.65 [0.60-0.70] | distinct2 0.89 [0.83-0.96] | n=5 | halt 2.00/4
+    e.g.: ': \n\n- Increased thirst-type 2 diabetes\n\n- The feeling of a dry mouth at the bottom \n\n- The need for water or juice to keep track of your blood and blood cells in the body.\n\n- The desire to keep things dry \n\n- The need to stop eating a lot of sugars in your diet and other foods that may affect your blood and blood pressure. \n\nThe reason why it is important to note that if you are experiencing'
+
+  α=0.7  | top_share 0.08 [0.05-0.16] | distinct1 0.64 [0.59-0.72] | distinct2 0.87 [0.79-0.91] | n=5 | halt 2.00/4
+    e.g.: ' increased consumption of sugary foods and beverages\n[ ]\n\nThe following medications have been associated with the same side effects (dizziness-leg). Please list the medication:\n\nBempedoic acid\n\n(A.\nB) Metaprot\n\n(0 B.\nD) Lactic acid\n\nWhat is the term for the ability to do things with one hand?\n\nI cannot, but I would say, for example, "A person'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.09 [0.06-0.14] | distinct1 0.64 [0.60-0.69] | distinct2 0.90 [0.84-0.97] | n=5 | halt 2.00/4
+    e.g.: " the underlying inflammation of the bone. For example, we have the patient with a severe inflammation that can cause symptoms such as the following.\n\nBut one of the ways to help patients with these conditions is by helping with other treatments, such as vitamin and melatonin. You can use a tablet. A simple solution here is to try to make a small dose of medication (if you have already taken the treatment, the dosage of blood and the serum of the body's own system will"
+
+  α=0.25 | top_share 0.08 [0.05-0.14] | distinct1 0.59 [0.47-0.68] | distinct2 0.85 [0.74-0.96] | n=5 | halt 2.00/4
+    e.g.: ' pain, especially in patients with acute rheumatic or chronic kidney disease (33). This may be particularly important in patients whose conditions are not well-managed by the management or treatment of the disease.\nIn these cases, there might be some risk of overstimulatory, or the development of the condition to prevent blood pressure. When it comes down to medications, it could be used to treat the symptoms of the chronic disease. An example of a patient with a condition that might'
+
+  α=0.5  | top_share 0.08 [0.05-0.12] | distinct1 0.60 [0.51-0.68] | distinct2 0.90 [0.85-0.94] | n=5 | halt 2.00/4
+    e.g.: " pain, inflammation, and pain. It works by reducing the production of prostagland (5-7). Prostagland, which are used as signals to treat the patients or to prevent the formation of a second major. These signals, which can be used to treat the patient's condition, can be given a different treatment. The most effective method is to treat the patient with a normal blood glucose level, a small amount but not a large amount of protein or a small percentage of"
+
+  α=0.7  | top_share 0.09 [0.04-0.12] | distinct1 0.61 [0.48-0.73] | distinct2 0.86 [0.71-0.94] | n=5 | halt 2.00/4
+    e.g.: " pain and inflammation, but I've heard that ibuprofen can cause some stomach issues that are related to inflammation in the stomach itself. The doctor said that even the low-dose NSAIDs that come from ibuprofen can affect our gastric mucosa and inflammation in the gut. I didn't realize that it's important for your gut to be nice and well-o-free from all the substances that can start the inflammation. But taking a low-dose every day? Can that be harmful? So that"
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.11 [0.07-0.21] | distinct1 0.47 [0.28-0.68] | distinct2 0.67 [0.48-0.92] | n=5 | halt 2.00/4
+    e.g.: '\n    if n % 8 == 0 or n % 9 != 0:\n        return prime(n % 8)\n    return [n% (i % 1) if i % 3 else 0]\n\nBut then, perhaps if I make a comparison between each digit and its square, but the question says that "the highest possible value of n is determined by sum/sum of 2*n" but perhaps that\'s not the case'
+
+  α=0.25 | top_share 0.09 [0.05-0.12] | distinct1 0.51 [0.32-0.62] | distinct2 0.73 [0.55-0.82] | n=5 | halt 2.00/4
+    e.g.: '\n    # Calculate the sum of the digits of the nth digit\n    # But here there is a confusion here: 997\n    # Which is the number of digits in the number, and after we get that, we have\n    # more than one decimal.\n    nth_digit = 1\n    nth_digit = 2\n\n    # Return the value of the next digit after the nth digit.\n    return -1\n\n\ndef calculate_next_'
+
+  α=0.5  | top_share 0.09 [0.05-0.19] | distinct1 0.51 [0.35-0.69] | distinct2 0.79 [0.62-0.98] | n=5 | halt 2.00/4
+    e.g.: '\n    nums = []\n    for i in range(n):\n        if i < n-3:\n            # add the last three elements to the first half\n            # and then the second half\n            # to get the first half of the sequence of 10 elements\n            nums.append(i + 1)\n            if i + 1 > 0:\n                nums.append(i + 1)\n                # now append the first element to the end of the last'
+
+  α=0.7  | top_share 0.09 [0.06-0.11] | distinct1 0.55 [0.45-0.65] | distinct2 0.83 [0.72-0.94] | n=5 | halt 2.00/4
+    e.g.: '\n    if n <= 1:\n        return n\n    else:\n        return n +1\nprint(f"The Fibonacci number {10} is {fib(10)}")\n```\n\nThe function is supposed to return the nth Fibonacci number, but it seems to have errors in the implementation. Please check and correct it.\n\n\nThe code is supposed to compute the Fibonacci sequence, but has several errors that we may have encountered'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.15 [0.06-0.26] | distinct1 0.33 [0.09-0.60] | distinct2 0.48 [0.16-0.85] | n=5 | halt 2.00/4
+    e.g.: ' 2x^2 - 5x + 4 = 2x^2 - 5x + 4 = 2x^2 - 5x + 4 = 2x - 5x + 5 = 2x - 5 = 2x - 5 = 2x + 5 = 2x - 5 = 2x + 5 = 2x - 5 = 2x +'
+
+  α=0.25 | top_share 0.08 [0.06-0.09] | distinct1 0.49 [0.43-0.55] | distinct2 0.78 [0.71-0.84] | n=5 | halt 2.00/4
+    e.g.: ' 0. So the second argument is y₁ = 0. Hmm, perhaps I should consider y₁.\n\nWait, the first solution is y₁ = 3x - 416. The first solution, in the context of the second order, gives us a solution.\n\nWait, but perhaps I should recall that in a simpler problem, when you have to find a function satisfying the equation, maybe with a different parameter, maybe'
+
+  α=0.5  | top_share 0.16 [0.11-0.24] | distinct1 0.30 [0.19-0.43] | distinct2 0.60 [0.32-0.80] | n=5 | halt 2.00/4
+    e.g.: ' 0.\n\n1. Write down the equation:\n\nx^2 - 5x + 6 = 0\n\n2. Solve the equation:\n\nx^2 - 5x + 6 = 0 => (x - 2)(x + 6) = 0\n\n3. Write down the equation for x in terms of x and x:\n\nx = 2 + 3x (1) = 0\n'
+
+  α=0.7  | top_share 0.09 [0.06-0.11] | distinct1 0.49 [0.36-0.58] | distinct2 0.76 [0.63-0.88] | n=5 | halt 2.00/4
+    e.g.: " 0 \\nand find the roots.\n\n\nOkay, I need to solve the quadratic equation x² -5x +6 =0. Hmm. Let's see. The equation is in the standard form axx +bx +c. Wait, wait, no, the variable is x, so maybe I should set it to 2x²? Because sometimes, the standard form is not always in the form for the quadratic equation. Wait, maybe I"
+
+wrote reports/probe_anneal045_149500.json — 120 decoded samples retained (the .txt shows 6 of them)

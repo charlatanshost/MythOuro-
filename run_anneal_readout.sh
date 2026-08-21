@@ -25,21 +25,22 @@ fi
 
 DIR="${DIR:-checkpoints_anneal045}"   # override: DIR=checkpoints_anneal040 bash ...
 S=$(basename "$(ls -t $DIR/step_*.pt | head -1)" | sed 's/step_0*//; s/\.pt//')
+TAG=$(basename "$DIR" | sed "s/^checkpoints_//")   # report prefix follows DIR
 echo "=== anneal readout @ step $S (α=0.45) vs 140,000 (α=0.5) ==="
 
 python -u -m tools.onpolicy_rollout_probe --ckpt-dir "$DIR" \
   --student-device xpu:0 --teacher-device xpu:0 \
   --teacher-id ByteDance/Ouro-2.6B-Thinking \
   --trust-remote-code --no-kv-cache --samples 5 \
-  --json "reports/probe_anneal045_${S}.json" \
-  2>&1 | tee "reports/probe_anneal045_${S}.txt"
+  --json "reports/probe_${TAG}_${S}.json" \
+  2>&1 | tee "reports/probe_${TAG}_${S}.txt"
 
 echo
 echo "=== α=0.0 PER SEED — re-collapse is the abort signal ==="
-python3 - "$S" <<'PY'
+python3 - "$S" "$TAG" <<'PY'
 import json,sys,statistics as st
-S=sys.argv[1]
-new=json.load(open(f"reports/probe_anneal045_{S}.json"))
+S,TAG=sys.argv[1],sys.argv[2]
+new=json.load(open(f"reports/probe_{TAG}_{S}.json"))
 old=json.load(open("reports/probe_140000.json"))
 def per_seed(d):
     out={}

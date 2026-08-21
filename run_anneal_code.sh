@@ -33,32 +33,32 @@ if pgrep -f "training[.](distill|sft)" >/dev/null; then echo "a trainer is runni
 
 DIR="${DIR:-checkpoints_anneal045}"   # override: DIR=checkpoints_anneal040 bash ...
 C=$(ls -t "$DIR"/step_*.pt | head -1)
+TAG=$(basename "$DIR" | sed "s/^checkpoints_//")   # report prefix follows DIR
 S=$(basename "$C" | sed 's/step_0*//; s/\.pt//')
 LOG="logs/anneal_code_$(date +%Y%m%d_%H%M).log"
 
 {
-echo "=== anneal045 @ $S — code capability vs 140,000 (65.0 raw / 33.8 chat) ==="
+echo "=== $TAG @ $S — code capability vs 140,000 (65.0 raw / 33.8 chat) ==="
 echo; echo "--- 1/2 RAW ---"
 python -u -m tools.code_eval -c "$C" --device xpu:0 \
   --samples 8 --temperature 0.4 --seed 1234 --repetition-penalty 1.15 \
-  --json "reports/code_anneal045_${S}_pen115.json"
+  --json "reports/code_${TAG}_${S}_pen115.json"
 echo; echo "--- 2/2 CHAT ---"
 python -u -m tools.code_eval -c "$C" --device xpu:0 \
   --samples 8 --temperature 0.4 --seed 1234 --repetition-penalty 1.15 \
-  --chat-template --extract --json "reports/code_anneal045_${S}_CHAT.json"
+  --chat-template --extract --json "reports/code_${TAG}_${S}_CHAT.json"
 } 2>&1 | tee "$LOG"
 
 echo
-python3 - "$S" <<'PY'
+python3 - "$S" "$TAG" <<'EOFPY'
 import json,sys
-S=sys.argv[1]
+S,TAG=sys.argv[1],sys.argv[2]
 def g(p):
     d=json.load(open(p))["diagnostics"]
     return 100*d["per_sample_l3plus"], d["looped"], d["char_degenerate"]
-r=g(f"reports/code_anneal045_{S}_pen115.json"); c=g(f"reports/code_anneal045_{S}_CHAT.json")
+r=g(f"reports/code_{TAG}_{S}_pen115.json"); c=g(f"reports/code_{TAG}_{S}_CHAT.json")
 print(f"  {'frame':6}{'@140,000':>10}{'@'+S:>10}{'diff':>8}   looped  degen")
 print(f"  {'RAW':6}{65.0:10.1f}{r[0]:10.1f}{r[0]-65.0:+8.1f}   {r[1]:>4}/80 {r[2]:>4}/80")
 print(f"  {'CHAT':6}{33.8:10.1f}{c[0]:10.1f}{c[0]-33.8:+8.1f}   {c[1]:>4}/80 {c[2]:>4}/80")
-print("\n  ⚠ n=80 -> ±10pp CI. A move under ~10pp is not distinguishable from noise;")
-print("    read it with the α=0.0 prose gain, not on its own.")
-PY
+print("\n  n=80 -> +-10pp CI. Report BOTH frames; either alone inverts the verdict.")
+EOFPY
