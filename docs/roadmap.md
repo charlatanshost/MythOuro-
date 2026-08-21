@@ -742,6 +742,15 @@ behaviour is now measured as tracking CHAT EXPOSURE, not on-policy λ, not dose.
 the project.** It is NOT a rung to run tonight; it is the thing to design against
 once the pour lands.
 
+**⚠ L3+ IS NOT A CAPABILITY METRIC (2026-08-21).** It means "parses and runs on
+the check inputs", not "answers the question". Re-grading saved completions with
+stronger tests showed L3+ and correctness are UNCORRELATED across the whole α
+ladder: 82.5% L3+ solved 0/80, 58.8% solved 2/80, and strict L4 stayed in 0-2/80
+across 30,000 steps and three α values. The shipped per-task tests are 1-3
+assertions and admit false positives (`is_even` passed `n%2==0 and n%3==1`).
+**Report L4 STRICT (`tools/regrade_strict.py`) next to L3+, always.** Rung A's
+"record" framing is withdrawn — see the tracker correction.
+
 **⚠ AGGREGATES HID A RECORD RESULT (2026-08-20).** The α-anneal produced three
 different verdicts from one leg: the six-seed MEAN of α=0.0 said FLAT (0.154 →
 0.153) and the readout script would have printed "α is not the lever"; PER-SEED

@@ -823,6 +823,53 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-21 — ⚠️ CORRECTION: the α-anneal moved PARSEABILITY, not correctness. L3+ is not a capability metric.
+
+The 2026-08-20 entry below calls 82.5% raw code L3+ "a new project record". That
+framing is withdrawn. Re-grading the SAVED completions (`tools/regrade_strict.py`,
+no regeneration, `score_sample` reused unchanged so only the TESTS differ):
+
+| step | α | L3+ (runs) | L4 shipped | **L4 STRICT** |
+|---|---|---|---|---|
+| 120,000 | 0.50 | 60.0% | 1/80 | **0/80** |
+| 125,181 | 0.50 | 55.0% | 2/80 | **2/80** |
+| 140,000 | 0.50 | 65.0% | 0/80 | **0/80** |
+| 141,500 | 0.45 | 76.2% | 0/80 | **0/80** |
+| 142,500 | 0.45 | 80.0% | 2/80 | **2/80** |
+| **143,500** | **0.45** | **82.5%** | 0/80 | **0/80** |
+| 145,500 | 0.40 | 58.8% | 3/80 | **2/80** |
+| 147,500 | 0.40 | 60.0% | 1/80 | **1/80** |
+| 149,500 | 0.40 | 58.8% | 3/80 | **2/80** |
+
+**L3+ and correctness are uncorrelated.** The highest-L3+ checkpoint (82.5%) solves
+NOTHING; the lowest (58.8%) solves two. Across 30,000 steps and three α values,
+strict L4 stays between 0 and 2 of 80 — counting noise. The α ladder moved L3+ by
+27 points and moved correctness not at all.
+
+**What the 82.5% actually is.** Reading the completions behind it: `add_two` ->
+`if a == b: return 0`; `sum_list` -> `if not nums: return 0`; `get_first` ->
+`return sorted(items)`; `double_it` -> `n = int(n)` followed by a comment about
+binary search. Guard clauses and topic drift — parseable fragments that do not
+answer the question. 66/80 graded L3 on exactly this.
+
+**The shipped tests also over-count.** They are 1-3 assertions per task. `is_even`
+was two assertions on two values, so `return (n % 2 == 0) and (n % 3 == 1)` passed
+and was graded L4 at 149,500. Three shipped L4s were false positives (double_it
+@120,000, is_even @145,500 and @149,500). `_STRICT` in the re-grader adds edge
+cases — zero, empty, negative, identity — because guard-clause fragments are
+exactly what thin tests wave through.
+
+**What still stands from the 08-20 entry:** the α=0.0 prose result. Prose-only
+top_share went 0.139 (α=0.5) → 0.092 (α=0.45) → 0.108 (α=0.40), the letter-salad
+mode is gone from the text, and that was the first movement in α=0.0 since step
+90,351. Owner's read of the α=0.0 outputs — clearly better than pre-120,000 — is
+consistent with both the numbers and the text. **The anneal did something real; it
+just was not code correctness.**
+
+⇒ **Do not run another α leg to chase L3+.** No α setting moves L4 off the floor,
+which makes this a capability wall, not a tuning problem. Report L4 STRICT
+alongside L3+ from here, and treat L3+ as a degeneracy/parseability proxy only.
+
 ## 2026-08-20 — ✅ α-ANNEAL 0.5 → 0.45: RAW CODE 65.0% → 82.5%, a new project record, in 3,500 steps
 
 The second α-anneal in the project's history, and the most productive single leg
