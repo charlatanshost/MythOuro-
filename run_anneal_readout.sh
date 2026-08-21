@@ -23,7 +23,7 @@ if pgrep -f "training[.](distill|sft)" >/dev/null; then
   echo "a trainer is running — it needs the card"; exit 1
 fi
 
-DIR=checkpoints_anneal045
+DIR="${DIR:-checkpoints_anneal045}"   # override: DIR=checkpoints_anneal040 bash ...
 S=$(basename "$(ls -t $DIR/step_*.pt | head -1)" | sed 's/step_0*//; s/\.pt//')
 echo "=== anneal readout @ step $S (α=0.45) vs 140,000 (α=0.5) ==="
 

@@ -31,7 +31,8 @@ mkdir -p logs reports
 
 if pgrep -f "training[.](distill|sft)" >/dev/null; then echo "a trainer is running"; exit 1; fi
 
-C=$(ls -t checkpoints_anneal045/step_*.pt | head -1)
+DIR="${DIR:-checkpoints_anneal045}"   # override: DIR=checkpoints_anneal040 bash ...
+C=$(ls -t "$DIR"/step_*.pt | head -1)
 S=$(basename "$C" | sed 's/step_0*//; s/\.pt//')
 LOG="logs/anneal_code_$(date +%Y%m%d_%H%M).log"
 
