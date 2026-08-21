@@ -59,7 +59,24 @@ ma=st.mean([v[0] for v in a.values()]); mb=st.mean([v[0] for v in b.values()])
 da=st.mean([v[1] for v in a.values()]); db=st.mean([v[1] for v in b.values()])
 print(f"  {'MEAN top_share':34}{ma:9.3f}{mb:9.3f}{mb-ma:+9.3f}")
 print(f"  {'MEAN distinct1':34}{da:9.3f}{db:9.3f}{db-da:+9.3f}")
+# ── ACRONYM-SALAD DETECTOR (added 2026-08-21) ────────────────────────────────
+# top_share does NOT catch this. At α=0.40 the bacterial seed emitted
+# "C.C.C.S.A.H.F.S.C.F.T.H.C.E.F.T.R.G.T.C.E.D.G.F.T.S.C" at top_share 0.135 —
+# nowhere near the 0.40 abort threshold. The degeneracy is a run of single
+# letters, which is lexically DIVERSE, so the proxy reads it as healthy prose.
+# Count it directly instead.
+import re as _re
+def _salad(t):
+    return len(_re.findall(r"(?:\b[A-Z]\.){4,}", t)) + \
+           len(_re.findall(r"(?:\b[A-Z]\b[ .]){5,}", t))
+_hits=sum(_salad(x) for kk,v in new["seeds"].items()
+          if not any(z in kk for z in ("fibonacci","quadratic"))
+          for x in v["0.0"]["texts"])
+print(f"  acronym-salad hits across prose samples: {_hits}   (α=0.45 @143,500 = 0, α=0.40 @149,500 = 4)")
 print()
+if _hits > 0:
+    print(f"  ⚠ ACRONYM SALAD RETURNED ({_hits} hits) — this is re-collapse even if")
+    print("    top_share looks fine. Read the text before continuing.")
 if worse: print(f"  ⚠ RE-COLLAPSE on {len(worse)} seed(s) >0.40 — the abort signal. Fall back to step_0140000.pt.")
 elif mb < ma - 0.02: print("  ✅ WORKING — α=0.0 improved with no re-collapse. Same shape as 0.6→0.5. Anneal further.")
 else: print("  ⏸ FLAT — α is not the lever at this scale. The exposure-bias gap needs rung 6 (on-policy SFT), not a smaller α.")
