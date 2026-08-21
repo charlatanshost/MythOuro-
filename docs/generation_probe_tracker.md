@@ -823,6 +823,72 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-21 — 📈 `committed`: the metric that shows the anneal working, 12% → 50% across the project
+
+Owner's read, which turned out to be right and which neither L3+ nor L4 could
+show: the outputs are *relevant, coherent and on-subject — they just never reach
+the end*. Measuring it directly confirms both the failure mode and the trend.
+
+### The failure is UNFINISHED, not wrong
+
+At step 143,500, of the 66 samples graded L3+:
+* **67% returned `None`** — fell off the end of the function
+* 33% returned a wrong value
+* 0% raised
+
+Median `body_stmts` is **1 at every checkpoint and every α measured.** The model
+writes one statement and stops, and that statement is frequently the CORRECT
+opening: `if not nums: return 0` is the right first line of `sum_list`. It is a
+correct prefix, not a wrong answer.
+
+Neither existing rung can see this. Falling off the end raises `AssertionError`
+exactly like a wrong answer, so both land on **L3**; and both are simply "not
+correct", so both land off **L4**.
+
+### `committed` — returned a value on valid inputs
+
+| step | α | L3+ | **committed** |
+|---|---|---|---|
+| 64,000 | 0.50 | 49% | **12%** |
+| 70,500 | 0.50 | 68% | **44%** |
+| 108,471 | 0.50 | 75% | **46%** |
+| 120,000 | 0.50 | 60% | **31%** |
+| 125,181 | 0.50 | 55% | **32%** |
+| 140,000 | 0.50 | 65% | **30%** |
+| **141,500** | **0.45** | 76% | **50%** ← project high |
+| 142,500 | 0.45 | 80% | **48%** |
+| 143,500 | 0.45 | 82% | **28%** |
+| 149,500 | 0.40 | 59% | **24%** |
+
+**12% → 50% across the project.** Two things fall out of the shape:
+
+1. **The 120k–140k plateau at ~30% coincides exactly with the 116k–120k
+   disruption.** `committed` dropped from 46% to ~30% and sat there for 20,000
+   steps. The α=0.45 anneal did not merely recover it — 50% is above the
+   pre-disruption 46%.
+2. **It anti-correlates with L3+ at the end of the 0.45 leg.** 141,500 is 76%
+   L3+/50% committed; 143,500 is 82% L3+/28% committed. The checkpoint we called
+   "best" on L3+ is the WEAKEST of the three at finishing an answer. **141,500 is
+   the better checkpoint**, and L3+ pointed at the wrong one.
+
+### Caveats, stated up front
+
+* **Body length never moved.** One statement at every α. What improved is whether
+  that statement RETURNS rather than guards. Tasks needing several statements
+  (`fibonacci`, `is_prime`) remain out of reach, which is why `is_even` — solvable
+  in one line — is the only task that ever grades correct.
+* `committed` does not mean right. Strict L4 is still 0–2/80 everywhere.
+* n=80 per point.
+
+### Now reported natively
+
+`_PROBE` in `tools/code_eval.py` calls each function once on valid inputs inside
+the EXISTING runner subprocess (before the assertions, so a failing check does not
+lose the result). Reports carry `committed` and `committed_frac`, and the run
+prints it next to the ladder. `tools/regrade_strict.py` recovers it from saved
+completions for any historical report.
+
+
 ## 2026-08-21 — ⚠️ CORRECTION: the α-anneal moved PARSEABILITY, not correctness. L3+ is not a capability metric.
 
 The 2026-08-20 entry below calls 82.5% raw code L3+ "a new project record". That

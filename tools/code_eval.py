@@ -128,15 +128,46 @@ def _clamp(value, low, high):
 
 '''
 
+# ── COMMITTED (added 2026-08-21) ─────────────────────────────────────────────
+# The dominant failure here is NOT a wrong answer — it is an UNFINISHED one. At
+# step 143,500, 67% of L3+ samples returned None: the model writes one statement,
+# typically a correct guard clause (`if not nums: return 0` for sum_list is the
+# right first line), and never reaches the body. L3 cannot see this — falling off
+# the end raises AssertionError exactly like a wrong answer does — and L4 cannot
+# either, since both are simply "not correct".
+#
+# So the runner now also CALLS the function once on valid inputs and reports
+# whether it returned a value at all. `committed` sits between L3 and L4 and is
+# the metric that tracks "does it finish", which is the axis the α-anneal moves:
+#   64,000 12% · 70,500 44% · 108,471 46% · 120,000 31% · 140,000 30% ·
+#   141,500 50% (project high, α=0.45) · 143,500 28% · 149,500 24% (α=0.40)
+# Note the 120k-140k plateau at ~30% coincides with the 116k-120k disruption.
+#
+# One subprocess still, not two: the probe runs BEFORE the assertions and prints
+# its verdict either way, so a later sys.exit(2) does not lose it.
 _RUNNER = """\
 import sys
 {code}
+try:
+    _probe_result = {probe}
+    print("RET:" + ("NONE" if _probe_result is None else "VAL"))
+except Exception:
+    print("RET:ERR")
 try:
 {checks}
 except Exception as e:
     print("FAIL:" + type(e).__name__); sys.exit(2)
 print("OK")
 """
+
+# One valid call per task, used only for the `committed` probe above.
+_PROBE = {
+    "add_two": "add_two(2, 3)", "double_it": "double_it(4)",
+    "get_first": "get_first([7, 8, 9])", "sum_list": "sum_list([1, 2, 3])",
+    "count_items": "count_items([1, 2, 3])", "is_even": "is_even(4)",
+    "reverse_string": "reverse_string('abc')", "max_of_two": "max_of_two(3, 9)",
+    "fibonacci": "fibonacci(6)", "is_prime": "is_prime(7)",
+}
 
 
 def _truncate_to_parseable(src: str) -> "tuple[str | None, int]":
@@ -384,7 +415,8 @@ def score_sample(prompt: str, completion: str, fname: str,
     #   clean exit      -> correct                                         -> L4
     # Subprocess only: this is untrusted model output.
     indented = "\n".join("    " + ln for ln in checks.split("\n"))
-    script = _RUNNER.format(code=code, checks=indented)
+    probe = _PROBE.get(fname, "None")
+    script = _RUNNER.format(code=code, checks=indented, probe=probe)
     with tempfile.TemporaryDirectory() as td:
         path = os.path.join(td, "t.py")
         with open(path, "w") as fh:
@@ -394,6 +426,7 @@ def score_sample(prompt: str, completion: str, fname: str,
                                text=True, timeout=timeout, cwd=td)
         except subprocess.TimeoutExpired:
             return d                                      # hang = no further credit
+    d["committed"] = "RET:VAL" in r.stdout      # returned a value, not None
     if r.returncode == 0 and "OK" in r.stdout:
         d["rung"] = 4                                     # L4 correct
     elif "FAIL:AssertionError" in r.stdout:
@@ -621,7 +654,17 @@ def main() -> None:
             "median_lrs_frac": round(med_lrs, 4),
             "char_degenerate": char_deg, "line_metric_blind": blind,
             "l3_samples": len(l3s), "l3_looped": l3_looped,
-            "l3_looped_frac": round(l3_looped / len(l3s), 3) if l3s else None}
+            "l3_looped_frac": round(l3_looped / len(l3s), 3) if l3s else None,
+            # COMMITTED: returned a value on valid inputs rather than falling off
+            # the end. Tracks "does it FINISH the answer" — the axis the α-anneal
+            # moves and the one L3+/L4 are both blind to. See _RUNNER's note.
+            "committed": sum(1 for s in all_samples if s.get("committed")),
+            "committed_frac": round(
+                sum(1 for s in all_samples if s.get("committed")) / tot, 4)
+            if tot else 0.0}
+    print(f"\n  COMMITTED (returned a value, did not fall off the end): "
+          f"{diag['committed']}/{tot} = {100*diag['committed_frac']:.0f}%"
+          f"   [64k 12% · 108k 46% · 140k 30% · 141.5k 50% high]")
     print(f"\n  repetition, BY LINE: {looped}/{tot} looped (>=3 identical lines), "
           f"median max-repeat {med_rep}")
     print(f"  repetition, BY CHARACTER: {char_deg}/{tot} degenerate "
