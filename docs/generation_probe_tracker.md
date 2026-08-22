@@ -823,6 +823,67 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-22 — ✅ n=320 SETTLES IT: the α-anneal is REAL (+18pp), and every n=80 number this week was inflated
+
+Four metrics had picked three different "best" checkpoints, which is the signature
+of measuring noise. Re-run at `--samples 32` (320 per checkpoint, same seed so the
+first 8 per task reproduce the existing runs exactly):
+
+| step | α | L3+ (n=320) | committed | restart | L4 |
+|---|---|---|---|---|---|
+| 140,000 | 0.50 | **59.1 ±5.4** | 31% | 20% | 2/320 |
+| 141,500 | 0.45 | **77.8 ±4.6** | 48% | 28% | 6/320 |
+| 143,500 | 0.45 | **76.6 ±4.6** | 25% | 16% | 5/320 |
+
+**The anneal effect is real and large.** 140,000 vs either anneal checkpoint gives
+cleanly separated intervals, +18pp. This is the first difference measured this week
+that survives proper power, and it validates the 0.5 → 0.45 anneal as a genuine
+capability move rather than a metric artifact.
+
+**141,500 and 143,500 tie on L3+ and differ elsewhere, in opposite directions.**
+Both gaps are non-overlapping at n=320:
+* `committed` **48% vs 25%** — 141,500 finishes an answer twice as often
+* `restart` **28% vs 16%** — 143,500 abandons and redefines half as often
+
+Neither dominates. L4 is 6/320 vs 5/320 (indistinguishable), and even against
+140,000's 2/320 the direction is ~3x but not significant at this n.
+
+### ⚠ EVERY n=80 NUMBER THIS WEEK WAS INFLATED BY 5-6pp
+
+| checkpoint | n=80 said | n=320 says |
+|---|---|---|
+| 143,500 | 82.5% | **76.6%** |
+| 140,000 | 65.0% | **59.1%** |
+
+The ORDERING held; the magnitudes did not. "82.5%, a new project record" was an
+n=80 artifact — the true figure is 76.6%, and 141,500 matches it. **±10pp intervals
+cannot resolve 8-20pp differences.** Comparisons that decide anything should run at
+`--samples 32`; `--samples 8` is for a quick look, not for ranking checkpoints.
+
+### Why the anneal helped FORM and not CONTENT
+
+Everything that moved across the project is form: char-degeneracy 67/80 → 0/80,
+restart 79% → ~20%, `committed` 12% → ~48%, acronym salad gone. Nothing has moved
+content: strict L4 has been 0-2/80 since step 64,000 and median `body_stmts` is **1
+at every α and every checkpoint ever measured.**
+
+That is not a coincidence. α, λ, loop-weighting and dose all reshape the
+DISTRIBUTION the student samples from; none of them add task competence. The model
+trained almost entirely on CONTINUATION data — codeparrot files, teacher
+continuations of web text — so it learned what code looks like and produces one
+plausible statement, because nothing in its training signal ever rewarded finishing
+a task. `is_even` is the only task it reliably solves because the answer fits in
+the single statement it knows how to produce.
+
+⇒ **The anneal has done its job and the ladder is closed.** The base is now
+0/80 degenerate, salad-free, and restarts a quarter as often as at 64,000 — the
+conditions the chat-mix legs lacked when they failed on an unstable base. The
+26,130-row instruction corpus is the only asset that demonstrates task COMPLETION,
+and it is the next move. Carry **step_0143500.pt**: it is weaker on `committed`,
+which is exactly what instruction data attacks, and stronger on `restart`, which
+data cannot easily fix.
+
+
 ## 2026-08-21 — 📈 `committed`: the metric that shows the anneal working, 12% → 50% across the project
 
 Owner's read, which turned out to be right and which neither L3+ nor L4 could
