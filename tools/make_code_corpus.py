@@ -100,9 +100,18 @@ def main() -> None:
                     path = os.path.join(a.out_dir, f"shard_{shard:04d}.jsonl")
                     writer = open(path, "w")
                     shard += 1
+                # ⚠ THE CLOSED <think></think> IS LOAD-BEARING (learned 2026-08-23).
+                # The first build omitted it, and after 6,000 steps the model was
+                # think-locked under chat framing in 320/320 samples: it opened
+                # <think> and emitted a code fence twice. It has strong <think>
+                # priors from the Thinking teacher and this data never showed it
+                # how to CLOSE one. gen_teacher_corpus's --no-think prefills
+                # exactly this block for the same reason. Raw framing was fine —
+                # the damage was confined to the frame the corpus itself uses.
                 text = (f"<|im_start|>system\n{_SYS}<|im_end|>\n"
                         f"<|im_start|>user\n{msgs[0]['content']}<|im_end|>\n"
-                        f"<|im_start|>assistant\n{msgs[1]['content']}<|im_end|>")
+                        f"<|im_start|>assistant\n<think>\n\n</think>\n\n"
+                        f"{msgs[1]['content']}<|im_end|>")
                 writer.write(json.dumps({"text": text,
                                          "source": "opencodeinstruct"}) + "\n")
                 written += 1
