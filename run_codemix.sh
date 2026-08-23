@@ -26,6 +26,17 @@
 #     dose and every batch size; teacher-data through distillation is what took
 #     code L3+ 51.2% → 75.0%.
 #
+# ⚠ ATTEMPT 2 (2026-08-23). Attempt 1 moved CONTENT for the first time all year —
+# L4 5/320 -> 30/320 across FOUR tasks instead of two, reverse_string 0 -> 13,
+# committed 25% -> 43%, all in the RAW frame. But CHAT framing broke completely:
+# think-locked in 320/320, a code fence in 2. Cause was the corpus, not the
+# training: the converter omitted the CLOSED think block that the harvested
+# corpus prefills in every row, so the model — which has strong think priors from
+# the Thinking teacher — was never shown how to close one in this format.
+# tools/make_code_corpus.py now emits it. REBUILD THE CORPUS BEFORE RUNNING:
+#   python -m tools.make_code_corpus --target-rows 100000 --out-dir data_teacher_code
+# Attempt 1's weights are kept as checkpoints_codemix_nothink/ for comparison.
+#
 # ⚠ DOSE. ~100,000 rows ≈ 35M tokens. At 16 seq x 1024 tok x ratio 0.2 = 3,277
 # teacher tokens/step, one epoch is ~10,700 steps, so this 6,000-step leg is
 # ~0.56 EPOCHS. The 2026-08-15 chat leg collapsed at 10.3 epochs and recovered at
@@ -80,6 +91,15 @@ if [ "${rows:-0}" -lt 50000 ]; then
   echo "refusing to start on a short corpus"; exit 1
 fi
 echo "=== code corpus: $rows rows ==="
+
+# Attempt 1 failed on exactly this. A corpus without the closed think block
+# think-locks the model under chat framing; refuse rather than spend the night.
+if ! head -1 data_teacher_code/shard_0000.jsonl | grep -q '</think>'; then
+  echo "corpus rows do NOT contain a closed think block — this is the attempt-1 bug."
+  echo "Rebuild: python -m tools.make_code_corpus --target-rows 100000 --out-dir data_teacher_code"
+  echo "refusing to start"; exit 1
+fi
+echo "=== corpus carries the closed think block ✓ ==="
 
 [ -f "$SRC" ] || { echo "base $SRC missing"; echo "no base $(date)" > "$FAIL"; exit 1; }
 [ -n "$(latest "$DIR")" ] || cp "$SRC" "$DIR/" || {
