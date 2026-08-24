@@ -687,6 +687,12 @@ def main() -> None:
             {"step": step, "temperature": args.temperature,
              "repetition_penalty": args.repetition_penalty,
              "seed": args.seed,
+             # ⚠ RECORD max_new (2026-08-24). It was absent from every report ever
+             # written, and the default of 96 is smaller than a single <think>
+             # block (median ~94 tokens measured under --chat-template). A
+             # generation cap is part of the result; nothing in the JSON revealed
+             # which one produced any historical chat number.
+             "max_new": args.max_new,
              "framing": args.framing,
              "chat_template": args.chat_template,
              "samples": args.samples, "tasks": rows,
