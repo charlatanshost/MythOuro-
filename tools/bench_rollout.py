@@ -43,6 +43,11 @@ def main() -> None:
     p.add_argument("--device", default="xpu:0")
     p.add_argument("--lens", default="64,128,256",
                    help="Comma-separated --rollout-len values to time.")
+    p.add_argument("--one", action="store_true",
+                   help="Time ONE (len,batch) config and print a single TSV line. "
+                        "A GPU page fault aborts the process, so the sweep driver "
+                        "runs each config in its own subprocess and keeps the "
+                        "results that survived.")
     p.add_argument("--batch", type=int, default=32, help="--rollout-batch.")
     p.add_argument("--prompt-len", type=int, default=64)
     p.add_argument("--n-loops", type=int, default=4)
@@ -66,6 +71,20 @@ def main() -> None:
 
     print(f"\n  step {step} | batch {a.batch} "
           f"| prompt {a.prompt_len} | n_loops {a.n_loops}")
+    if a.one:
+        L = lens[0]
+        ts = []
+        for _ in range(a.reps):
+            sync(); t0 = time.perf_counter()
+            with torch.no_grad():
+                generate_rollout(model, None, prompt, n_loops=a.n_loops,
+                                 max_new_tokens=L, teacher_mix_alpha=0.0,
+                                 temperature=1.0, top_k=50, use_kv_cache=False)
+            sync(); ts.append(time.perf_counter() - t0)
+        best = min(ts)
+        print(f"RESULT\t{L}\t{a.batch}\t{best:.3f}\t{a.batch*L/best:.1f}", flush=True)
+        return
+
     print(f"\n  {'len':>6}{'cache':>8}{'sec':>9}{'tok/s':>10}{'vs 64':>8}")
     base = {}
     for cached in ([False, True] if a.cached_too else [False]):
@@ -80,12 +99,11 @@ def main() -> None:
                                      use_kv_cache=cached)
                 sync(); ts.append(time.perf_counter() - t0)
             best = min(ts)
-            toks = a.batch * L
             tag = "cached" if cached else "uncached"
             if not cached and L == lens[0]:
                 base["t"] = best
             rel = best / base["t"] if "t" in base else float("nan")
-            print(f"  {L:>6}{tag:>8}{best:>9.2f}{toks/best:>10.0f}{rel:>7.1f}x")
+            print(f"  {L:>6}{tag:>8}{best:>9.2f}{a.batch*L/best:>10.0f}{rel:>7.1f}x")
 
     print(f"\n  A leg is 6,000 steps; rollouts regenerate every "
           f"--rollout-reuse steps (8 in the current recipe), so multiply the "

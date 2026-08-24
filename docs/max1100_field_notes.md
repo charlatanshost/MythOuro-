@@ -267,7 +267,7 @@ apples-to-apples comparison with published reviews.*
 `docs/hardware_options.md`, day-by-day validation history in the git log.
 Corrections and reproductions welcome.*
 
-## ⚠ GPU page fault at `--rollout-len` 128 (2026-08-24) — OBSERVED, NOT DIAGNOSED
+## ⚠ GPU page fault at `--rollout-len` 128 (2026-08-24) — TRANSIENT, DID NOT REPRODUCE
 
 `tools/bench_rollout.py` completed rollout-len 64 cleanly, then aborted entering 128:
 
@@ -283,11 +283,14 @@ Sequence length at the crash was 64+128 = 192, far under the model's 1024
 `max_seq_len`, so this is NOT a context overflow. Card recovered on its own —
 `xpu-smi` read 22.49 MiB immediately after, nothing stuck, no reboot needed.
 
-**Cause unknown.** 64 works, 128 does not, and nothing about 192 positions should
-be special. Do not trust `bench_rollout` above len 64 until someone knows why.
-If it recurs, the things worth capturing are whether it is length-dependent or
-batch-dependent (try batch 8 at len 128), and whether the cached path crashes at
-the same point.
+**UPDATE, same day: it did not reproduce.** A 9-config sweep (len 64/128/256 x
+batch 8/16/32, each in its own subprocess) completed every cell — including the
+exact len 128 / batch 32 config that aborted. So this was a transient fault, not
+a length or memory ceiling, and `bench_rollout` is usable at all these sizes.
+
+Cause still unknown. Worth knowing it can happen, and worth running sweeps under
+a per-config subprocess driver (`run_bench_rollout.sh`) so a recurrence costs one
+cell instead of the whole run.
 
 **It did not block the decision it was run for** — see the rollout-cost note below.
 
@@ -301,19 +304,29 @@ prefix each step: **O(n²), not O(n)**.
 
 Measured on step_0149500, batch 32, prompt 64, n_loops 4:
 
-| rollout-len | per rollout | tok/s | per 6,000-step leg (750 regenerations) |
+### MEASURED (9 configs, `run_bench_rollout.sh`), hours are per 6,000-step leg
+
+| len \ batch | 8 | 16 | 32 |
 |---|---|---|---|
-| **64** (current recipe) | **11.74 s** | **174** | **2.4 h — 29% of an 8.5 h leg** |
-| 128 | ~4x (est.) | | ~9.8 h |
-| 256 | ~16x (est.) | | ~39 h |
+| **64** | 3.56 s → **0.7 h** | 5.67 s → **1.2 h** | 10.01 s → **2.1 h** ← current recipe |
+| **128** | 8.12 s → **1.7 h** | 13.51 s → **2.8 h** | 24.70 s → **5.1 h** |
+| **256** | 26.96 s → **5.6 h** | 36.60 s → **7.6 h** | 69.31 s → **14.4 h** |
 
-(128/256 are the O(n²) projection; the direct measurement crashed — see above.)
+**⚠ SCALING IS SUB-QUADRATIC: ~7x at 256, not the 16x O(n²) predicts** (7.6x /
+6.5x / 6.9x at batch 8/16/32). The card absorbs much of the longer prefix. An
+earlier note here projected 9.8 h for 128 and 39 h for 256 from the complexity
+argument and concluded "not viable" — **that was wrong by more than 2x, in the
+favourable direction.** Measure rollout cost; do not derive it.
 
-**⇒ Raising `--rollout-len` is not viable on this card.** At 128 the rollouts
-alone would cost more than an entire leg costs today. This is not a hardware
-ceiling that a better kernel fixes — it is uncached O(n²) decode, and the
-uncached requirement is architectural (ACT early-exit vs KV cache).
+**⇒ Raising `--rollout-len` IS viable.** Against the current 2.1 h:
+* len 128 / batch 16 → **2.8 h** — double the window for +0.7 h
+* len 256 / batch 8 → **5.6 h** — quadruple it; a leg goes ~8.5 h → ~12 h
 
-Consequence for the chat-framing problem: the on-policy window cannot be extended
-to span a ~495-token think block. If the answer must fall inside the rollout
-window, the reasoning has to get SHORTER; the window cannot get longer.
+⚠ Lower `--rollout-batch` is cheaper partly by generating FEWER on-policy
+sequences per regeneration (32 → 8 quarters them). That is a real trade, not free
+throughput. Note also that tok/s RISES with batch (144 → 205 at len 64), so the
+big batch is more efficient per token even though it costs more wall-clock.
+
+⚠ 256 still does not span a ~495-token think block. Extrapolating the measured
+curve, len 512 / batch 8 lands near 13 h of rollout time — borderline. A partial
+extension may still be worth trying, but "cover think + answer" is not yet cheap.
