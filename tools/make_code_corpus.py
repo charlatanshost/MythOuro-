@@ -45,8 +45,15 @@ _SYS = "You are a helpful assistant."
 def _body_stmts(code: str) -> int:
     """Statements in the first function body — the metric the model is stuck at 1 on."""
     import ast
+    import warnings
     try:
-        tree = ast.parse(code)
+        # Solutions routinely contain regex literals like re.compile("\\d+"), and
+        # the parser emits SyntaxWarning for each one. Cosmetic — it affects only
+        # this statistic, never acceptance or the written rows — but across
+        # ~240,000 streamed rows it floods the terminal.
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", SyntaxWarning)
+            tree = ast.parse(code)
     except (SyntaxError, ValueError):
         return -1
     for n in ast.walk(tree):
