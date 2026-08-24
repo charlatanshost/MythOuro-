@@ -1,150 +1,95 @@
 """
-Rollout-path benchmark: legacy full-recompute vs KV-cached decode, swept
-across generation batch sizes.
+Benchmark ON-POLICY ROLLOUT GENERATION — the cost that scales with --rollout-len.
 
-Companion to tools/bench_step.py (which measures the TRAIN phase). This one
-measures the phase that actually gates on-policy distillation throughput —
-autoregressive rollout generation — and answers the two questions that
-decided the phase-5 design (docs/onpolicy_plan.md):
+`tools/bench_step.py` times a training step (forward+backward on random data) and
+has no rollout path at all. But the cost that decides whether --rollout-len can be
+raised lives in `generate_rollout`, and it scales badly: rollouts are hard-pinned
+UNCACHED, so generating n tokens re-runs the forward over the whole prefix each
+step — O(n^2), not O(n).
 
-  1. how much does the KV cache save (O(L²) → O(L) student+teacher work)?
-  2. how much does going WIDE save (latency-bound accelerators only win
-     at batch — the 2026-07-12 bench showed the Max 1100 losing to a 5070
-     at batch 1 and beating it ~1.6× at batch 32+)?
+WHY UNCACHED (2026-07-16, measured). Cached vs uncached student logits on identical
+weights: max |Δlogit| 5.5, KL up to 0.95 nats. Reading mythouro/main.py, both
+early-exit paths carry `kv_cache is None` as a condition — so CACHED decode runs
+FULL depth while UNCACHED early-exits at ACT depth, which every probe measures at
+2.00/4. That 2x depth gap is the distribution shift, and training on cached
+rollouts produced the 2026-07-16 regression.
 
-Student-only by default (no download). Pass --teacher-id to include the
-teacher-mix path (real Ouro teacher → real numbers, needs the HF weights).
+WHAT THIS MEASURES, on the real card rather than from a complexity argument:
+  * uncached wall-time and tok/s at each --rollout-len (the training path)
+  * cached, for reference — how much the O(n) path would buy IF the depth gap
+    were ever resolved. NOT a recommendation to train on it.
+  * observed mean halt depth, since that is what sets the uncached cost
 
-Usage
------
-    # Max 1100, student-only sweep (the standard table)
-    python -m tools.bench_rollout --device xpu
-
-    # include the real teacher (what training actually runs)
-    python -m tools.bench_rollout --device xpu \\
-        --teacher-id ByteDance/Ouro-2.6B-Thinking --trust-remote-code
-
-Read the tok/s column: generated tokens per wall-second (batch × new_tokens
-/ elapsed). The 'speedup' column is cached-vs-legacy at the same batch.
+    python -m tools.bench_rollout -c checkpoints_codemix/step_0149500.pt \\
+        --device xpu:0 --lens 64,128,256 --batch 32
 """
-
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import time
 
 import torch
 
-sys.path.insert(0, __import__("os").path.dirname(
-    __import__("os").path.dirname(__import__("os").path.abspath(__file__))
-))
-
-import mythouro.variants as variants                          # noqa: E402
-from mythouro import device as dev                            # noqa: E402
-from mythouro.main import MythOuro                            # noqa: E402
-from mythouro.training_utils import (                         # noqa: E402
-    _reset_teacher_cache_gate,
-    generate_rollout,
-    load_distillation_teacher,
-)
-
-
-def bench_one(
-    student,
-    teacher,
-    *,
-    device: str,
-    batch: int,
-    seed_len: int,
-    rollout_len: int,
-    n_loops: int,
-    use_kv_cache: bool,
-    dtype: torch.dtype,
-    repeats: int = 3,
-) -> float:
-    """Median tok/s over `repeats` timed rollouts (1 warmup)."""
-    vocab = student.cfg.vocab_size
-    amp = (
-        torch.autocast(device_type=dev.autocast_type(device), dtype=dtype)
-        if dev.is_accelerator(device)
-        else __import__("contextlib").nullcontext()
-    )
-    times = []
-    for rep in range(repeats + 1):
-        prompt = torch.randint(0, vocab, (batch, seed_len), device=device)
-        dev.synchronize(device)
-        t0 = time.perf_counter()
-        with amp:
-            generate_rollout(
-                student, teacher, prompt,
-                n_loops=n_loops, max_new_tokens=rollout_len,
-                teacher_mix_alpha=0.25 if teacher is not None else 0.0,
-                temperature=1.0, top_k=50,
-                use_kv_cache=use_kv_cache,
-            )
-        dev.synchronize(device)
-        if rep > 0:                                   # rep 0 = warmup
-            times.append(time.perf_counter() - t0)
-    times.sort()
-    return batch * rollout_len / times[len(times) // 2]
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from inspect_checkpoint import _load_model                       # noqa: E402
+from mythouro.training_utils import generate_rollout             # noqa: E402
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    p.add_argument("--variant", default="mythouro_distill_tiny")
-    p.add_argument("--device", default=None)
-    p.add_argument("--batches", type=int, nargs="+", default=[1, 8, 16, 32])
-    p.add_argument("--seed-len", type=int, default=24)
-    p.add_argument("--rollout-len", type=int, default=96)
+    p = argparse.ArgumentParser(description=__doc__.splitlines()[1])
+    p.add_argument("-c", "--checkpoint", required=True)
+    p.add_argument("--device", default="xpu:0")
+    p.add_argument("--lens", default="64,128,256",
+                   help="Comma-separated --rollout-len values to time.")
+    p.add_argument("--batch", type=int, default=32, help="--rollout-batch.")
+    p.add_argument("--prompt-len", type=int, default=64)
     p.add_argument("--n-loops", type=int, default=4)
-    p.add_argument("--dtype", default="bf16", choices=["bf16", "fp16", "fp32"])
-    p.add_argument("--teacher-id", default=None,
-                   help="Optional HF id; includes teacher-mix in the bench.")
-    p.add_argument("--trust-remote-code", action="store_true")
-    p.add_argument("--legacy-max-batch", type=int, default=32,
-                   help="Skip legacy-path runs above this batch (it's slow).")
-    args = p.parse_args()
+    p.add_argument("--reps", type=int, default=3)
+    p.add_argument("--cached-too", action="store_true",
+                   help="Also time the cached path, for reference only.")
+    a = p.parse_args()
 
-    device = dev.pick_device(args.device)
-    dtype = {"bf16": torch.bfloat16, "fp16": torch.float16,
-             "fp32": torch.float32}[args.dtype]
+    model, cfg, step = _load_model(a.checkpoint, a.device)
+    model.eval()
+    lens = [int(x) for x in a.lens.split(",")]
+    vocab = getattr(cfg, "vocab_size", 49152)
+    g = torch.Generator(device="cpu").manual_seed(1234)
+    prompt = torch.randint(0, vocab, (a.batch, a.prompt_len), generator=g).to(a.device)
 
-    student = MythOuro(getattr(variants, args.variant)()).to(device).eval()
-    n_params = sum(p_.numel() for p_ in student.parameters())
+    def sync():
+        if a.device.startswith("xpu"):
+            torch.xpu.synchronize()
+        elif a.device.startswith("cuda"):
+            torch.cuda.synchronize()
 
-    teacher = None
-    if args.teacher_id:
-        teacher = load_distillation_teacher(
-            args.teacher_id, student_vocab_size=student.cfg.vocab_size,
-            device=device, dtype=dtype,
-            trust_remote_code=args.trust_remote_code,
-        )
-        if teacher is None:
-            sys.exit("teacher failed to load — see log above")
+    print(f"\n  step {step} | batch {a.batch} "
+          f"| prompt {a.prompt_len} | n_loops {a.n_loops}")
+    print(f"\n  {'len':>6}{'cache':>8}{'sec':>9}{'tok/s':>10}{'vs 64':>8}")
+    base = {}
+    for cached in ([False, True] if a.cached_too else [False]):
+        for L in lens:
+            ts = []
+            for _ in range(a.reps):
+                sync(); t0 = time.perf_counter()
+                with torch.no_grad():
+                    generate_rollout(model, None, prompt, n_loops=a.n_loops,
+                                     max_new_tokens=L, teacher_mix_alpha=0.0,
+                                     temperature=1.0, top_k=50,
+                                     use_kv_cache=cached)
+                sync(); ts.append(time.perf_counter() - t0)
+            best = min(ts)
+            toks = a.batch * L
+            tag = "cached" if cached else "uncached"
+            if not cached and L == lens[0]:
+                base["t"] = best
+            rel = best / base["t"] if "t" in base else float("nan")
+            print(f"  {L:>6}{tag:>8}{best:>9.2f}{toks/best:>10.0f}{rel:>7.1f}x")
 
-    print(f"variant : {args.variant} ({n_params:,} params)   device: {device}")
-    print(f"shape   : seed={args.seed_len} rollout={args.rollout_len} "
-          f"n_loops={args.n_loops} dtype={args.dtype} "
-          f"teacher={'yes' if teacher is not None else 'no'}")
-    print(f"{'batch':>6} {'legacy tok/s':>14} {'cached tok/s':>14} {'speedup':>9}")
-    for b in args.batches:
-        _reset_teacher_cache_gate()
-        cached = bench_one(
-            student, teacher, device=device, batch=b,
-            seed_len=args.seed_len, rollout_len=args.rollout_len,
-            n_loops=args.n_loops, use_kv_cache=True, dtype=dtype,
-        )
-        if b <= args.legacy_max_batch:
-            legacy = bench_one(
-                student, teacher, device=device, batch=b,
-                seed_len=args.seed_len, rollout_len=args.rollout_len,
-                n_loops=args.n_loops, use_kv_cache=False, dtype=dtype,
-            )
-            print(f"{b:>6} {legacy:>14,.0f} {cached:>14,.0f} "
-                  f"{cached / legacy:>8.1f}x")
-        else:
-            print(f"{b:>6} {'skipped':>14} {cached:>14,.0f} {'—':>9}")
+    print(f"\n  A leg is 6,000 steps; rollouts regenerate every "
+          f"--rollout-reuse steps (8 in the current recipe), so multiply the "
+          f"per-rollout time by 6000/8 = 750 to get the leg's rollout cost.")
 
 
 if __name__ == "__main__":

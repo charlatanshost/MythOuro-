@@ -266,3 +266,54 @@ apples-to-apples comparison with published reviews.*
 *Data from the MythOuro project (this repo) — bench tables and methodology in
 `docs/hardware_options.md`, day-by-day validation history in the git log.
 Corrections and reproductions welcome.*
+
+## ⚠ GPU page fault at `--rollout-len` 128 (2026-08-24) — OBSERVED, NOT DIAGNOSED
+
+`tools/bench_rollout.py` completed rollout-len 64 cleanly, then aborted entering 128:
+
+```
+Segmentation fault from GPU at 0xff0000007d3ac000, ctx_id: 1 (CCS)
+type: 0 (NotPresent), level: 1 (PDE), access: 1 (Write), banned: 1, aborting.
+Abort was called at 288 line in ./shared/source/os_interface/linux/drm_neo.cpp
+```
+
+A driver-level page fault from the Intel compute runtime, not a Python exception.
+Config: step_0149500, batch 32, prompt 64, n_loops 4, uncached, teacher=None.
+Sequence length at the crash was 64+128 = 192, far under the model's 1024
+`max_seq_len`, so this is NOT a context overflow. Card recovered on its own —
+`xpu-smi` read 22.49 MiB immediately after, nothing stuck, no reboot needed.
+
+**Cause unknown.** 64 works, 128 does not, and nothing about 192 positions should
+be special. Do not trust `bench_rollout` above len 64 until someone knows why.
+If it recurs, the things worth capturing are whether it is length-dependent or
+batch-dependent (try batch 8 at len 128), and whether the cached path crashes at
+the same point.
+
+**It did not block the decision it was run for** — see the rollout-cost note below.
+
+## Rollout generation is ~29% of every training leg (2026-08-24, measured)
+
+`generate_rollout` is hard-pinned UNCACHED (2026-07-16: cached decode runs FULL
+depth because both early-exit paths require `kv_cache is None`, while uncached
+early-exits at the measured ACT depth of 2.00/4 — a 2x depth gap worth 0.95 nats
+of KL). Uncached means generating n tokens re-runs the forward over the whole
+prefix each step: **O(n²), not O(n)**.
+
+Measured on step_0149500, batch 32, prompt 64, n_loops 4:
+
+| rollout-len | per rollout | tok/s | per 6,000-step leg (750 regenerations) |
+|---|---|---|---|
+| **64** (current recipe) | **11.74 s** | **174** | **2.4 h — 29% of an 8.5 h leg** |
+| 128 | ~4x (est.) | | ~9.8 h |
+| 256 | ~16x (est.) | | ~39 h |
+
+(128/256 are the O(n²) projection; the direct measurement crashed — see above.)
+
+**⇒ Raising `--rollout-len` is not viable on this card.** At 128 the rollouts
+alone would cost more than an entire leg costs today. This is not a hardware
+ceiling that a better kernel fixes — it is uncached O(n²) decode, and the
+uncached requirement is architectural (ACT early-exit vs KV cache).
+
+Consequence for the chat-framing problem: the on-policy window cannot be extended
+to span a ~495-token think block. If the answer must fall inside the rollout
+window, the reasoning has to get SHORTER; the window cannot get longer.
