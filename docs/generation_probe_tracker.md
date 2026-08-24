@@ -823,6 +823,82 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-24 — ✅ TASK-COMPLETION DATA MOVES CONTENT (raw), ❌ chat framing broken by `--rollout-len 64`
+
+Two legs on OpenCodeInstruct converted to teacher-corpus shards
+(`tools/make_code_corpus.py`), 143,500 → 149,500, 6,000 steps, α=0.45, ratio 0.2
+(~0.56 epochs). All numbers n=320.
+
+### The result that stands: RAW framing
+
+| checkpoint | L3+ | committed | L4 | tasks solved |
+|---|---|---|---|---|
+| base 143,500 | 76.6 ±4.6 | 25% | 5/320 | add_two, double_it |
+| attempt 1 (no think block) | 54.1 ±5.5 | 43% | **30/320** | add_two, is_even, reverse_string, max_of_two |
+| **attempt 2 (with think block)** | **76.9 ±4.6** | **42%** | **14/320** | is_even, reverse_string, max_of_two |
+
+**Content moved for the first time all year.** Against the base, attempt 2 holds
+L3+, nearly doubles `committed` (25% → 42%) and roughly triples L4 (5 → 14/320,
+non-overlapping intervals). `reverse_string` — never solved once in anything
+previously measured — is solved 7-13 times depending on the leg. Four nights of
+α tuning never touched L4; one night of task-completion data tripled it.
+
+Attempt 1 vs 2 is a real trade, not noise: attempt 1 has higher L4 (30 vs 14,
+barely-separated intervals) across four tasks; attempt 2 has far better L3+
+(76.9 vs 54.1). The closed `<think></think>` block bought parseability and cost
+some correctness. Both are kept — `checkpoints_codemix_nothink/` and
+`checkpoints_codemix/`.
+
+Median `body_stmts` is still **1**, and every newly-solved task is a one-liner
+(`s[::-1]`, `max(a,b)`, `n % 2 == 0`). Multi-statement tasks (`fibonacci`,
+`is_prime`) remain unsolved. The corpus moved correctness on tasks that fit the
+single statement the model can produce; it has not yet taught it to produce more.
+
+### Chat framing: 0.0%, and THREE hypotheses died explaining it
+
+Both legs, both frames: chat L3+ **0.0%**, `<think>` in **320/320**.
+
+1. **❌ The corpus lacked a closed think block.** The harvested `data_teacher_chat`
+   prefills one (`gen_teacher_corpus --no-think`); the converter omitted it.
+   Fixed and re-run → attempt 2 is *still* 320/320 think-locked. Not the cause.
+2. **❌ `--max-new 96` was too small.** A think block measured ~94 tokens median,
+   so the budget looked exhausted before any answer. Re-run at **512**: still
+   0.0%, all 320 at rung 0. The think block simply **expands to fill the budget**
+   — 94 tokens at a 96 cap, **495 tokens at a 512 cap**. The cap was never the
+   cause; the model reasons until it is stopped.
+3. **❌ Closing the block is sufficient.** At 512, **48/320 DID close** — and only
+   5/320 produced a code fence, with all 320 still scoring L0. Exiting the
+   reasoning does not produce an answer.
+
+### ⇒ The live lead: `--rollout-len 64` has never covered the answer
+
+Every training run in project history uses `--rollout-len 64`. That is the
+on-policy correction window: the student generates 64 tokens, the teacher
+corrects them. Under chat framing the model's first 64 tokens are entirely
+INSIDE a think block that runs ~495 tokens.
+
+**So the on-policy objective has never once trained the transition out of
+reasoning, or the answer that follows it.** It only ever trains "how to reason
+for 64 more tokens." That accounts for both observations: reasoning expands
+without limit because reasoning is the only thing on-policy training shapes, and
+closing-then-answering was never in the correction window.
+
+⚠ **The 2026-08-17 λ refutation does NOT cover this.** That probe compared the
+RATE of opening `<think>` (64/80 at λ=0.7 vs 68/80 at λ=0.2) — not its length,
+and not whether it closes. Different quantities; the relevant one was never tested.
+
+**Test:** `--rollout-len 256` or higher, enough to span think + answer. Costs
+~4x the rollout compute, so a night buys proportionally fewer steps — pick the
+size deliberately rather than by guess. This is a TRAINING-side change; the
+corpus and the eval have both now been ruled out.
+
+### Instrument fix
+
+`max_new` was absent from every report ever written, so no historical chat number
+recorded which generation cap produced it. Now recorded (`d4e1590`). A generation
+cap is part of the result.
+
+
 ## 2026-08-22 — ✅ n=320 SETTLES IT: the α-anneal is REAL (+18pp), and every n=80 number this week was inflated
 
 Four metrics had picked three different "best" checkpoints, which is the signature
