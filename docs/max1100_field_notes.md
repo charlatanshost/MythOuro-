@@ -312,6 +312,22 @@ Measured on step_0149500, batch 32, prompt 64, n_loops 4:
 | **128** | 8.12 s → **1.7 h** | 13.51 s → **2.8 h** | 24.70 s → **5.1 h** |
 | **256** | 26.96 s → **5.6 h** | 36.60 s → **7.6 h** | 69.31 s → **14.4 h** |
 
+### ⚠ THE TABLE ABOVE IS STUDENT-ONLY AND UNDERSTATES BY ~3.4x (corrected 2026-08-25)
+
+It was measured with `teacher=None` / `teacher_mix_alpha=0.0`, i.e. the 278M
+student generating alone. **Training runs `--teacher-mix-alpha 0.45`, so the 2.6B
+teacher forwards at EVERY generated token as well** — uncached, over the same
+growing prefix. The bench measured the cheaper half of the work.
+
+Measured against reality: len 256 / batch 16 / α 0.45 ran at **28.9 s/step**
+against the 8.5 s/step this table predicted. A 4,000-step leg projected at 9.4 h
+was heading for **~32 h** and was stopped at 1,738 steps. `tools/bench_rollout.py`
+now takes `--teacher-id` and warns loudly when run without one.
+
+So the numbers below are a valid *relative* scaling curve (the ~7x at 256 holds,
+and the page-fault finding stands) but are **not** absolute leg costs. For those,
+re-run with the teacher loaded.
+
 **⚠ SCALING IS SUB-QUADRATIC: ~7x at 256, not the 16x O(n²) predicts** (7.6x /
 6.5x / 6.9x at batch 8/16/32). The card absorbs much of the longer prefix. An
 earlier note here projected 9.8 h for 128 and 39 h for 256 from the complexity
