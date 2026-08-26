@@ -963,6 +963,49 @@ So the gibberish→coherent jump needs **from-scratch at scale with real data**,
 
 **Key nuance — from-scratch ≠ pure pretraining.** For hardware-constrained reality, **from-scratch *distilled* from a strong teacher** (Llama 3.3 70B / DeepSeek V3) is far more sample-efficient than raw CE pretraining — reaches coherence on *much* less data. That's the actual destination.
 
+### ⚠ SUPERSEDED 2026-08-26 — THE RENTAL ASSUMPTION WAS NEVER THE OWNER'S PLAN
+
+Everything below about renting A100-class compute was **an assistant assumption**,
+written before the Max 1550 was acquired (2026-07-24) and never the owner's
+intent. Owned hardware is the plan: sustained multi-month training is exactly the
+regime where rental cost crosses purchase price, and the cards remain afterward.
+Keep the *quantize-to-fit* half — that reasoning stands. Discard the rental half.
+
+### Time to budget on OWNED hardware — measured, not projected
+
+From `docs/training_throughput.md`: **209M tok/day** on the 1100 at
+`--rollout-reuse 8`, duty cycle included (independently re-measured 2026-08-26 at
+3,213 tok/s, within 6%). `hardware_options.md`: **one 1550 tile ≈ the whole
+1100**, and the 1550 is a 2-tile card ⇒ ~2x.
+
+| config | 3B (30-45B tok) | 1B (10-15B tok) |
+|---|---|---|
+| 1100 (today) | 4.2-6.4 years | 172-259 days |
+| **1550** (needs adapter + PSU only) | **2.1-3.2 years** | **86-129 days** |
+| 1550 + teacher-logit cache* | 1.3-2.0 years | 54-81 days |
+| 2x 1550 | 1.1-1.6 years | 43-65 days |
+| 2x 1550 + cache* | 0.7-1.0 years | 27-40 days |
+
+\* the cache attacks the teacher's **54.2%** share of step time at reuse=8. The
+1.6x used here is a GUESS, not a measurement — get the real figure from
+`--profile-steps` before planning around it.
+
+**⇒ 3B is reachable on owned hardware.** An earlier version of this section called
+it "not viable", which was wrong twice over: it assumed rented compute, and the
+arithmetic double-counted the duty cycle already baked into the 209M/day figure.
+1B is not a destination but a waypoint — under two months once the 1550 runs.
+
+### THE HIGHEST-VALUE UNBUILT THING: top-K teacher-logit cache
+
+`training_throughput.md` item 2, still not built, and the case got **stronger**
+this week: the teacher corpus went 10.9M → 92M tokens, so far more offline steps
+now recompute identical teacher logits every pass. ~512 bytes/token, ~7GB on
+disk for the old corpus. It also unblocks λ, which the docs record has never been
+a real throughput lever precisely because the teacher runs regardless.
+
+Sequence: **cache → profile → size the card count → start the big run.** Not:
+buy cards and hope.
+
 ### The "train big, then quantize to fit" strategy
 
 Confirmed intent (2026-06-06): on rented compute, **train a model bigger than 1B (e.g., 3B), then quantize it to fit a small card for local deployment** — *quantize, not distill-down*. The distinction matters:
