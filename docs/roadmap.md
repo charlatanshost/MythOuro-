@@ -986,9 +986,22 @@ From `docs/training_throughput.md`: **209M tok/day** on the 1100 at
 | 2x 1550 | 1.1-1.6 years | 43-65 days |
 | 2x 1550 + cache* | 0.7-1.0 years | 27-40 days |
 
-\* the cache attacks the teacher's **54.2%** share of step time at reuse=8. The
-1.6x used here is a GUESS, not a measurement — get the real figure from
-`--profile-steps` before planning around it.
+\* **MEASURED 2026-08-26, and the 1.6x above is WRONG — it is ~1.16x.** Profile at
+the production config (n_loops 4, LR at floor): teacher_fwd **47.1%**, rollout
+**40.0%**, backward 8.9%, student_fwd 3.1%. The verdict line fires ("teacher
+DOMINATES, build the cache") — but the cache only helps OFFLINE micro-steps, and
+at λ=0.7 those are ~30% of them. 47.1% x 30% = **14% of step time = 1.16x**.
+Reaching 1.5x needs λ≈0.3, which trades away the on-policy signal that cured the
+repetition attractor. The rows above using 1.6x are therefore optimistic; divide
+the cache's contribution by roughly three.
+
+⚠ **The loop now has TWO co-equal bottlenecks**, not one: teacher 47.1% and
+rollout 40.0% (up from 31.2% on the old record). Neither has a cheap fix — the
+rollout is uncached O(n²) by architectural necessity (ACT early-exit vs KV cache,
+2026-07-16). A first profile at the WRONG config (n_loops 2, LR restarted at
+2.84e-04 because `--total-steps 999999` put the curriculum early in its ramp)
+reported 45.5%/46.3%; always check the step line says `n_loops 4` before
+trusting a profile.
 
 **⇒ 3B is reachable on owned hardware.** An earlier version of this section called
 it "not viable", which was wrong twice over: it assumed rented compute, and the
