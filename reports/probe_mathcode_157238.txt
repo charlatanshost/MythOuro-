@@ -1,0 +1,97 @@
+[probe] loaded checkpoints_mathcode/step_0157238.pt (step 157238) on xpu:0
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-08-26 09:27:47.367 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1835 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=xpu:0). Teacher frozen.
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+2026-08-26 09:27:48.619 | WARNING  | mythouro.main:warn_once:106 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=None).
+
+  α=0.0  | top_share 0.09 [0.05-0.14] | distinct1 0.57 [0.49-0.67] | distinct2 0.86 [0.74-0.97] | n=5 | halt 2.00/4
+    e.g.: ' start with some sort of weather policy discussion. Today in the winter, we shall look at some very different things in the winter and then we will go to a few more days ago at the beginning of the second year. This will go to somewhere in the past. So the days after the winter is probably the same as the summer days that are going to give rise to the 2009 – 2014. We will look at the end. It is'
+
+  α=0.25 | top_share 0.10 [0.06-0.12] | distinct1 0.61 [0.54-0.67] | distinct2 0.88 [0.82-0.93] | n=5 | halt 2.00/4
+    e.g.: " keep the weather in the place here.\n\nThe weather data was provided at a rate of one, i.e.\n\n$X$°C in 1,000 days, and 2°C in 20th day, but if the weather in the morning, it's still in the event of 3,000, I guess.\n\nIt's better to leave these, in the afternoon, that would be a good"
+
+  α=0.5  | top_share 0.09 [0.05-0.12] | distinct1 0.60 [0.52-0.68] | distinct2 0.90 [0.85-0.95] | n=5 | halt 2.00/4
+    e.g.: " go the zoo to visit the penguins, including the famous penguin.\n\nLet's say that the first day at the zoo, you saw the first penguin. Every day after that was clear or the first day, so you have a chance to see N. If you see a penguin on the first, then it will follow the first on the next day.\n\nHere’s a quick list of the first 100 penguins in the first ten days: 1"
+
+  α=0.7  | top_share 0.09 [0.06-0.14] | distinct1 0.66 [0.61-0.71] | distinct2 0.96 [0.94-0.98] | n=5 | halt 2.00/4
+    e.g.: " go to the outskirts of the capital of Berdram, which was the third day after, they came out here at the 1st. He can't leave the capital's radius and the next day, so a group consisting of the three decided about the most important thing.\n\nYou're given three lines. Let's imagine that these three lines come together with the following directions. The first is the main road leading from the capital to the suburbs, and the rest are"
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.09 [0.06-0.10] | distinct1 0.59 [0.48-0.67] | distinct2 0.87 [0.69-0.95] | n=5 | halt 2.00/4
+    e.g.: ":\n\n- A medical condition like *the* diagnosis of the infection.\n- The primary cause of the disease.\n- The patient's infection and the infection can be managed if they are not infected.\n\n- An infection that's causing a problem with the bacteria.\n- The patient should be in the best possible condition.\n- The patient should be sure that the patient's infection is not causing the disease.\n- The patient should be able to survive"
+
+  α=0.25 | top_share 0.17 [0.10-0.39] | distinct1 0.52 [0.29-0.61] | distinct2 0.79 [0.45-0.94] | n=5 | halt 2.00/4
+    e.g.: " antibiotics and antibiotics. If the antibiotics aren't effective, it is possible to use an antiviral medication. We will also provide treatment options for the treatment of the infection and if the treatment is safe and effective. If you have any indication that the antibiotic contains a certain compound, then the following is a good indication that the use of antibiotics may help in the prevention of other forms of bacterial infection.\n\nWhat is the role of the antimicrobial drugs in disease?\n\n* There are"
+
+  α=0.5  | top_share 0.16 [0.06-0.45] | distinct1 0.48 [0.23-0.62] | distinct2 0.75 [0.33-0.96] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics, which are medications that cause harm from a high-fat diet can be done with the help of the following. They help prevent the formation of blood clots, which help prevent the formation of blood clots. However, they also help prevent the formation of blood flow, so they are important for the health benefits of the blood vessels.\n\nIf you are still in a low-fat environment, you should go to a higher- fat diet to prevent the formation of blood sugar'
+
+  α=0.7  | top_share 0.13 [0.07-0.19] | distinct1 0.61 [0.47-0.69] | distinct2 0.85 [0.64-0.95] | n=5 | halt 2.00/4
+    e.g.: " antibiotics. For parasitic infections, an appropriate antiparasitic medication is prescribed, based on the type of parasite causing the disease, and for the same reason it is important to make a proper diagnosis of the patient by a qualified physician.\n\nThe treatment is prescribed for a short period, as the parasites' life was limited to 5-7 days.\n\nAfter the introduction, an initial increase in the level of eosinophils in the blood and/or the occurrence of"
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.15 [0.07-0.33] | distinct1 0.47 [0.35-0.55] | distinct2 0.72 [0.60-0.85] | n=5 | halt 2.00/4
+    e.g.: ':\n\n- High-temperature: This is the most common cause of the disease and most often associated with cardiovascular conditions like asthma or any type of disease.\n\n- Symptoms of a chronic or severe mental disorder that could lead to the development of some of the first stage of the disease.\n\n- A common condition, among the underlying disease and health conditions, is the major cause of the disease.\n\n- The causes of the disease and the way in which the'
+
+  α=0.25 | top_share 0.17 [0.05-0.35] | distinct1 0.52 [0.31-0.72] | distinct2 0.74 [0.47-0.95] | n=5 | halt 2.00/4
+    e.g.: ' increased thirst, frequent urination and a constant feeling of hunger, but they are often not always linked to an underlying problem such as the condition of the pancreas. \n\nIt is possible to treat many diseases like this. For example, you’ll find it less likely to have serious health problems, if you treat type 2 diabetes. \n\nFor example, you’ll have to deal with the problem of not eating too much of the standard American foods. You can also learn'
+
+  α=0.5  | top_share 0.10 [0.05-0.19] | distinct1 0.65 [0.55-0.76] | distinct2 0.90 [0.81-1.00] | n=5 | halt 2.00/4
+    e.g.: ': \n\n- Increased thirst-related problems or symptoms \n\n- The feeling of a negative impact at the moment \n\n- The need for water or fluids to reduce the symptoms of diabetes and the need for other medical procedures and procedures to control the symptoms of the disease.\n\n- More than adequate\n\nType 2 in medical field\n\nThe most significant and most significant and significant factor in the relationship between weight and the person who is diagnosed with diabetes is obesity,'
+
+  α=0.7  | top_share 0.08 [0.06-0.08] | distinct1 0.68 [0.61-0.73] | distinct2 0.90 [0.84-0.95] | n=5 | halt 2.00/4
+    e.g.: ' increased consumption of sugary foods and beverages\n\nB: A person\'s diet is high for the majority of people who are lactose intolerant.\n\nC: A person\'s weight is more likely to be affected by their genetics than their lifestyle, which can cause different problems such as heart disease and diabetes, leading to a higher risk of obesity.\n\nD: People who do not eat a lot of food may also be considered "prevention" for their overall health.\n\n'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.14 [0.07-0.26] | distinct1 0.57 [0.46-0.68] | distinct2 0.83 [0.59-0.94] | n=5 | halt 2.00/4
+    e.g.: " the underlying and underlying conditions\n\nQuestion: Is the drug the patient's medication useful for the treatment of the disease? Answer: Not directly applicable to the original question, but as per the question, it is not the same as the original problem's mention.\n\nQuestion: Is the method used to treat an illness with a higher score than what is done using the second-degree procedure? Answer: Yes, it is not mentioned in the question.\n\nQuestion: Does"
+
+  α=0.25 | top_share 0.11 [0.06-0.23] | distinct1 0.53 [0.32-0.76] | distinct2 0.74 [0.47-0.98] | n=5 | halt 2.00/4
+    e.g.: ' the following conditions.\nWhich of the following is a risk factor for developing the condition?\nThe following is a symptom of inflammation in the affected tissue.\nThe following is a common cause of inflammation in the condition.\nThe following is a risk factor for developing the condition.\nThe following is a common cause of the condition.\nThe following is a way to manage the conditions associated with the infection.\nThe following is a step to develop the condition.\nThe following'
+
+  α=0.5  | top_share 0.09 [0.04-0.12] | distinct1 0.59 [0.47-0.66] | distinct2 0.87 [0.78-0.95] | n=5 | halt 2.00/4
+    e.g.: " pain, inflammation, and fever. It works by adding a combination of different types of medicines into the process. This way, it can help the body's own immune system to fight off the infection more effectively.\n\n- It includes four main steps: reducing pain, inflammation, fever, and pain.\n- It helps to prevent the development of serious health problems, and it can also help with the development of pain, and the treatment of many other diseases.\n- It"
+
+  α=0.7  | top_share 0.07 [0.06-0.09] | distinct1 0.62 [0.46-0.73] | distinct2 0.87 [0.64-0.98] | n=5 | halt 2.00/4
+    e.g.: " pain and inflammation, but it's not used to directly cause weight loss.\n\nE-cigarette use is not a proven method for treating patients with the disease, according to experts with the Office on the National Institute of Diabetes, an agency of the National Institutes of Health.\n\nPBS Health, a health site and blog-based publication, explains that the use of an existing medical device to treat the disease can have side effects and may require additional treatment. According to the"
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.26 [0.06-0.95] | distinct1 0.45 [0.06-0.66] | distinct2 0.67 [0.06-0.89] | n=5 | halt 2.00/4
+    e.g.: '\n    if n == 1:\n        return \'n=12\'\n    return \'n=12\'\n\n\n# Function to find the Fibonacci number, a sequence of numbers\ndef find_fibonacci(nums):\n    if not isinstance(nums, numbers):\n        return None\n    print("Input must be a list of integers.")\n    # Define a function to return the Fibonacci number, a list of numbers\n    # Also, make sure the function returns the'
+
+  α=0.25 | top_share 0.17 [0.04-0.42] | distinct1 0.47 [0.25-0.62] | distinct2 0.71 [0.42-0.81] | n=5 | halt 2.00/4
+    e.g.: '\n    # Calculate the Fibonacci numbers with a sum of Fibonacci numbers\n    # up to the Fibonacci number n\n    # to the same amount of Fibonacci numbers, as per the logic presented in the problem statement\n    # The Fibonacci numbers are represented in an array of integers (fibonacci array, for the n-th element,\n    # the numbers are in the following format:\n    # f(n-1) + 1 for even n-f(n'
+
+  α=0.5  | top_share 0.09 [0.06-0.14] | distinct1 0.44 [0.35-0.57] | distinct2 0.73 [0.63-0.87] | n=5 | halt 2.00/4
+    e.g.: '\n    nums = []\n    for i in range(n-1):\n        count = 3\n        for i in range(i+1):\n            nums.append(i + count)\n            count += 1\n        for i in range(n, 2):\n            nums.extend(i + 1)\n            continue\n        if i + 1 > i:\n            pass\n        else:\n            count += 1\n        if i + 1 < i:\n            count'
+
+  α=0.7  | top_share 0.07 [0.05-0.08] | distinct1 0.47 [0.30-0.57] | distinct2 0.74 [0.47-0.91] | n=5 | halt 2.00/4
+    e.g.: '\n\n    if n <= 0:\n\n        return []  # Or, if n is supposed to be positive, maybe raise the error\n    elif n <= 0:\n\n        return [0]  # But that depends on how the recursive approach is structured\n\nWait, maybe the base case is when n is 1, return [0], and for n=2, return [0, 1]\n\nWait, perhaps in the recursive approach, we can have:'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.16 [0.15-0.19] | distinct1 0.25 [0.15-0.30] | distinct2 0.46 [0.27-0.61] | n=5 | halt 2.00/4
+    e.g.: ' 2x^2 - 5x^2 - 9x^2 + 5x^2 + 2x^2 + 17x + 900 = 2x^2 + 17x + 17x - 5 - 5x^2 + 17x + 17x - 1800y^2 + 17x + 17x + 1'
+
+  α=0.25 | top_share 0.12 [0.07-0.15] | distinct1 0.42 [0.23-0.64] | distinct2 0.64 [0.46-0.86] | n=5 | halt 2.00/4
+    e.g.: " 0. So, 3x^2 - 5x + 6 = 0. But this seems wrong. Wait, hold on.\n\nWait, perhaps I made a mistake in expanding the square of cos(2x). Maybe there's an alternative approach. Alternatively, perhaps I should use the double-square approach here.\n\nWait, let me check if my calculation of 2x^2 is correct? Hmm.\n\nAlternatively, maybe"
+
+  α=0.5  | top_share 0.12 [0.06-0.21] | distinct1 0.42 [0.30-0.58] | distinct2 0.67 [0.53-0.87] | n=5 | halt 2.00/4
+    e.g.: ' 18\n\n2. A number has to be one of the integers from 1 up to 100.\n\nSolve: 7(x + 4) - 12 = 2(x - 1)\n\n2. A number has to be 40.\n\n3. A 2 times 2 square of a number.\n\nGiven:\n\nEquation:\n\nThe greatest common multiple (GCM of'
+
+  α=0.7  | top_share 0.12 [0.06-0.17] | distinct1 0.40 [0.27-0.61] | distinct2 0.63 [0.40-0.91] | n=5 | halt 2.00/4
+    e.g.: ' 0. The solutions should start with "Solution is a list of all solutions in the complex plane." and then list the factors of the equation. However, the problem is this question, the user has provided a solution, and the answers should reflect the correct solution.\n\nWait, but looking at the initial prompt: \n"Solve the quadratic equation x^2 - 5x + 6 = 0. The solutions should include listing the factors of the'
+
+wrote reports/probe_mathcode_157238.json — 120 decoded samples retained (the .txt shows 6 of them)

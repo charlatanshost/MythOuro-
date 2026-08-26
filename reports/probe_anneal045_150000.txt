@@ -1,0 +1,97 @@
+[probe] loaded checkpoints_anneal045/step_0150000.pt (step 150000) on xpu:0
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-08-26 08:46:23.874 | SUCCESS  | mythouro.training_utils:load_distillation_teacher:1835 - load_distillation_teacher: loaded ByteDance/Ouro-2.6B-Thinking (vocab=49152, dtype=torch.bfloat16, device=xpu:0). Teacher frozen.
+[probe] teacher ByteDance/Ouro-2.6B-Thinking on xpu:0
+
+==============================================================================
+SEED: 'In the morning the weather was clear, so we decided to'  (12 tok)
+2026-08-26 08:46:25.114 | WARNING  | mythouro.main:warn_once:106 - GQAttention: using torch SDPA fallback (FA2 unavailable; cuda_cc=None).
+
+  α=0.0  | top_share 0.15 [0.07-0.44] | distinct1 0.54 [0.31-0.69] | distinct2 0.77 [0.46-0.98] | n=5 | halt 2.00/4
+    e.g.: ' start with the following steps. Now, we are in need of ${T}$$ and we need to solve this problem using the following formula.\n\n$$\\left(L\\right){n}(p)^{n+1}$$\n\n2. How do you set the value of the variable $\\rho$ as a function of the variable $m$?\n\n$p$\n\n$$1\\\\[1\\right]\n\n$\\\\times'
+
+  α=0.25 | top_share 0.09 [0.05-0.14] | distinct1 0.59 [0.51-0.70] | distinct2 0.90 [0.80-0.99] | n=5 | halt 2.00/4
+    e.g.: ' keep the windows open and we had to find a special type of security for any of our windows because, if these two (maybe even more) are kept at a higher level, then they do well, but we also had to be sure that there will be some better solutions for us in order to avoid this.\n\nWe will also have some good options for the first time in a few months. We are planning to use, in the meantime, that we want them to'
+
+  α=0.5  | top_share 0.09 [0.06-0.14] | distinct1 0.60 [0.49-0.68] | distinct2 0.88 [0.78-0.96] | n=5 | halt 2.00/4
+    e.g.: ' go the zoo to a nearby, and we will take a train to take us to the\n\nQuestion: Which of the following would be the most natural to take an image of for this story? Answer: A black-and-mole-skin-colored, with a black stripe on the back, which can be easily recognized by the eye. It can be seen as the way that a human being would be able to do this. It may or may not be an'
+
+  α=0.7  | top_share 0.10 [0.06-0.20] | distinct1 0.60 [0.47-0.68] | distinct2 0.87 [0.77-0.95] | n=5 | halt 2.00/4
+    e.g.: ' go to the outskirts of the city on a bicycle ride. In the town one day after, they announce that the weather during the time of the trip can be divided into periods of time in some periods of time. These periods were all the time in the city and the rest of the time we were moving between, so the periods of the trip were all the time during the trip. So, at the end of the trip, the weather in the city can be seen as the'
+
+==============================================================================
+SEED: 'The treatment for a bacterial infection usually involves'  (8 tok)
+
+  α=0.0  | top_share 0.14 [0.06-0.38] | distinct1 0.58 [0.42-0.68] | distinct2 0.82 [0.49-0.95] | n=5 | halt 2.00/4
+    e.g.: " antibiotic treatment, but treatment may be done using different strategies. It may be useful to have a better understanding of antibiotic therapy.\n\nOther questions to focus on:\n\nIn vitro, after the infection, it is necessary to determine the exact conditions of the bacterium.\n\nThe study also raises concerns about potential treatment options for drug therapy.\n\nFurthermore, researchers should consider how to assess which antibiotics are most effective for treating chronic health problems.\n\nThe study's findings"
+
+  α=0.25 | top_share 0.07 [0.05-0.12] | distinct1 0.61 [0.54-0.69] | distinct2 0.91 [0.83-0.96] | n=5 | halt 2.00/4
+    e.g.: " antibiotics and antibiotics. If the antibiotics aren't effective, it's possible that it's just a viral infection. So the treatment is still possible without any kind of serious disease. However, if I can't have a treatment for a viral infection, then what if you have a bacterial infection of your family and friends from your family and your family? If you have to live in isolation, then there's no way for you to have a chance to get rid of the bacteria present in"
+
+  α=0.5  | top_share 0.06 [0.05-0.08] | distinct1 0.66 [0.60-0.70] | distinct2 0.95 [0.93-0.98] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics, which are medications that can kill from a particular disease. Although antibiotics are powerful and common. For instance, when using antibiotics, a patient must be treated before or after a certain infection. By treating the infection, the patient is then treated as "good" and so is able to live the disease without antibiotics. To reduce the number and type of bacterial infections in one country, a new antibiotic system can help treat such infections. However, it is often hard to take care'
+
+  α=0.7  | top_share 0.09 [0.06-0.17] | distinct1 0.57 [0.47-0.71] | distinct2 0.83 [0.71-0.97] | n=5 | halt 2.00/4
+    e.g.: ' antibiotics. For parasitic infections, you might have things like antibiotic-based, but here B is antibiotics, which means they might target the same.\n\nAlso, in D, both the pathogen and the infection is bacterial, making sure the treatment is correct.\n\nIf you try to use antibiotics to treat a bacterial-related infection, but the infection is caused by bacteria. I know.\n\nThus, D would be the answer, but I think I have to choose'
+
+==============================================================================
+SEED: 'Common symptoms of type 2 diabetes include'  (8 tok)
+
+  α=0.0  | top_share 0.08 [0.05-0.11] | distinct1 0.57 [0.28-0.69] | distinct2 0.79 [0.41-0.93] | n=5 | halt 2.00/4
+    e.g.: ':\n- Lateral loss of the body\n- CER and MSTR\n- Type 2 diabetes\n- Diabetes or any type of disease\n- Symptoms, Symptoms, and symptoms are associated with the most extreme cases of the disease, most commonly referred to as the onset of the disease and thus the diagnosis is dependent on the underlying disease.\nThe doctor has a number of possible reasons including:\n- The risk for heart attacks\n- The ability to move from'
+
+  α=0.25 | top_share 0.09 [0.06-0.15] | distinct1 0.60 [0.55-0.69] | distinct2 0.86 [0.79-0.95] | n=5 | halt 2.00/4
+    e.g.: ' increased blood sugar levels and increased insulin levels, and even reduced cholesterol levels in the elderly individuals. These cases are not necessarily related to any particular diet or lifestyle changes.\n\nThese findings suggest that the use of a food-free food-free diet is less likely to cause serious health problems compared to other types of foods. Therefore, the food system plays a crucial role in creating good food choices and reducing the risk of harmful disease patterns.\n\nReferences:\n\n- The'
+
+  α=0.5  | top_share 0.11 [0.07-0.17] | distinct1 0.61 [0.46-0.73] | distinct2 0.85 [0.67-0.98] | n=5 | halt 2.00/4
+    e.g.: ": \n\n- Increased thirst-type 2 diabetes\n- Increased sleep: \n- Increased need to urinate \n\n- Low blood sugar (hypoglycemia) \n- Increased risk for a person's heart and heart disease \n\nSome people may be advised to treat the condition if they are going to become type II in their medical conditions, which include diabetes and other serious health concerns.\n\nThis article will discuss the benefits of using a non-insuline"
+
+  α=0.7  | top_share 0.08 [0.07-0.08] | distinct1 0.61 [0.54-0.71] | distinct2 0.84 [0.77-0.89] | n=5 | halt 2.00/4
+    e.g.: ' increased blood sugar levels, and this is a medical condition that occurs when the body\n26/04/2021 · Treatment of the early stage of diabetes: The treatment of diabetes has been based on the control of blood sugar levels since the introduction of insulin in 8-Oct-2021 · 20 May 2018. The mainstays of treatment of diabetes, especially the most common form of diabetes, is an over'
+
+==============================================================================
+SEED: 'Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat'  (14 tok)
+
+  α=0.0  | top_share 0.08 [0.05-0.11] | distinct1 0.63 [0.53-0.71] | distinct2 0.92 [0.87-0.96] | n=5 | halt 2.00/4
+    e.g.: " the disease and treat diseases associated with Crohn disease, which has the patient's immune response for the affected disease.\n\nThe main benefit of this system is that it allows for a better response of the immune system, which is the treatment of patients with the disease. This prevents the cells from being effectively recovered and repair the cells from the immune system.\n\nOverall, this paper provides an approach to treatment for the patients with a disease, and has been the first to be successful"
+
+  α=0.25 | top_share 0.09 [0.06-0.12] | distinct1 0.66 [0.61-0.71] | distinct2 0.90 [0.80-0.98] | n=5 | halt 2.00/4
+    e.g.: " pain, especially at times. These days, many patients still need to take some medications that interfere with the immune system. That's why I'm not sure that the problem is solved completely. So I think they are talking about the problem of 'anti-inflamm' drugs, and the drugs will not be able to prevent the disease. I suppose it has to be a very simple problem for the body so you have to find out how many of them are not available, and how"
+
+  α=0.5  | top_share 0.06 [0.05-0.08] | distinct1 0.68 [0.57-0.80] | distinct2 0.94 [0.91-0.98] | n=5 | halt 2.00/4
+    e.g.: ' pain, inflammation, and fever. It works by lowering the levels of hormones that cause inflammation and inflammation. IbBec\n\nI\'m not sure what you mean by "the answer you want to know". But if you want to get a better understanding of how the patient\'s condition worsens, then I need to find out what\'s going on. This may be a good starting point to assess the patient\'s health and provide a better treatment for them.\n\nIn addition to'
+
+  α=0.7  | top_share 0.09 [0.05-0.12] | distinct1 0.65 [0.53-0.77] | distinct2 0.89 [0.80-0.97] | n=5 | halt 2.00/4
+    e.g.: " pain and inflammation, but I've heard that ibuprofen can cause some stomach issues that are related to inflammation in the stomach itself. The exact causes are different from the ones in rheumatoid that's why I asked the patient about this issue, but I think that's because the problem is related to the treatment not the same pathology.\n\n9. Are these symptoms new? Have you been taking other medications to control pain?\n\n10. Do you suspect the NSAIDs to treat RA-A"
+
+==============================================================================
+SEED: 'def fibonacci(n):'  (6 tok)
+
+  α=0.0  | top_share 0.10 [0.05-0.21] | distinct1 0.49 [0.42-0.56] | distinct2 0.74 [0.68-0.80] | n=5 | halt 2.00/4
+    e.g.: '\n    if n == 1:\n        if n % 2:\n            return False\n        else:\n            return False\n\n\n# Function to find the first three primes\ndef get_product(n):\n    """\n    Function to find the first three primes in a sorted list of primes.\n    \n    Args:\n        n: The input number. Must be a string containing only the elements of the input number, and the list of primes\n    """\n    # Check if'
+
+  α=0.25 | top_share 0.12 [0.08-0.18] | distinct1 0.41 [0.12-0.52] | distinct2 0.60 [0.16-0.79] | n=5 | halt 2.00/4
+    e.g.: '\n    # Calculate the sum of the Fibonacci series\n    # but using the sum from the Fibonacci numbers (not 0)\n    # So the result is not a new list, so we use the list to get all numbers\n    # and add the sum of Fibonacci numbers (not\n    # 1, 2, 3, 4, 5, 6,... etc)\n\n\n# Example usage:\n# n = 54333'
+
+  α=0.5  | top_share 0.09 [0.07-0.11] | distinct1 0.43 [0.36-0.59] | distinct2 0.71 [0.62-0.85] | n=5 | halt 2.00/4
+    e.g.: '\n    # Your implementation will have a total of 2 lines of code to calculate the n-th order of the Fibonacci sequence.\n    pass\n```\n\nOriginal Instruction:\nThe function will be given a positive integer n, where n is the order of the Fibonacci sequence. The function should return the result as a list of integers representing the Fibonacci sequence. The function should start with 0 and 1.\n\n1. Create an array with the given value'
+
+  α=0.7  | top_share 0.08 [0.06-0.09] | distinct1 0.52 [0.30-0.65] | distinct2 0.79 [0.55-0.92] | n=5 | halt 2.00/4
+    e.g.: '\n\n    if not is_valid(n):\n       print("No, sorry, that\'s not one of the following, but the problem asks us to generate a proper fibonacci series: {0, 21}, where the first one is 1 and the second one is 2. But since the problem is asking the next two elements in the list, we can return 1 if it is within the array and if not, just return 1")\n        return False'
+
+==============================================================================
+SEED: 'To solve the quadratic equation x^2 - 5x + 6 = 0, we'  (16 tok)
+
+  α=0.0  | top_share 0.10 [0.05-0.18] | distinct1 0.44 [0.27-0.57] | distinct2 0.64 [0.41-0.81] | n=5 | halt 2.00/4
+    e.g.: " 24.\n\nFirst, I'll rewrite this equation as:\n\n```\n(X^2 - 5X^2) / (X^2 - 5X^2) - (Cx^2 - 5X^2) / (X - 5X^2) / (X - 5X + 1)\n\nThen I can move it back into a new equation. Let's say that the equation is"
+
+  α=0.25 | top_share 0.22 [0.08-0.68] | distinct1 0.45 [0.19-0.61] | distinct2 0.65 [0.29-0.83] | n=5 | halt 2.00/4
+    e.g.: " 0. So first, we'll set x^2 = 0 at the left and then we'll set x + 6 = 0 (which is why we can get a better answer for 41353).\n\nSo, using the method of substitution, we can see here.\n\nWe have two choices:\n\nThe second one represents the x + 40333.\n\nLet's use this formula for quadratic equation"
+
+  α=0.5  | top_share 0.10 [0.05-0.15] | distinct1 0.43 [0.31-0.55] | distinct2 0.72 [0.57-0.93] | n=5 | halt 2.00/4
+    e.g.: ' 0.\n\n1. Write down the quadratic equation and then write the roots to be used with this information in terms of the given coefficients.\n\nx = b + c\n\nx = c2 + b2\n\nx + b2 = (c2 - b2) 4 = c2 + b2\n\nx = b2 + c\n\nTherefore, the roots are x = b + c.\n\nThus, the original quadratic equation'
+
+  α=0.7  | top_share 0.09 [0.05-0.11] | distinct1 0.49 [0.38-0.61] | distinct2 0.76 [0.62-0.91] | n=5 | halt 2.00/4
+    e.g.: ' 0. The solutions should be returned in a list.\n\n```python\ndef solve_quadratic_equilateral(x, y, n):\n    sides = sorted([x + 1, y, 2 * x if x < y else x])\n    return sides[0][0][0][0][0] # Place in the first box\n```\n\nThe corrected version of this solution is:\n\ndef solve_quadratic'
+
+wrote reports/probe_anneal045_150000.json — 120 decoded samples retained (the .txt shows 6 of them)

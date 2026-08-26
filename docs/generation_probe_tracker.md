@@ -865,6 +865,40 @@ oscillating series (1.2 / 3.8 / 11.2 / 5.0 / 11.25) is consistent with a flat ~5
 read at ±7pp. Adding 58M math tokens has not yet moved math itself — but it moved
 CODE solution length, which is what multi-step math CoT demonstrates.
 
+### Cross-domain probe @157,238 — medical IMPROVED, and top_share missed it
+
+Six-seed rollout probe, α=0.0, against @140,000 (pre code+math):
+
+| seed | @140k | @150k | @157k | distinct1 | halt |
+|---|---|---|---|---|---|
+| weather | 0.100 | 0.152 | **0.094** | 0.571 | 2.00 |
+| bacterial | 0.179 | 0.140 | **0.085** | 0.594 | 2.00 |
+| diabetes | 0.194 | 0.081 | 0.154 | 0.475 | 2.00 |
+| ibuprofen | 0.081 | 0.081 | 0.144 | 0.573 | 2.00 |
+| fibonacci | 0.246 | 0.100 | 0.260 | 0.448 | 2.00 |
+| quadratic | 0.125 | 0.100 | 0.160 | 0.246 | 2.00 |
+
+prose-only top_share 0.139 → 0.119. **Acronym-salad hits: 0** — no re-collapse.
+`halt` is still exactly 2.00/4 on every seed, as it has been on every checkpoint
+ever measured.
+
+**The metrics are mixed and the TEXT is not.** Both medical seeds were DEGENERATE
+at 140,000 and are coherent prose at 157,238:
+
+* bacterial @140k: *"including: \* Infection, Infection, and other medical
+  conditions … 100000000000000000000000000000000000"* → @157k: *"- A medical
+  condition like the diagnosis of the infection. - The primary cause of the
+  disease. - The patient's infection can be managed…"*
+* diabetes @140k: *"- Lateral-drying - High-fat - High-fat - Low-fat - High-fat
+  - High-fat - Low-fat - Low-fat…"* (a pure repetition loop) → @157k:
+  *"- High-temperature: This is the most common cause of the disease and most
+  often associated with cardiovascular conditions like asthma…"*
+
+diabetes read 0.194 → 0.154 on top_share — a mild move — while the text went from
+a repetition loop to structured prose. **⇒ Adding 92M tokens of code and math did
+not damage the mission domain; it improved its FORM.** Content is still wrong
+(high temperature is not a diabetes symptom), which is the project-wide pattern.
+
 ### ⇒ The diagnosis that was right: TOKEN STARVATION IN THE TEACHER STREAM
 
 The 80% base stream is unlimited HF text. The 20% teacher stream — the part
