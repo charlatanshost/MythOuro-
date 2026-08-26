@@ -823,6 +823,72 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-26 — 🎯 THE FROZEN METRIC MOVES: multi-statement solutions 3% → 28%, L4 5 → 26/320, monotone across two corpus additions
+
+The teacher stream was the constraint, not the objective. Expanding it moved
+CONTENT on two independent metrics, monotonically, in the same direction.
+
+### The result
+
+| checkpoint | teacher corpus | 1-stmt | **≥2 stmts** | body mean | **L4/320** | L3+ |
+|---|---|---|---|---|---|---|
+| anneal base @143,500 | continuation 10.9M | 97.1% | **3%** | 1.03 | **5** | 76.6 |
+| codemix @149,500 | + code 35M | 85.0% | **15%** | 1.20 | **14** | 76.9 |
+| **mathcode @157,238** | + math 58M (92M total) | **72.0%** | **28%** | **1.35** | **26** | 54.7 |
+
+All n=320. **One-statement solutions fell 97% → 72%; multi-statement rose 3% →
+28%, nearly 10x.** A four-statement solution appeared for the first time in
+project history. `body_stmts` had been median 1 at EVERY α and EVERY checkpoint
+ever measured — the α ladder, the loop-weighting arm, every SFT attempt.
+
+Tasks solved keep changing, and getting harder:
+* base — `add_two`, `double_it`
+* codemix — `is_even`, `reverse_string`, `max_of_two`
+* **mathcode — `add_two` 5, `sum_list` 4, `count_items` 2, `reverse_string` 15**
+
+`sum_list` requires accumulation, not a one-liner. That is a different class of
+task than anything solved before 2026-08-24.
+
+### What it cost, and why it is worth it
+
+L3+ fell 78.8 → 54.7 (raw). Same trade the two codemix legs showed: correctness
+and completeness up, parseable fragments down. Given L3+ counts guard clauses
+that never answer — `if not nums: return 0` graded L3 for `sum_list` — this is
+the right side of the trade.
+
+### Math did NOT regress
+
+4.37% L3+ at n=320 against 11.25% at n=80. Intervals [2.2, 6.6] vs [4.3, 18.2] —
+they overlap. Math has been ~4-6% all along; **the 11.25% was n=80 noise**, the
+same inflation that made every code headline 5-6pp too high last week. The
+oscillating series (1.2 / 3.8 / 11.2 / 5.0 / 11.25) is consistent with a flat ~5%
+read at ±7pp. Adding 58M math tokens has not yet moved math itself — but it moved
+CODE solution length, which is what multi-step math CoT demonstrates.
+
+### ⇒ The diagnosis that was right: TOKEN STARVATION IN THE TEACHER STREAM
+
+The 80% base stream is unlimited HF text. The 20% teacher stream — the part
+carrying the distillation signal — was `data_teacher_v2` + `data_teacher_med` =
+**10.9M tokens, one epoch every 3,339 steps**, re-read dozens of times by step
+140,000. Every lever tried for a fortnight (α, λ, loop-weighting, dose, rollout
+window, corpus format, eval budget) reshapes the sampling DISTRIBUTION; none of
+them add signal. Two corpus additions did what none of those could.
+
+Current: **92M teacher tokens, one epoch every 28,229 steps** — a 6,000-step leg
+is 0.21 epochs, nothing re-read.
+
+**Headroom is large and cheap.** OpenMathInstruct-2 has ~14M pairs and 250k are
+used. OpenCodeInstruct has 200k configured, 100k used. PubMedQA (100k,
+provenance-clean, the mission domain) is untouched. All convert with
+`tools/make_code_corpus.py --source <name>`, no GPU, routed through the
+`sft_data.py` adapters so the Tulu-3 subset filter is never bypassed.
+
+⚠ Tulu-3 is held: median 0 statements / 81% at one or fewer (chat prose, wrong
+shape), AND its WildChat filter returned 0 drops on 2,000 rows where ~10% was
+expected — unresolved, and it is the one source with card-verified OpenAI
+contamination.
+
+
 ## 2026-08-24 — ✅ TASK-COMPLETION DATA MOVES CONTENT (raw), ❌ chat framing broken by `--rollout-len 64`
 
 Two legs on OpenCodeInstruct converted to teacher-corpus shards

@@ -37,7 +37,16 @@ import statistics as st
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from mythouro.sft_data import _to_messages_opencode              # noqa: E402
+from mythouro.sft_data import (                                  # noqa: E402
+    _ADAPTERS, _CLEAN_DATASET_SPECS)
+
+# ⚠ ALWAYS GO THROUGH THE ADAPTER, NEVER THE RAW DATASET. `_to_messages_tulu`
+# is what strips the WildChat-GPT-4 and Evol subsets from Tulu-3 — reading the
+# dataset directly reintroduces ~10% OpenAI-generated content, which is the one
+# thing this project cannot ship (docs/clean_sft_datasets.md, 2026-07-28 pass).
+# The adapters also carry each source's own quality filter, e.g. OpenCodeInstruct
+# requiring EVERY unit test to pass.
+_SPECS = {name: (repo, cfg, split) for name, repo, cfg, split, _ in _CLEAN_DATASET_SPECS}
 
 _SYS = "You are a helpful assistant."
 
@@ -69,30 +78,42 @@ def _fenced(out: str) -> str:
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[1])
-    p.add_argument("--dataset", default="nvidia/OpenCodeInstruct")
-    p.add_argument("--split", default="train")
+    p.add_argument("--source", default="clean_code",
+                   choices=sorted(_SPECS), help="Which provenance-cleared source.")
+    p.add_argument("--dataset", default="", help="Override the repo id.")
+    p.add_argument("--split", default="")
     p.add_argument("--sample", type=int, default=2000,
                    help="Rows to stream for --inspect.")
     p.add_argument("--target-rows", type=int, default=0,
                    help="Accepted rows to write. 0 = inspect only.")
-    p.add_argument("--out-dir", default="data_teacher_code")
+    p.add_argument("--out-dir", default="")
     p.add_argument("--rows-per-shard", type=int, default=20000)
     p.add_argument("--inspect", action="store_true")
     a = p.parse_args()
 
+    repo, cfg_name, split = _SPECS[a.source]
+    repo = a.dataset or repo
+    split = a.split or split
+    adapt = _ADAPTERS[a.source]
+    print(f"\n  source {a.source}: {repo}"
+          + (f" [{cfg_name}]" if cfg_name else "")
+          + f" split={split}  adapter={adapt.__name__}")
+
     from datasets import load_dataset
-    ds = load_dataset(a.dataset, split=a.split, streaming=True)
+    ds = (load_dataset(repo, cfg_name, split=split, streaming=True) if cfg_name
+          else load_dataset(repo, split=split, streaming=True))
 
     seen = kept = 0
     stmts, chars, toks = [], [], []
     writer = None
     shard = 0
     written = 0
-    os.makedirs(a.out_dir, exist_ok=True) if a.target_rows else None
+    out_dir = a.out_dir or f"data_teacher_{a.source.replace('clean_','')}"
+    os.makedirs(out_dir, exist_ok=True) if a.target_rows else None
 
     for row in ds:
         seen += 1
-        msgs = _to_messages_opencode(row)
+        msgs = adapt(row)
         if msgs:
             kept += 1
             sol = _fenced(msgs[1]["content"])
@@ -104,7 +125,7 @@ def main() -> None:
                 if writer is None or written % a.rows_per_shard == 0:
                     if writer:
                         writer.close()
-                    path = os.path.join(a.out_dir, f"shard_{shard:04d}.jsonl")
+                    path = os.path.join(out_dir, f"shard_{shard:04d}.jsonl")
                     writer = open(path, "w")
                     shard += 1
                 # ⚠ THE CLOSED <think></think> IS LOAD-BEARING (learned 2026-08-23).
@@ -120,7 +141,7 @@ def main() -> None:
                         f"<|im_start|>assistant\n<think>\n\n</think>\n\n"
                         f"{msgs[1]['content']}<|im_end|>")
                 writer.write(json.dumps({"text": text,
-                                         "source": "opencodeinstruct"}) + "\n")
+                                         "source": a.source}) + "\n")
                 written += 1
                 if written >= a.target_rows:
                     break
@@ -128,6 +149,23 @@ def main() -> None:
             break
     if writer:
         writer.close()
+
+    # Write the inspection to a report too — --inspect used to print and vanish,
+    # so the numbers had to be pasted back by hand to be acted on.
+    rep = {"source": a.source, "repo": repo, "streamed": seen, "accepted": kept,
+           "accept_frac": round(kept / max(seen, 1), 4)}
+    if stmts:
+        rep.update(body_median=st.median(stmts), body_mean=round(st.mean(stmts), 2),
+                   frac_1stmt=round(sum(1 for x in stmts if x <= 1) / len(stmts), 4),
+                   frac_3plus=round(sum(1 for x in stmts if x >= 3) / len(stmts), 4))
+    if chars:
+        c = sorted(chars)
+        rep.update(chars_p50=c[len(c) // 2], chars_p90=c[int(.9 * len(c))],
+                   frac_over_budget=round(sum(1 for x in chars if x > 4096) / len(chars), 4))
+    os.makedirs("reports", exist_ok=True)
+    with open(f"reports/corpus_inspect_{a.source}.json", "w") as fh:
+        json.dump(rep, fh, indent=2)
+    print(f"\n  wrote reports/corpus_inspect_{a.source}.json")
 
     print(f"\n  streamed {seen} rows, accepted {kept} ({100*kept/max(seen,1):.1f}%)")
     if stmts:
@@ -143,7 +181,7 @@ def main() -> None:
         over = sum(1 for x in chars if x > 4096)
         print(f"    over 4096 chars (would truncate): {100*over/len(chars):.0f}%")
     if written:
-        print(f"  wrote {written} rows across {shard} shard(s) in {a.out_dir}/")
+        print(f"  wrote {written} rows across {shard} shard(s) in {out_dir}/")
 
 
 if __name__ == "__main__":

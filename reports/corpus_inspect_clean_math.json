@@ -1,0 +1,14 @@
+{
+  "source": "clean_math",
+  "repo": "nvidia/OpenMathInstruct-2",
+  "streamed": 250000,
+  "accepted": 250000,
+  "accept_frac": 1.0,
+  "body_median": 3.0,
+  "body_mean": 3.11,
+  "frac_1stmt": 0.2857,
+  "frac_3plus": 0.6429,
+  "chars_p50": 923,
+  "chars_p90": 1871,
+  "frac_over_budget": 0.0028
+}
