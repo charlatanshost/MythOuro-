@@ -823,6 +823,87 @@ every Nth-step checkpoint + `--keep-last` raised to 5. 36,658 recoverable from t
 is ever wanted. Raw: `reports/onpolicy_rollout_probe_46000_xpu_uncached_n5.txt`.
 
 
+## 2026-08-27 — ⚠️ LENGTH AND CORRECTNESS ARE ANTI-CORRELATED; leg 3 was net harmful; keep step_0157238
+
+A third leg on the SAME 92M-token corpus (157,238 → 163,238, identical config)
+reversed both gains, and measuring the middle of it overturned the framing of the
+previous three days.
+
+### Solution length rose, peaked, then collapsed — and L4 moved OPPOSITE
+
+| step | | ≥2 stmt | mean | committed | **L4/320** |
+|---|---|---|---|---|---|
+| 143,500 | base | 3% | 1.03 | 25% | 5 |
+| 157,238 | leg 2 end | 28% | 1.35 | 42% | **26** |
+| 159,500 | +2.3k | **50%** | **1.60** | 33% | **2** |
+| 161,000 | +3.8k | 38% | 1.50 | 24% | 4 |
+| 163,238 | leg 3 end | 4% | 1.05 | **64%** | 19 |
+
+**At 159,500 the model wrote multi-statement solutions half the time — the best
+that figure has ever been — and correctness COLLAPSED to 2/320.** At 163,238 it
+returned to one statement and correctness recovered to 19/320 with `committed` at
+64%, also the best ever.
+
+⇒ **When this model writes longer code, it writes WORSE code.** The
+multi-statement rise reported 2026-08-26 (3% → 15% → 28%) tracked L4 by
+coincidence of which corpus was added, not because longer solutions were better
+ones. "Get `body_stmts` off 1" was the wrong target: 1.6 statements of wrong code
+is not closer to correct than 1.0 statements of right code. The 2026-08-26 entry's
+framing is corrected by this.
+
+### Prose degraded MONOTONICALLY — a separate failure, harmful from step one
+
+| step | α=0.0 top_share | distinct1 | salad hits |
+|---|---|---|---|
+| 157,238 | 0.150 | 0.484 | **0** |
+| 160,000 | 0.197 | 0.456 | 0 |
+| 163,238 | **0.242** | 0.427 | **1** |
+
+No turning point — straight decline across the leg. The **acronym salad returned**
+on the bacterial seed, the exact degeneracy mode the α-anneal eliminated:
+
+> 157,238: *"- A medical condition like the diagnosis of the infection. - The
+> primary cause of the disease."*
+> 163,238: *"antibiotic treatment, such as C.P. A treatment method includes the
+> following components: - CASE - CABI (cascar - CCAO - CACA - CACI - CCA - CACF
+> - CSC - CAST - CDA - CCI - CCA - CCA - CCA"*
+
+Weather drifts off-topic into programming; ibuprofen picks up number fragments
+(*"1. 9682 -0.01 m2"*). **The owner asked for the outputs to be read rather than
+the metrics; the metrics were pointing the same way this time, but the salad is
+only visible in the text.**
+
+### ⇒ KEEP step_0157238. More steps on an unchanged corpus UNDO its gains.
+
+157,238 is best on L4 (26/320), best on prose (0.150, zero salad) and holds 28%
+multi-statement. Nothing after it improves that combination.
+
+⚠ **AND IT WAS ALREADY GONE.** `--keep-last 5` rotated `step_0157238.pt` out
+during leg 3 — it is not a multiple of the 500-step milestone interval, so it was
+never protected. **Third time this class of bug has cost a checkpoint** (step
+8,668; steps 40,002/36,658; step 0108471 earlier this month). Its MEASUREMENTS
+survive as JSON, so nothing in this entry is unverifiable — but the weights are
+not recoverable.
+
+`step_0157000.pt` (238 steps earlier) survives and is copied to
+`checkpoints_base/` as the stand-in. **It has NOT been evaluated** — treat it as
+presumed-equivalent until measured, not as the checkpoint the table above
+describes.
+
+⇒ Non-milestone checkpoints are never safe. Copy anything worth keeping to
+`checkpoints_base/` the moment it is identified, not after the next leg.
+
+**A 92M-token corpus supports roughly 6,000 steps before it starts hurting** —
+leg 2 (151,238 → 157,238) gained, leg 3 (157,238 → 163,238) lost. That ratio is
+the number that matters for sizing the teacher corpus of the 1B run, where the
+same mistake costs months instead of a night.
+
+⇒ The next move is NEW SOURCES (PubMedQA, the 13.75M unused OpenMathInstruct
+pairs), not more steps on these 92M tokens. And the gate should be **L4 and
+prose**, not `body_stmts` — which this entry demotes from headline metric to
+diagnostic.
+
+
 ## 2026-08-26 — 🎯 THE FROZEN METRIC MOVES: multi-statement solutions 3% → 28%, L4 5 → 26/320, monotone across two corpus additions
 
 The teacher stream was the constraint, not the objective. Expanding it moved
