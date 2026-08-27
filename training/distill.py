@@ -65,6 +65,13 @@ from mythouro.checkpointing import (
     save_checkpoint,
 )
 from mythouro.tokenizer import MythOuroTokenizer
+# Sentinel decay for GROWN checkpoints. tools/grow_checkpoint.py gates new
+# experts behind a large negative router_bias; it MUST decay to 0 over
+# n_decay_steps or the promoted experts never enter top-k and the expansion
+# is inert — a bigger, slower model identical to the source. sft.py has done
+# this since growth was built; distill.py never did, so the growth path only
+# worked through the channel that collapses this model (found 2026-08-27).
+from mythouro.grow import apply_sentinel_to_router_biases
 from mythouro.training_utils import (
     _MIX_RATIOS,
     LoopCurriculum,
@@ -653,10 +660,24 @@ def main():
     # ------------------------------------------------------------------
     start_step = 0
     existing = list_ckpts(args.ckpt_dir)
+    resume_extra = None
     if existing:
         logger.info(f"distill: resuming from {existing[-1]}")
-        start_step, _ = load_checkpoint(
+        start_step, resume_extra = load_checkpoint(
             student, optimizer, existing[-1], ddp=False, current_cfg=cfg,
+        )
+
+    # A checkpoint from tools/grow_checkpoint.py carries growth_metadata in its
+    # `extra`. New experts start behind a sentinel bias that must follow the
+    # decay SCHEDULE, not the data-driven updater, during the warm-in window.
+    growth_metadata = (resume_extra or {}).get("growth_metadata")
+    if growth_metadata is not None:
+        logger.info(
+            "distill: GROWN checkpoint — "
+            f"{growth_metadata.get('source_n_experts')} -> "
+            f"{growth_metadata.get('target_n_experts')} experts, "
+            f"sentinel={growth_metadata.get('sentinel_bias')}, "
+            f"decay over {growth_metadata.get('n_decay_steps')} steps"
         )
 
     # ------------------------------------------------------------------
@@ -1051,6 +1072,13 @@ def main():
             student, accum_expert_counts,
             bias_lr=cfg.router_bias_lr, ddp=False,
         )
+
+        # Sentinel override for grown checkpoints. MUST run AFTER the
+        # aux-loss-free updater: during warm-in the schedule controls
+        # new-expert biases, not traffic counts. No-op when growth_metadata
+        # is None and after the decay window closes.
+        if growth_metadata is not None:
+            apply_sentinel_to_router_biases(student, growth_metadata, step)
         step += 1
         if prof.enabled and step > profile_start:
             prof.steps += 1
