@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mythouro.variants import mythouro_distill_tiny, mythouro_distill_small  # noqa: E402
 from mythouro.main import MythOuro, MoEFFN                                    # noqa: E402
 from mythouro.training_utils import (                                         # noqa: E402
-    load_distillation_teacher, update_router_bias_from_counts)
+    load_distillation_teacher, update_router_bias_from_counts, distillation_loss)
 
 
 def mark(s):
@@ -38,6 +38,9 @@ def main() -> None:
     p.add_argument("--experts", type=int, choices=(24, 48), default=48)
     p.add_argument("--batch", type=int, default=4)
     p.add_argument("--seq-len", type=int, default=1024)
+    p.add_argument("--steps", type=int, default=1,
+                   help="Repeat the complete step N times. Everything single-shot\n"
+                        "passes, so the question is whether the fault is CUMULATIVE.")
     p.add_argument("--sandwich", action="store_true",
                    help="cfg.use_sandwich_norm = True, as distill.py sets it.")
     p.add_argument("--depth-aware-init", action="store_true",
@@ -76,38 +79,46 @@ def main() -> None:
 
     ids = torch.randint(0, cfg.vocab_size, (a.batch, a.seq_len), device=dev)
 
-    mark("teacher forward")
-    with torch.no_grad():
-        t_out = teacher(ids)
-        t_logits = t_out.logits if hasattr(t_out, "logits") else t_out
-    mark(f"teacher logits {tuple(t_logits.shape)}")
+    for _it in range(a.steps):
+      if a.steps > 1:
+        mark(f"--- iteration {_it+1}/{a.steps} "
+             f"(peak {torch.xpu.max_memory_allocated()/1e9:.2f} GB) ---")
+      mark("teacher forward")
+      with torch.no_grad():
+          t_out = teacher(ids)
+          t_logits = t_out.logits if hasattr(t_out, "logits") else t_out
+      mark(f"teacher logits {tuple(t_logits.shape)}")
 
-    mark("student forward (train mode, grad on)")
-    with torch.autocast(dev.split(":")[0], dtype=torch.bfloat16):
-        s_out = model(ids)
-        s_logits = s_out[0] if isinstance(s_out, tuple) else s_out
-    mark(f"student logits {tuple(s_logits.shape)}")
+      mark("student forward (train mode, grad on)")
+      with torch.autocast(dev.split(":")[0], dtype=torch.bfloat16):
+          s_out = model(ids)
+          s_logits = s_out[0] if isinstance(s_out, tuple) else s_out
+      mark(f"student logits {tuple(s_logits.shape)}")
 
-    mark("distillation loss (rev_kl)")
-    lp_s = torch.log_softmax(s_logits.float(), -1)
-    lp_t = torch.log_softmax(t_logits.float(), -1)
-    loss = (lp_s.exp() * (lp_s - lp_t)).sum(-1).mean()
-    mark(f"loss {float(loss):.4f}")
+      # ⚠ USE THE TRAINER'S OWN LOSS. A hand-rolled full-vocab fp32 KL
+      # (log_softmax on (8,1024,49152) twice = ~3.2 GB of extra fp32) peaked at
+      # 36 GB and page-faulted on iteration 2 at BOTH 24 and 48 experts — an
+      # artefact of the instrument, not the model. distillation_loss is what the
+      # trainer actually calls.
+      mark("distillation loss (rev_kl, the trainer's own)")
+      loss, _m = distillation_loss(s_logits, t_logits, targets=None,
+                                   temperature=2.0, divergence="rev_kl")
+      mark(f"loss {float(loss.detach()):.4f}")
 
-    mark("backward")
-    loss.backward()
+      mark("backward")
+      loss.backward()
 
-    mark("optimizer step")
-    opt.step(); opt.zero_grad(set_to_none=True)
+      mark("optimizer step")
+      opt.step(); opt.zero_grad(set_to_none=True)
 
-    mark("router bias update")
-    counts = {}
-    for name, m in model.named_modules():
-        if isinstance(m, MoEFFN) and getattr(m, "_last_expert_counts", None) is not None:
-            counts[name] = m._last_expert_counts
-    if counts:
-        update_router_bias_from_counts(model, counts, bias_lr=1e-3, ddp=False)
-    mark(f"updated {len(counts)} MoE layer(s)")
+      mark("router bias update")
+      counts = {}
+      for name, m in model.named_modules():
+          if isinstance(m, MoEFFN) and getattr(m, "_last_expert_counts", None) is not None:
+              counts[name] = m._last_expert_counts
+      if counts:
+          update_router_bias_from_counts(model, counts, bias_lr=1e-3, ddp=False)
+      mark(f"updated {len(counts)} MoE layer(s)")
 
     if dev.startswith("xpu"):
         torch.xpu.synchronize()

@@ -323,6 +323,12 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "every TransformerBlock) — recurrent hidden-state-collapse "
                         "stabiliser, 'required at scale'. Changes architecture → "
                         "FRESH runs only (carried in cfg_dict).")
+    p.add_argument("--no-gradient-checkpointing", action="store_true",
+                   help="DIAGNOSTIC/WORKAROUND. cfg.gradient_checkpointing=False. "
+                        "The 2026-08-28 48-expert segfault stack runs through "
+                        "torch.utils.checkpoint at main.py:1794; this removes it. "
+                        "Costs activation memory (loop becomes O(n_loops), not "
+                        "O(1)) so pair with a smaller --micro-batch.")
     p.add_argument("--use-depth-aware-init", action="store_true",
                    help="Huginn/Takase depth-aware init: residual-output projs get "
                         "std^2=1/(5*h*l). FRESH runs only (no effect on resumed "
@@ -603,6 +609,10 @@ def main():
     cfg.recurrent_state_noise = args.recurrent_state_noise
     cfg.use_sandwich_norm = args.use_sandwich_norm
     cfg.use_depth_aware_init = args.use_depth_aware_init
+    if args.no_gradient_checkpointing:
+        cfg.gradient_checkpointing = False
+        logger.info('distill: gradient checkpointing DISABLED '
+                    '(activation memory now O(n_loops))')
 
     # XPU: complex-tensor RoPE (view_as_complex / polar) can segfault on
     # Intel's kernels. The real-valued (cos/sin) path is mathematically

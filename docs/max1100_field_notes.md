@@ -414,3 +414,78 @@ while the rollout fault is understood, though that trains a different recipe.
 the sentinel decay in `distill.py` (commit 123e460) and the 48-expert model are
 all verified working. What is blocked is rollout generation at 48-expert shapes
 on this XPU stack, and it may be an Intel driver/torch issue rather than ours.
+
+### 2026-08-28 (afternoon) — the elimination is COMPLETE; it is an XPU-stack fault
+
+Every structural difference between the failing trainer and a passing standalone
+reproduction has now been removed, one at a time, and the fault survives all of
+them. The crash is always `mythouro/main.py:851` — the MoE router `topk` — and
+always a GPU page fault:
+
+```
+Segmentation fault from GPU at 0x...  ctx_id: 1 (CCS)
+type: 0 (NotPresent)  level: 1 (PDE)  access: 1 (Write)  banned: 1
+```
+
+**Stack versions (for a bug report):**
+
+| component | version |
+|---|---|
+| torch | **2.13.0+xpu** (native `torch.xpu`, no IPEX) |
+| device | Intel Data Center GPU Max 1100, 51.5 GB reported |
+| level-zero driver | **1.6.33578+77** |
+| compute runtime | `intel-opencl-icd 25.18.33578.77-1146~24.04` |
+| i915 DKMS | `intel-i915-dkms 1.25.2.57.250224.65+i75-1` |
+| kernel | 6.8.0-138-generic |
+
+### Eliminated — every one of these PASSES at 48 experts
+
+| tested | result |
+|---|---|
+| `bench_step` fwd+bwd, batch 8 seq 1024 | OK, 727 ms/step |
+| forward with `router_bias[24:] = -100` | OK |
+| `topk(4)` on `(N,48)` with sentinel, fp32/bf16, N ∈ {8,32,1024,8192} | OK, no bad indices |
+| `generate_rollout` uncached, ACT live | OK |
+| …with the REAL promoted checkpoint | OK |
+| …with the REAL teacher, autocast, seed (32,16), α=0.45, exact trainer args | OK |
+| …in **train** mode and in **eval** mode | both OK |
+| complete training step (optimizer, teacher logits, rev_kl, backward, step, router-bias update) with the trainer's exact cfg mutations | OK, peak 36.32 GB |
+| **278M control on the identical trainer path** | **RUNS CLEAN** |
+
+### Eliminated — changing these does NOT fix the trainer
+
+`--rollout-batch` 32→8 · `--micro-batch` 8→4 · **both together** ·
+`--teacher-data-ratio 1.0` (removes the HF stream entirely — the 429s and the
+live `urllib3` thread were red herrings; zero http frames in that dump, identical
+stack) · `--rollout-legacy` (removes the RolloutBuffer and the seed-accumulation
+`next(data_iter)` calls) · `--no-gradient-checkpointing` (added today — the stack
+moved from `main.py:1794` to `1800`, i.e. out of `torch.utils.checkpoint`, and
+still faulted).
+
+**Memory is NOT the cause, measured:** 48 experts costs **+0.47 GB** over 24 at
+the same batch (36.32 vs 35.85 GB) on a 48 GB card.
+
+⚠ A minimal repro that DID fail turned out to be invalid — a hand-rolled
+full-vocab fp32 KL pushed it to 35.85 GB and it page-faulted at BOTH 24 and 48
+experts. **That is the useful incidental finding: this card page-faults instead of
+raising a clean OOM**, so a `Segmentation fault from GPU` here does not by itself
+mean a driver bug — check memory first.
+
+### Where the crash moves
+
+Reducing a peak relocates the fault to the next-largest one — rollout → student
+forward — which looks like a ceiling, but the memory numbers rule that out. The
+faulting frame (`topk`) is misattributed: async GPU faults surface at the next
+synchronising Python frame, and `ZE_SERIALIZE=2` serialises submission, not
+completion.
+
+### ⇒ Next steps are version work, not configuration
+
+1. Try a different torch build (2.12 / 2.14 `+xpu`) — a one-variable swap.
+2. Search Intel's compute-runtime and torch-xpu issue trackers for
+   `NotPresent` / `PDE` / `access: Write` faults in MoE or long-running loops.
+3. If reporting: the reproduction is `run_grown48_probe.sh` plus a promoted
+   checkpoint; the 278M control passing the identical path is the key contrast.
+
+**Growth remains blocked. The 278M line is unaffected and continues to train
+normally.**
