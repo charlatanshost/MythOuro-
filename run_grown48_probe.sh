@@ -158,7 +158,35 @@ source ../venv-xpu/bin/activate
 #             persistence (it saves ~minutes of JIT per launch) and run the leg.
 #   crash  -> the feature itself mis-keys these kernels; run permanently with
 #             the cache off and report to Intel.
-export SYCL_CACHE_PERSISTENT=1 TRITON_DEFAULT_BACKEND=intel
+# ── REPLICATION OF THE ONLY SUCCESS (17:45) ─────────────────────────────────
+# Production + cache-off CRASHED (17:15), so the matrix is:
+#   old cache:   crash / crash      fresh cache: untested / crash
+#   cache off:   SUCCESS(16:40) / crash
+# The lone success is n=1, and this fault class has documented nondeterminism
+# (07-12 "identical rerun succeeded"; 08-24 bench fault did not reproduce).
+# Before concluding ANYTHING, replicate 16:40 exactly: mb4/ga4, rb8,
+# no-grad-ckpt, cache off.
+#   passes again -> the cell is real; bisect the config delta next, and the LEG
+#                   runs TONIGHT in this proven configuration.
+#   crashes      -> the success was stochastic, no factor is established, and
+#                   tonight falls back to the 278M mathcode leg while the growth
+#                   question moves to a torch-version swap.
+# (superseded note below)
+# ── 2x2 COMPLETION (17:35) ───────────────────────────────────────────────────
+# The 17:14 "verification" changed TWO variables (cache back on + production
+# config) and crashed — ambiguous, my error. But it wrote 43 fresh entries into
+# an EMPTY dir before dying, so STALENESS IS NOT REQUIRED: the persistent-cache
+# feature faults on this workload even from a clean state. (Fits July 12: the
+# cache was first enabled 14:22 that day; the original one-off abort was the
+# same day. The 24-expert steady state survived on pure read-hits.)
+#   matrix:  old cache: crash/crash   cache off: SUCCESS(reduced)/THIS RUN
+#            fresh cache: untested/crash
+# THIS RUN: production config (mb8/ga2, rb32, grad-ckpt ON), cache OFF.
+#   clean -> workaround is simply "no persistent cache"; run_grown48.sh tonight.
+#   crash -> cache is not the whole story for production config; the reduced
+#            config is the fallback that is PROVEN to run.
+export TRITON_DEFAULT_BACKEND=intel
+unset SYCL_CACHE_PERSISTENT
 
 # ── MAKE THE SEGFAULT NAME ITSELF ────────────────────────────────────────────
 # Every crash so far printed only "Segmentation fault (core dumped)" with no
@@ -181,11 +209,11 @@ python -u -m training.distill \
   --student-variant mythouro_distill_small \
   --student-device xpu:0 --teacher-device xpu:0 \
   --teacher-id ByteDance/Ouro-2.6B-Thinking \
-  --seq-len 1024 --micro-batch 8 --grad-accum 2 \
+  --seq-len 1024 --micro-batch 4 --grad-accum 4 \
   --warmup-steps 500 --lr 1e-4 --min-lr 3e-5 --start-loops 4 \
   --depth-reg-coeff 0.3 --divergence rev_kl \
-  --use-sandwich-norm --use-depth-aware-init \
-  --teacher-mix-alpha 0.45 --rollout-len 64 --rollout-batch 32 --rollout-reuse 8 \
+  --use-sandwich-norm --use-depth-aware-init --no-gradient-checkpointing \
+  --teacher-mix-alpha 0.45 --rollout-len 64 --rollout-batch 8 --rollout-reuse 8 \
   --teacher-data-ratio 0.2 \
   --teacher-data-files 'data_teacher_code/shard_*.jsonl,data_teacher_math/shard_*.jsonl' \
   --onpolicy-lambda 0.7 \

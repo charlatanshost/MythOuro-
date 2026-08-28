@@ -526,3 +526,34 @@ diagnostic tool.
 fails in situ, diff the ENVIRONMENT before the code — the split was visible in
 the shell scripts all day; (2) run the last-known-good control FIRST when two
 things changed at once; (3) enable faulthandler before bisecting any hard crash.
+
+### ⚠️ CORRECTION (2026-08-28 17:45) — "root cause found" was OVERCLAIMED from n=1
+
+The full 2x2 refutes the clean cache story:
+
+| | reduced config (mb4/ga4, rb8, no-ckpt) | production (mb8/ga2, rb32, ckpt) |
+|---|---|---|
+| old (stale) cache | CRASH | CRASH |
+| fresh empty cache | untested | CRASH |
+| **cache OFF** | **SUCCESS — n=1 (16:40)** | **CRASH (17:15)** |
+
+Cache-off does NOT fix the production config, and the old cache crashed the
+reduced config too — so neither the cache nor the config alone explains the
+pattern. Either the two interact, or **the lone success was stochastic**: this
+fault class has documented nondeterminism (2026-07-12 "identical rerun
+succeeded"; the 2026-08-24 bench fault did not reproduce). Replication of the
+16:40 cell is in flight and gates every conclusion.
+
+Also corrected: the staleness narrative (cache written before the same-day
+driver install) remains a true and suggestive TIMELINE, but the fresh-cache
+crash shows staleness is not required, and the cache-off production crash shows
+the cache is not sufficient as an explanation. `docs/sycl_cache_bug_report.md`
+stays DRAFT and must not be filed in its current form.
+
+What is still solid: every crash is the same GPU fault (`NotPresent / PDE /
+Write`) at 48 experts under the full trainer, the 278M control passes the
+identical path, memory is measured out (+0.47 GB), and all single-shot
+48-expert tests pass. The honest current hypothesis class: a load/geometry-
+dependent driver or runtime fault whose trigger probability varies with
+configuration — which is consistent with EVERY observation, including the
+one-off successes.
