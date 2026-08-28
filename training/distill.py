@@ -681,6 +681,21 @@ def main():
     # `extra`. New experts start behind a sentinel bias that must follow the
     # decay SCHEDULE, not the data-driven updater, during the warm-in window.
     growth_metadata = (resume_extra or {}).get("growth_metadata")
+
+    # ⚠ growth_metadata MUST be re-saved into every checkpoint this run writes.
+    # It arrives only in the promoted file's `extra`; if a save drops it, the
+    # next resume sees no metadata, apply_sentinel_to_router_biases() is never
+    # called, and the new experts' bias freezes at its partial-decay value
+    # (~-60 mid-window). The DeepSeek updater at bias_lr=1e-3 needs ~60k steps
+    # to walk that back, so the new experts never enter top-k and the run
+    # silently produces a 460M model that routes exactly like its 278M source.
+    # This bites on ANY crash-restart inside the 500-step decay window, and on
+    # the nightly resume after the Windows reboot. (Found 2026-08-28; the
+    # 123e460 sentinel patch wired the decay in on load but not on save.)
+    ckpt_extra = (
+        {"growth_metadata": growth_metadata} if growth_metadata is not None else None
+    )
+
     if growth_metadata is not None:
         logger.info(
             "distill: GROWN checkpoint — "
@@ -1123,6 +1138,7 @@ def main():
                 args.ckpt_dir, ddp=False, master=True,
                 keep_last=args.keep_last,
                 keep_milestone_every=args.ckpt_milestone_every,
+                extra=ckpt_extra,
             )
             last_ckpt_time = time.perf_counter()
 
@@ -1156,6 +1172,7 @@ def main():
                 args.ckpt_dir, ddp=False, master=True,
                 keep_last=args.keep_last,
                 keep_milestone_every=args.ckpt_milestone_every,
+                extra=ckpt_extra,
             )
             break
 
@@ -1166,6 +1183,7 @@ def main():
             args.ckpt_dir, ddp=False, master=True,
             keep_last=args.keep_last,
             keep_milestone_every=args.ckpt_milestone_every,
+            extra=ckpt_extra,
         )
     if shutdown.requested:
         logger.warning("distill: stopped via signal — resume by re-running.")
