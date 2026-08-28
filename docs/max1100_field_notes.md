@@ -346,3 +346,71 @@ big batch is more efficient per token even though it costs more wall-clock.
 ⚠ 256 still does not span a ~495-token think block. Extrapolating the measured
 curve, len 512 / batch 8 lands near 13 h of rollout time — borderline. A partial
 extension may still be worth trying, but "cover think + answer" is not yet cheap.
+
+## 🔴 GROWTH BLOCKED — deterministic XPU segfault in rollout at 48 experts (2026-08-28)
+
+Promoting 278M/24-expert → 397M/48-expert and training with `distill.py`
+segfaults every time, inside the first rollout, before any step completes.
+`PYTHONFAULTHANDLER=1` + `ZE_SERIALIZE=2` name the stack:
+
+```
+mythouro/main.py:851        MoEFFN.forward  — (logits + router_bias).topk(4)
+mythouro/main.py:1116/1688/1800/2261        recurrent block → model forward
+mythouro/training_utils.py:2243             generate_rollout
+mythouro/rollout.py:124                     rollout_with_retry
+training/distill.py:869                     main
+```
+
+**This fault class is already documented in `rollout.py`'s own docstring:** *"A
+shape/timing-dependent abort was observed once at rollout start on XPU
+(2026-07-12; the identical rerun succeeded). A hard segfault can't be caught from
+Python."* It happened once at 24 experts and was survivable. **At 48 experts it is
+deterministic.**
+
+### What is RULED OUT — all of these pass at 48 experts
+
+| test | result |
+|---|---|
+| `bench_step` fwd+bwd, batch 8 seq 1024 | OK, 727 ms/step |
+| forward with `router_bias[24:] = -100` | OK |
+| `generate_rollout` uncached, ACT live | OK |
+| teacher resident + rollout at α=0.45 | OK, peak 21.4 GB of 48 |
+| **complete training step** — optimizer, teacher logits, rev_kl, backward, optimizer step, router-bias update, with the trainer's exact cfg mutations (`max_seq_len 1024`, sandwich norm, depth-aware init) | **OK, peak 21.75 GB** |
+| `topk(4)` on `(N,48)` with sentinel, fp32/bf16, N ∈ {8,32,1024,8192} | OK, no out-of-range indices |
+| `--rollout-batch` 32 → 8 | still segfaults |
+| `--micro-batch` 8 → 4 | still segfaults |
+| **278M control, identical path** | **RUNS CLEAN** — logs a step, prints the profile, exits normally |
+
+Memory is not the limit (21.75 GB of 48). The model is not the limit. The
+environment is not the limit — the 278M control passes the same path with the
+same data and the same teacher.
+
+### ⚠ THE 429s WERE A RED HERRING, AND SO WERE SIX HYPOTHESES
+
+HuggingFace began rate-limiting the base stream the same day, and every crash had
+a `429 … Retrying in 60sec` shortly before it. The 278M control settled it: same
+429s, no crash. Two variables changed at once and the assistant spent the night
+eliminating hypotheses inside the one we controlled while treating the other as noise.
+
+**The control against the last known-good config was the single most useful test
+and should have been first.** So should `PYTHONFAULTHANDLER=1` — six hypotheses
+were eliminated one at a time over ~5 hours, and the traceback named the call
+site in ten minutes.
+
+### Where it stands
+
+The faulting frame (`topk` at main.py:851) is misattributed — that op is clean in
+isolation at every shape and dtype tested. Async GPU faults surface at the next
+synchronising Python frame; `ZE_SERIALIZE=2` serialises submission, not
+completion. So the real failure is somewhere in the rollout's kernel stream at
+48-expert shapes.
+
+**Untested and next:** `rollout_with_retry` is trainer scaffolding the repro never
+exercised (it called `generate_rollout` directly). And `--onpolicy-lambda 0`
+removes rollout generation entirely — if that runs, growth is usable offline-only
+while the rollout fault is understood, though that trains a different recipe.
+
+⇒ **Do not plan around growth until this is resolved.** The promotion tooling,
+the sentinel decay in `distill.py` (commit 123e460) and the 48-expert model are
+all verified working. What is blocked is rollout generation at 48-expert shapes
+on this XPU stack, and it may be an Intel driver/torch issue rather than ours.
