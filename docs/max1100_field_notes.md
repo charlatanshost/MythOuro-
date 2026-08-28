@@ -489,3 +489,40 @@ completion.
 
 **Growth remains blocked. The 278M line is unaffected and continues to train
 normally.**
+
+### ✅ ROOT CAUSE FOUND (2026-08-28 16:54) — corrupt persistent SYCL kernel cache
+
+With `SYCL_CACHE_PERSISTENT` unset — and NOTHING else changed from the config
+that had crashed five times — the 48-expert trainer ran 3 clean profiled steps
+(6474 ms/step, teacher 78.4%) and exited normally.
+
+**The mechanism.** `~/.cache/libsycl_cache` (2.2 GB, 219 files) held a corrupt or
+stale JIT kernel binary. Oldest entry: **2026-07-12 — the same day as
+`rollout.py`'s documented one-off "shape/timing-dependent abort"**; that abort
+plausibly wrote the truncated entry itself. Every `run_*.sh` exports
+`SYCL_CACHE_PERSISTENT=1`, so the trainer loaded cached binaries from disk; every
+standalone repro ran in a fresh shell WITHOUT it and JIT-compiled in memory —
+which is why identical code, model, weights and inputs passed standalone and
+failed in the trainer all day. The 278M model's kernels were the ones the cache
+was correctly built from; the 48-expert model's new kernel specializations are
+where the bad hit landed. A garbage binary scribbling explains the signature
+exactly: `type: 0 (NotPresent), level: 1 (PDE), access: 1 (Write)`.
+
+**Resolution:** quarantine the cache
+(`mv ~/.cache/libsycl_cache ~/.cache/libsycl_cache.quarantined_20260828`), then a
+verification pass at PRODUCTION config with the cache re-enabled against the
+fresh dir — distinguishing "bad contents" (keep the feature) from "broken
+feature" (run with it off, report to Intel).
+
+**What today's eliminations remain true about:** memory is not the constraint
+(+0.47 GB for 48 vs 24 experts, 36 GB peak of 48); the promotion, sentinel decay
+and 48-expert model are all correct; and **this card page-faults instead of
+raising a clean OOM** (the invalid loop-repro's genuine OOM produced the
+identical signature — Adam states materializing at iteration 2 pushed it over).
+The `--no-gradient-checkpointing` flag added today stays as a legitimate
+diagnostic tool.
+
+**The costly lessons, in order of price:** (1) when a thing passes standalone and
+fails in situ, diff the ENVIRONMENT before the code — the split was visible in
+the shell scripts all day; (2) run the last-known-good control FIRST when two
+things changed at once; (3) enable faulthandler before bisecting any hard crash.

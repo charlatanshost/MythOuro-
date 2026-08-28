@@ -130,7 +130,35 @@ set -uo pipefail
 trap 'pkill -INT -P $$ 2>/dev/null; true' INT TERM
 cd "$(dirname "$0")"
 source ../venv-xpu/bin/activate
-export SYCL_CACHE_PERSISTENT=1 PYTORCH_ALLOC_CONF=expandable_segments:True TRITON_DEFAULT_BACKEND=intel
+# ── THE ONE VARIABLE NEVER TESTED (found 2026-08-28 16:00) ──────────────────
+# Every failing run exported PYTORCH_ALLOC_CONF=expandable_segments:True; every
+# passing standalone repro ran WITHOUT it (fresh shells / bare activate). The
+# fault signature — write to a NotPresent PDE — is precisely what a kernel
+# writing into a grown-but-not-yet-mapped allocator segment produces. Expandable
+# segments is the component whose job is mapping those pages.
+# This run drops ONLY that setting. Everything else identical to the last crash.
+# ── LAST ENV VARIABLE STANDING (16:35) ───────────────────────────────────────
+# expandable_segments removed -> still crashed. The only env difference left
+# between every failing and every passing run is SYCL_CACHE_PERSISTENT=1 — the
+# on-disk JIT kernel cache at ~/.cache/libsycl_cache (2.2 GB, 219 files, oldest
+# entry dated 2026-07-12: the SAME DAY as rollout.py's documented one-off abort).
+# Standalone repros compile fresh in memory; the trainer loads cached binaries.
+# A stale or truncated cached kernel scribbling = write to a NotPresent page.
+# This run disables the cache. The cache dir itself is NOT touched.
+# ── ROOT CAUSE FOUND (16:54): the persistent SYCL kernel cache ──────────────
+# With SYCL_CACHE_PERSISTENT unset, the exact config that crashed five times ran
+# 3 clean profiled steps. The cache (~/.cache/libsycl_cache, oldest entry
+# 2026-07-12 = the day of the original one-off abort) held a corrupt/stale
+# kernel binary that only the 48-expert compile path loaded.
+#
+# THIS RUN is the verification pass: PRODUCTION flags restored (micro-batch 8,
+# grad-accum 2, rollout-batch 32, gradient checkpointing ON — none of those were
+# ever the problem), cache RE-ENABLED against a freshly quarantined cache dir.
+#   clean  -> the cache FEATURE is fine, the old CONTENTS were bad. Keep
+#             persistence (it saves ~minutes of JIT per launch) and run the leg.
+#   crash  -> the feature itself mis-keys these kernels; run permanently with
+#             the cache off and report to Intel.
+export SYCL_CACHE_PERSISTENT=1 TRITON_DEFAULT_BACKEND=intel
 
 # ── MAKE THE SEGFAULT NAME ITSELF ────────────────────────────────────────────
 # Every crash so far printed only "Segmentation fault (core dumped)" with no
@@ -153,11 +181,11 @@ python -u -m training.distill \
   --student-variant mythouro_distill_small \
   --student-device xpu:0 --teacher-device xpu:0 \
   --teacher-id ByteDance/Ouro-2.6B-Thinking \
-  --seq-len 1024 --micro-batch 4 --grad-accum 4 \
+  --seq-len 1024 --micro-batch 8 --grad-accum 2 \
   --warmup-steps 500 --lr 1e-4 --min-lr 3e-5 --start-loops 4 \
   --depth-reg-coeff 0.3 --divergence rev_kl \
-  --use-sandwich-norm --use-depth-aware-init --no-gradient-checkpointing \
-  --teacher-mix-alpha 0.45 --rollout-len 64 --rollout-batch 8 --rollout-reuse 8 \
+  --use-sandwich-norm --use-depth-aware-init \
+  --teacher-mix-alpha 0.45 --rollout-len 64 --rollout-batch 32 --rollout-reuse 8 \
   --teacher-data-ratio 0.2 \
   --teacher-data-files 'data_teacher_code/shard_*.jsonl,data_teacher_math/shard_*.jsonl' \
   --onpolicy-lambda 0.7 \
