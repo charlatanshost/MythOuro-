@@ -557,3 +557,89 @@ identical path, memory is measured out (+0.47 GB), and all single-shot
 dependent driver or runtime fault whose trigger probability varies with
 configuration — which is consistent with EVERY observation, including the
 one-off successes.
+
+---
+
+## ✅ GROWTH UNBLOCKED (2026-08-29) — the fault is AVOIDED, not root-caused
+
+`run_grown48.sh` ran **8h34m / 2,650 steps clean** at 48 experts, zero crashes,
+supervisor never fired. Every prior attempt died at ~11 minutes. Stopped
+deliberately for the day at step 2,650 with a clean shutdown save.
+
+**The working configuration** (this is the whole finding — treat it as load-bearing):
+
+| knob | value |
+|---|---|
+| micro-batch / grad-accum | 4 / 4  (not 8 / 2) |
+| rollout-batch | 8  (not 32) |
+| gradient checkpointing | **DISABLED** (`--no-gradient-checkpointing`) |
+| `SYCL_CACHE_PERSISTENT` | **unset** |
+| `PYTORCH_ALLOC_CONF` | **unset** (no `expandable_segments`) |
+| `ZE_SERIALIZE` | 2 |
+| `SYCL_QUEUE_THREAD_POOL_SIZE` | 1 |
+
+⚠ **This is avoidance, not a fix.** The `NotPresent / PDE / Write` fault is not
+root-caused and `docs/sycl_cache_bug_report.md` stays DRAFT. n=1 at 8.5h is far
+stronger than n=1 at 3 steps, but the fault class is documented-nondeterministic.
+Do not "clean up" any row above without re-testing, and do not assume the
+production config is safe because this one is.
+
+### The static audit found NO model bug — that class is RULED OUT
+
+The `Write` fault suggested an out-of-bounds expert-indexed write. Chased
+properly, it does not hold: promotion is genuinely bit-exact (router rows are
+tiled by `w_src.repeat()`, so the 48-wide softmax halves every probability and
+the top-k renorm restores it exactly), every expert-indexed path is dense,
+`bincount(minlength=n_experts)` bounds the dispatch segment walk, and
+`ExpertSpecializationProbe` performs no index writes at all. The fault is in the
+stack below PyTorch.
+
+### Measured throughput — BOTH earlier estimates were wrong
+
+**11.5 s/step sustained** (steps 2550→2600, 573 s). Prior claims: 6.5 s/step
+(fantasy, from the reduced-config profile) and 28.1 s/step (inferred from the
+first 14 steps, polluted by warmup and HF 503 retries). **Quote a rate only from
+a steady-state window ≥50 steps.** At 11.5 s/step the 6,000-step leg is ~19h
+total — a MULTI-NIGHT leg, not one night.
+
+### The HF 503s are noise, not the bottleneck
+
+`fineweb-edu` streaming threw repeated 503s with backoff retries. Throughput
+matched the known GPU-bound rate throughout, so they cost little. Do not chase
+them.
+
+### ⚠ SEPARATE REAL BUG, found by the audit and FIXED — growth_metadata was dropped on save
+
+None of `training/distill.py`'s three `save_checkpoint` call sites passed
+`extra=`, so `growth_metadata` existed only in the promoted file. Any resume
+after the first save — a crash-restart inside the 500-step decay window, **or
+the nightly resume after the Windows reboot** — would have seen no metadata,
+never called `apply_sentinel_to_router_biases()`, and frozen the new experts'
+bias at its partial-decay value (~-60 mid-window). At `bias_lr=1e-3` the
+DeepSeek updater needs ~60k steps to walk that back, so the new experts would
+never enter top-k: **a 460M model that routes exactly like its 278M source**,
+which is the silent failure `run_grown48.sh`'s header warns about. Commit
+123e460 wired the decay in on load but not on save. Now fixed at all three
+sites and **verified on disk**: `step_0002650.pt` carries
+`{source 24 → target 48, sentinel -100.0, decay 500}` plus optimizer state.
+
+Because this leg must span multiple nights, that bug WOULD have fired.
+
+### ✅ THE GROWTH ACTUALLY TOOK — expert utilisation is the proof
+
+```
+step 2500 | MoE util: ffn: cv=0.323 min=0.6% max=3.8% bias|·|₂=4.536
+step 2600 | MoE util: ffn: cv=0.158 min=1.4% max=2.8% bias|·|₂=4.647
+```
+
+Uniform at 48 experts is **2.08%**. Observed min 1.4% / max 2.8% / cv 0.158 —
+all 48 experts carrying traffic, tightly balanced and still tightening. **If the
+sentinel had failed to decay, this line would read ~24 experts at 4.17% and 24 at
+0.0%, cv ≈ 1.0.** So this single log line is the cheap, direct check that a grown
+run is real rather than a bigger-but-identical model — watch it on every resume.
+
+Loss over the same window: 1.1009 → 0.9148 → 0.9013. Down, with the new experts in.
+
+⚠ **This says the promotion is mechanically sound. It says NOTHING about
+quality.** The open question is unchanged and needs the readout: does 460M move
+L3+, L4 and prose TOGETHER, or trade them the way 278M did at every intervention?

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# GROWN 24 -> 48 EXPERTS, first pour on the promoted model. ~10.8h.
+# GROWN 24 -> 48 EXPERTS, first pour on the promoted model.
+# ~19h TOTAL at the MEASURED 11.5 s/step (steps 2550->2600, 2026-08-29). This is
+# a MULTI-NIGHT leg. Two earlier estimates were wrong in both directions -- 6.5
+# s/step (reduced-config profile) and 28.1 s/step (first 14 steps, polluted by
+# warmup and HF 503 retries). Quote a rate only from a >=50-step steady window.
 #
 #   bash run_grown48.sh          # Ctrl-C ONCE and WAIT
 #
