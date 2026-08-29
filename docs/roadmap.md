@@ -294,12 +294,12 @@ hardware upgrade" tier.
 
 ## ⚡ Resume quickstart (read this first if returning after a gap)
 
-**CURRENT (2026-08-29): a 460M 24→48-expert leg is IN PROGRESS**, paused at step
+**CURRENT (2026-08-29): a 397M 24→48-expert leg is IN PROGRESS**, paused at step
 2,650/6,000 in `checkpoints_grown48/`. Resume with `bash run_grown48.sh` (it
 globs the newest `step_*.pt` itself). ~19h total at the measured 11.5 s/step, so
 ~11h remain — a multi-night leg. The XPU segfault that blocked growth for a day
 is AVOIDED (not root-caused) by the exact config pinned in that script; see
-[max1100_field_notes.md](max1100_field_notes.md) "GROWTH UNBLOCKED". **No 460M
+[max1100_field_notes.md](max1100_field_notes.md) "GROWTH UNBLOCKED". **No 397M
 evaluation exists yet** — the L3+/L4/prose readout is the next thing owed, and it
 is the whole point of the leg. Everything below this paragraph predates it.
 

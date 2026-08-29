@@ -617,7 +617,7 @@ the nightly resume after the Windows reboot** — would have seen no metadata,
 never called `apply_sentinel_to_router_biases()`, and frozen the new experts'
 bias at its partial-decay value (~-60 mid-window). At `bias_lr=1e-3` the
 DeepSeek updater needs ~60k steps to walk that back, so the new experts would
-never enter top-k: **a 460M model that routes exactly like its 278M source**,
+never enter top-k: **a 397M model that routes exactly like its 278M source**,
 which is the silent failure `run_grown48.sh`'s header warns about. Commit
 123e460 wired the decay in on load but not on save. Now fixed at all three
 sites and **verified on disk**: `step_0002650.pt` carries
@@ -640,6 +640,32 @@ run is real rather than a bigger-but-identical model — watch it on every resum
 
 Loss over the same window: 1.1009 → 0.9148 → 0.9013. Down, with the new experts in.
 
+### The expansion is INSTANT, not gradual — and there is only ONE MoE layer
+
+A recurring misconception worth killing: `grow_moe_checkpoint` doubles the
+experts **on disk, before step 0**. The model has 48 experts from the first
+forward. Nothing about expert *count* is gradual. What is gradual is the
+sentinel GATE: new experts start at bias -100 and decay linearly to 0 over
+`n_decay_steps=500`. That window closed at step 500.
+
+And MythOuro is recurrent-depth — ONE shared `recurrent.block.ffn` reused across
+all 4 loops — so there is exactly **1 MoEFFN layer** in the whole model.
+"Expanding it everywhere" is automatic; there is no per-layer rollout.
+
+Verified on `step_0002650.pt`: 1 router_bias of shape (48,), 48 routed-expert
+slots, sentinel gone, and the new experts' bias now sits ABOVE the originals
+(**+0.688 vs -0.458 mean**) — the DeepSeek balancer actively steering traffic
+toward them because they began underused. That is full integration, not survival.
+
+### ⚠ PARAM COUNT CORRECTED — 397M, not 460M
+
+The state dict sums to 459,909,475, but `embed.weight` and `head.weight` are the
+**same tied tensor** (49152 x 1280 = 62,914,560) stored under both names.
+Trainable params are **396,879,731** — the figure distill.py logs at startup, and
+the one to use. Every "460M" in the scripts and docs was this double-count and
+has been corrected. Token guardrail follows: 397M x 9.3 tok/param = **3.69B**
+wanted vs 2.58B in, a **1.11B** gap (previously overstated as 1.70B).
+
 ⚠ **This says the promotion is mechanically sound. It says NOTHING about
-quality.** The open question is unchanged and needs the readout: does 460M move
+quality.** The open question is unchanged and needs the readout: does 397M move
 L3+, L4 and prose TOGETHER, or trade them the way 278M did at every intervention?

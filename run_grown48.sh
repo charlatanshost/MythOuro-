@@ -35,7 +35,7 @@
 # gates the 24 new experts behind router_bias -100.0, decaying over 500 steps.
 # sft.py has applied that schedule since growth was built; distill.py had ZERO
 # references to it (fixed 2026-08-27, commit 123e460). Without that patch this
-# run would produce a 460M model whose new experts NEVER enter top-k — bigger,
+# run would produce a 397M model whose new experts NEVER enter top-k — bigger,
 # slower, identical to the source. Watch for the "GROWN checkpoint" log line on
 # startup; if it is absent, STOP: the metadata is not being read.
 #
@@ -47,7 +47,7 @@
 # ⚠ NO --resume FLAG EXISTS. distill.py resumes by globbing --ckpt-dir via
 # list_ckpts(), which requires the zero-padded `step_{0000000}.pt` convention —
 # tools/grow_checkpoint.py's suggested `promoted_step_0.pt` is NOT matched and
-# would be silently ignored, starting a 460M model from RANDOM INIT. The promoted
+# would be silently ignored, starting a 397M model from RANDOM INIT. The promoted
 # file is therefore renamed to step_0000000.pt inside the ckpt dir.
 #
 # --start-loops 4, NOT the default 2. The curriculum ramps against total_steps
@@ -56,7 +56,12 @@
 # model that is function-preserving at depth 4. (This exact mistake made the
 # 2026-08-26 profile measure the wrong model.)
 #
-# TOKEN GUARDRAIL, stated honestly: 460M at the current 9.3 tok/param wants 4.28B
+# ⚠ PARAM COUNT CORRECTED 2026-08-29: this is a 397M model, NOT 460M. The old
+# figure came from summing the state dict, which stores the TIED embedding twice
+# (`embed.weight` and `head.weight` are the same 49152x1280 = 62.9M tensor).
+# Trainable params are 396,879,731 — the number distill.py logs on startup.
+#
+# TOKEN GUARDRAIL, stated honestly: 397M at the current 9.3 tok/param wants 3.69B
 # tokens; 2.58B are in. This leg does not close that gap — it tests whether the
 # promotion HOLDS and whether the trades weaken. The gap is ~8 days on the 1100.
 #
@@ -104,7 +109,7 @@ echo "=== corpus: $rows rows ==="
 
 at=$(latest "$DIR"); at=${at:+$(step_of "$at")}; at=${at:-0}
 TARGET=$((at + STEPS))
-echo "=== GROWN 48-expert leg: $at -> $TARGET  (460M params) ==="
+echo "=== GROWN 48-expert leg: $at -> $TARGET  (397M params) ==="
 echo "=== EXPECT a 'GROWN checkpoint — 24 -> 48 experts' line below. If absent, STOP. ==="
 echo "=== log: $LOG ==="
 
@@ -178,7 +183,7 @@ READ AT --samples 32. Baselines are the 278M model at its best:
   163,238 (post):       L3+ 77.5  committed 64%  L4 19/320  prose 0.242
 
 THE QUESTION IS WHETHER THE TRADES WEAKEN. At 278M every intervention moved one
-metric up and another down. If 460M moves L3+ AND L4 AND prose together, the
+metric up and another down. If 397M moves L3+ AND L4 AND prose together, the
 capacity hypothesis is supported and growth is the lever. If it trades the same
 way, the problem is the recipe, not the size — and that is worth knowing before
 committing months to a 1B run.
