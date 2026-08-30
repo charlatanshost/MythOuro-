@@ -850,6 +850,9 @@ def main():
                 args.onpolicy_lambda > 0.0
                 and onpolicy_rng.random() < args.onpolicy_lambda
             )
+            # OPT-A: set by the rollout buffer when it carries teacher logits
+            # for this micro-step; None means "run the teacher yourself".
+            cached_t_logits = None
             if is_onpolicy:
                 prof.start("rollout")     # paired with prof.stop below
                 seed_len = max(8, args.rollout_len // 4)
@@ -901,8 +904,25 @@ def main():
                                 top_k=args.onpolicy_top_k,
                                 use_kv_cache=False,
                             )
-                        rollout_buffer.fill(wide, step)
-                    rollout = rollout_buffer.draw()
+                        # ── OPT-A: TEACHER-LOGIT REUSE CACHE ──────────────
+                        # This wide rollout will be drawn `reuse *
+                        # (rollout_batch // micro_batch)` times (16 at the
+                        # current recipe) in slices that REPEAT — each 4-row
+                        # slice is served 8 times, byte-identical. The teacher
+                        # forward is 78.4% of a step (measured), so running it
+                        # once here instead of per micro-step is worth ~50% of
+                        # wall clock. Numerically equivalent, not bitwise: the
+                        # teacher now sees 8 rows at once rather than two 4-row
+                        # batches, so reduction order differs in the last bits.
+                        wide_tl = None
+                        if teacher is not None:
+                            with amp_ctx:
+                                with prof.region("teacher_fwd"):
+                                    wide_tl = teacher_logits(
+                                        teacher_fwd, wide[:, :-1]
+                                    ).to(device)
+                        rollout_buffer.fill(wide, step, teacher_logits=wide_tl)
+                    rollout, cached_t_logits = rollout_buffer.draw_pair()
                 x_in, y_in = rollout[:, :-1], rollout[:, 1:]
                 # Sampled tokens aren't gold → pure soft divergence (targets=None
                 # makes distillation_loss drop the hard-CE term).
@@ -918,7 +938,12 @@ def main():
                 # NOTE: this runs on EVERY micro-step, on-policy or offline. It is
                 # the prime suspect for the λ null result — see _StepProfiler.
                 with prof.region("teacher_fwd"):
-                    t_logits = teacher_logits(teacher_fwd, x_in).to(device)
+                    if cached_t_logits is not None:
+                        # OPT-A hit: identical x_in was already sent to the
+                        # teacher when this rollout was generated.
+                        t_logits = cached_t_logits
+                    else:
+                        t_logits = teacher_logits(teacher_fwd, x_in).to(device)
 
                 # ── Student forward ──
                 # The per-loop path is needed when EITHER head is trained across

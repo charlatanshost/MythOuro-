@@ -455,3 +455,7 @@ data_teacher*/
 # Transient run-chain markers (run_leg_and_probe.sh) — control files, not results
 reports/*_DONE
 reports/*_FAILED
+
+# patch backups written by optim/apply.sh
+*.preA
+*.preB
