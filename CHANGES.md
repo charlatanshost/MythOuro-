@@ -11,13 +11,31 @@ conversation history.
 > in, and no responsibility for, these changes or the fork's direction. See the
 > README "Acknowledgements" section.
 
-**Status as of 2026-06-10:** 313+ tests pass. External code review fixed 5
+**Status as of 2026-08-30.** The current lineage is a **fresh retrain** — the
+corpus was rebuilt from scratch after a data-provenance review, so the archived
+`v1`–`v5` checkpoints below are a superseded line, not this model's ancestry.
+The current model is **397M** (`checkpoints_grown48/`, a 24→48 routed-expert
+expansion of the 278M `checkpoints_base/`), mid-way through its first
+post-growth pour, with capability at 397M **not yet measured**.
+
+⚠ **The "MoE growth is tapped out" verdict recorded below is RETRACTED** — first
+on 2026-06-29 (v5's ceiling was re-diagnosed as token dilution + exposure-bias
+collapse, not a parameter ceiling), and now contradicted directly: the 24→48
+expansion holds, with all 48 experts carrying balanced traffic (`cv` 0.20–0.29)
+and the new experts' router bias sitting ABOVE the originals. Growth also costs
+nothing in activated compute — total params rose 279M → 397M while **activated
+params stayed at 180,726,115**, since only 4 of 48 experts fire per token.
+Whether that capacity converts to capability is milestone **G2** in
+[`docs/roadmap.md`](docs/roadmap.md), still open.
+
+**Historical status as of 2026-06-10:** 313+ tests pass. External code review fixed 5
 correctness bugs (see the 2026-06-09/10 section at the bottom); first run on
 the fixed code beat v1's final PPL by 6.5×. Full distillation → SFT →
 model-growth pipeline validated end-to-end on consumer hardware. Trained
 reference checkpoints v1 (278M distilled) through v5 (632M, 2nd MoE expansion to
 96 experts) archived. **v5 hit the expert-count ceiling** — net-comparable to v4
-(420M), so MoE growth is now considered tapped out; the next lever is width/scale
+(420M), so MoE growth was considered tapped out (⚠️ RETRACTED — see the status
+block at the top); the next lever is width/scale
 (Net2Wider toward ~1B single-card) or from-scratch distilled 3B on rented
 compute, not more experts. See [`docs/roadmap.md`](docs/roadmap.md) for the
 checkpoint lineage and forward plan.

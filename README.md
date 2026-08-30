@@ -41,11 +41,21 @@ hybrid that draws on three distinct lineages but is identical to none of them:
 **What's genuinely original here** (not inherited from any of the above):
 - The distillation → SFT → MoE-growth training pipeline and its tooling
 - Function-preserving **MoE expansion** (sentinel-bias promotion) on a recurrent-MoE architecture — [`docs/growth_design.md`](docs/growth_design.md)
-- The trained reference checkpoints (278M v1 → 632M v5, plus the post-fix ablation runs) and their end-to-end validation — [`docs/training_runs.md`](docs/training_runs.md)
+- The trained reference checkpoints and their end-to-end validation — [`docs/training_runs.md`](docs/training_runs.md). Note **two lineages**: the ARCHIVED `v1`(278M) → `v5`(632M) line in `archived_models/`, and the **current** line (`checkpoints_base/` 278M → `checkpoints_grown48/` 397M) rebuilt from scratch after the corpus was re-sourced over data provenance.
 - A single-card consumer-hardware training recipe (8-bit Adam, staged seq-len, growth-based scaling)
 - A pre-registered **MoE-vs-dense ablation** at matched active compute, and the measured depth/calibration findings feeding the MoDr direction — [`docs/roadmap.md`](docs/roadmap.md)
 
-**Current state (updated 2026-07-27):** the long-standing blocker — **free-running
+**Current state (updated 2026-08-30).** The current-lineage model is **397M**
+(24→48 routed-expert MoE expansion of the 278M base), mid-way through its first
+post-growth pour. What growth actually bought, measured rather than assumed:
+**total params 279M → 397M with activated params UNCHANGED at 180.7M** — 4 of 48
+experts fire per token, so capacity rose ~42% at zero activated-compute cost.
+All 48 experts carry balanced traffic (`cv` 0.20–0.29, min 0.9% against a 2.08%
+uniform), so the promotion held. **Capability at 397M is not yet measured** —
+that readout is the next thing owed, and its pass/fail bar is pre-registered as
+milestone **G2** in [`docs/roadmap.md`](docs/roadmap.md).
+
+**Earlier state (2026-07-27):** the long-standing blocker — **free-running
 generation degeneration** at small scale — was broken in stages. It
 was diagnosed as **exposure bias** (a learned repetition attractor; *not* a
 recurrent/hidden-state collapse — the recurrent representations stay healthy,
@@ -122,7 +132,7 @@ Full record:
 [`docs/onpolicy_plan.md`](docs/onpolicy_plan.md).
 
 **Honest scale note:** the trained checkpoints are **278M–632M proof-of-concept
-models.** They validate that the architecture + recipe work end-to-end (stable
+models** (current lineage: 278M → 397M). They validate that the architecture + recipe work end-to-end (stable
 training, balanced MoE routing, calibrated uncertainty, all three halt
 mechanisms firing). Their free-running generation was mode-collapsed (exposure
 bias) — **on-policy distillation un-collapsed it domain-wide, and fluent

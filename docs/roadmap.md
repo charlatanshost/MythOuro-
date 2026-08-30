@@ -307,7 +307,8 @@ is the whole point of the leg. Everything below this paragraph predates it.
 validated through v5; the latest checkpoint is `mythouro_distill_xl_grown_v5`
 (632M, 96 experts) — but the **2nd MoE expansion (48 → 96) hit the expert-count
 ceiling** (net-comparable to the 420M v4, `cv` wouldn't tighten below ~0.5), so
-**MoE growth is now considered tapped out** and output is still gibberish at this
+**MoE growth is now considered tapped out** (⚠️ RETRACTED — see the paragraph
+immediately below, and G1) and output is still gibberish at this
 scale (parameter-count ceiling, not a bug).
 
 **UPDATE 2026-06-29 — the v5 "ceiling" RE-DIAGNOSED: token dilution + collapse, NOT an
@@ -672,7 +673,22 @@ zero diversity) and cited nonexistent DDP support.
 
 ---
 
-## Where we are (as of 2026-06-12)
+## ⚠️ ARCHIVED LINEAGE — everything in this section predates the retrain
+
+**This section and the `v1`–`v5` milestone ladder at the bottom describe the
+ARCHIVED lineage** in `archived_models/` (`mythouro_distill_tiny_v1`,
+`tiny_sft_v2`, `small_grown_v3`, `small_v4`, `xl_grown_v5`). That line was
+retired when the corpus was rebuilt from scratch over the data-provenance /
+non-compete issue. **It is not the model being trained now.**
+
+The current lineage lives in `checkpoints_base/` (278M) and
+`checkpoints_grown48/` (397M). For where THAT model stands, read
+[Resume quickstart](#-resume-quickstart-read-this-first-if-returning-after-a-gap)
+and "Current-lineage milestones" at the bottom. Kept below because the
+architecture findings, failure modes and recipe lessons all still apply — only
+the checkpoints are superseded.
+
+## Where we are (ARCHIVED lineage — as of 2026-06-12)
 
 ### Shipped reference checkpoints
 
@@ -864,7 +880,7 @@ intermediate loops. Expect calibration to improve and selection to still not bea
 a fixed final depth.
 
 
-### Immediate (v4 + v5 both done — MoE growth tapped out)
+### Immediate (⚠️ ARCHIVED lineage — v4 + v5; the "tapped out" premise is RETRACTED) ⚠️ **RETRACTED** — see [Current-lineage milestones → G1](#g1--growth-holds-at-397m-achieved-2026-08-30): the 24→48 expansion HELD on the current lineage (all 48 experts balanced, cv 0.20–0.29), and growth costs zero activated compute (180,726,115 activated params before and after).
 
 v4 validated (all 3 halt mechanisms fire, 4/4 prompts halt cleanly) and v5 (2nd
 MoE expansion) hit the expert-count ceiling on 2026-06-06. The decision is made:
@@ -962,7 +978,9 @@ Endpoint: a ~1B model distilled from a stronger teacher (breaks the Ouro-2.6B qu
 The biggest roadmap gap, now filled: *what to actually run when compute arrives.*
 Decided 2026-06-06 after the v5 expert-ceiling finding.
 
-### Grow vs. from-scratch — decision: **growth is tapped out; destination is from-scratch (distilled)**
+### Grow vs. from-scratch — ⚠️ the "growth is tapped out" half of this decision is RETRACTED ⚠️ **RETRACTED** — see [Current-lineage milestones → G1](#g1--growth-holds-at-397m-achieved-2026-08-30): the 24→48 expansion HELD on the current lineage (all 48 experts balanced, cv 0.20–0.29), and growth costs zero activated compute (180,726,115 activated params before and after).
+
+The from-scratch destination may still be right for other reasons; but it can no longer rest on growth being exhausted.
 
 Growth (MoE expansion / Net2Wider) was the **proof-of-concept + compute-thrift** tool and it did its job — validated the recipe and *mapped the ceilings*. But the evidence says it's near its useful end for this base:
 - **2nd MoE expansion (v5) hit a ceiling** — measured, not theoretical
@@ -1367,7 +1385,78 @@ Full writeup in the README's "Licensing & data provenance" section. Short versio
 
 ---
 
-## Capability success criteria per milestone
+## Current-lineage milestones (the model being trained NOW)
+
+The `v1`–`v5` ladder further down is the **archived** lineage. This is the bar
+for the current one. Criteria are written BEFORE the measurement wherever
+possible — the v4 entry below did that and it is why v4's result is readable
+years later.
+
+### G0 — 278M base. ACHIEVED
+
+`checkpoints_base/step_0157000.pt`, the preserved stand-in for 157,238.
+
+| instrument | 157,238 (pre-leg-3) | 163,238 (post) |
+|---|---|---|
+| code L3+ | 54.7% | **77.5%** |
+| committed | 42% | **64%** |
+| code L4 (strict, n=320) | **26/320** | 19/320 |
+| prose salad score | **0.150** | 0.242 |
+| char-degenerate | 0/80 | 0/80 |
+
+⚠ These two checkpoints are the baselines for everything below, and they
+already disagree — 157,238 is better on L4 and prose, 163,238 on L3+ and
+committed. **That disagreement IS the trade pattern** the next milestone tests.
+
+### G1 — growth holds at 397M. ACHIEVED 2026-08-30
+
+24 → 48 routed experts, 279,030,115 → 396,994,915 total params, **activated
+params unchanged at 180,726,115**.
+
+- Function preservation at promotion — tiled router rows + zeroed `down` +
+  −100 sentinel; bit-exact by construction ✓
+- All 48 experts carry traffic — min 0.9–1.4% against a 2.08% uniform ✓
+- MoE `cv` after stabilisation < 0.5 — measured **0.20–0.29** ✓
+- No loss spike through the 500-step sentinel decay ✓
+- Trains stably at 48 experts — **8h34m / 2,650 steps clean**, after the XPU
+  page fault blocked it for a full day ✓
+- `growth_metadata` survives save→resume (it did not before 2026-08-29) ✓
+- New experts' router bias now sits ABOVE the originals (+0.688 vs −0.458) —
+  the balancer steering traffic TOWARD them ✓
+
+**G1 says the apparatus works. It says nothing about capability.**
+
+### G2 — does capacity break the trade pattern? PENDING — this is the readout
+
+**The question the whole growth effort exists to answer.** At 278M, every
+intervention moved one metric up and another down. Measured at `--samples 32`
+first, then `n=320` for anything that looks real:
+
+| verdict | condition | what it means |
+|---|---|---|
+| **PASS** | L4 > 26/320 **and** L3+ ≥ 77.5% **and** prose ≤ 0.150 — all three at once | capacity was the constraint; the pour is worth committing nights to |
+| **PARTIAL** | any two improve, one regresses | trades persist; size alone is not the fix |
+| **FAIL** | net-comparable to G0 | it is the recipe, not the size — and that is worth knowing before months of compute |
+
+⚠ **CONFOUND, recorded before the measurement:** the G0 baselines ran
+`--rollout-batch 32`; the 397M leg runs **8** (48-expert crash avoidance). Two
+variables moved. State this in whatever conclusion is drawn.
+
+⚠ Do not read G2 off a checkpoint close to the promotion — a model still
+settling will measure the settling, not the capacity.
+
+### G3 — first *useful* coherence. NOT YET DEFINED
+
+Deliberately unwritten: the bar depends on what G2 returns. Defining it now
+would be guessing.
+
+---
+
+## Capability success criteria per milestone (⚠️ ARCHIVED lineage — v1–v5)
+
+**These describe `archived_models/`, NOT the current model.** The old `v3`
+criteria happen to look like G1 above because the same growth machinery was
+used — but they were met by a different checkpoint on a different corpus.
 
 What "succeeded" looks like at each checkpoint. Use these as the
 yardstick when deciding whether to ship a reference checkpoint vs
@@ -1445,7 +1534,7 @@ improvement**:
 - 7-prompt inspector read came out **net-comparable to v4** (2 better, 2 worse on
   the standard 4) — correct register + clean halting, but scale-bound gibberish
 - Conclusion: at 632M / ~20–40M tokens the model can't find distinct work for 96
-  experts. **MoE expansion is tapped out** (Open research Q#1, answered 2026-06-06)
+  experts. **MoE expansion is tapped out** (Open research Q#1, answered 2026-06-06 — ⚠️ **RETRACTED 2026-06-29 and again empirically on 2026-08-30**: the current lineage's 24→48 expansion holds with all 48 experts balanced. v5's ceiling was token dilution + exposure-bias collapse on a collapsed base, not a parameter ceiling.)
 
 Archived as `archived_models/mythouro_distill_xl_grown_v5/`. **Do not do a third
 expansion.** Next lever is width (Net2Wider) or scale, not more experts.
