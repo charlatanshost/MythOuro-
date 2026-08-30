@@ -657,6 +657,41 @@ slots, sentinel gone, and the new experts' bias now sits ABOVE the originals
 (**+0.688 vs -0.458 mean**) — the DeepSeek balancer actively steering traffic
 toward them because they began underused. That is full integration, not survival.
 
+### ⚠️ CORRECTION 2026-08-30 — THE "TOKEN GAP" IS AN ARTIFACT OF THE DENOMINATOR
+
+Measured from `step_0006676.pt`: **activated parameters are IDENTICAL before and
+after growth — 180,726,115.** `topk=4` and `expert_dim=1280` never changed; only
+the routed pool went 24 -> 48. Growth bought **+42% storage capacity at exactly
+zero activated-compute cost.**
+
+```
+                        278M      397M
+tok / TOTAL param       9.25  ->  6.86     <- the framing used all week
+tok / ACTIVATED param  14.28  -> 15.06     <- went UP
+routed experts are 59.4% of total params, but only 4/48 fire per token
+```
+
+Chinchilla-style tok/param ratios were derived on DENSE models where activated ==
+total. For MoE the compute-optimal convention is activated params. By that
+measure this model is BETTER fed than the 278M was, not worse. "More experts to
+retain instead of trade" is a real mechanism and it is free on the compute axis.
+
+**⇒ The 1.11B token gap, and the ~22-night pour justified by it, do not survive
+this.** Both came from `9.3 tok/param` measured on TOTAL params — which is just
+the ratio the 278M happened to sit at, never a derived target. On activated
+params there is no gap. This does NOT prove more tokens won't help (empirically
+they always have); it means the SIZE of the deficit was never established, and
+no multi-week commitment should rest on it.
+
+**And the step budget is not obviously short either.** The largest documented
+capability jump on this project — chat-framed code L3+ **10.0% -> 37.5%,
+3.75x** — happened between 116,000 and 125,181: **9,181 steps = 150.4M tokens.**
+This leg is 8,696 steps = 142.5M tokens. Directly comparable. A jump of that
+kind inside this leg is consistent with precedent, not optimism.
+
+Owner called both of these; the docs confirmed both. See [[read-text-not-metrics]]
+and the standing rule to search the docs before disputing recall.
+
 ### ⚠ PARAM COUNT CORRECTED — 397M, not 460M
 
 The state dict sums to 459,909,475, but `embed.weight` and `head.weight` are the
