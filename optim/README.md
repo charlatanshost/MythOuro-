@@ -20,6 +20,43 @@ levers — which is also why the λ sweep moved throughput ~4% against a predict
 45%. On-policy micro-steps are **72.6%** of the total (measured from the
 `op N/4` log lines over the 2026-08-29 leg).
 
+## ⚠️ CORRECTION 2026-08-30 — A IS WORTH ~5%, NOT 2x. B IS THE LEVER.
+
+**Measured on the first A leg: 11.98 s/step (2700→2750, contains a checkpoint
+save) against an 11.46 s/step pre-A baseline. No usable speedup.**
+
+The error was mine and it is a specific one: I read the profiler's
+`teacher_fwd ... 4.0 calls/step` together with the `op 2/4` log lines and
+concluded on-policy micro-steps were **72.6% of the teacher's work**. They are
+72.6% of the teacher's **CALLS**. The two are wildly different here, because the
+two paths run at completely different sequence lengths:
+
+```
+on-policy x_in = seed_len(16) + rollout_len(64) - 1 =   79 tokens
+offline   x_in = seq_len(1024)                    - 1 = 1023 tokens
+```
+
+Teacher tokens per optimizer step: on-policy **632 (7.2%)**, offline
+**8,184 (92.8%)**. So A can touch at most 5.6% of step time and saves 7/8 of
+that = **4.9%** — 11.5 → 10.93 s/step, which is invisible under checkpoint noise
+and is exactly what was measured.
+
+**A is still correct, just small.** The loss gate passed cleanly (0.7485 at step
+2700 against 0.9013 pre-A, continuous — mispaired logits would have spiked it to
+5-10+). It is a real ~5% win with no downside; keep it.
+
+**B is where the 3x lives**, and for the same reason A is not: B removes the
+teacher from the **offline** path, which is 92.8% of teacher token-work.
+**11.5 → ~3.13 s/step.** Every "+A" row below overstates A and understates B's
+relative importance; the s/step figures for A+B combined remain roughly right
+because they were dominated by the offline term all along.
+
+**The general lesson, worth carrying:** a profiler's `calls/step` is not
+`work/step` when call shapes differ. Multiply by the actual tensor sizes before
+predicting a saving.
+
+---
+
 ## A — teacher-logit reuse cache (on-policy). NUMERICALLY EQUIVALENT.
 
 `RolloutBuffer` sets `_draws_left = reuse * (rollout_batch // micro_batch)`
