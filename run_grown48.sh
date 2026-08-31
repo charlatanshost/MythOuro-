@@ -188,8 +188,10 @@ capacity hypothesis is supported and growth is the lever. If it trades the same
 way, the problem is the recipe, not the size — and that is worth knowing before
 committing months to a 1B run.
 
-  python -u -m tools.code_eval -c $DIR/step_0*.pt --device xpu:0 \\
-    --samples 32 --temperature 0.4 --seed 1234 --repetition-penalty 1.15 \\
-    --json reports/code_grown48.json
-  DIR=$DIR bash run_anneal_readout.sh    # prose, 6 seeds, salad detector
+  bash run_g2_readout.sh    # control vs final at n=320, prose, and the G2 verdict
+
+  # ^ replaces the old two-liner. tools.code_eval takes ONE checkpoint (-c is
+  #   required=True, no nargs), so \`-c \$DIR/step_0*.pt\` expanded to 22 paths
+  #   and died on unrecognised arguments. run_g2_readout.sh also evaluates
+  #   step_0000000 as a within-session control, since promotion is bit-exact.
 EOF
