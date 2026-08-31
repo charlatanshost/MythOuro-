@@ -93,6 +93,7 @@ def grow_moe_checkpoint(
     expansion_factor: int = 2,
     sentinel_bias: float = DEFAULT_SENTINEL_BIAS,
     perturb_scale: float = 0.0,
+    router_perturb_scale: float = 0.0,
     n_decay_steps: int = 500,
 ) -> dict:
     """
@@ -107,9 +108,22 @@ def grow_moe_checkpoint(
                               negative makes promotion bit-exact. Decayed
                               over `n_decay_steps` post-promotion.
         perturb_scale      -- σ of Gaussian noise added to duplicated experts'
-                              gate/up weights. 0.0 (default) is fine because
-                              SGD noise breaks symmetry naturally; raise to
-                              e.g. 1e-3 to accelerate divergence.
+                              gate/up weights, RELATIVE to each tensor's own std.
+                              ⚠ 0.0 was used for the 2026-08-30 397M promotion
+                              and the experts never differentiated — see
+                              `router_perturb_scale`.
+        router_perturb_scale-- σ of Gaussian noise added to the NEW router rows,
+                              relative to the source rows' std. **This is the
+                              one that matters.** Tiled router rows are
+                              identical, so expert i and i+24 attract the same
+                              tokens and SGD has no reason to specialise them:
+                              measured on the 397M run, the new experts
+                              plateaued at cos 0.909 to their parents and
+                              |down| 0.404, both asymptotic by step ~6,000.
+                              Perturbing the router is SAFE and remains
+                              function-preserving, because the -100 sentinel
+                              makes new experts unselectable at step 0 no matter
+                              what their routing direction is. Try 0.1.
         n_decay_steps      -- step count over which the sentinel decays to 0.
                               Stored in checkpoint metadata; training script
                               reads it and applies the schedule.
@@ -155,6 +169,7 @@ def grow_moe_checkpoint(
         e_tgt=e_tgt,
         sentinel_bias=sentinel_bias,
         perturb_scale=perturb_scale,
+        router_perturb_scale=router_perturb_scale,
     )
 
     # Build growth metadata so the training script can apply the
@@ -168,6 +183,7 @@ def grow_moe_checkpoint(
         "expansion_factor": expansion_factor,
         "sentinel_bias": float(sentinel_bias),
         "perturb_scale": float(perturb_scale),
+        "router_perturb_scale": float(router_perturb_scale),
         "n_decay_steps": int(n_decay_steps),
         "method": "moe_expansion_v1",
     }
@@ -277,6 +293,7 @@ def _promote_state_dict(
     e_tgt: int,
     sentinel_bias: float,
     perturb_scale: float,
+    router_perturb_scale: float = 0.0,
 ) -> "dict[str, torch.Tensor]":
     """
     Walk the source state dict, promote any MoEFFN sub-dicts, leave everything
@@ -317,6 +334,17 @@ def _promote_state_dict(
                 f"{rk}: expected first dim {e_src}, got {tuple(w_src.shape)}"
             )
         w_tgt = w_src.repeat(e_tgt // e_src, 1).contiguous()    # tile
+        if router_perturb_scale > 0.0:
+            # Break the routing symmetry for the NEW rows only. Without this the
+            # twins attract identical token distributions and converge back to
+            # each other (measured: cos 0.909, asymptotic, on the 397M run).
+            # Safe: the -100 sentinel blocks these experts from top-k at step 0,
+            # so the promoted model's function is unchanged regardless.
+            g = torch.Generator().manual_seed(1234)
+            noise = torch.randn(
+                w_tgt[e_src:].shape, generator=g, dtype=w_tgt.dtype
+            ) * (router_perturb_scale * w_src.std())
+            w_tgt[e_src:] = w_tgt[e_src:] + noise
         new_entries[rk] = w_tgt
         promoted_keys.add(rk)
 

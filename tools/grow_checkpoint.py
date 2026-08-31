@@ -75,6 +75,19 @@ def main(argv: "list[str] | None" = None) -> int:
         ),
     )
     p.add_argument(
+        "--router-perturb-scale", type=float, default=0.0,
+        help="σ of noise on the NEW router rows, relative to the source rows' "
+             "std. THE ONE THAT MATTERS. Tiled router rows are identical, so "
+             "twin experts attract the same tokens and never specialise — "
+             "measured on the 2026-08-30 397M promotion, they plateaued at "
+             "cos 0.909 to their parents (asymptotic by step ~6,000). Safe and "
+             "still function-preserving: the -100 sentinel blocks new experts "
+             "from top-k at step 0 whatever their routing direction. "
+             "Calibration: 0.5 -> cos 0.89, 0.75 -> 0.80, 1.0 -> 0.70, "
+             "1.5 -> 0.55. 1.0 starts where the last run's router took 8,696 "
+             "steps to drift.",
+    )
+    p.add_argument(
         "--n-decay-steps", type=int, default=500,
         help=(
             "Number of post-promotion training steps over which the sentinel "
@@ -90,6 +103,7 @@ def main(argv: "list[str] | None" = None) -> int:
         expansion_factor=args.expansion_factor,
         sentinel_bias=args.sentinel_bias,
         perturb_scale=args.perturb_scale,
+        router_perturb_scale=args.router_perturb_scale,
         n_decay_steps=args.n_decay_steps,
     )
 
