@@ -2674,6 +2674,76 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-08-31 (evening) — ❌ GROWTH v2: router symmetry was NOT the ceiling. STOP GROWING EXPERTS.
+
+Pre-registered test, gate written before the run: re-promote 24→48 with the
+router rows perturbed (`--router-perturb-scale 1.0`, cos 0.704 at step 0 against
+the old promotion's 1.000), pour 3,000 steps, and require the expert
+differentiation curve to sit BELOW the old one AND still be falling.
+
+**It failed, and it failed upward** — v2 differentiated *slower*:
+
+| step | v2 cos(gate) | old | delta |
+|---|---|---|---|
+| 0 | 0.9988 | 1.0000 | −0.0012 |
+| 1,000 | 0.9811 | 0.9822 | −0.0011 |
+| 2,000 | 0.9646 | 0.9598 | **+0.0048** |
+| 3,000 | 0.9601 | 0.9433 | **+0.0168** |
+
+### The finding, and it does NOT depend on the cross-run comparison
+
+Within v2 alone — one run, no confound:
+
+```
+step      0    1000    2000    3000
+cos(router) 0.7041  0.6186  0.5465  0.5323   <- DIVERGING
+cos(gate)   0.9988  0.9811  0.9646  0.9601   <- CONVERGING, decelerating
+Δcos(gate)/500      -0.0139 -0.0063 -0.0016
+```
+
+**The router pulled the twins further apart while the experts drifted back
+together.** They are provably receiving different token distributions —
+routing directions only 53% aligned — and they still learn the same function.
+
+**⇒ Symmetry was never the bottleneck. Initialisation is ruled out.**
+
+### What that leaves, and it is the v5 conclusion on the current lineage
+
+If routing diversity does not buy expert diversity, the task does not contain 48
+distinguishable sub-functions at this scale and token budget. Every expert
+converges to roughly the same general-purpose FFN. That is exactly the
+2026-06-06 v5 post-mortem — "at this scale the model can't find distinct work
+for the experts" — reproduced on the fresh lineage at 48 experts, this time with
+**initialisation eliminated as the explanation**.
+
+The 2026-06-29 retraction of "MoE growth is tapped out" was right about its
+*reason* (v5's ceiling was token dilution on a collapsed base) and is not
+contradicted here. This is a different and better-controlled result: healthy
+base, 142M post-growth tokens, function-preserving promotion, symmetry broken on
+purpose — and the experts still converge.
+
+### ⇒ DECISION: stop adding experts. Widen them instead.
+
+`docs/growth_design.md` lists four axes. MoE width is now measured out on this
+lineage. **Net2Wider is the indicated next axis and it is the right shape of fix
+for this specific failure**: it widens the experts that already exist rather than
+adding more for the model to find work for. It is function-preserving under
+SiLU/SwiGLU (duplicate a unit, halve its outgoing weight), and `grow_width.py`
+does not exist yet — roadmap estimates ~2 sessions, pure dev time.
+
+### ⚠ My confound, recorded
+
+v2 ran the broadened corpus (code+math+med+v2) where the old run was code+math
+only, so the cross-run delta column above conflates router perturbation with
+corpus. The within-v2 dissociation is what carries the conclusion, and that is
+single-run. The corpus half of the test is unresolved, which is fine — it was
+never what this run was for.
+
+Also fixed to get here: the teacher shards carried two different schemas and
+`med` + `v2` were being dropped entirely (410 skipped batches, corpus banner
+still printing all four directories). See `tools/normalize_teacher_shards.py`.
+**`run_grown48_broadmix.sh` had never actually worked.**
+
 ## 2026-08-31 — 🔬 G2 READOUT: the leg is FLAT, and the two-checkpoint protocol is BROKEN
 
 First capability measurement of the grown 397M model. The headline is not about

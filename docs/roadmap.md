@@ -1477,6 +1477,35 @@ distribution, not a property of the run.
 * **Re-baseline** — `step_0157000` is NOT the evaluated `157,238`: measured
   within-session it reads L4 9/320 against the archive's 26/320.
 
+### G2b — is expert-count growth the lever at all? ❌ ANSWERED NO (2026-08-31)
+
+Pre-registered test: re-promote with the router rows perturbed
+(`--router-perturb-scale 1.0`, cos 0.704 vs the old 1.000), 3,000 steps, require
+the differentiation curve below the old one and still falling.
+
+**Failed, and failed upward** — v2 differentiated slower (cos 0.9601 at 3,000 vs
+the old run's 0.9433). And within v2 alone, no confound:
+
+```
+step         0     1000    2000    3000
+cos(router) 0.704  0.619  0.547  0.532   <- DIVERGING
+cos(gate)   0.999  0.981  0.965  0.960   <- CONVERGING, decelerating
+```
+
+**The router pulled the twins apart while the experts drifted back together.**
+They receive provably different token distributions and still learn the same
+function. **Initialisation is eliminated.** The task does not contain 48
+distinguishable sub-functions at this scale — the v5 post-mortem's conclusion,
+reproduced on a healthy base with symmetry deliberately broken.
+
+**⇒ DECISION: stop adding experts.** Two promotions, both function-preserving,
+both ending with the new experts as ~96% twins of their parents.
+
+**⇒ Next axis is Net2Wider** — it widens the experts that exist rather than
+adding more for the model to find work for, which is the right shape of fix for
+this exact failure. Function-preserving under SiLU/SwiGLU. `grow_width.py` does
+not exist (~2 sessions, pure dev time, no capital).
+
 ### G3 — first *useful* coherence. NOT YET DEFINED
 
 Deliberately unwritten: the bar depends on what G2 returns. Defining it now
