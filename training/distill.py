@@ -329,6 +329,23 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "torch.utils.checkpoint at main.py:1794; this removes it. "
                         "Costs activation memory (loop becomes O(n_loops), not "
                         "O(1)) so pair with a smaller --micro-batch.")
+    p.add_argument("--router-bias-lr", type=float, default=None,
+                   help="Override cfg.router_bias_lr (default 1e-3). The "
+                        "DeepSeek-V3 aux-loss-free balancer nudges routing "
+                        "toward UNIFORM utilisation every step: "
+                        "bias[i] += lr * sign(mean_count - count[i]). Measured "
+                        "2026-08-31, that bias reaches a spread COMPARABLE to "
+                        "the content logit spread (ratio 0.7-1.1), so it is "
+                        "roughly half of what decides which experts fire. On a "
+                        "GROWN model whose new experts begin as exact clones, "
+                        "forcing them to stay equally USED plausibly forces them "
+                        "to stay equally TRAINED: both promotions ended with the "
+                        "new experts as ~90%% twins on an asymptotic curve. Set "
+                        "0.0 to remove the pressure and let the router starve or "
+                        "specialise the duplicates. WARNING: 0.0 also removes the "
+                        "only thing preventing expert collapse; cv above ~1.0 "
+                        "with min%% near 0 means experts are dying, which is a "
+                        "RESULT, not a crash.")
     p.add_argument("--use-depth-aware-init", action="store_true",
                    help="Huginn/Takase depth-aware init: residual-output projs get "
                         "std^2=1/(5*h*l). FRESH runs only (no effect on resumed "
@@ -611,6 +628,15 @@ def main():
     cfg.use_depth_aware_init = args.use_depth_aware_init
     if args.no_gradient_checkpointing:
         cfg.gradient_checkpointing = False
+    if args.router_bias_lr is not None:
+        # Recorded into cfg so the checkpoint carries it -- a leg run with the
+        # balancer off must be identifiable from its checkpoint alone.
+        logger.info(
+            f"distill: router_bias_lr {cfg.router_bias_lr} -> {args.router_bias_lr}"
+            + ("  (BALANCER OFF -- expert collapse is possible and informative)"
+               if args.router_bias_lr == 0.0 else "")
+        )
+        cfg.router_bias_lr = args.router_bias_lr
         logger.info('distill: gradient checkpointing DISABLED '
                     '(activation memory now O(n_loops))')
 
