@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/charlatanshost/mythouro-backup/MythOuro-main/tools/onpolicy_rollout_probe.py", line 245, in <module>
+    main()
+  File "/home/charlatanshost/mythouro-backup/MythOuro-main/tools/onpolicy_rollout_probe.py", line 155, in main
+    student.load_state_dict(model_state, strict=False)
+  File "/home/charlatanshost/mythouro-backup/venv-xpu/lib/python3.12/site-packages/torch/nn/modules/module.py", line 2638, in load_state_dict
+    raise RuntimeError(
+RuntimeError: Error(s) in loading state_dict for MythOuro:
+	size mismatch for recurrent.block.ffn.router_bias: copying a param with shape torch.Size([48]) from checkpoint, the shape in current model is torch.Size([24]).
+	size mismatch for recurrent.block.ffn.router.weight: copying a param with shape torch.Size([48, 1280]) from checkpoint, the shape in current model is torch.Size([24, 1280]).
