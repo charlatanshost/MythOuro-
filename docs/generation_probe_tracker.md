@@ -2674,6 +2674,94 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-08-31 (late) — ⚠️ TWO CORRECTIONS, and the balancer hypothesis
+
+### 1. The pre-growth pours WERE already balanced across all four domains
+
+I claimed a four-domain pour "has never been run" and argued the regression was
+domain forgetting from narrow corpora. **Wrong — I reasoned from directory names
+instead of contents.** `data_teacher_v2` is itself multi-domain:
+
+```
+data_teacher_v2   general 1976  math 1402  code 622   (per 4k sample)
+data_teacher_med  medical 4000
+```
+
+So `newmix` (v2+med), the pre-growth pour, was **already all four domains and
+genuinely balanced**:
+
+| corpus | general | medical | math | code |
+|---|---|---|---|---|
+| **newmix (v2+med)** — pre-growth, 17,132 rows | **32.2%** | **29.3%** | **26.1%** | **12.4%** |
+| **broadmix (all four dirs)** — what I proposed, 367,132 rows | 1.5% | 1.4% | 69.3% | 27.8% |
+
+**The "broadened" corpus is not broader — it is 97% code+math**, far narrower in
+effective balance than what was already run. And rung A closed with *"6,500
+further steps at 0.45 regressed on every axis"* on the balanced mix.
+
+**⇒ The owner's capacity hypothesis is better supported than the metric critique
+suggested.** A balanced four-domain pour was run, it regressed, and the salad
+returned in the text. That is not a two-checkpoint artifact.
+
+### 2. Expert-count growth never raised the capacity that binds
+
+```
+activated params, 24 experts:  180,726,115
+activated params, 48 experts:  180,726,115     <- UNCHANGED
+```
+
+Only 4 of 48 fire per token, so promotion added *storage* while leaving
+*per-token capacity* untouched. If the model trades because it cannot retain
+within the capacity it applies to each token, adding experts it cannot reach was
+never going to help — which is exactly what two promotions measured. **This makes
+the growth failure consistent with the capacity hypothesis rather than a
+refutation of it.** Net2Wider is the only axis that raises activated params.
+
+### 3. THE BALANCER HYPOTHESIS — and a 29x claim I withdrew within the hour
+
+More tokens will NOT differentiate the current twins. Exponential fit on the
+grown48 curve: **asymptote cos 0.893**, predicted 0.8939 at 20,000 steps and
+0.8930 at 200,000. The room exists; nothing fills it.
+
+So why is there an asymptote? The DeepSeek-V3 aux-loss-free balancer runs every
+step with a **uniform** target, `bias[i] += lr * sign(mean_count - count[i])`,
+at a hardcoded `cfg.router_bias_lr = 1e-3` that was **never exposed as a flag**.
+Measured on both grown checkpoints:
+
+| checkpoint | content logit spread | router_bias spread | ratio |
+|---|---|---|---|
+| step_0008696 | 2.83 | 3.03 | **1.07** |
+| step_0003000 | 3.48 | 2.48 | **0.71** |
+
+Roughly **half** of what decides which experts fire is a controller whose only
+goal is that they fire equally often. On a grown model whose new experts begin as
+exact clones, forcing them to stay equally USED is a plausible mechanism for
+forcing them to stay equally TRAINED.
+
+⚠️ **I first measured this ratio at 29x** and concluded routing was
+content-blind. That assumed unit-norm router inputs; the router actually reads an
+RMSNorm output with norm ~27 (`main.py:1116`). Corrected to ~1x before anything
+was built on it. The balancer is a co-driver, not a blindfold — and the dramatic
+version of this claim was wrong.
+
+**Testable for one argparse line:** `--router-bias-lr` now exists, and
+`run_balancer_test.sh` is the cleanest A/B this project has had — same base
+checkpoint, same corpus, same every other flag, one variable. `growth_v2` is the
+balancer-on control and its fitted curve predicts cos 0.944 at step 6,000.
+
+### 4. The schema bug that silently halved the corpus
+
+`data_teacher_med` and `data_teacher_v2` carried a `seed_len` column that
+`code`/`math` did not. `load_dataset("json", ...)` locks its schema to the first
+file and refuses to cast the rest, so **med and v2 were dropped entirely** — 410
+skipped batches in 50 minutes while the corpus banner printed all four directory
+names. `run_grown48_broadmix.sh` had therefore never worked. Fixed by
+`tools/normalize_teacher_shards.py`.
+
+**Third bug this week whose signature is "logs a warning and keeps running while
+training the wrong thing"**, after growth_metadata dropped on save and the broken
+`-c` glob in the eval tail. Startup assertions for this class are owed.
+
 ## 2026-08-31 (evening) — ❌ GROWTH v2: router symmetry was NOT the ceiling. STOP GROWING EXPERTS.
 
 Pre-registered test, gate written before the run: re-promote 24→48 with the
