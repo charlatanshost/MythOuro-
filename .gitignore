@@ -459,3 +459,6 @@ reports/*_FAILED
 # patch backups written by optim/apply.sh
 *.preA
 *.preB
+
+# schema backups written by tools/normalize_teacher_shards.py
+*.preschema
