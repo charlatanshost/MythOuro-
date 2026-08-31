@@ -2674,6 +2674,92 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-08-31 — 🔬 G2 READOUT: the leg is FLAT, and the two-checkpoint protocol is BROKEN
+
+First capability measurement of the grown 397M model. The headline is not about
+growth — it is that **the way this project has been measuring all month cannot
+support the conclusions drawn from it.**
+
+### The five-point sweep (n=320 each, bare framing, T=0.4 pen=1.15 seed=1234)
+
+| step | L3+ | ±95% | L4 |
+|---|---|---|---|
+| 0 (= bit-exact 278M base) | **68.8%** | 5.1 | 9/320 |
+| 2,000 | **31.2%** | 5.1 | 15/320 |
+| 4,000 | **65.6%** | 5.2 | 3/320 |
+| 6,000 | 58.4% | 5.4 | 8/320 |
+| 8,696 (final) | 48.4% | 5.5 | 12/320 |
+
+**L3+ mean 54.5%, sd 13.6 pp, range 31.2–68.8. Checkpoint-to-checkpoint variance
+is 5.1x the per-measurement sampling noise.** Consecutive swings: −37.6, +34.4,
+−7.2, −10.0 pp, between checkpoints 2,000 steps apart in ONE run.
+
+### ⇒ The verdict: the leg did nothing measurable
+
+Mean-based, which is what the variance demands:
+
+* early (0, 2,000) **50.0%** → late (6,000, 8,696) **53.4%** = **+3.4 pp**
+* against a within-leg sd of **13.6 pp**. Flat.
+* L4 across the leg: 9, 15, 3, 8, 12 — counts of 320, 95% CI ~±6 samples. Noise.
+
+**G2 is UNRESOLVED, not failed.** 8,696 steps of code+math on the grown model
+moved neither metric.
+
+### ⚠️ TWO CLAIMS MADE TONIGHT AND WITHDRAWN THE SAME NIGHT
+
+1. **"Significant regression, z=−5.22, p<0.0001."** WRONG — an endpoint
+   artifact. That test compared step 0 (68.8%) against step 8,696 (48.4%)
+   counting only *sampling* noise inside each checkpoint. Once
+   checkpoint-to-checkpoint variance is included the gap is ~1.3 sd. Both
+   endpoints happen to sit far from the mean, in opposite directions.
+2. **"L3+ and L4 are anti-correlated."** WRONG — read off four points. Across
+   all 15 bare-framing n=320 evals, **r = −0.178**. Not significant.
+
+### ⇒ THE PROTOCOL CHANGE, and it invalidates more than this leg
+
+**Every "trade" documented this month was read off TWO checkpoints:** code
+corpus 76.6→54.1, more steps 54.7→77.5, 157,238 vs 163,238. Against a metric
+with **13.6 pp checkpoint-to-checkpoint sd**, those are all ~1 sd moves. The
+trade pattern that motivated the entire growth programme may substantially be an
+artifact of single-checkpoint comparison.
+
+**Rule from here: compare MEANS over >=3 checkpoints per condition, with the
+spread quoted. Never endpoints.** A single checkpoint's L3+ is one draw from a
+distribution ~37 pp wide; it is not a property of the run.
+
+Also: `step_0157000` was NOT equivalent to the evaluated `157,238` as
+`run_grown48.sh` presumed — measured within-session it reads L4 **9/320** where
+the archive records **26/320**. The header flagged it as an unevaluated
+stand-in; that caution was warranted.
+
+### Why growth could not have shown up here anyway — the experts are still twins
+
+Measured on `step_0008696.pt`, each new expert against the parent it was cloned
+from:
+
+```
+mean cos(gate) 0.909   mean cos(up) 0.912   |down_new| / |down_parent| 0.404
+```
+
+They **woke up** (`down` grew from a zeroed init to 40% of parent magnitude) but
+never **differentiated** — still ~91% aligned with their twins. Balanced routing
+(`cv` 0.206) was never evidence of distinct work.
+
+The cause is dose, and it is arithmetic:
+
+| | tokens seen per expert |
+|---|---|
+| original 24, pre-growth (topk 4 of 24) | **430M** |
+| new 24, post-growth only (topk 4 of 48) | **11.9M** |
+
+**36x less**, and `perturb_scale` at promotion was **0.0** — so they began as
+*exact* clones with only SGD noise to separate them. `grow.py`'s own docstring
+says to raise it to ~1e-3 to accelerate divergence. Do that on the next
+promotion.
+
+**⇒ The 397M model is currently 24 trained experts plus 24 half-strength echoes.
+That is not a test of the capacity hypothesis; the capacity does not exist yet.**
+
 ## 2026-07-29 — 🟢 MEDICAL-BLEND TRIPWIRE @60,154 (~⅓ dose, n=5): healthy, and α=0.25 is an ALL-TIME LOW
 
 First leg with medical in the teacher stream (blend: 8.65M general/math/code +

@@ -1426,24 +1426,56 @@ params unchanged at 180,726,115**.
 
 **G1 says the apparatus works. It says nothing about capability.**
 
-### G2 — does capacity break the trade pattern? PENDING — this is the readout
+### G2 — does capacity break the trade pattern? ⚠️ UNRESOLVED (measured 2026-08-31)
 
-**The question the whole growth effort exists to answer.** At 278M, every
-intervention moved one metric up and another down. Measured at `--samples 32`
-first, then `n=320` for anything that looks real:
+**Not passed, not failed — the instrument cannot resolve the question.** Full
+entry: `generation_probe_tracker.md` 2026-08-31.
 
-| verdict | condition | what it means |
+Five-point sweep across the leg, n=320 each, identical settings, one session:
+
+| step | L3+ | L4 |
 |---|---|---|
-| **PASS** | L4 > 26/320 **and** L3+ ≥ 77.5% **and** prose ≤ 0.150 — all three at once | capacity was the constraint; the pour is worth committing nights to |
-| **PARTIAL** | any two improve, one regresses | trades persist; size alone is not the fix |
-| **FAIL** | net-comparable to G0 | it is the recipe, not the size — and that is worth knowing before months of compute |
+| 0 (= bit-exact 278M base) | 68.8% | 9/320 |
+| 2,000 | 31.2% | 15/320 |
+| 4,000 | 65.6% | 3/320 |
+| 6,000 | 58.4% | 8/320 |
+| 8,696 | 48.4% | 12/320 |
 
-⚠ **CONFOUND, recorded before the measurement:** the G0 baselines ran
-`--rollout-batch 32`; the 397M leg runs **8** (48-expert crash avoidance). Two
-variables moved. State this in whatever conclusion is drawn.
+**L3+ sd is 13.6 pp between checkpoints — 5.1x the ±5.2 pp sampling CI.**
+Mean-based, early (0, 2,000) 50.0% → late (6,000, 8,696) 53.4% = **+3.4 pp**.
+The leg moved nothing. L4 (9, 15, 3, 8, 12) is noise at these counts.
 
-⚠ Do not read G2 off a checkpoint close to the promotion — a model still
-settling will measure the settling, not the capacity.
+**Three reasons this was never a clean test, all now measured:**
+
+1. **The capacity is nominal.** New experts sit at cos **0.91** to the parents
+   they were cloned from, at **0.40** output magnitude — awake but not
+   differentiated. They have seen **11.9M** tokens each against the **430M**
+   that shaped the originals (36x less), and `perturb_scale` was **0.0**, so
+   they started as exact clones. The model is 24 trained experts plus 24
+   half-strength echoes.
+2. **Three variables moved at once** — size, corpus (code+math only), and
+   `--rollout-batch` 32→8.
+3. **The metric is too noisy for two-point comparison** (below).
+
+#### ⇒ PROTOCOL CHANGE — this invalidates more than this leg
+
+Every "trade" on record was read off **two** checkpoints (code corpus
+76.6→54.1; more steps 54.7→77.5; 157,238 vs 163,238). Against 13.6 pp
+checkpoint-to-checkpoint sd those are ~1 sd moves. **The trade pattern that
+motivated the whole growth programme may substantially be an artifact of
+single-checkpoint comparison.**
+
+**Rule from here: compare MEANS over ≥3 checkpoints per condition, quoting the
+spread. Never endpoints.** One checkpoint's L3+ is a draw from a ~37 pp
+distribution, not a property of the run.
+
+#### What to fix before re-running G2
+
+* **Differentiate the experts** — `perturb_scale ≈ 1e-3` at promotion (grow.py's
+  own docstring recommends it), and far more post-growth tokens.
+* **Remove the corpus confound** — `run_grown48_broadmix.sh`.
+* **Re-baseline** — `step_0157000` is NOT the evaluated `157,238`: measured
+  within-session it reads L4 9/320 against the archive's 26/320.
 
 ### G3 — first *useful* coherence. NOT YET DEFINED
 
