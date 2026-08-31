@@ -191,7 +191,7 @@ committing months to a 1B run.
   bash run_g2_readout.sh    # control vs final at n=320, prose, and the G2 verdict
 
   # ^ replaces the old two-liner. tools.code_eval takes ONE checkpoint (-c is
-  #   required=True, no nargs), so \`-c \$DIR/step_0*.pt\` expanded to 22 paths
+  #   required=True, no nargs), so `-c $DIR/step_0*.pt` expanded to 22 paths
   #   and died on unrecognised arguments. run_g2_readout.sh also evaluates
   #   step_0000000 as a within-session control, since promotion is bit-exact.
 EOF
