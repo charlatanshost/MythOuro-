@@ -25,6 +25,7 @@ import argparse
 from collections import Counter
 
 import torch
+from loguru import logger
 
 from mythouro import MythOuro
 from mythouro.checkpointing import list_ckpts
@@ -134,7 +135,36 @@ def main() -> None:
     tok = MythOuroTokenizer(args.tokenizer)
 
 
-    cfg = _VARIANTS[args.student_variant]()
+    # Build cfg from the CHECKPOINT, not from the CLI default.
+    # 2026-09-01: this probe hardcoded mythouro_distill_tiny (24 experts) and
+    # died with a size mismatch on every grown checkpoint —
+    #   size mismatch for recurrent.block.ffn.router.weight:
+    #   copying a param with shape [48, 1280] into shape [24, 1280]
+    # run_anneal_readout.sh never passed --student-variant, and the wrapper
+    # swallowed the traceback, so the PROSE axis was silently unmeasured on
+    # every grown model. Growth was motivated by a prose regression and then
+    # evaluated only on code for a week because of this.
+    from mythouro.checkpointing import list_ckpts as _lc
+    _peek = _lc(args.ckpt_dir)
+    if not _peek:
+        raise SystemExit(f"no checkpoints found in {args.ckpt_dir!r}")
+    _ck = torch.load(_peek[-1], map_location="cpu", weights_only=False)
+    _ckcfg = _ck.get("cfg")
+    if _ckcfg is None and _ck.get("cfg_dict"):
+        from mythouro.main import MythOuroConfig
+        _ckcfg = MythOuroConfig(**_ck["cfg_dict"])
+    if _ckcfg is not None:
+        cfg = _ckcfg
+        _cli = _VARIANTS[args.student_variant]()
+        if getattr(_cli, "n_experts", None) != getattr(cfg, "n_experts", None):
+            logger.warning(
+                f"probe: checkpoint has n_experts={getattr(cfg,'n_experts',None)} "
+                f"but --student-variant {args.student_variant} implies "
+                f"{getattr(_cli,'n_experts',None)}. Using the CHECKPOINT's config."
+            )
+    else:
+        cfg = _VARIANTS[args.student_variant]()
+    del _ck
     cfg.vocab_size = tok.vocab_size
     cfg.max_seq_len = args.seq_len
     cfg.use_sandwich_norm = not args.no_sandwich_norm
