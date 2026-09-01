@@ -2674,6 +2674,79 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-01 (late night) — 🐛 RUNG 3 WAS CLOSED ON A BUG. Loop weighting has never run.
+
+Trying to launch `exit_pdf` produced a loud error, and chasing it invalidated a
+roadmap verdict.
+
+### The defect
+
+`RecurrentBlock` gated trajectory capture on **`not self.training`**:
+
+```python
+collect = self.collect_trajectory and kv_cache is None and not self.training
+```
+
+That guard was written for the INFERENCE best-of-trajectory feature.
+`MythOuro.forward_loop_states` was written later, for loop-loss-weighting, and
+needs the trajectory **during training** — it even sets
+`trajectory_requires_grad=True` and the code says why: *"needs the graph
+precisely BECAUSE it builds a training loss at every loop — without it the
+recurrent block and prelude receive no gradient at all."* The older guard
+silently defeated it.
+
+So in training `last_trajectory` was `None`, and `forward_loop_states` fell
+through to:
+
+```python
+if traj is None:              # n_loops == 0     <- the comment is wrong
+    traj = e.unsqueeze(2)     # e = PRELUDE OUTPUT
+```
+
+**Every `--loop-loss-weighting` run supervised `coda(prelude(x))` with the entire
+recurrent block bypassed.** Measured before the fix: `states (2,32,1,1280)`
+against `halt (2,36,4)` — K=1 where four loops ran.
+
+### ⇒ Rung 3's verdict is RETRACTED
+
+*"uniform loop weighting DESTROYS the model"* (2026-08-11: per-loop accuracy
+0.980 → 0.075, trajectory inverted) is exactly what training a model to answer
+from its prelude alone produces. **That was the bug, not a property of loop
+supervision.** `uniform` and `progressive` failed SILENTLY; only `exit_pdf`
+raised, because someone wrote a shape check with the note *"do not let this
+silently fall back, or the A/B measures nothing."* That note is the only reason
+this was ever found.
+
+### After the fix
+
+```
+TRAIN mode: states (2,32,4,1280)   halt (2,32,4)   sums to 1   grad ✓
+mean halt mass per loop: [0.249, 0.253, 0.254, 0.244]
+```
+
+Default inference path unchanged (`collect_trajectory` and
+`trajectory_requires_grad` both default False). 433 + 4 tests pass;
+`tests/test_loop_states.py` pins all four properties, including that the
+recurrent block actually receives gradient.
+
+### 🔍 And it reinterprets "halt is pinned at 2.00/4"
+
+The halt distribution is **uniform** — 0.25 per loop. That is
+`--depth-reg-coeff 0.3` doing its job: a KL pulling the halt distribution toward
+uniform. A uniform distribution over 4 loops has mean depth ~2 **by
+construction**. So the long-standing finding *"ACT is not making a poor routing
+decision; it is making no decision at all"* is better read as **the regulariser
+forbidding a decision**, not the halt head failing to make one.
+
+It also means `exit_pdf` ≈ `uniform` at depth-reg 0.3 — precisely what
+`run_loopweighted.sh` predicted when it skipped exit_pdf, and why
+`run_exitpdf.sh` lowers depth-reg to 0.1 (the documented v3-onward default) in
+the same run.
+
+**Sixth silent failure of the week.** Five logged warnings or reported success;
+this one silently trained the wrong states for an entire rung and produced a
+published verdict.
+
 ## 2026-09-01 (night) — 📚 THE LITERATURE SAYS OUR WALL MAY BE THE OBJECTIVE, AND THE TREATMENT IS UNRUN
 
 Owner's prompt: check the papers, that is how the conclusions were reached.

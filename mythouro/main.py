@@ -1762,7 +1762,24 @@ class RecurrentBlock(nn.Module):
         # `collect_trajectory`, and never during training (the training return
         # is h_K and must stay on its own gradient path — see the comment at the
         # end of this method).
-        collect = self.collect_trajectory and kv_cache is None and not self.training
+        # ⚠ `trajectory_requires_grad` is the caller's explicit "I need this
+        # DURING TRAINING, with gradients" signal, and only
+        # MythOuro.forward_loop_states sets it. Before 2026-09-01 the
+        # `not self.training` clause stood alone, so forward_loop_states got
+        # last_trajectory=None in training, fell through to its
+        # `traj = e.unsqueeze(2)` branch (labelled "n_loops == 0"), and
+        # supervised `coda(prelude(x))` with the ENTIRE RECURRENT BLOCK
+        # BYPASSED. Every --loop-loss-weighting mode was affected; uniform and
+        # progressive failed silently, only exit_pdf raised (its shape check
+        # caught K=1 against a 4-step halt distribution). That is what rung 3
+        # measured when it concluded "uniform loop weighting destroys the model"
+        # — accuracy 0.980 -> 0.075 is what training a model to answer from its
+        # prelude alone looks like. The default inference path is unchanged.
+        collect = (
+            self.collect_trajectory
+            and kv_cache is None
+            and (not self.training or self.trajectory_requires_grad)
+        )
         traj_states: list[torch.Tensor] = []
 
         # P0.2: accumulate MoE routing telemetry across ALL loops (not just the
