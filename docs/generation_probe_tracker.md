@@ -2674,6 +2674,81 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-01 (night) — 📚 THE LITERATURE SAYS OUR WALL MAY BE THE OBJECTIVE, AND THE TREATMENT IS UNRUN
+
+Owner's prompt: check the papers, that is how the conclusions were reached.
+Doing so lands three things directly on this week's results.
+
+### 1. Final-only supervision is a documented cause of accuracy walls
+
+`looped_lm_landscape.md` §0.1 records the contradiction with evidence both ways.
+MythOuro supervises **final-only (`h_K`)** — and not by choice, but because the
+ACT-weighted sum let the optimiser pin λ₀≈1 and collapse depth.
+
+* [recurrent-depth-ttc](https://github.com/duongtrongnguyen123/recurrent-depth-ttc):
+  iterative-target supervision extrapolates **24x beyond trained depth**;
+  **final-only supervision causes accuracy WALLS.** Same prelude/core/coda layout.
+* **Ouro** ([2510.25741](https://arxiv.org/abs/2510.25741)) — *our teacher* —
+  trains `L = Σ_t p_φ(t|x)·L^(t)`, per-step weighted by exit probability.
+* **RLTT** ([2602.10520](https://arxiv.org/abs/2602.10520)): distributing credit
+  across the latent trajectory beats terminal-only by **+5.8% / +10.9%**,
+  measured on Ouro.
+
+The landscape doc's own reading: *"depth is not dead, it is walled, the wall is
+the objective, and rung 5 (grow depth) treats the symptom while rung 3 treats the
+cause."* **We spent 2026-08-27..09-01 growing WIDTH.**
+
+Corroborating our own instruments: halt depth is pinned at **exactly 2.00/4 on
+every sample of every domain** and has been on every checkpoint measured; the
+`--n-loops` sweep was flat at 4/6/8; L4 has never cleared ~9%.
+
+### 2. `exit_pdf` — Ouro's exact weighting — EXISTS AND HAS NEVER BEEN RUN
+
+`--loop-loss-weighting` accepts `off | uniform | progressive | exit_pdf`, where
+exit_pdf is documented in-flag as *"the model's own halt distribution, i.e.
+Ouro's p(t|x) exactly."* Rung 3 tested **uniform only** and concluded loop
+weighting destroys the model.
+
+Uniform is the harshest arm — the roadmap says so: *"it gives loop 0, never an
+output state, 25% of the gradient."* It inverted the depth trajectory
+(0.980 → 0.075, deeper loops worse than shallower), which is what forcing loop 0
+to match loop 3 should do. **That result does not generalise to exit_pdf.**
+
+`run_loopweighted.sh` skipped exit_pdf deliberately and for a good reason:
+`--depth-reg-coeff 0.3` is a KL from the halt distribution toward UNIFORM, so
+exit_pdf would be pulled toward uniform anyway. The roadmap already names the
+remedy: **"progressive/exit_pdf with depth-reg lowered."** Never run.
+
+### ⚠ 3. The honest tension — this is a two-sided experiment, not a fix
+
+With halt **pinned at 2.00**, exit_pdf concentrates nearly all weight on loop 2:
+that converts final-only supervision into *loop-2-only*, not distributed
+supervision. Lowering `--depth-reg-coeff` is what lets the halt distribution
+move — but depth-reg is exactly what prevents ACT loop-collapse, the failure that
+made us supervise `h_K` in the first place. **The two knobs pull against each
+other and must move together.**
+
+The landscape doc pre-registered how to read it: *"depth collapsing toward loop 0
+vindicates Silent Thinking; the flat-depth wall lifting vindicates per-loop
+supervision."* Watch the halt distribution and `loop_efficiency` beside the evals.
+
+### 4. Two more unadopted levers from the same batch
+
+* **Muon instead of AdamW** ([2511.07384](https://arxiv.org/abs/2511.07384),
+  switched specifically for recurrent stability) — *"cheapest untested lever in
+  this batch on a rig where stability has been the recurring failure."*
+* **A data curriculum** — general "healing" data first, task data after. *"We ramp
+  loop depth but never data composition."* This bears directly on the mathcode
+  regression, which poured code+math onto a general model and produced salad on
+  MEDICAL seeds — a curriculum failure with a named remedy in the literature.
+
+### 5. And the scale gap, stated plainly
+
+Retrofitted recurrence reaches **51.2% GSM8K at 32 recurrent steps** vs 46.2% for
+the non-recurrent baseline. We train at **4** and evaluate at 4, with halt pinned
+at 2. *"Depth, not width, drives multi-step accuracy"* — and width is the axis we
+just spent a week on.
+
 ## 2026-09-01 (evening) — 🟢 PROSE: the wall REPRODUCES, and the masked model is past it
 
 First prose measurement ever taken on a grown model, and the first controlled
