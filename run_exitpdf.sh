@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # EXIT_PDF — is our accuracy wall the OBJECTIVE rather than the parameter count?
 #
-#   bash run_exitpdf.sh          # ~8h, 3,000 steps
+#   bash run_exitpdf.sh          # ~4.2h, 3,000 steps at the measured 278M rate (5.0 s/step)
 #
 # THE CASE, from docs/looped_lm_landscape.md §0.1 (owner-supplied literature):
 #   * recurrent-depth-ttc: iterative-target supervision extrapolates 24x beyond
