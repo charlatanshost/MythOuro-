@@ -2674,6 +2674,49 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-01 (later) — 📉 CAPABILITY AFTER GROWTH: NULL. Three lineages, one number.
+
+All n=320, bare framing, T=0.4 pen=1.15 seed=1234 — identical settings, and the
+control is the BIT-EXACT promoted 278M so no cross-session drift is involved.
+
+| checkpoint | L3+ | L4 | task L4+ |
+|---|---|---|---|
+| 278M base (grown48 step 0 control) | **68.8%** | 9/320 | 3/10 |
+| 397M grown48 @ 8,696 (code+math) | 48.4% | 12/320 | 4/10 |
+| 397M growth_v2 + balancer_off @ 6,000 | 59.1% | 5/320 | 2/10 |
+
+**Spread 20.3 pp against a 13.6 pp checkpoint-to-checkpoint sd — all three sit
+within ~1.5 sd of one another.** After ~15,000 post-growth steps across two
+separate promotions, on two different corpora, with and without the load
+balancer, capability is statistically indistinguishable from the unchanged base.
+Both grown models read *lower* than the control, though not significantly.
+
+**⇒ Growth is mechanically sound (G1) and delivered nothing measurable (G2).**
+That is now four independent lines of evidence pointing the same way:
+
+1. Experts converge to ~90% twins — asymptotic, at any token budget (fit 0.893)
+2. Router perturbation to cos 0.704 made differentiation *slower*, not faster
+3. Removing the uniformity controller changed the curve by −0.003
+4. Capability is flat against the pre-growth base, twice
+
+### The one thing growth could never have done, restated
+
+```
+activated params, 24 experts:  180,726,115
+activated params, 48 experts:  180,726,115
+```
+
+Only 4 of 48 fire per token. Expert-count growth adds storage the model cannot
+reach within a token, so it was never able to move the quantity the capacity
+hypothesis identifies. **Net2Wider is the only growth axis that raises activated
+params**, and it is the one that has never been built.
+
+### ⇒ Recommended base for Net2Wider: `checkpoints_base/step_0157000.pt`
+
+Not the 397M. The grown models measure no better, cost 34% more per checkpoint
+(4.5 GB vs 3.35 GB), and carry 24 experts that two controlled experiments say
+will not differentiate. Nothing measurable is lost by starting from the 278M.
+
 ## 2026-09-01 — ✅ BALANCER RULED OUT. G2b is established: STOP ADDING EXPERTS.
 
 The cleanest A/B this project has run: same base (`growth_v2/step_0003000`), same
