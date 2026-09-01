@@ -1501,6 +1501,14 @@ reproduced on a healthy base with symmetry deliberately broken.
 **⇒ DECISION: stop adding experts.** Two promotions, both function-preserving,
 both ending with the new experts as ~96% twins of their parents.
 
+**CONFIRMED 2026-09-01 — the uniformity controller is also ruled out.** A clean
+one-variable A/B (`--router-bias-lr 0.0`, same base and corpus as `growth_v2`)
+moved cos(gate) by **−0.003** at step 6,000, and utilisation stayed balanced
+without the controller (cv 0.19–0.57, no collapse). Initialisation and load
+balancing are both eliminated; the twinning is intrinsic. Side-finding: the
+aux-loss-free balancer is doing almost no work at this scale, so **`cv` is a
+weak health signal** — it reads uniform whether or not anything enforces it.
+
 **⇒ Next axis is Net2Wider** — it widens the experts that exist rather than
 adding more for the model to find work for, which is the right shape of fix for
 this exact failure. Function-preserving under SiLU/SwiGLU. `grow_width.py` does

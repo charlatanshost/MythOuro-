@@ -2674,6 +2674,66 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-01 — ✅ BALANCER RULED OUT. G2b is established: STOP ADDING EXPERTS.
+
+The cleanest A/B this project has run: same base (`growth_v2/step_0003000`), same
+corpus, same every other flag. **One variable: `--router-bias-lr 0.0` vs 1e-3.**
+`growth_v2` is the balancer-on control from that exact checkpoint.
+
+### Result — the balancer was NOT manufacturing the twins
+
+| step | cos(gate), balancer OFF | balancer-ON prediction | delta |
+|---|---|---|---|
+| 3,000 | 0.9601 | 0.9578 | +0.0023 |
+| 4,000 | 0.9494 | 0.9513 | −0.0019 |
+| 5,000 | 0.9439 | 0.9469 | −0.0030 |
+| 6,000 | **0.9407** | 0.9438 | **−0.0031** |
+
+−0.003 is nothing. Removing the uniformity controller entirely changed the
+differentiation curve not at all.
+
+### And utilisation stayed balanced WITHOUT the controller
+
+```
+balancer OFF   cv = 0.360  0.294  0.571  0.193  0.198   (bias L2 frozen 4.569)
+balancer ON    cv = 0.419  0.547  0.236  0.234          (bias L2 climbing)
+```
+
+No collapse, no dying experts, min% never below 0.5%. **The model self-balances.**
+
+**⇒ Two independent explanations for the twinning are now eliminated:
+initialisation (growth v2, router perturbed to cos 0.704) and the uniformity
+controller (this run). The convergence is INTRINSIC.** G2b stands on evidence.
+
+### ⚠ Limit of this test
+
+`--router-bias-lr 0` stops the *update*; it does not zero the accumulated bias,
+which stayed frozen at L2 4.569. So the DYNAMIC suppression hypothesis is
+refuted — nothing was actively pushing the twins together — but a static offset
+effect is untested. Given cv sits near 0.2 unforced, that offset appears close
+to what the model wants anyway.
+
+### Free side-finding: the aux-loss-free balancer is doing almost no work
+
+Utilisation is near-uniform with the controller off. The DeepSeek-V3 machinery
+is not earning its place at this scale, and **`cv` is a weaker health signal
+than it looked** — it reads uniform whether or not anything is enforcing it.
+Do not treat a healthy `cv` as evidence that routing is doing something.
+
+### ⇒ NEXT AXIS: Net2Wider, and for a measured reason
+
+Expert-count growth cannot raise the quantity the capacity hypothesis says binds:
+
+```
+activated params, 24 experts:  180,726,115
+activated params, 48 experts:  180,726,115
+```
+
+Only 4 of 48 fire per token. Net2Wider widens the experts that DO fire, so it is
+the only axis that moves activated params. Function-preserving under SiLU/SwiGLU
+(duplicate a unit, halve its outgoing weight). `grow_width.py` does not exist —
+roadmap estimates ~2 sessions, pure dev time, no capital.
+
 ## 2026-08-31 (late) — ⚠️ TWO CORRECTIONS, and the balancer hypothesis
 
 ### 1. The pre-growth pours WERE already balanced across all four domains
