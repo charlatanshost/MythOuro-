@@ -2674,6 +2674,59 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-01 (final) — ✅ THE NEW EXPERTS WERE THE DAMAGE. Growth should be REVERTED.
+
+Owner's hypothesis: the grown models look worse because with topk=4 of 48, half
+of every token's experts are now the UNDERTRAINED ones. Tested by re-applying the
+-100 sentinel to experts 24-47 (`tools/mask_new_experts.py`) — same weights, same
+training, new experts silenced, model functionally 24-expert again.
+
+### CONFIRMED, and large
+
+| | L3+ | L0 |
+|---|---|---|
+| grown48, 48 live | 48.4% | 102/320 |
+| grown48, MASKED to 24 (mean of 3 ckpts) | **71.1%** (sd 4.7) | **40** |
+| 278M base | 68.8% | 49 |
+
+**Silencing the new experts fully recovers the model** — L3+ back to base, L0
+*below* base (z=-5.90, p<1e-6). The 24 undertrained experts were degrading every
+token they touched. **Growth's harm is real, mechanical, and reversible.**
+
+### ⚠️ WITHDRAWN THE SAME SESSION: "L4 tripled"
+
+Off `step_0008696` alone, masked L4 read **30/320** against the base's 9 — z=3.47,
+p=0.0005, and it broke the trade pattern. It did not replicate:
+
+```
+masked L4 by checkpoint:  8696 -> 30,  7000 -> 15,  8000 -> 1
+mean 15.3, SE 6.8, interval 1.7-29.0 — INCLUDES the base's 9. Not significant.
+```
+
+One draw, written up as a finding. The protocol from 2026-08-31 said means over
+>=3 checkpoints and was ignored the moment a result looked good.
+
+### ⚠️ L4 IS ~12x NOISIER THAN L3+ AND IS UNUSABLE ON ONE CHECKPOINT
+
+```
+L4   mean 15.3  sd 11.8   relative sd 0.77
+L3+  mean 71.1  sd  4.7   relative sd 0.066
+```
+
+30 -> 15 -> 1 across checkpoints ~1,000 steps apart. **Every single-checkpoint L4
+number this project has quoted is suspect**, including "code L4 = 0 across 240
+generations" (2026-07-30), which was part of the evidence that the wall was
+capacity and that the student should be grown.
+
+### ⇒ WHAT TO DO
+
+1. **Revert the growth.** Prune experts 24-47 and go back to 24. The grown models
+   are strictly worse live, equal when masked, and cost 34% more per checkpoint.
+   Two controlled experiments say the new experts will never differentiate.
+2. **No evidence the 8,696 steps helped.** Masked ~= base on both metrics. The
+   pour on a grown model bought nothing; it was spent diluting itself.
+3. **L4 needs >=3 checkpoints, always.** So does L3+, at a lower factor.
+
 ## 2026-09-01 — 📖 READ THE TEXT: growth made TYPICAL output WORSE, and best-of-32 hid it
 
 The owner asked for prompt→output pairs rather than the ladder aggregate. Doing
