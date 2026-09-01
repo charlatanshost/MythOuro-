@@ -37,6 +37,18 @@
 # 0.3 -> 0.1 here: 0.1 is the documented v3-onward default (failure_modes.md),
 # not a guess. Do NOT go to 0 in the same run — that changes both knobs at once.
 #
+# ⚠ MICRO-BATCH 2, GRAD-ACCUM 8 — NOT 8/2. THIS IS LOAD-BEARING.
+# The loop-weighted objective runs a FULL-VOCAB distillation_loss PER LOOP:
+#     for k in range(K): logits_k = student.head(states[..., k, :])
+#                        distillation_loss(logits_k, t_logits, ...)
+# with all K autograd graphs live. At micro-batch 8 that is ~19.3 GB for this
+# term alone (8 x 1024 x 49152 x 4B x ~3 tensors x 4 loops) on a 48 GB card that
+# also holds the 2.6B teacher. The 2026-09-01 16:32 attempt died on the card's
+# characteristic page fault — "Segmentation fault from GPU ... NotPresent, PDE,
+# Write" — inside distillation_loss, which is what an OOM looks like here rather
+# than a clean allocator error.
+# 2 x 8 = 16 micro-batch-steps, identical tokens/step (16,384), ~4.8 GB.
+#
 # THE GATE, pre-registered by the landscape doc itself:
 #   halt distribution MOVES off 2.00 and L4/L3+ hold or rise
 #       -> the wall was the objective. Rung 3 reopens, depth becomes the axis,
@@ -56,6 +68,10 @@ source ../venv-xpu/bin/activate
 export TRITON_DEFAULT_BACKEND=intel
 unset SYCL_CACHE_PERSISTENT PYTORCH_ALLOC_CONF
 export PYTHONFAULTHANDLER=1 PYTHONUNBUFFERED=1
+# Same fault class as the 48-expert crash (NotPresent/PDE/Write). These are the
+# knobs that made that one survivable; cheap insurance on a memory-heavy run.
+export SYCL_QUEUE_THREAD_POOL_SIZE=1
+export ZE_SERIALIZE=2
 
 # STEPS override so the night can be de-risked with a short pilot first:
 #   STEPS=1200 bash run_exitpdf.sh    # ~1.7h — does the halt distribution MOVE?
@@ -81,7 +97,7 @@ echo "=== log: $LOG ==="
 python -u -m training.distill \
   --student-variant mythouro_distill_tiny \
   --student-device xpu:0 --teacher-device xpu:0 --teacher-id "$TEACHER" \
-  --seq-len 1024 --micro-batch 8 --grad-accum 2 \
+  --seq-len 1024 --micro-batch 2 --grad-accum 8 \
   --warmup-steps 500 --lr 1e-4 --min-lr 3e-5 --start-loops 4 \
   --loop-loss-weighting exit_pdf \
   --depth-reg-coeff 0.1 --divergence rev_kl \
