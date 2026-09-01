@@ -2674,6 +2674,83 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-01 (evening) — 🟢 PROSE: the wall REPRODUCES, and the masked model is past it
+
+First prose measurement ever taken on a grown model, and the first controlled
+contrast between a leg that regressed and one that did not. **Everything below
+was measured in ONE session**, α=0.0 (pure student, no teacher mixed in).
+
+| | top_share ↓ | distinct1 ↑ | n |
+|---|---|---|---|
+| **MASKED grown48 (24 live)** | **0.104** ±0.015 | **0.571** ±0.016 | 3 |
+| 278M base `step_0157000` | 0.137 | 0.520 | 1 |
+| mathcode leg (the REGRESSION) | 0.159 ±0.036 | 0.482 ±0.025 | 3 |
+| — of which `163,238` | 0.205 | 0.450 | |
+
+### 1. The regression is REAL and it reproduces
+
+`163,238` reads **0.205** in-session against **0.242** archived — same direction,
+same magnitude, and the worst of everything measured. The mathcode leg sits below
+its own parent (0.159 vs 0.137). **The wall is not a measurement artifact.** I
+questioned that on 2026-08-31 on the strength of the checkpoint-variance finding;
+that questioning was wrong and is withdrawn here.
+
+### 2. The masked model is past the wall — perfect rank separation
+
+masked spans **0.083–0.117**; mathcode spans **0.118–0.205**. **No overlap**,
+3 vs 3, which is the minimum achievable p (0.05, exact). And it beats the base it
+descends from on both metrics.
+
+### 3. Both legs poured the SAME corpus
+
+`mathcode` (278M, 6,000 steps from 157,238) and `grown48` (397M, 8,696 steps from
+157,000) both poured code+math from effectively the same parent. One regressed
+prose; the other improved it.
+
+**HYPOTHESIS, not a finding — accidental regularisation.** The difference is that
+grown48 trained with 24 undertrained experts absorbing roughly half of every
+token's routing. That dilution may have prevented the original experts from
+over-specialising onto code+math — which is exactly the mechanism that produced
+salad on *medical* seeds in the mathcode leg. Mask them at eval and you cash in an
+un-regressed model. **Untested.** The clean test is a 24-expert leg on the same
+corpus with an equivalent regulariser (expert dropout, or a held-out expert
+fraction) — if it also escapes the wall, the mechanism is regularisation and
+growth was never needed for it.
+
+### 4. The text agrees with the metrics — read it
+
+```
+163,238  (archived):  "such as C.P. ... - CASE - CABI (cascar - CCAO - CACA
+                       - CACI - CCA - CACF - CSC - CAST - CDA - CCI - CCA"
+masked grown48:       "the treatment of the skin problem and the presence or
+                       more often a specific type of infection. We know that
+                       the combination of the new treatment for the diseases..."
+```
+
+Acronym salad gone. Register correctly selected per domain across four seeds —
+clinical bullets for diabetes, Python for fibonacci, LaTeX for the quadratic,
+pharmacological prose for ibuprofen. **One honest exception:**
+`"using ant-antantantantant or D or d"` — a token-level stutter on the bacterial
+seed, not the sustained cascade that defined the regression.
+
+### ⇒ 5. AND THE UN-PARK CONDITION FOR GROWTH WAS NEVER MET
+
+`ideas.md` parked "grow the model" on 2026-06-18: *fails triage #1, token-starved,
+bigger model = hungrier, worse*. Un-park condition, written at the time:
+
+> **"Token-curve shows we've reached compute-optimal at current size."**
+
+**That curve was never run.** Growth was un-parked in August on the regression-wall
+evidence instead. And today's prose result is a data point ON that curve — 8,696
+further steps improved prose over the base — which says the model is **still
+gaining from tokens**, i.e. still not compute-optimal, i.e. the un-park condition
+is *still* unmet.
+
+**Main thread #2 — "push 5-10x tokens, inspect every ~50M tokens, does capability
+keep growing?" — is the work.** #3 records that this curve is the go/no-go for
+capital and the proof artifact for a collaborator. It remains the highest-value
+thing on the board and it has been open since June.
+
 ## 2026-09-01 (final) — ✅ THE NEW EXPERTS WERE THE DAMAGE. Growth should be REVERTED.
 
 Owner's hypothesis: the grown models look worse because with topk=4 of 48, half

@@ -294,6 +294,25 @@ hardware upgrade" tier.
 
 ## ⚡ Resume quickstart (read this first if returning after a gap)
 
+**CURRENT (2026-09-01): GROWTH IS DONE AND IT FAILED — go back to the token curve.**
+Expert-count growth ran 08-27..09-01 and is closed on evidence (G2b, and the
+`ideas.md` parked row). Live, the grown model is worse; masked back to 24 experts
+it matches or beats the 278M base on every axis, and on PROSE it beats both the
+base and the regressed mathcode leg with perfect rank separation. Best current
+model: **`checkpoints_grown48/step_0008696_MASKED.pt`** (masked to 24 live experts).
+
+⚠ **The growth programme un-parked itself without meeting its own condition.**
+`ideas.md` parked "grow the model" in June, un-parkable only when *"the token-curve
+shows we've reached compute-optimal at current size"*. That curve was never run.
+The 09-01 prose readout is a point ON it and says the model is STILL gaining from
+tokens — so the condition remains unmet and growth remains parked.
+
+**⇒ The work is main-thread #2: the token curve.** Push 5-10x tokens, inspect
+every ~50M, on a 24-expert model, with means over >=3 checkpoints and BOTH
+instruments (code ladder + prose probe). Main-thread #3 records that this curve is
+the go/no-go for capital and the proof artifact for a collaborator. It has been
+open since June and it is the highest-value thing on the board.
+
 **CURRENT (2026-08-29): a 397M 24→48-expert leg is IN PROGRESS**, paused at step
 2,650/6,000 in `checkpoints_grown48/`. Resume with `bash run_grown48.sh` (it
 globs the newest `step_*.pt` itself). ~19h total at the measured 11.5 s/step, so
