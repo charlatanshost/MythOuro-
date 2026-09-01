@@ -57,6 +57,10 @@ export TRITON_DEFAULT_BACKEND=intel
 unset SYCL_CACHE_PERSISTENT PYTORCH_ALLOC_CONF
 export PYTHONFAULTHANDLER=1 PYTHONUNBUFFERED=1
 
+# STEPS override so the night can be de-risked with a short pilot first:
+#   STEPS=1200 bash run_exitpdf.sh    # ~1.7h — does the halt distribution MOVE?
+#   bash run_exitpdf.sh               # continues by 3,000 from wherever it is
+STEPS="${STEPS:-3000}"
 DIR=checkpoints_exitpdf
 SRC=checkpoints_pruned24/step_0000000.pt
 TEACHER=ByteDance/Ouro-2.6B-Thinking
@@ -70,7 +74,7 @@ if pgrep -f "python -u -m training\.(distill|sft)" >/dev/null; then
 [ -f "$DIR/step_0000000.pt" ] || cp "$SRC" "$DIR/step_0000000.pt"
 
 at=$(basename "$(ls -t $DIR/step_*.pt | head -1)" | sed 's/step_0*//; s/\.pt//'); at=${at:-0}
-echo "=== exit_pdf: $at -> $((at+3000))  (24 experts, depth-reg 0.3 -> 0.1) ==="
+echo "=== exit_pdf: $at -> $((at+STEPS))  (24 experts, depth-reg 0.3 -> 0.1) ==="
 echo "=== WATCH THE HALT DISTRIBUTION. That is the experiment. ==="
 echo "=== log: $LOG ==="
 
@@ -88,7 +92,7 @@ python -u -m training.distill \
   --ckpt-dir "$DIR" \
   --ckpt-every-mins 15 --ckpt-milestone-every 500 --keep-last 8 \
   --num-workers 0 --trust-remote-code --log-every 50 \
-  --total-steps $((at+3000)) \
+  --total-steps $((at+STEPS)) \
   > >(tee -a "$LOG") 2> >(tee -a "$LOG.err" >&2)
 
 echo
