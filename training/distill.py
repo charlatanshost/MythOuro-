@@ -727,6 +727,17 @@ def main():
         resume_extra, cfg,
         source_variant_experts=_VARIANT_FUNCS["mythouro_distill_tiny"]().n_experts,
     )
+    # A run that would execute zero steps is a configuration error, not a
+    # success. Silently printing "training complete" after resuming past
+    # --total-steps has already cost one pilot window.
+    if start_step >= args.total_steps:
+        raise SystemExit(
+            f"refusing a no-op run: resumed at step {start_step} but "
+            f"--total-steps is {args.total_steps}. Either the checkpoint's "
+            f"internal step is wrong (a promoted/pruned file should carry "
+            f"step=0), or --total-steps needs to be higher than {start_step}."
+        )
+
     growth_metadata = (resume_extra or {}).get("growth_metadata")
 
     # ⚠ growth_metadata MUST be re-saved into every checkpoint this run writes.

@@ -80,6 +80,13 @@ def main():
     if ck.get("cfg_dict"):
         ck["cfg_dict"] = dict(ck["cfg_dict"]); ck["cfg_dict"]["n_experts"] = keep_n
 
+    # Reset the step counter. The pruned model starts a NEW lineage, and
+    # grow.py sets step=0 on promotion for the same reason. Leaving the source
+    # step (e.g. 8696) while naming the file step_0000000.pt makes the trainer
+    # resume at 8696, compare against --total-steps, and exit with "training
+    # complete" after ZERO steps — reporting success. Cost a pilot window on
+    # 2026-09-01.
+    ck["step"] = 0
     ck["optimizer"] = {}          # shapes changed — a stale optimizer would break
     extra = dict(ck.get("extra") or {})
     extra.pop("growth_metadata", None)
