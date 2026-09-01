@@ -72,6 +72,14 @@ from mythouro.tokenizer import MythOuroTokenizer
 # this since growth was built; distill.py never did, so the growth path only
 # worked through the channel that collapses this model (found 2026-08-27).
 from mythouro.grow import apply_sentinel_to_router_biases
+# Startup assertions. Three jobs in the week of 2026-08-25 ran for hours doing
+# the wrong thing while logging only a warning; these turn that class of
+# condition into a hard failure before a single GPU kernel launches.
+from mythouro.preflight import (
+    check_corpus_rows,
+    check_growth_metadata,
+    check_teacher_shard_schemas,
+)
 from mythouro.training_utils import (
     _MIX_RATIOS,
     LoopCurriculum,
@@ -647,6 +655,13 @@ def main():
         cfg.rope_real = True
         logger.info("distill: XPU detected → rope_real=True (complex ops unsupported)")
 
+    # ── PREFLIGHT: fail in seconds, not hours ────────────────────────────
+    # Runs BEFORE the student, the teacher, or any CUDA/XPU allocation.
+    if args.teacher_data_files:
+        check_teacher_shard_schemas(args.teacher_data_files)
+        n_rows = check_corpus_rows(args.teacher_data_files, minimum=1000)
+        logger.info(f"preflight: teacher corpus {n_rows:,} rows")
+
     student = MythOuro(cfg).to(device)
     n_params = sum(p.numel() for p in student.parameters())
     logger.info(
@@ -706,6 +721,12 @@ def main():
     # A checkpoint from tools/grow_checkpoint.py carries growth_metadata in its
     # `extra`. New experts start behind a sentinel bias that must follow the
     # decay SCHEDULE, not the data-driven updater, during the warm-in window.
+    # A grown checkpoint that lost its metadata would train a bigger model
+    # that routes exactly like its source. Refuse rather than warn.
+    check_growth_metadata(
+        resume_extra, cfg,
+        source_variant_experts=_VARIANT_FUNCS["mythouro_distill_tiny"]().n_experts,
+    )
     growth_metadata = (resume_extra or {}).get("growth_metadata")
 
     # ⚠ growth_metadata MUST be re-saved into every checkpoint this run writes.

@@ -2674,6 +2674,54 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-01 — 📖 READ THE TEXT: growth made TYPICAL output WORSE, and best-of-32 hid it
+
+The owner asked for prompt→output pairs rather than the ladder aggregate. Doing
+that changed the reading twice, and the second correction is the one that counts.
+
+### First pass (WRONG — best-of-32 is pass@32, not behaviour)
+
+Taking each task's highest-rung sample, `grown48` looked BEST: it produced
+`return sum(nums)` and `return n % 2 == 0` where the base failed, while L3+
+ranked it worst. That is cherry-picking — one sample out of 32 says what the
+model CAN do, not what it does.
+
+### Second pass — the full rung distribution over all 320 samples
+
+| model | L0 | L2 | L3 | L4 |
+|---|---|---|---|---|
+| **278M base** | **15%** | 15% | **65%** | 2% |
+| 397M grown48 | **31%** | 19% | 44% | 3% |
+| 397M v2+balancer_off | **30%** | 10% | 57% | 1% |
+
+**Both grown models DOUBLE the L0 rate** — no usable function at all — 15% →
+30-31%, consistently and independently across two separate lineages. Text and
+metrics agree once you stop reading the best sample: growth did not help and
+plausibly hurt.
+
+### What the text shows that no aggregate did
+
+The base is **L3 65% / L4 2%**. It writes code that RUNS and is WRONG on
+two-thirds of samples:
+
+```
+is_even       ->  if n == 0: return False        (runs; wrong for every input)
+count_items   ->  count_items = 0 ; for i in range(len(items)):   (never returns)
+add_two       ->  if b == 0: return 1 ... def add_two(a,b): return a+b
+```
+
+That last one is the shape of the whole problem: **the correct answer is present,
+buried in noise the model also emits.** This is not fluency (solved), not
+halting, and not obviously capacity. It is CORRECTNESS, and it is where the
+entire remaining gap lives.
+
+### ⚠ Instrument note — the rambling tail is NOT scored
+
+`code_eval.py:344` truncates at `<|im_end|>` before grading, so the paragraphs of
+wrong explanation after the code do not affect the rung. Read completions
+truncated the same way or you will judge text the grader discards — I did, for
+one message, and it inverted the conclusion.
+
 ## 2026-09-01 (later) — 📉 CAPABILITY AFTER GROWTH: NULL. Three lineages, one number.
 
 All n=320, bare framing, T=0.4 pen=1.15 seed=1234 — identical settings, and the
