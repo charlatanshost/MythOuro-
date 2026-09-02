@@ -2674,6 +2674,70 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-02 — 🟢 EXIT_PDF: THE WALL WAS THE OBJECTIVE. ACT finally decides.
+
+4,200 steps of `--loop-loss-weighting exit_pdf --depth-reg-coeff 0.1` on the
+pruned 278M, the first time Ouro's own objective has ever run here.
+
+### The headline — ACT made a decision, and it held
+
+| | halt distribution | mean depth | KL to uniform |
+|---|---|---|---|
+| base (depth-reg 0.3) | [0.249, 0.252, 0.256, 0.244] | 2.49/4 | 0.0001 |
+| exit_pdf @4,000 | [0.012, 0.189, 0.366, 0.433] | **3.22/4** | 0.2893 |
+| exit_pdf @4,104 | [0.011, 0.198, 0.357, 0.434] | **3.21/4** | 0.2862 |
+| exit_pdf @4,200 | [0.011, 0.206, 0.339, 0.443] | **3.21/4** | 0.2825 |
+
+Loop 0 abandoned (0.249 → 0.011); mass on loops 3 and 4. Three consecutive
+checkpoints agree to two decimals — a **stable learned distribution**, not drift.
+
+**This is what four prior efforts could not do.** "Halt depth pinned at exactly
+2.00/4 on every sample of every domain… ACT is not making a poor routing
+decision; it is making no decision at all" was **the depth regulariser forbidding
+a decision** — a KL toward uniform, whose mean depth is ~2 by construction. Drop
+it to 0.1, supervise every loop, and ACT decides within 1,200 steps.
+
+### Capability — a favourable trade, not a free lunch
+
+| | base | exit_pdf | read |
+|---|---|---|---|
+| code **L0** (nothing usable) | 12.6% (121/960) | **2.5%** (8/320) | **z=−5.20, p=2e-7** |
+| code L3+ | 71.1% | 77.2% | +6.0 pp, within the 13.6 pp sd |
+| code L4 | ~9–30/320 | 4/320 | L4 is ~12x noisier; unreadable at n=1 |
+| prose top_share ↓ | 0.104 | 0.118 ±0.018 | within noise |
+| prose distinct1 ↑ | 0.571 | **0.519 ±0.026** | **−0.052, ~2 sd — mild real loss** |
+
+**Five times fewer catastrophic failures**, at the cost of slightly narrower
+lexical variety. Consistent with a model now spending 3.21 of 4 loops per token:
+more deliberation, more reliability, marginally less sampling diversity.
+
+⚠ **`distinct1` is the number to track.** A sustained slide is the early
+signature of the repetition attractor fought all summer. One 2 sd dip at 4,200
+steps is not that, but it is the metric that would show it first.
+
+### ⇒ It does NOT reproduce the 2026-08-14 precedent
+
+That run moved depth 2.00 → 3.60 via `train_depth_policy.py` and **the task got
+worse** (math L3+ 11.2% → 5.0%). Here depth rose and the code task **improved**.
+Two mechanisms, opposite outcomes. The difference: this came from the training
+objective, not a bolt-on policy stage optimising the halting head directly.
+
+Corroboration worth noting — that 2026-08-14 entry found the trained head put
+"mass on loops 3 and 4, the two lowest-CE depths." exit_pdf independently
+arrived at the same two loops. Different mechanisms, same answer.
+
+### ⇒ WHAT THIS MEANS FOR THE PROJECT
+
+`looped_lm_landscape.md` §0.1 said it on 2026-08-10: *"depth is not dead, it is
+walled, the wall is the objective, and rung 5 (grow depth) treats the symptom
+while rung 3 treats the cause."* Rung 3 was then closed on 2026-08-11 by a bug
+that made loop-weighted training supervise `coda(prelude(x))` with the recurrent
+block bypassed — and the growth programme followed, treating the symptom for six
+days and two promotions.
+
+**The lever was the objective, and it was documented, implemented, and one flag
+away the entire time.**
+
 ## 2026-09-01 (late night) — 🐛 RUNG 3 WAS CLOSED ON A BUG. Loop weighting has never run.
 
 Trying to launch `exit_pdf` produced a loud error, and chasing it invalidated a

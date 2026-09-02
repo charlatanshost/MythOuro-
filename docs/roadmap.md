@@ -294,7 +294,16 @@ hardware upgrade" tier.
 
 ## ⚡ Resume quickstart (read this first if returning after a gap)
 
-**CURRENT (2026-09-01): GROWTH IS DONE AND IT FAILED — go back to the token curve.**
+**CURRENT (2026-09-02): `exit_pdf` WORKS — ACT decides for the first time.**
+4,200 steps of `--loop-loss-weighting exit_pdf --depth-reg-coeff 0.1` moved mean
+halt depth **2.49 → 3.21/4** (stable across 3 checkpoints, KL to uniform 0.0001 →
+0.28) and cut code **L0 from 12.6% to 2.5% (p=2e-7)**, at the cost of a ~2 sd dip
+in prose `distinct1` (0.571 → 0.519). Best model:
+**`checkpoints_exitpdf/step_0004200.pt`**. The 2026-08-11 rung-3 verdict that
+closed this axis was a BUG (see tracker 09-01); the growth programme that
+followed was treating a symptom.
+
+**OLDER (2026-09-01): GROWTH IS DONE AND IT FAILED — go back to the token curve.**
 Expert-count growth ran 08-27..09-01 and is closed on evidence (G2b, and the
 `ideas.md` parked row). Live, the grown model is worse; masked back to 24 experts
 it matches or beats the 278M base on every axis, and on PROSE it beats both the
