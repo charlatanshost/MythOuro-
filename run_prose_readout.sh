@@ -57,7 +57,14 @@ for p in sys.argv[1:]:
     for seed,by_alpha in d["seeds"].items():
         a=by_alpha.get("0.0")
         if not a: continue
-        ts.append(a["top_share"]); ds.append(a["distinct1"])
+        # ⚠ top_share / distinct1 are PER-SAMPLE LISTS, not scalars. Treating
+        # them as scalars makes statistics.mean() raise
+        # "can't convert type 'list' to numerator/denominator" (2026-09-02) —
+        # after the probe has already done its work, so it only kills the
+        # summary table. Flatten, then average.
+        _ts = a["top_share"]; _ds = a["distinct1"]
+        ts.extend(_ts if isinstance(_ts, list) else [_ts])
+        ds.extend(_ds if isinstance(_ds, list) else [_ds])
         for t in a.get("texts",[]):
             n+=1
             if SALAD.search(t): hits+=1
