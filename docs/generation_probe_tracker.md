@@ -2674,6 +2674,91 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-03 — 🔬 WHAT ACTUALLY BROKE THE REGRESSION WALL (and why we nearly missed it)
+
+The wall was broken by the **growth leg**, not by `exit_pdf` — and not through
+capacity. Recording this because nobody was looking for it, and the only reason
+it surfaced was the owner asking whether undertrained experts were dragging the
+model down.
+
+### The measurement that shows it — two legs, same parent, same corpus
+
+All α=0.0, all measured in one session:
+
+| | top_share ↓ | distinct1 ↑ |
+|---|---|---|
+| base `step_0157000` | 0.137 | 0.520 |
+| **mathcode leg** — 24 experts, code+math | **0.159** | **0.482** |
+| **grown48 → masked → pruned24** — 48 experts, code+math | **0.104** | **0.571** |
+| exit_pdf on pruned24 | 0.118 | 0.519 |
+
+Two legs from effectively the same parent on the same corpus. **The 24-expert leg
+regressed on both metrics; the 48-expert leg improved on both.** Then masking the
+added experts KEEPS the improvement.
+
+### It was not capacity, and every measurement says so
+
+* activated params never moved off **180,726,115** at 24 or 48 experts
+* the new experts never differentiated — ~90% twins, asymptotic (fit 0.893),
+  with initialisation and load balancing both independently ruled out
+* **masking them made the model BETTER**, not worse
+
+So the benefit was entirely at **training time**. The growth was, functionally, a
+dropout mask made of parameters.
+
+### ⚠️ THE OWNER'S MECHANISM, TESTED AND RULED OUT
+
+Proposed: the twins act as a **reference copy** — the originals drift onto the
+new corpus while the twins retain what is being forgotten, anchoring it.
+
+That makes a prediction the dilution account does not: twins should sit CLOSER
+to the step-0 weights than the originals do. Measured on `grown48`:
+
+```
+cos(original@8696, original@0) = 0.9497     <- how far the originals moved
+cos(twin@8696,     original@0) = 0.9424     <- how far the twins stayed
+                      difference  -0.0073
+```
+
+**The twins did not stay anchored** — they drifted the same distance, marginally
+further. No reference copy. Good hypothesis, clean refutation, and worth more
+than the untested version because it made a falsifiable prediction.
+
+### What is left, and its honest status
+
+**Inferred, not established: dilution.** With half of every token's routing going
+to weak experts, each original expert receives a smaller, noisier update —
+effectively a lower learning rate on the corpus term, so less over-fitting onto
+code+math while the on-policy component (70% of micro-steps) carries relatively
+more of the signal.
+
+⚠ **This cannot be separated from `--rollout-batch`.** The two legs also differed:
+mathcode ran 32, grown48 ran 8 (48-expert crash avoidance). Lower rollout-batch
+means less diverse on-policy sampling, and that is a live alternative.
+
+### ⇒ THE TEST THAT SETTLES IT — one night, one variable
+
+24 experts, code+math, **expert dropout ~50% on routing**, everything else
+matched to the mathcode leg *including rollout-batch 32*.
+
+* prose escapes the wall → **dilution confirmed**, and the effect is available
+  without ever promoting a checkpoint
+* prose regresses like mathcode → **rollout-batch was the variable**, which is a
+  far cheaper lever than either
+
+### Why this was unforeseen
+
+Growth was justified on capacity. Capacity never moved. The benefit arrived
+through a channel nobody was measuring, and it was invisible while the diluting
+experts were still live — the 48-expert model reads WORSE than the base
+(L0 12.6% → 31%). It only appeared once they were masked, and masking only
+happened because the owner asked whether the undertrained experts were the drag.
+
+**The lesson is not "growth works".** It is that a result can be real, large, and
+attributable to a mechanism entirely different from the one that motivated the
+experiment — and that the instrument which reveals it may be one nobody thought
+to build.
+
 ## 2026-09-03 — ⏹ DEPTH SWEEP: the wall did NOT lift. Contractivity binds, not supervision.
 
 `exit_pdf` model, no training, evaluated beyond its trained depth:
