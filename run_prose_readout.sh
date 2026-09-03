@@ -50,10 +50,28 @@ done
 python - "${OUTS[@]}" <<'PY'
 import json, sys, re, statistics as st
 SALAD = re.compile(r"(?:\b[A-Z]{2,6}\b[\s,\-]*){4,}")   # runs of bare acronyms
+from collections import Counter as _C
+def _looping(t):
+    """A sample loops if any non-trivial line repeats >=3x.
+
+    Added 2026-09-03 after the owner asked whether the TEXTS had been read.
+    They had not, and reading them found a "Question 15" x7 loop that
+    distinct1 had averaged into invisibility across 6 seeds. Counting turns
+    out to separate far better than distinct1 does: the regressed mathcode
+    checkpoint runs 5/30 looping against 0-1/30 everywhere else, where
+    distinct1 only manages 0.482 vs 0.571 on a metric with 0.016 sd.
+    """
+    lines=[l.strip() for l in t.split("\n") if len(l.strip())>3]
+    return bool(lines) and max(_C(lines).values()) >= 3
+def _stutter(t):
+    """Token-level stutter — a 4+ char run doubled inside one word
+    ('immunoconductduct', 'ant-antantantant')."""
+    return bool(re.search(r"\b\w*?(\w{4,})\1\w*\b", t))
 rows=[]
 for p in sys.argv[1:]:
     d=json.load(open(p))
     ts,ds,hits,n = [],[],0,0
+    loops=stut=0
     for seed,by_alpha in d["seeds"].items():
         a=by_alpha.get("0.0")
         if not a: continue
@@ -68,13 +86,15 @@ for p in sys.argv[1:]:
         for t in a.get("texts",[]):
             n+=1
             if SALAD.search(t): hits+=1
-    rows.append((d.get("step","?"), st.mean(ts), st.mean(ds), hits, n))
+            if _looping(t): loops+=1
+            if _stutter(t): stut+=1
+    rows.append((d.get("step","?"), st.mean(ts), st.mean(ds), hits, n, loops, stut))
 print("\n"+"="*64)
 print("  PROSE READOUT (α=0.0) — lower top_share, higher distinct1 is better")
 print("="*64)
-print(f"  {'step':>10} {'top_share':>10} {'distinct1':>10} {'salad':>10}")
-for s,t,dd,h,n in rows:
-    print(f"  {s:>10} {t:10.3f} {dd:10.3f} {f'{h}/{n}':>10}")
+print(f"  {'step':>10} {'top_share':>10} {'distinct1':>10} {'salad':>8} {'LOOPING':>9} {'stutter':>9}")
+for s,t,dd,h,n,lo,su in rows:
+    print(f"  {s:>10} {t:10.3f} {dd:10.3f} {f'{h}/{n}':>8} {f'{lo}/{n}':>9} {f'{su}/{n}':>9}")
 if len(rows)>=2:
     print(f"\n  MEAN over {len(rows)} checkpoints:")
     print(f"    top_share {st.mean([r[1] for r in rows]):.3f} "
@@ -82,6 +102,9 @@ if len(rows)>=2:
     print(f"    distinct1 {st.mean([r[2] for r in rows]):.3f} "
           f"(sd {st.pstdev([r[2] for r in rows]):.3f})")
     print(f"    salad     {sum(r[3] for r in rows)}/{sum(r[4] for r in rows)}")
+    print(f"    LOOPING   {sum(r[5] for r in rows)}/{sum(r[4] for r in rows)}"
+          f"   <- separates better than distinct1; regressed ckpt runs 5/30")
+    print(f"    stutter   {sum(r[6] for r in rows)}/{sum(r[4] for r in rows)}")
 print("\n  REFERENCE — the regression that motivated growth (pre-growth 278M):")
 print("    157,238  top_share 0.150  distinct1 0.484  salad 0")
 print("    160,000  top_share 0.197  distinct1 0.456  salad 0")
