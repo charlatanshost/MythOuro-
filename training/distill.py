@@ -337,6 +337,17 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "torch.utils.checkpoint at main.py:1794; this removes it. "
                         "Costs activation memory (loop becomes O(n_loops), not "
                         "O(1)) so pair with a smaller --micro-batch.")
+    p.add_argument("--expert-dropout", type=float, default=0.0,
+                   help="Zero this fraction of each token's top-k expert gates "
+                        "during training, WITHOUT renormalising, so effective "
+                        "top-k falls from K to K*(1-p). Reproduces the "
+                        "accidental regularisation the 24->48 growth produced: "
+                        "half of every token's routing went to experts "
+                        "contributing at ~0.40 amplitude, so the originals saw "
+                        "~2 slots instead of 4. That leg IMPROVED prose "
+                        "(0.137->0.104 top_share) where the matched 24-expert "
+                        "leg REGRESSED (->0.159). 0.5 matches the growth case. "
+                        "0.0 = off, bit-identical.")
     p.add_argument("--router-bias-lr", type=float, default=None,
                    help="Override cfg.router_bias_lr (default 1e-3). The "
                         "DeepSeek-V3 aux-loss-free balancer nudges routing "
@@ -636,6 +647,13 @@ def main():
     cfg.use_depth_aware_init = args.use_depth_aware_init
     if args.no_gradient_checkpointing:
         cfg.gradient_checkpointing = False
+    if args.expert_dropout > 0.0:
+        cfg.expert_dropout = args.expert_dropout
+        logger.info(
+            f"distill: expert_dropout={args.expert_dropout} — effective top-k "
+            f"{cfg.n_experts_per_tok} -> "
+            f"{cfg.n_experts_per_tok * (1 - args.expert_dropout):.1f}"
+        )
     if args.router_bias_lr is not None:
         # Recorded into cfg so the checkpoint carries it -- a leg run with the
         # balancer off must be identifiable from its checkpoint alone.

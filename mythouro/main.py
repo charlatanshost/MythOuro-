@@ -217,6 +217,16 @@ class MythOuroConfig:
     # utilisation. Too high → routing oscillates; too low → bias never
     # catches up. 1e-3 matches the DeepSeek-V3 paper.
     router_bias_lr: float = 1e-3
+    # Expert dropout (2026-09-03). Zeroes a fraction of each token's top-k
+    # expert GATES during training WITHOUT renormalising, so the effective
+    # top-k falls from K to K*(1-p). This reproduces, without any extra
+    # parameters, the accidental regularisation the 24->48 growth produced:
+    # there, half of every token's routing went to experts contributing at
+    # ~0.40 amplitude, so the ORIGINAL experts effectively saw ~2 slots
+    # instead of 4. That leg improved prose where the matched 24-expert leg
+    # regressed. This is the single-variable test of whether dilution was the
+    # mechanism. 0.0 = off, bit-identical to prior behaviour.
+    expert_dropout: float = 0.0
     # §3 new-component warmup: linear LR ramp 0→1 over this many steps for
     # parameters that are non-zero-init at step 0 (InjectionScheduler,
     # LoRAAdapter.down, MultiScaleInjection) so they don't destabilise the
@@ -792,6 +802,7 @@ class MoEFFN(nn.Module):
         self.n_experts = cfg.n_experts
         self.n_shared = cfg.n_shared_experts
         self.topk = cfg.n_experts_per_tok
+        self.expert_dropout = float(getattr(cfg, "expert_dropout", 0.0))
 
         self.router = nn.Linear(cfg.dim, cfg.n_experts, bias=False)
         # load-balancing bias adjusted externally during training; not a gradient param
@@ -851,6 +862,21 @@ class MoEFFN(nn.Module):
         _, topk_idx = (logits + self.router_bias).topk(self.topk, dim=-1)
         topk_scores = scores.gather(-1, topk_idx)
         topk_scores = topk_scores / topk_scores.sum(dim=-1, keepdim=True)  # renorm
+
+        # ── EXPERT DROPOUT ────────────────────────────────────────────────
+        # Deliberately NOT renormalised after masking. Renormalising would let
+        # the surviving experts absorb the dropped weight, leaving the token's
+        # total FFN contribution unchanged — which is the opposite of the
+        # effect being reproduced. Dropping without renormalising is what makes
+        # the effective top-k fall, which is what the twin experts did.
+        # Safe under gradient checkpointing: the loop body is wrapped with
+        # use_reentrant=False and preserve_rng_state defaults True, so the
+        # recompute draws the same mask.
+        if self.training and self.expert_dropout > 0.0:
+            keep = (
+                torch.rand_like(topk_scores) >= self.expert_dropout
+            ).to(topk_scores.dtype)
+            topk_scores = topk_scores * keep
 
         # Per-expert dispatch counts, computed once from the topk decision.
         # Exposed so the trainer can drive the aux-loss-free bias updater
