@@ -2674,6 +2674,64 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-03 — ⏹ DEPTH SWEEP: the wall did NOT lift. Contractivity binds, not supervision.
+
+`exit_pdf` model, no training, evaluated beyond its trained depth:
+
+| n_loops | L3+ | L0 | L4 | task L4+ |
+|---|---|---|---|---|
+| 4 (trained) | 75.6% | 3% | 3/320 | 2/10 |
+| 6 | 76.2% | 3% | 5/320 | 3/10 |
+| 8 | 75.6% | 2% | 3/320 | 2/10 |
+
+**4 → 8 loops: L3+ +0.0 pp.** Extra depth at inference buys nothing.
+
+### Why this is a CLEAN result rather than a repeat of the old flat sweep
+
+The 2026-07-31 sweep was also flat at 4/6/8, but under final-only supervision —
+the exact condition the literature says produces a wall at the trained depth, so
+it could not distinguish "objective walls the model" from "depth is useless".
+
+This one is measured on a model that **demonstrably uses depth**: halt at 3.21/4
+with mass on the last two loops, learned and stable. The flatness is therefore
+NOT the model ignoring its loops. **Loops 5-8 have nothing left to contribute.**
+
+ρ(A) predicts exactly that: mean 0.289, so the linear `A·h + B·e` term is at
+0.7% of initial by loop 4 and 0.005% by loop 8. **The recurrence has converged
+by the depth it was trained to.** The 2026-08-11 contractivity argument was right
+— and it is now confirmed on a working objective rather than on the bugged
+rung-3 leg where it was first measured.
+
+### ⇒ The literature's "24x beyond trained depth" does not transfer
+
+`recurrent-depth-ttc` reports iterative-target supervision extrapolating 24x.
+We now have iterative-target supervision and get 1.0x. The difference is not the
+objective — it is that our recurrence is far more contractive than theirs. That
+is a property of **our architecture**, not our training recipe.
+
+### ⇒ The depth lever is the CONTRACTION, and it is a build not a flag
+
+DeepLoop ([2607.13491](https://arxiv.org/abs/2607.13491)) scales residuals as a
+function of visit count and moves the DeepNorm exponent 1/4 → 1/2 as recurrent
+depth rises. `references.md` already flags that `grow_depth.py` *"expands four
+per-loop tensors but changes NO normalisation scaling, and we run sandwich norm"*
+— so rung 5 was always gated on this, and the sweep confirms the gate was right.
+
+### Three axes now closed on evidence, one open
+
+| axis | verdict |
+|---|---|
+| expert-count growth | **closed** — twins both times, activated params never moved off 180,726,115 |
+| depth extrapolation | **closed** — contraction binds; needs DeepLoop-style residual scaling first |
+| **the objective (exit_pdf)** | **WORKS** — L0 12.6% → 2.5% (p=2e-7), ACT decides for the first time |
+| tokens (main-thread #2) | **OPEN, and never run** |
+
+**⇒ The pour is the work.** It is main-thread #2, open since June, and #3 records
+it as the go/no-go for capital. It can now be measured through an objective that
+does not wall the model at its trained depth — which is exactly why running it
+before this week would have produced a pessimistic curve and possibly the wrong
+call on real money.
+
 ## 2026-09-02 — 🟢 EXIT_PDF: THE WALL WAS THE OBJECTIVE. ACT finally decides.
 
 4,200 steps of `--loop-loss-weighting exit_pdf --depth-reg-coeff 0.1` on the
