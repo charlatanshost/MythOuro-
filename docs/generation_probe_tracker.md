@@ -2802,6 +2802,43 @@ depth rises. `references.md` already flags that `grow_depth.py` *"expands four
 per-loop tensors but changes NO normalisation scaling, and we run sandwich norm"*
 — so rung 5 was always gated on this, and the sweep confirms the gate was right.
 
+### ⇒ THE DEPTH LEVER IS DeepLoop, AND HERE IS WHAT IT WOULD TOUCH
+
+**DeepLoop: Depth Scaling for Looped Transformers**
+([arXiv:2607.13491](https://arxiv.org/abs/2607.13491)) formalises residual
+scaling when the SAME blocks are revisited — a perturbation bound with a
+visit-alignment coefficient — and moves the Post-LN DeepNorm exponent from
+**1/4 to 1/2 as recurrent depth increases**. Validated at GPT-2 scale.
+
+**Our residual scale does not vary with loop count at all.** `RecurrentBlock`:
+
+```python
+x = x + self.resid_drop(self.attn(self.attn_norm(x), ...))
+if self.use_sandwich: x = self.post_attn_norm(x)
+x = x + self.resid_drop(self.ffn(self.ffn_norm(x)))
+if self.use_sandwich: x = self.post_ffn_norm(x)
+```
+
+Loop 1 and loop 8 get identical treatment. Nothing in the block is a function of
+which visit this is. Combined with ρ(A) mean **0.289**, that is precisely the
+regime where revisiting adds nothing: the state has already settled and each
+further pass applies the same contraction to an already-converged vector.
+
+**This is why `tools/grow_depth.py` is gated.** `references.md` records it:
+*"expands four per-loop tensors but changes NO normalisation scaling, and we run
+sandwich norm."* Growing 4→8 without loop-dependent scaling would add loops into
+the regime the sweep just measured as empty.
+
+**And the same note gives independent corroboration:** DeepLoop is *"a concrete
+candidate explanation for Ouro's own 'tried 8, dropped to 4 after loss spikes and
+gradient oscillations'."* Our teacher hit this too, at production scale, and
+retreated to exactly our depth. Two systems, same wall, same suspected cause.
+
+⇒ **Order of operations for any future depth work:** loop-dependent residual
+scaling FIRST, then `grow_depth.py`, then re-run this sweep. Doing it in the
+other order tests nothing — which the flat 4/6/8 result now demonstrates rather
+than merely predicts.
+
 ### Three axes now closed on evidence, one open
 
 | axis | verdict |
