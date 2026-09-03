@@ -1,0 +1,916 @@
+{
+  "step": 6500,
+  "samples": 5,
+  "temp": 1.0,
+  "top_k": 50,
+  "alphas": [
+    0.0,
+    0.25,
+    0.5,
+    0.7
+  ],
+  "seed": 0,
+  "rollout_len": 96,
+  "seeds": {
+    "In the morning the weather was clear, so we decided to": {
+      "0.0": {
+        "texts": [
+          " start building the weather for the weather, and we had to take into account the weather patterns and we then make our weather forecast to make this great holiday \"cool\". So the next day our holiday is very similar to the winter season. The day we would look at the day for the day, and we will see our summer with the weather in the summer. In the summer there is a season that will require something different. We will start taking the moon and then the weather.",
+          " return to a local community. It's a weekend, so that's the second reason. It's like some kind of holiday.\n\nWe've looked at it in the morning. But at the very moment, I didn't realize. I can't read it again, because I think I don't really have a chance to find the same. At the same time, it came to be a very long day.\n\nFor the summer, there's a lot of food",
+          " set the sun's temperature to give 3 degrees of warmth to the sun.\n\nThe weather is important since it can help keep the Sun's sun's temperature above the surface of the sun's surface. A day would be a great day in the summer, but that day it will not be like winter.\n\nThe moon and the moon are not really the same as the sun.\n\nIt is also good to consider the sun on the moon's altitude as a",
+          " leave the sun in the same, but what will be the new \"day\" that the solar panels will be on the same day.\n\nThe days we need to set up different \"lenses\" of lights with the day. The first day has the first day of the day, the following day will also be the current day. The next day, the day of the day will be the first day, the\n\n* 1990:\n\n*",
+          " look around the night. The days during the morning, the next day, which is an unusual week, and the day the day the morning and the daylight, was the year so the day's night was already a \"day,\"\n\n\"We need to use a special form of weather-season, the evening, that would be the last Monday, the day on the day's day.\n\nThis weekend, you will get all the weather, and it will be nice"
+        ],
+        "top_share": [
+          0.125,
+          0.07291666666666667,
+          0.11458333333333333,
+          0.14583333333333334,
+          0.14583333333333334
+        ],
+        "distinct1": [
+          0.5416666666666666,
+          0.59375,
+          0.5520833333333334,
+          0.4895833333333333,
+          0.5729166666666666
+        ],
+        "distinct2": [
+          0.8947368421052632,
+          0.9368421052631579,
+          0.8526315789473684,
+          0.7473684210526316,
+          0.8736842105263158
+        ],
+        "halt_depth": [
+          2.94,
+          2.84,
+          2.95,
+          2.92,
+          2.94
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " keep the weather in the summer. So the day will be Monday.\n\n\n\n\nThe original weather forecast was 2010, but this will happen during the summer. Which is when the weather was 2010.\n\n\n  The original season's weather was like that of November 2017.\n\n\nDuring a time, the original season was the same as the 2010 summer season.\n\n\nThe weather has been",
+          " start the week with one week and one day.\n\n\"Today, we have to find out how many days of weather have been predicted by the year of 21 (in the year 21?). The day is not known yet, and we have to ask the people for it.\n\nThis is an important part of your daily exercise to understand what your daily \"day\" is. You must have the data at the end of the day.\n\nWe",
+          " make a trip.\n\nBy the same way, we had a long day of walking, on the back of the hills, passing a big, long, quiet river (from the north) and it will take about 70% of the time we're going to travel here.\n\nSo, we'll have to start to drive around and have a long day, with something like a long afternoon, and to see if the rain-fog, from the wind",
+          " visit them to visit the City of O'Laguna.\n\nThe time after the start of the day is the evening, then the weather was clear during the month. The day we had seen was clear but it was the weather in the night. We have seen that in the summer, after three months, it was still in the summer. But the weather was different.\n\nIt was cold, no sun from the sunrise. There's no sunlight, but the",
+          " give D, but it was a short. In reality, since the weather was a bit too hard, we should use it. For example, it was the day-a-day, and the last day, we had a spring, the day-up season. It was the day of the first three days, the first, or the winter-by-day, so this was during the summer, and the day of spring, so we'd want to do a lot"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.07291666666666667,
+          0.09375,
+          0.13541666666666666,
+          0.125
+        ],
+        "distinct1": [
+          0.4791666666666667,
+          0.6041666666666666,
+          0.625,
+          0.5520833333333334,
+          0.5104166666666666
+        ],
+        "distinct2": [
+          0.7578947368421053,
+          0.8842105263157894,
+          0.9263157894736842,
+          0.8947368421052632,
+          0.8210526315789474
+        ],
+        "halt_depth": [
+          2.91,
+          2.87,
+          2.9,
+          2.93,
+          2.92
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " go the zoo to visit the penguins, but the next day the weather should be cloudy. That night, we also have to have a dark weather because it's not an intense weather. \n  This will not just rain. Let it just be over.\n\n\n\nWe need to get rid of the heat, which will result in the heat wave. The temperature difference could be 4 to 6 \u00b0C.\n \n\n\n \n\n\nPlease answer this question in one-to",
+          " go out. Then suddenly, and out from under our feet and feet! We heard our father's\n\nSo on the morning of the third day in the mountains, the two other brothers decided to go on an adventure. This is just a thought.\n\n\"You can get a big surprise that comes across your eyes, so to find out who the best of the night, you should go on an adventure. And remember that you are the first person who you can do",
+          " stay there with the\npurpose of observing the moon's\nand to see the time of its setting. At the same time, we wanted to\nobs the weather of the moon's\n\"\n\n\n```python\nimport pandas as pd\nfrom datetime import datetime\n\ndates = [\"1858-05-25\", \"1853-04-17\", \"1854-17-15\", \"19",
+          " fly in the winter sun at Lake\nKivu, and we had the chance of seeing the very beautiful snow covered mountains in the\ndistance for some time in the winter sun. We also wanted to see the sky and the\nsnow that is\ncovered with the\ntrees we will talk,\nbut for those who will have to know about the\nday and a little to get the weather report in July.\nSokka\nSokka, a\nc",
+          " go to the mountains. The first 1 day of July, I was going to travel the 1225km route in the mountains.\n\nSo this is the way the other 50 year olds did, we wanted to go back home after the 2.02.0 and 1 hour after the 13.53. There had to be a meeting in P and it was about time when I went.\n\n\n\n\n\nIt was"
+        ],
+        "top_share": [
+          0.0625,
+          0.07291666666666667,
+          0.09375,
+          0.10416666666666667,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.6770833333333334,
+          0.6458333333333334,
+          0.5208333333333334,
+          0.6145833333333334,
+          0.5625
+        ],
+        "distinct2": [
+          0.9789473684210527,
+          0.9368421052631579,
+          0.8210526315789474,
+          0.8947368421052632,
+          0.8842105263157894
+        ],
+        "halt_depth": [
+          2.91,
+          2.92,
+          2.95,
+          2.91,
+          2.87
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " go to the outskirts of the city on a bicycle ride. In the town one can find two of the main directions: one along the latitude (north-south) and another along the longitude (east-east. These directions are orthogonal).\n\nThe city has n intersections, n1 and n2 intersections, k1 and k2. The i=1..n1 are located on the latitude 1, and i=n2+1 ..\n\nThe coordinates",
+          " go for the long walk. It's very easy to get lost in Africa  the sun is hot and the sand is white. We left the village in the early   to get to a safe village on the right bank of the city of   Ziguaga-- that's why a little town with a good road   to reach other places. We crossed the   river to the other side   of the park, and then the town. The river was _ a bit and",
+          " go to the hills. The first leg is in some way that you have  the coordinates of one of the houses.\n\nWait, but in this problem, I think the initial input is a list of coordinates and a starting room. So maybe I'm supposed to list the rooms and the path from the starting point, considering the order constraints (e.g., a starting point of which the room is in the path, but which is the shortest path) is irrelevant,",
+          " set off on a day trip. If the morning was dark and the weather was gloomy, we decided not to go out here. If the weather was cool and showery (and if there was wind), we could not know beforehand. We looked out some of the following options.  \nThe following are the possibilities for weather on Monday:\n(w_weather) (n_weather) (p_weather)         \ncool weather               cool shower   cool wind\nn",
+          " prepare some interesting problems for the students we'll see today. After some careful planning, we have come to the following task.\n\nWe have n positive integers written in a row a_1, ..., a_n. We will do the following n operations of the following kind and find the number of distinct subsequences of all possible subsequences.\n\n\n\n\nFirst - we should choose k_1 (i.e., x = 1) and i_1 (i"
+        ],
+        "top_share": [
+          0.07291666666666667,
+          0.11458333333333333,
+          0.11458333333333333,
+          0.052083333333333336,
+          0.052083333333333336
+        ],
+        "distinct1": [
+          0.5625,
+          0.6145833333333334,
+          0.5625,
+          0.6145833333333334,
+          0.65625
+        ],
+        "distinct2": [
+          0.9157894736842105,
+          0.9578947368421052,
+          0.9473684210526315,
+          0.9052631578947369,
+          0.9157894736842105
+        ],
+        "halt_depth": [
+          2.95,
+          2.94,
+          2.95,
+          2.92,
+          2.87
+        ]
+      }
+    },
+    "The treatment for a bacterial infection usually involves": {
+      "0.0": {
+        "texts": [
+          " immunoconforming a bacterial infection in the form of specific elements; the immune response to the infection, which may be seen at an uninfected stage of infection. This suggests that the immune response is the same as the resistance of the infection itself, and may be the first to be the primary trigger of infection. In recent cases of infection in the lungs, the immunologic response may affect the immune response and immune activity. The immune response of a certain virus is associated with the immune",
+          " the use of a single, but often a specific combination of antigen-stellar antigens, which are commonly referred to as immune response mediators (e.g., T-type antibodies, or cytokines, or in other examples in the immune response and immune responses. The effectiveness of immune response mechanisms is often unclear, but it is important to consider the importance of immune response systems in the development response.\nThe anti-inflammatory response of immune responses is a factor that is important to prevent",
+          " a combination of an immunologic evaluation (e.g. immunological analysis) and an immunological analysis (e.g. immunologic analysis); there was a good research on the relationship between a protein immunologic response to immunologic assessments (e.g., immune response of a mucosal immunological response). The research also found the direct cause of the genetic modification in the immune response is the pathogenic response of the immune response of a immune response of the immune response. The immune",
+          " immunisation of the immune response, although only a few different types of bacteria have received immunological responses.\n\nThe following statement provides a detailed overview of the patient's response to the case of a bacterial immune response that is associated with the immune system and is the best treatment to the treatment of the disease or the diagnosis of the disease.\n\nThe patient's response to the test is often a disease, e.g. the immune system, which is the process of the",
+          " the immune response, and there is a process called immunologic immune response to infectious disease, as well as a response to antibiotics or drugs that may cause the same response of infectious disease. However, a new vaccine, called Anti-inflamm disease, has been demonstrated to be the most effective antibody that is responsible for a specific type of disease, such as the virus that has been used in the clinical cases of viral disease, which can be determined by a disease-like antibody-like"
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.0625,
+          0.08333333333333333,
+          0.13541666666666666,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.53125,
+          0.59375,
+          0.4375,
+          0.5,
+          0.5729166666666666
+        ],
+        "distinct2": [
+          0.8526315789473684,
+          0.8842105263157894,
+          0.7157894736842105,
+          0.8105263157894737,
+          0.9157894736842105
+        ],
+        "halt_depth": [
+          2.83,
+          2.93,
+          2.92,
+          2.88,
+          2.85
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " antibiotics and antibiotics. If the antibiotics are not effective, patients should use antibiotics, and the doctor may need to consult the physician or the hospital. To reduce the risk of infection, the person who is receiving IV or the doctor when it occurs, the doctor will also advise.\nTreatment of skin infections and related infections. The doctor may consider the following steps:\n- Use the medicine.\n- Avoid using antibiotics or antibiotics.\n- Avoid using antibiotics or antibiotics.\n-",
+          " antibiotics, such as\n\nThe most common method of antibiotic treatment is the use of a combination of different drugs to combat or treat some kind of disease like infection. The different types of drugs for treatment include anti-inflamm, and treatment. If you have a blood sample, you can look for other types of treatment, as the person in question may be an antibiotic. It helps to reduce the burden of infection, but also it can sometimes be a little difficult to detect if there",
+          " a specific treatment that includes a combination of immunosuppiotics and antibiotics.\n2. The risk may increase after diagnosis due to complications, complications, or progression of the disease.\n3. The risk may be the main cause of the disease, but it may also be due to the immune system.\n4. The patient's medical condition should not be affected by the treatment.\n5. The patient may not be able to recover the entire patient's immune response from the virus or",
+          " a combination of antibiotics.\n\nIt is also important for your skin to heal; therefore, a physician may also prescribe an antibiotic ointment that is used at the same time, as well. As previously, these are usually given to heal the underlying skin and prevent the spread of the skin. The same way that your skin is normally exposed to the bacteria and in the skin and skin is getting the skin inside the skin. However, such a lot of the skin and skin products can",
+          " a process with the infection and the antibiotic.\n\nBut the key is to have a proper infection-related process and the antibiotic component.\n\nOther options:\n\nThe role of the enzyme.\n\nFor example, there is a bacteria that uses the enzyme called A-catase.\n\nBut then, when you have such an enzyme, the same thing happens, so the antibiotic that targets this enzyme is a protein-based antibiotic.\n\nI think that"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.07291666666666667,
+          0.08333333333333333,
+          0.10416666666666667,
+          0.125
+        ],
+        "distinct1": [
+          0.53125,
+          0.6666666666666666,
+          0.5520833333333334,
+          0.5729166666666666,
+          0.53125
+        ],
+        "distinct2": [
+          0.8105263157894737,
+          0.9894736842105263,
+          0.8421052631578947,
+          0.8736842105263158,
+          0.8315789473684211
+        ],
+        "halt_depth": [
+          2.91,
+          2.86,
+          2.89,
+          2.91,
+          2.9
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " antibiotics, which are medications developed by scientists from a complex, chemical standpoint. Thus, a common treatment for the infection was, \"a course of antibiotics and plenty of rest, with the goal of ensuring that the infected individual will eventually recover.\" This type of virus, however, is extremely reactive to the bacteria that cause the illness and the bacterial infection which causes it. These can be considered a new, unique, and important factor in developing a healthy immune system. The fact that viruses",
+          " antibiotics, but it's not just taking antibiotics or doing an infection. That's really basic, but you should be more specific to the question.\n\nI understand it's \"cooking\" in terms of preparing. Maybe add that. But I feel like \"the treatment for your disease is antibiotics, which is done using an anti-biotic medication. But I've gotten the idea of \"cooking\" in the question as if you are preparing a meal. But if",
+          " specific antibiotics tailored to a specific or group of bacteria (e.g., penicillin or a narrow-spectrum antibiotic) to eliminate the infection. But if your doctor or a physician prescribes the antibiotic in a controlled manner, you can help preserve the beneficial health-support for a patient with a non-specific condition.  But sometimes, your doctor may suggest using antibiotics if you want to treat them and not to cure. The most common way to treat most antibiotic resistance is to have",
+          " using an antimicrobial drug. These two medications can also be used to treat cancer but usually do not interact with the other treatments.\nDo I need to be worried about the potential risks of a blood sugar problem?\n\nQuestion: Is clonidine for cats safe? Answer: No, it is not safe for cats. Cats do not use clonidine, but can be used as a side-effect management during a clinical stage.\n\nQuestion: Can people with a",
+          " antibiotics, antibiotics target bacteria, so it can be effective if it's taken by the body, and if the bacteria are susceptible to infection, it can be effective. In case of some resistant bacteria, even the virus is not effective.\n\nHow does a vaccine change in structure for inflammation?\n\nThe immune system of the bacterium has a very different effect than that of the body's own immune response.\n\nIf your disease is caused by an infectious reaction, the immune"
+        ],
+        "top_share": [
+          0.09375,
+          0.0625,
+          0.0625,
+          0.052083333333333336,
+          0.0625
+        ],
+        "distinct1": [
+          0.7083333333333334,
+          0.6666666666666666,
+          0.6770833333333334,
+          0.6666666666666666,
+          0.625
+        ],
+        "distinct2": [
+          1.0,
+          0.8842105263157894,
+          0.968421052631579,
+          0.9052631578947369,
+          0.8947368421052632
+        ],
+        "halt_depth": [
+          2.88,
+          2.92,
+          2.93,
+          2.93,
+          2.84
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " antibiotics. For parasitic infections, anthelmintic agents are prescribed, and for immune-mediated or allergic reactions, antihistamines, or the same for severe cases, steroids like a gluco-drug for fast relief of symptoms.\n\nThe question is about the mechanism of action. But the answer options would need to be about different types of medications.\n\nWait, the first question is about the most likely treatment for a patient experiencing a disease-related reaction, given that",
+          " the use of a(3rd-order) antibiotics that do not affect the host. Although the first-order antibiotic is called antibiotics, it does not prevent the infection (like other antibiotics), it is only the third-order antibiotics, such as the antibiotic, do not inhibit the immune system or cause the immune response to the host. The second-order antibiotics can prevent the infection but are unable to kill the bacteria. The more important of the two third-order viruses of",
+          "...\n\nE: antibiotics\n\n87.\n\n\"It hurts only when I breathe deeply...\"\n\nPleuritic pain\n\nIt's a classic sign of a pleural\n\nInflammosis. - - - It could even lead to your own death.\n\nA pleural effactor, it could become infected with bacteria, etc.\"\n\nThe following sentences are not true:\n\nA. It could lead to a sudden drop in blood pressure",
+          ":\nA immunomodulatory agents\nB antibiotics\nAntibiotics are specifically designed as bacterial agents to treat bacterial infections. While immunomodulatory agents and other treatments may be relevant, one of the reasons for using broad coverage is that the antibiotic is a drug is to be used to treat it.\n\n## 29. A physician orders 500 mg of an antihypertensive medication to be given in tablet in the drug-store.\n\n",
+          " one of the following: \n\n- Antibiotics and other antibacterial medications, aimed to fight and restore balance in the fight against the bacteria.\n\nThe question remains: Is there any difference in bacterial infection treatment and antiviral infection treatment?\n\n### Answer: No\n\n## Question 5:\n\nPlease answer this question:\n\n- \"Is a bacterial infection in the body a self, with the bacteria causing a problem\nin the environment\"\n\n### Answer:"
+        ],
+        "top_share": [
+          0.07291666666666667,
+          0.125,
+          0.16666666666666666,
+          0.07291666666666667,
+          0.14583333333333334
+        ],
+        "distinct1": [
+          0.6875,
+          0.5625,
+          0.65625,
+          0.6770833333333334,
+          0.5833333333333334
+        ],
+        "distinct2": [
+          0.9473684210526315,
+          0.8526315789473684,
+          0.8631578947368421,
+          0.9157894736842105,
+          0.8526315789473684
+        ],
+        "halt_depth": [
+          2.91,
+          2.83,
+          2.91,
+          2.94,
+          2.93
+        ]
+      }
+    },
+    "Common symptoms of type 2 diabetes include": {
+      "0.0": {
+        "texts": [
+          " symptoms that have a particular feature of type 2 diabetes.\n\nFor instance, it may involve blood or blood sugar, especially through exercise or in the body. This can be the reason why there's the risk of having a high blood sugar that's not a good blood-level risk.\n\nEven with a lack of dietary and physical health factors, the doctor has to make sure that the health and lifestyle is not a good thing.\n\nThe way you're dealing",
+          ":\n\n- Low insulin: A common type of\n\n- Non-protein and specific protein that can be used as a source of cancer.\n\n- High blood pressure, where the pancreas is divided into the cells of the cells and the cells that are the same.\n\n- Different causes of cancer:\n\n- Obesity and autoimmune disorders\n\n- Chronic disorders and an inflammatory\n\n- The presence of tumors in the skin and organs.\n\n- The",
+          ",\n\nWhat is a type 2 diabetes in the form of chronic illness?\n\nThere is a risk of having an impaired disease that needs a diagnosis of this type of disease (e.g., the type 2 diabetes), which is usually caused by a lack of information about the presence of a metabolic disorder and chronic disease (also known as an immunologic syndrome).\n\nThe disease can be caused by the disease itself (e.g. the autoimmune disease of",
+          " abdominal, abdominal, and/or a condition called:\n\nInfection may include:\n\nFlying\n\nThe body can be affected by the development of type 2 diabetes.\n\nC. Chronic inflammation\n\nRebt\n\nC. T-T-B\n\nF-T-T-D\n\nF-T-T-T\n\nF-T-T-T\n\nF-T-T-T\n\n",
+          " increased blood cell 2 or 1). It can result when you have elevated blood in your blood cells, your heart needs to work in the liver to generate oxygen. The way that you get the right blood pressure is through blood pressure and when you make blood's response by exercise, and heart attacks\n\nIn conclusion, the main way heart disease is to take into your skin as a major effect of having enough oxygen in your blood, and how the blood can be damaged in"
+        ],
+        "top_share": [
+          0.0625,
+          0.16666666666666666,
+          0.07291666666666667,
+          0.22916666666666666,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.65625,
+          0.5208333333333334,
+          0.5729166666666666,
+          0.4270833333333333,
+          0.6354166666666666
+        ],
+        "distinct2": [
+          0.9263157894736842,
+          0.7789473684210526,
+          0.8842105263157894,
+          0.5578947368421052,
+          0.9473684210526315
+        ],
+        "halt_depth": [
+          2.83,
+          2.89,
+          2.87,
+          2.7,
+          2.92
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " increased blood sugar levels.\nDave, a user-friendly tool for diabetes research, uses appropriate medical devices and supplements, but only healthy diet is a way of preventing disease.\nThe study has a link between food intake and food-related issues, with the purpose of reducing high cholesterol, which is not mentioned in the text.\nSo how does a diet change and how to make it better?\nThis study is the first to find a specific diet that can reduce the",
+          ":\n- Increased thirst\n- High levels of cholesterol or lipid-like fatty acids\n- Inappropriate blood tests, such as high or moderate blood pressure\n- Uncontrolled blood pressure and blood pressure-related symptoms\n- Increased risk of high blood sugar\n\nTo calculate heart rate or hypertension, we need to consider the risk of developing cardiovascular disease. To assess the condition, we can use the following formula:\n\nBlood pressure:\n\nS0 = 90",
+          ":\n  - The condition is often asymptomatic in people with borderline and uncontrolled blood sugar levels, and that includes all age-groups, which are more sensitive to insulin and other factors that can be harmful to the body. This is why, for example, low levels of the insulin hormone called HYB3 (diet-derived) will not affect blood pressure. While the majority of the patients are unaware of the condition, this can reduce their susceptibility to inflammation and therefore can produce",
+          ":\n\n- Physical symptoms like inflammation, inflammation, and inflammation.\n\n- Signs of type 2 diabetes include pain, weight, pain, and weakness, often with a decrease in body weight (or a type of inflammation).\n\n- Weight and risk of developing type 2 diabetes includes cardiovascular diseases, stroke, hyperglyc, stroke, or heart failure that are related to heart problems and the heart.\n\n- Increased risk of developing type 2 diabetes may",
+          ":\n\n\u2022 Increased thirst,\n\n\u2022 Increased sleep\n\n\u2022 Symptoms such as high cholesterol,\n\n\u2022 Low cholesterol,\n\n\u2022 Increased anxiety,\n\n\u2022 Higher BMI,\n\n\u2022 Reduced obesity,\n\n\u2022 Increased weight.\n\n\u2022 Increased risk of diabetes,\n\n\u2022 Low risk of diabetes,\n\n\u2022 Reduced cholesterol,\n\n\u2022 Poor physical functioning,\n\n\u2022 High blood pressure,\n\n\u2022 Excessive dietary intake,\n\n"
+        ],
+        "top_share": [
+          0.052083333333333336,
+          0.11458333333333333,
+          0.052083333333333336,
+          0.10416666666666667,
+          0.3125
+        ],
+        "distinct1": [
+          0.7083333333333334,
+          0.6041666666666666,
+          0.7291666666666666,
+          0.5208333333333334,
+          0.3333333333333333
+        ],
+        "distinct2": [
+          0.9789473684210527,
+          0.8631578947368421,
+          0.9789473684210527,
+          0.7789473684210526,
+          0.4842105263157895
+        ],
+        "halt_depth": [
+          2.92,
+          2.91,
+          2.91,
+          2.91,
+          2.93
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " increased blood sugar levels and high blood pressure, or at least, low blood pressure levels. However, what many of us don't realize is that this condition caused by the over-consumption of sugary food can affect other areas of the body and lead to severe damage. The cause and the effects of diabetes, especially of type 2 in the same way that the other kinds affect other parts of the body, is the over-consumption of the brain tissues and nervous system's.\n",
+          " increased thirst, frequent episodes of urination, and extreme\nhunger.\n\nThe most common type of treatment is a medication with a small dose of a type of anti-inflammatory\ndrugs, including metformul.\n\nThere are many ways to improve your blood sugar\nlevels. One of the best ways to do it is to use a supplement, which can be a\n\nWhat is the difference between an individual and a type 2 diabetic insulin therapy.\n",
+          ": fatigue, which is common to be a symptom; this type has also caused your muscles, muscles and other cells to function improperly due to insulin.\n\nIn this article, we have a discussion about type 2 diabetes: causes, or risk factors of type 2 diabetes, symptoms, diagnosis, and some treatment options. This disease is a common condition that might have various diseases with a specific diagnosis of type 2. It is a common sign of type 2 diabetes",
+          " the formation of certain types of deposits in the eyes, specifically cataracts, which are caused by the buildup of sugars on the stomach and the blood vessels lining of the eye. This process is known as the \"Sang\" by the body, which is a type of hyperplastic reaction (e.g., \"Bos\") and is produced by the body's blood vessels, which contribute to these deposits. These diseases contribute significantly to the development of various health issues, such as the",
+          " increased body weight, and the following symptoms can also be the warning for this disease.\n\nType 2 diabetes is a type of diabetes.\n- The amount of exercise you need is what your doctor recommends.\n- If you are already in a treatment plan, the doctor's recommendation should be followed by one of your usual recommendations.\n- If you have any medication that causes your doctor to not give you a specific type of treatment, then you should do one or more"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.10416666666666667,
+          0.07291666666666667,
+          0.11458333333333333,
+          0.052083333333333336
+        ],
+        "distinct1": [
+          0.6354166666666666,
+          0.65625,
+          0.59375,
+          0.625,
+          0.6458333333333334
+        ],
+        "distinct2": [
+          0.9052631578947369,
+          0.9263157894736842,
+          0.8736842105263158,
+          0.9263157894736842,
+          0.9052631578947369
+        ],
+        "halt_depth": [
+          2.82,
+          2.85,
+          2.83,
+          2.87,
+          2.86
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " increased consumption of sugary foods and beverages\n\nB: A person's diet is high in fiber and low in protein\n\nC: The most common symptom is loss of weight:\n\nD: The liver converts excess fat into glucose, leading to higher levels of blood pressure\n\nE: An excess of insulin leads to the accumulation of insulin in blood\n\nD: The liver converts excess fat into\n\nE, An excess of insulin leads to the accumulation of insulin in",
+          " diabetes mellitus, and insulin.\n\nThese drugs may also be used to treat diabetes in the body, and even without any significant effects of the effects of insulin on blood glucose.\n\nWhat do you have to to lower your blood sugar levels, you need to eat this diet and eat a person's diet.\n\nHowever, what happens when you have high blood sugar in addition to it is important to have a much more commonly, we can't be able to what helps",
+          ":\n- Persistent hunger (polyphagia), as well as a compulsion or urge.\n- Toll-free or free telephone calls as needed.\n- Unpredictable blood sugar levels (hyperglycemia), which may be accompanied by a 'welcome or 'bad' feeling (a possible reference to the symptom, or perhaps a jest).\n- These situations may have been the most significant challenges to date.\n\nIn particular, it is crucial to",
+          " excessive thirst.\n\nOption A: Persistent (persence) thirst\u2014this is a risk of having.\n\nOption B: Excessive appetite (appearance)\u2014this is a risk of having.\n\nThe third one is persistent for a person with an excess thirst and/or to do with a person's health-related behavior (e.g., diet and the. In this research, we used a self-control method to investigate the effect of physical activity on the",
+          ":\n- Type 2 Diabetes Complications & Blood-Breat\n- Diabetes Mellitus and Obesity\n- Signs of Low Blood Sugar (Hypoglycolc)\n- Blood Glucose and Insulin\n- Home remedies\n- Diabetes Mellitus in Hindi\n- Diabetes and the eyes\n- Risk factors for type 2 diabetes\n- Can diabetes affect your health\n- Type 2 diabetes\n- Chronic inflammation in diabetes\n- Hypoglycemia in diabetes\n- Insulin treatment and"
+        ],
+        "top_share": [
+          0.125,
+          0.07291666666666667,
+          0.0625,
+          0.0625,
+          0.14583333333333334
+        ],
+        "distinct1": [
+          0.4895833333333333,
+          0.6145833333333334,
+          0.71875,
+          0.65625,
+          0.5
+        ],
+        "distinct2": [
+          0.7263157894736842,
+          0.9157894736842105,
+          0.9473684210526315,
+          0.8736842105263158,
+          0.7368421052631579
+        ],
+        "halt_depth": [
+          2.94,
+          2.83,
+          2.87,
+          2.88,
+          2.93
+        ]
+      }
+    },
+    "Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat": {
+      "0.0": {
+        "texts": [
+          " the underlying inflammation of the skin. For example, we have the anti-inflamm drug for the skin, which we can treat, which the other component of the skin is the same as the skin, etc.\nThe other way, when you have a lot of the natural, all the drugs can do the other ways. The other thing you should note is that when you have a small group of people, the other thing that you can get from the skin's own system.",
+          ", treat and treat, to reduce the effect of dietary supplements and medications. This is to prevent it from having the effect on skin. It can be a healthy and healthy way to treat the condition, and as the skin changes.\n\nThe process is to reduce the amounts of vitamin B, which means the immune system helps you stay healthy.\n\nThe immune system is in a high-quality form, which can be a good way to reduce or prevent the infection in your",
+          " the body.\nIn addition, the combination of the oral enzyme (nilone) and its other drugs in anti-inflammatory responses can be used to treat the gastrointestinal system, particularly as the body's main mechanism, the gut, organs, lungs and intestinal system, which can also trigger the gut, and the body's immune response to a small and dangerous bacterial organism. When used in the body, some people can get too much oxygen, and even the bacteria that produce antibiotics",
+          " and treat inflammation, but the drug used in this process can be considered as a medicinal agent for the prevention of inflammation. However, it is not necessarily necessary for the management of the patient. It is also also important to use the drug as an anti-inflammatory drug, but it is not essential to use a food with a certain amount of these. However, there are some reasons for the use of antibiotics to treat pain. To manage the inflammation in the healing of this illness,",
+          " pain of the body, leading to a type of irritation in the body.\nB: Gantant and the patient may react with a compound with an unusual, less or other drug.\nC: Antilopamol, a drug that has been on the body or, by the body.\nD: E. The anti-inflammatory drug is a very specific agent, and a combination of drugs.\n\nThis is confusing because the patient is not allowed to say"
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.07291666666666667,
+          0.10416666666666667,
+          0.08333333333333333,
+          0.0625
+        ],
+        "distinct1": [
+          0.5208333333333334,
+          0.53125,
+          0.65625,
+          0.5729166666666666,
+          0.6041666666666666
+        ],
+        "distinct2": [
+          0.8526315789473684,
+          0.8631578947368421,
+          0.9052631578947369,
+          0.9052631578947369,
+          0.9157894736842105
+        ],
+        "halt_depth": [
+          2.83,
+          2.89,
+          2.91,
+          2.76,
+          2.87
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " pain, especially if they have a risk for heart disease or other heart problems.\n\nIt is also essential to treat the inflammation in the eyes, where you are having the right blood pressure, and in the right to have a better health.\n\nIt is also important to avoid this type of inflammation to prevent blood pressure.\n\nBut it is important to protect the immune system to the body's immune cells to lower levels of blood pressure.\n\nSome of the common",
+          " the most common types of non-inflammatory medication and is in which the use of a combination of vitamins and anti-inflammatory drugs is a natural way of suppressing the body. Thus, the anti-inflamm response of these medications can significantly decrease the effectiveness of the treatments. If the patient has no previous symptoms, then the first step should be to try an appropriate oral oral medication or oral spray.\n\nQuestion: What effect is the first step to reducing inflammation in the heart that is",
+          " allergic or inflammatory diseases, and is a member of aspirin class. It is found that if you have a history or a history, you can have a good sense of what sort of food is and how to treat it.\n\n## Step 2: Identify the key information about ibuprofen and the role of anti-inflammatory medication\n\nThe role of a member of the aspirin should be considered based on the type of food.\n\nTo analyze the effect of antibiotics on the health",
+          " the skin, not the skin. To reduce the skin inflammation of this product and reduce risk of a viral infection. The only way is to make your skin immune to the immune system in response to the infection. Anti-inflammatory drugs such as the anti-inflammatory drugs, such as the anti-inflammatory of the treatment therapy, are used to treat your immune system.\n\nThe anti-inflammatory treatment therapy in a blood transfusion. The drug used to treat the skin in the skin",
+          " pain and pain. It's also known for the inflammation, the swelling, swelling and inflammation of body, which helps your body to protect the pain, pain and inflammation.\n\nIs Lolot L.O.I. O is a dietary ingredient used by the treatment of pain and inflammation, can help prevent. The medication is a medicine which is used to treat the pain and inflammation, such as arthritis and inflammation. The doctor can also make sure and care for the other"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.10416666666666667,
+          0.08333333333333333,
+          0.10416666666666667,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.5625,
+          0.6458333333333334,
+          0.6145833333333334,
+          0.4583333333333333,
+          0.5104166666666666
+        ],
+        "distinct2": [
+          0.8315789473684211,
+          0.9578947368421052,
+          0.8947368421052632,
+          0.7894736842105263,
+          0.8526315789473684
+        ],
+        "halt_depth": [
+          2.88,
+          2.86,
+          2.88,
+          2.84,
+          2.93
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " pain, inflammation, and fever. It works by lowering the levels of the body's natural healing chemicals, specifically prostagland, thus helping to maintain blood's levels.\n\nAdverse effects of ibuprofen: -The adverse effects of such substances can be associated with their health.\n\n*\n\nThere are various adverse effects of taking ibuprofen.\n\n-The first step is the first step in the development of the immune system. They are called the \"immune\" system (",
+          " pain and discomfort from conditions in the patient while having fewer side-effects of medication.\n\nAntiphlogistic Properties of the 3360 (NHSW15) \u2013 The anti-inflammatory aspect is most suitable as well as a pain-killer and is found to be very sensitive to the blood cells of the blood vessels.\n\nAs a result of the above-mentioned anti-inflammatory factors, as well as the anti-inflammatory properties of the",
+          " a variety of skin conditions. This includes acne, rashes, and even sunburn, and the pain.\nIn addition to being able to relieve inflammation and inflammation in the skin\nNaproxyl in these tablets can be used for conditions like pain, fatigue, and stiffness.\nIt is important to take the medication with a proper diet\nThe drug also has an anti-inflammatory action as well as\nTo keep the skin or mouth free and avoid excessive food\n\nQuestion:",
+          " pain, inflammation, and fever. It is also a common ingredient in many medicinal products in both the world and the body.\n\nThe most common way to take prescription painkillers is to have them prescribed medications that are not typically prescribed.\n\nWe are still getting used to drug-induced inflammation. It is a drug that can cause people to have the same symptom or a severe, life-threatening condition.\n\nOne reason why it is important to control drug abuse is that",
+          " the disease.\n\nFor instance, the American Heart Association was created in May 2010, which started in 2011.\n\nWhile this medication was once accepted, it may be possible to improve the function.\n\nThe authors made this study in the US and the US and have created a new type of \"anti-inflammatory medicine\". The use of anti-inflammatory medicines in the United States has been growing in the 2010"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.07291666666666667,
+          0.07291666666666667,
+          0.0625,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.6458333333333334,
+          0.6458333333333334,
+          0.6979166666666666,
+          0.625,
+          0.6041666666666666
+        ],
+        "distinct2": [
+          0.8947368421052632,
+          0.8736842105263158,
+          0.9578947368421052,
+          0.9263157894736842,
+          0.8315789473684211
+        ],
+        "halt_depth": [
+          2.88,
+          2.87,
+          2.92,
+          2.88,
+          2.88
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " pain and inflammation, but it's not used to directly cause weight loss.\n\nE-cigarette\n\nThe e-cigarette was developed as a potent alternative to a tobacco that's a product which generates an increase of the chemical element known as \"aerosol, flavorings,\" and may also have a higher concentration and/or nicotine that can harm the lungs as well as other body reactions.\n\nVaping\n\nVaping is the process of heating up a liquid",
+          " pain and pain, but it is a good choice because it has a lower dosage that does not need any medical care, or any medication.\n\nThey're not recommended to consult a doctor about how you will have to use a prescription for a condition that makes you a problem. You could ask for a consultation with your doctor to see if the doctor's advice is right for you.\n\nThe first thing you need in you to know is to consult a medical professional about the",
+          " pain, fever, and inflammation.\nWhat is the main advantage of ibuprofen over aspirin for pain relief?\nA. It also prevents swelling.\nB. It has fewer side effects than aspirin.\nC. It can be useful in treating arthritis and other inflammatory conditions.\nD. It can be used in a dose that is usually much lower than the aspirin.\nE. It decreases the risk of certain complications due to inflammation or clotting in the blood.\nF.",
+          " pain, fever, and other symptoms like inflammation. But what's the right dose? While lower doses are okay for short-term use, higher doses are recommended for longer-term or prolonged use.\n\n## Key Takeaways\n- The usual adult is likely to experience side effects of ibuprofen on heart function if they are taking it daily or for a period of more than 2 weeks.\n- The recommended dose of ibuprofen and ac-analgin in the long-",
+          " pain, especially those related to inflammation in the body. I used a high concentration solution (100mg) and took in the same time and the same way as someone else with the same problem taking an identical 100mg ibuprofen in the same area over 5 days. \n\nBy doing a quick internet experiment, I found that the standard ibuprofen medication is a 200 mg dose after five days (about 28 mg per kilogram of body weight"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.08333333333333333,
+          0.125,
+          0.0625,
+          0.0625
+        ],
+        "distinct1": [
+          0.7083333333333334,
+          0.6145833333333334,
+          0.6145833333333334,
+          0.7083333333333334,
+          0.6666666666666666
+        ],
+        "distinct2": [
+          0.9263157894736842,
+          0.9473684210526315,
+          0.8736842105263158,
+          0.9368421052631579,
+          0.8947368421052632
+        ],
+        "halt_depth": [
+          2.92,
+          2.9,
+          2.88,
+          2.92,
+          2.88
+        ]
+      }
+    },
+    "def fibonacci(n):": {
+      "0.0": {
+        "texts": [
+          "\n    if n <= 1:\n        fibonacci_list = [num for num in num_list if num <= 1]\n    # Check for each number in the sequence\n    previous_num = []\n    for num in num_list:\n        if num == num_list[num] and num is not None:\n            num = 1\n            pass\n        else:\n            pass\n        if num > 1:\n            if num < 1:\n                continue\n            if",
+          "\n    if n <= 1:\n        return 0\n    if n <= 1:\n        return 1\n    # The code below checks for the n-th Fibonacci number\n    n += 1\n    if n < 1:\n        return 1\n\n    # Handle the case when n is 1\n    for t in range(n):\n        if n < 1:\n            if n % 2 == 0:\n                return 1\n            # Only add ",
+          "\n    if n <= 1:\n        fibonacci_sequence = fibonacci(n)\n    if n % 2 == 0:\n        fibonacci_sequence = [n * 1 for n in range(2, n)]\n        fibonacci_sequence = []\n    # Create a dictionary to hold the fibonacci sequence\n    fibonacci_sequence = [f\"a-1100010100010000010",
+          "\n    if n <= 1:\n        fibonacci = [num for num in reversed(n) if isinstance(num, (int, float)): \n             if num == 1:\n                sum = 1\n            else:\n                if num > 0:\n                    continue\n            if num == 1:\n                return int(sum / 1000)\n        \nWait, the code above starts with a loop that uses the loop to create the array. So for",
+          "\n    if n <= 1:\n        return 0\n    # Initialize the set of Fibonacci Numbers\n    fibonacci_list = [num for num in nums if num <= 1]\n    \n    # Check for the time complexity of the previous solution\n    if len(fibonacci_list) < 1:\n        # The sequence is: (1, 1), (2, 2), and (3, 1)\n        # This implementation should make sure the input"
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.13541666666666666,
+          0.14583333333333334,
+          0.07291666666666667,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.4166666666666667,
+          0.4375,
+          0.4166666666666667,
+          0.59375,
+          0.5729166666666666
+        ],
+        "distinct2": [
+          0.7368421052631579,
+          0.6736842105263158,
+          0.631578947368421,
+          0.8631578947368421,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.9,
+          2.9,
+          2.94,
+          2.94,
+          2.94
+        ]
+      },
+      "0.25": {
+        "texts": [
+          "\n    # Initialize the Fibonacci sequence with a base n\n    if n < 2:\n        fibonacci_sequence = [0, 1, 2]\n    else:\n        fibonacci_sequence = [0, 1]\n\n    # Add the first Fibonacci sequence (for `n` = 1 to 10, if `n` is 1 and its current index is 2, then we are not starting for `n = 1`,",
+          "\n    Fibonacci(n)\n    fibonacci_numbers = [num for num in numbers if num in Fibonacci(n)]\n    \n    return fibonacci_value(n) if n == 1 else []\n```\nThe code snippet given has a mistake in the code above. Instead of making the `fibonacci_numbers` function as a decorator that is used for all operations, instead of `fibonacci_numbers` function.\nIt is a mistake, not a",
+          "\n    fib_sequence = [num for num in [num, num_num in zip(fib_sequence, fib_sequence_list)]\n    fib_sequence = [num for num in num for num in num_num_list]\n\n    return fib_sequence[-1]\n\nn = 10\nprint(max_fibonacci(10))\n```\n\nThe above code is used to modify the function `fibonacci(n)` (which",
+          "\n    if n <= 1:\n        fibonacci(reversed=True)\n    if n % 2 == 0:\n        fibonacci_reversed(5)\n    # print(\"hello\")\n    print(\"The number of recursive calls is:\")\n    print(\"Start the function with n=5.\")\n    print(\"The expected result is:\")\n    print(\"0x100000000000000000000",
+          "\n    if n == 1:\n        # Iterate through the numbers\n        if n < 1:\n            # Iterate over the numbers\n        # Iterate over the number of times the recursion is performed\n            # If the number is in the list, then add it\n            # to the result to be the result\n        # Keep the sequence as follows:\n            # The current iteration here with only one element.\n            # So, we have to add 1 to it\n           "
+        ],
+        "top_share": [
+          0.09375,
+          0.0625,
+          0.10416666666666667,
+          0.22916666666666666,
+          0.09375
+        ],
+        "distinct1": [
+          0.5,
+          0.59375,
+          0.4479166666666667,
+          0.4375,
+          0.5208333333333334
+        ],
+        "distinct2": [
+          0.7263157894736842,
+          0.8210526315789474,
+          0.7368421052631579,
+          0.631578947368421,
+          0.7684210526315789
+        ],
+        "halt_depth": [
+          2.93,
+          2.94,
+          2.93,
+          2.95,
+          2.91
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "\n    nums = []\n    for i in range(n):\n        if i < 1:\n            nums.append(i)\n        if i < 2:\n            nums.append(i * i)\n        if i % 3 != 0:\n            nums.append(i)\n        if i in [1, 3, 5, 7, 7, 9, 10], then append x as a sum of two adjacent elements in",
+          "\n    a499 = 1\n    # Use a recursive generator\n    a = a + 1\n    b = 1\n    result = 1\n    result = fibonacci(n-1)\n    return result\n\nBut according to the problem's requirement, the function is called fibonacci twice as given. The problem wants the function fibonacci function to return the result, but without using explicit functions.\n\nWait, the first step is to compute the nth",
+          "\n    if n <= 1:\n        fibonacci = 0\n    else:\n        fibonacci = 1\n\n    fib = [\n       0, 1, 1, 1, 1, 1, 1, 1, 1, 1\n        ]\n    return fib[n]\n\nn = int(10, 16)\nprint(fibonacci[50])\n\n\n\n\nOkay, let me see",
+          "\n    if n < 1:\n        fibonacci(n)\n    elif n == 1:\n        return 1\n    else:\n        return 1\n\ntest(20)\n\n\nOkay, I need to solve this problem where I have to calculate the Fibonacci sequence but with a memoization check. Let's start by considering the simplest case where n is 1000. The problem says to call the function directly using a recursive function. The",
+          "\n    fib_matrix = []\n    fib_matrix.extend(fibonacci(n - 1))\n    if n == 0:\n        return 0\n\n    for i in range(n-1):\n        fib_matrix.extend(fibonacci(i+1))\n        if fib_matrix[0] == 0:\n            fib_matrix.append(1)\n            fib_matrix[0] = n-1\n        else:\n            break\n    return fib"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.07291666666666667,
+          0.13541666666666666,
+          0.052083333333333336,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.4583333333333333,
+          0.5208333333333334,
+          0.3854166666666667,
+          0.6145833333333334,
+          0.40625
+        ],
+        "distinct2": [
+          0.6526315789473685,
+          0.8315789473684211,
+          0.6421052631578947,
+          0.8842105263157894,
+          0.6842105263157895
+        ],
+        "halt_depth": [
+          2.95,
+          2.93,
+          2.93,
+          2.93,
+          2.95
+        ]
+      },
+      "0.7": {
+        "texts": [
+          "\n\n    if n <= 1:\n\n        return []  # Or return the appropriate list\n    else:\n        return [fibonacci(n-1), 1] + [1] ?\n\nWait, no. The user's instructions are:\n\nIf n is divisible by 3 or 5, return the list sorted in reverse order.\n\nIf n is 1, then the number is not unique.\n\nIf n is 2, return the",
+          "\n    if n <= 0:\n        return []\n    elif n == 1:\n        return [0] + [n]\n    elif n == 2:\n        return [0, 1] + [i * n for i in range(1, 3)]\n    else:\n        result = []\n        a, b = 0, 1\n        for i in range(n):\n            if i % 3 == 0 and i != 3:",
+          "\n    if n <= 1:\n        return n\n    return fibonacci(n), fibonacci(n-1) + fibonacci(n-2)\n    # return None\n    # return fib(n, 1)\n    print(fibonacci(12))\n    return fib(n-1) + 1\n\nn = 10\nprint(fibonacci(n))\n```\n\nThis reference solution modifies the function signature and updates the values",
+          "\n    if n <= 1:\n        return n\n    return [num if n % i == 0 else num + 1 if i < 10 else num * 10 for i in range(1, n+1)].sum() / n\n\n# Correct answer\n```\n\nThe code provided was not a correct Fibonacci sequence for all input `n` due to the following issues, not the one the explanation was suggesting. Hence, the original",
+          "\n    if n <= 1:\n        return n\n    else:\n        return fibonacci(n-1) + fibonacci(n-1)\n\nn = 10\n\nfor f in range_fibonacci(n):\n    if f % 2 == 0:\n        return f\n\ndef fibonacci(n):\n    if n <= 1:\n        return np.sqrt(n)\n    if n % 2 == 0:\n       "
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.10416666666666667,
+          0.09375,
+          0.0625,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.5625,
+          0.3958333333333333,
+          0.40625,
+          0.6354166666666666,
+          0.3541666666666667
+        ],
+        "distinct2": [
+          0.8210526315789474,
+          0.7157894736842105,
+          0.6842105263157895,
+          0.9157894736842105,
+          0.5894736842105263
+        ],
+        "halt_depth": [
+          2.92,
+          2.93,
+          2.94,
+          2.95,
+          2.89
+        ]
+      }
+    },
+    "To solve the quadratic equation x^2 - 5x + 6 = 0, we": {
+      "0.0": {
+        "texts": [
+          " 2x^2 - 11x^2 + 4x^2 - 6x^2 = 4x^2 - 7x^2 + x^2 - x^2. Find the coefficients of the second equation.\n\nSolutions:\n\n- Given: x^2 + 2x^2 + 16x^2 + 18x^2 = ...x * x^2 * (x",
+          " 0.\n\nSolutions:\n\n1. $x^2 - 9x^2 = 4x^2 - 3\\sqrt{2}$\n2. \\(x^3 + 22\\sqrt{2} - 5\\sqrt{2} \\)\n\nTo solve for x, we can start by using the factor equation.\n\n\\(x^3 + 9x^2 + 9x =",
+          " 72\n\n\nSolve the equation by checking whether the quadratic formula is valid. \n\n\nWhen you have x\u00b2 + x, we know that x^2 has to be zero and if x^2 equals x, then this will lead to the equation. \n\nSolving for the quadratic equation is the following: \n\nTo find the equation of the system: \n\nx^3 + 9x = 0 + 12\n\n",
+          " 5x^2 + 80\n\nSolutions for this equation:\n\n(x^2 - 8x^2 - 8x^2) = (x^2 - 8x^2) + 8x^2 - 8x^2 - x^2 + 8x^2\n\nIn this case with the constant term:\n\n(x^2 - 8x^2)\n\n(",
+          " 140. Solve for x and simplify. Then, we can solve the equation by multiplying the variables by the equations.\n\nThe equation of the function is: (9)x^4 = (x - yx)^2 + (y - y)x, where (x = y) to solve for y and y. Solve for y as y = x^2 and write down the equation. (1).\n\nSolutions:\n\n("
+        ],
+        "top_share": [
+          0.15625,
+          0.10416666666666667,
+          0.09375,
+          0.125,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.3020833333333333,
+          0.4270833333333333,
+          0.5729166666666666,
+          0.28125,
+          0.5
+        ],
+        "distinct2": [
+          0.5368421052631579,
+          0.6842105263157895,
+          0.8631578947368421,
+          0.4105263157894737,
+          0.8947368421052632
+        ],
+        "halt_depth": [
+          2.92,
+          2.89,
+          2.91,
+          2.83,
+          2.94
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " 0. So, we can apply the method of completing the equation with algebra.\n\nSolutions for a variable.\n\nSolution:\n\nWe can write two equations which are the same equation with the variable separated by variables. First, we will solve for x, then substitute in the variable x.\n\nWe can use the following algebra to solve for x:\n\nx = (A x) + (B x) (where x is the variable).",
+          " 0. First multiply the equation by the leading coefficient to make sure it is positive: x^2 - 5x^2 + 4x^2 + 4 = 0. Let x^2 = x. In this case, the equation is a linear equation with the variable x, so it's easy to solve using the equation without the equation.\n\nx^2 - 5x^2 + 2x^2 = 8x",
+          " 0:\n\n1) x^2 + x - (k+1)x + x^2\n2) (k^2 - 4) - (k+1)\n\nSimplifying the equation involves a series of steps:\n\n1) -(1+k^2)\n\n2) (k+1) + (k+1)\n\nThen, simplify the equation so that it becomes linear form. Since the exponent is ",
+          " 8x^2 - 19x^2 + 14x - 16 = x^2 - 18x^2 + x^2 - 18x^2\n\nLet me see. 2. We can use the following rule: 2(2.2x^2) + 12 - 12.\n\nH(x^2) = -12. 2(7.",
+          " 0\n\\)\n\nSolving the first equation:\n\\[\nx - 5x - 10 = 0\n\\]\n\\[\n-x - 5x - 7\n\\]\n\\[\n-x - 4x - 2x - 1\n\\]\n\nSimplifying, we get:\n\\[\n-x - 7\n\\]\nLet's solve this equation by"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.08333333333333333,
+          0.10416666666666667,
+          0.16666666666666666,
+          0.1875
+        ],
+        "distinct1": [
+          0.5520833333333334,
+          0.4479166666666667,
+          0.4270833333333333,
+          0.3020833333333333,
+          0.34375
+        ],
+        "distinct2": [
+          0.8315789473684211,
+          0.7157894736842105,
+          0.6736842105263158,
+          0.5578947368421052,
+          0.5052631578947369
+        ],
+        "halt_depth": [
+          2.96,
+          2.9,
+          2.92,
+          2.9,
+          2.91
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " 18\n\n2. A number has been calculated and rounded to the nearest tenth.\n\n3. How do you write the number of words in scientific notation? \n\n4. Can you give me an example of each of the 26 letters of the word? \n\nPlease provide answers for these questions.\n\n17. 2/3 \n\n2. **Answers**\n\nAnswer the following question:\n\n**Question (1)**\n\nSolve",
+          " 0\n\nAnswer: x^2 - 5x + 6.\n\nFind the quadratic equation: y = -x^2 + 5x - 6.\n\nAnswer: y = -x^2 - 4x - 1\n\nSolve linear equations:\n\nEquation 1: 2x + 5 = -3.\nEquation 2: y = 0.\nEquation 3:",
+          " 0.\n\nx^2-3x = 0, x^4 +x +1= 0.\n\nSolversing the equation given in the form of x, to find x: \nx * y^1 = a given quadratic equation.\n\nBy solving the inequality: x^2 = - y (quadratic) * (-x) (non) and (15 - y) (a non-quadratic",
+          " 0\n\n10. What is the value of e?\n\nA. approximately 2.2\nB. approximately 2.7\nC. approximately 3.3\nD. 0\n\n11. What is the value of t?\n\nA. 2.2278\nB. 2.3039\nC. 2.2143\nD. 2.844\n\n",
+          " 0.\n\nThe quadratic polynomial equation can be solved using factoring, the quadratic formula, completing the equation, and solving using the TI-Grap-c. For example, the equation: 2x^2 + 2x - 12 = 13x + 9x^4 + 6x^3 + 7x^2 - 13x^2 - 12x + 18x^2 -"
+        ],
+        "top_share": [
+          0.07291666666666667,
+          0.13541666666666666,
+          0.07291666666666667,
+          0.17708333333333334,
+          0.11458333333333333
+        ],
+        "distinct1": [
+          0.6458333333333334,
+          0.3020833333333333,
+          0.4895833333333333,
+          0.2604166666666667,
+          0.4166666666666667
+        ],
+        "distinct2": [
+          0.9368421052631579,
+          0.5684210526315789,
+          0.8526315789473684,
+          0.5684210526315789,
+          0.6947368421052632
+        ],
+        "halt_depth": [
+          2.93,
+          2.93,
+          2.94,
+          2.94,
+          2.92
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " 0. The solutions should start with \\boxed{}, and the solutions should be sorted in ascending order within that box.\n\nNew Answer:\n\nTo solve this question, let's start by factorizing the quadratic equation:\n\n\nx^2 = -5x + 10\n\nx^2 + 6x - 6 = 0\n\nWait, that's incorrect, I made a mistake in setting up the quadratic equation.\n",
+          " 0.\n\n1. **Write down the equation in terms of variables**: \\( x = \\frac{-b \\pm \\sqrt{b^2 - 42ax + 4a^2}}{2a^2} \\) is solved similarly. To maintain equality, ensure the right-hand side is balanced.\n\n2. Factor quadratic expressions using exponents: \n\\[ x^2 + 5x + 6 = 0",
+          " 0\n\n`2` and `3`\nOkay, I need to solve the equation x squared multiplied by (x minus 3)x3. Wait, let me parse the original problem again. The user wrote: \"Solve the quadratic equation x^2 + 6x + 30 = x^2 - 5x^2 - 10x + 5x^2 + 4x + 1. Then",
+          " 0 using substitution.\n\n35. Solve for x in the equation x(2b + 3) = 0.\n\n36. Find the x-coordinate of the circle with y-coordinate (0, 0) and center of symmetry.\n\n37. Write a quadratic function in standard form using the values from its graph to find the vertex, given the roots and vertex.\n\n**Simplify & Combine Like Terms**\n\n1.",
+          " 0.\n\nSolution:\n\n1. Solve the quadratic equation using the quadratic formula.\n\n* First, identify the coefficients a, b, and c.\n* a = 4*b / 2*x^2\n* b = 3*a / 2\n* c = a*b / 12\n* The quadratic formula is x = -b*(1 + 1) / (2*a)*3 = ("
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.07291666666666667,
+          0.09375,
+          0.08333333333333333,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.5833333333333334,
+          0.6145833333333334,
+          0.53125,
+          0.6145833333333334,
+          0.4270833333333333
+        ],
+        "distinct2": [
+          0.8526315789473684,
+          0.8947368421052632,
+          0.8,
+          0.9263157894736842,
+          0.7894736842105263
+        ],
+        "halt_depth": [
+          2.95,
+          2.9,
+          2.96,
+          2.94,
+          2.93
+        ]
+      }
+    }
+  }
+}

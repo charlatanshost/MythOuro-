@@ -2674,6 +2674,50 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-03 (evening) — ✅ EXIT_PDF @7,200: the distinct1 dip was a TRANSIENT
+
+Second readout on the exit_pdf lineage, 3,000 steps past the first. Both
+instruments, three checkpoints each, all in one session.
+
+| | base | @4,200 | **@7,200** | mathcode (regressed) |
+|---|---|---|---|---|
+| halt depth | 2.49/4 | 3.21/4 | **3.22/4** | — |
+| code L0 | 12.6% | 2.5% | **4.7%** | — |
+| code L3+ | 71.1% | 75.6–77.2% | 65.0% | — |
+| prose top_share ↓ | 0.104 | 0.118 | **0.106** | 0.159 |
+| prose distinct1 ↑ | 0.571 | 0.519 | **0.527** | 0.482 |
+
+### The question this settled
+
+`distinct1` fell 0.571 → 0.519 at 4,200 (~2 sd) and was flagged as the metric to
+watch, since a sustained slide is how the repetition attractor announced itself
+all summer. **It did not slide.** 0.519 → 0.527 over 3,000 further steps, and
+`top_share` recovered fully to base (0.106 vs 0.104).
+
+⇒ The dip was a **settling transient**. What remains is a persistent but stable
+~0.044 reduction in lexical variety — real, modest, non-compounding. That is the
+honest cost of the objective, and the pour is clean to continue.
+
+### What is durable, and what is noise
+
+**Durable (replicated across independent checkpoints):**
+* halt depth **2.49 → 3.22**, moved 3.21 → 3.22 over 3,000 steps — converged
+* code **L0 12.6% → 2.5% / 4.7%**, p=2e-7 and p=7e-5 against 960 base samples
+
+**Noise, and should not be quoted:**
+* code L3+ at 65.0 / 71.1 / 75.6 / 77.2 spans less than one 13.6 pp checkpoint sd
+* code L4 at 3 / 9 / 14 / 52 — the metric swung 30/15/1 within one lineage
+
+### ⚠ Housekeeping failure worth recording
+
+`--keep-last 8` rotated away `step_0004200.pt` — the checkpoint every depth-sweep
+and eval number in the 09-02/09-03 entries was measured on. The reports survive
+so nothing is lost analytically, but the model is gone and those numbers can
+never be re-derived. **A checkpoint that carries a published result belongs
+outside the rotation**, the way `checkpoints_base/` preserves the pre-growth
+lineage. `step_0007200` has been copied to
+`checkpoints_base/exitpdf_0007200.pt`.
+
 ## 2026-09-03 — 🔬 WHAT ACTUALLY BROKE THE REGRESSION WALL (and why we nearly missed it)
 
 The wall was broken by the **growth leg**, not by `exit_pdf` — and not through
