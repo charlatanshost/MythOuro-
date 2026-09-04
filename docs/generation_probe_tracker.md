@@ -137,6 +137,68 @@ deeper than trained → **pessimistic read**; should improve once the loop curri
 
 ---
 
+## Longitudinal eval trajectory (n=320, bare framing, T=0.4 pen=1.15 seed=1234)
+
+Every n=320 code eval on record, in step order. **Slot each new checkpoint in
+here rather than comparing it to one predecessor** — the bands below are what
+"normal" looks like, and most single-checkpoint deltas fall inside them.
+
+| step | L3+ | L4 | L0 | note |
+|---|---|---|---|---|
+| 140,000 | 59.1% | 2/320 | 10% | |
+| 141,500 | 77.8% | 6/320 | 6% | |
+| 143,500 | 76.6% | 5/320 | 6% | α-anneal carry-forward |
+| 146,500 | 53.4% | 4/320 | 8% | codemix |
+| 149,500 | 54.1% | **30/320** | 10% | codemix — top L4, bought with L3+ in the low 50s |
+| 151,238 | **78.8%** | 17/320 | 4% | rollout256 — top L3+ on record |
+| 157,238 | 54.7% | 26/320 | 31% | |
+| 163,238 | 77.5% | 19/320 | 7% | mathcode END — prose REGRESSED here |
+| — exit_pdf lineage — | | | | |
+| step 0 (= 278M base) | 68.8% | 9/320 | 15% | bit-exact control |
+| @4,200 | 77.2% | 4/320 | **2%** | **lowest L0 on record** |
+| @7,200 | 65.0% | 14/320 | **4%** | |
+
+**Bands across the whole lineage:** L3+ **53–79%**, L4 **1–30**, L0 **4–31%**.
+
+⇒ **L3+ has never separated an intervention** — its 26 pp band matches the
+13.6 pp checkpoint sd measured 2026-08-31. **L4's two highest values (30, 26)
+both came with L3+ in the low 50s** — the trade. **L0 is the discriminating
+metric**, and exit_pdf holds the two lowest values ever recorded without paying
+for them in L3+.
+
+## Qualitative trajectory — same seed, α=0.0 vs α=0.25, chronological
+
+The practice: read the SAME seed at the SAME α down the lineage. Metrics say
+where to look; this says what changed. Seed: *"The treatment for a bacterial
+infection usually involves"*, sample #0.
+
+**α=0.0 (pure student) — scaffold → fragments → loop → sentences**
+
+```
+157,000 base     'immuno ¡ … A: The following statements … A: The following is
+                  a sample … C: The standard name of the test group'
+161,500 mathcode 'immunoconduct … • Bilateral • C. of the same, • E. of the'
+163,238 mathcode '… - CABI (cascipronic) - CABI (cascipronic) x4'
+grown48 masked   'the treatment of the skin problem and the presence or more
+                  often a specific type of infection.'
+exit_pdf @7,200  'immunoconductduct … Other research is needed to study the role
+                  of antibiotics in infectious-type viruses.'
+```
+
+The base was not producing prose on this seed at all — `A:` / `A:` / `C:` list
+scaffolding with no content. The new lineage produces sentences.
+
+**α=0.25 — a stock-phrase tic disappears**
+
+`"antibiotics and antibiotics"` opens 157,000, 161,500 AND 163,238 — stable
+across 6,000 steps of the old lineage. It appears in **neither** new checkpoint.
+
+**⇒ The trend that matters: the α=0.0 → α=0.25 GAP HAS CLOSED.** At 157,000 the
+difference between unaided and teacher-assisted was fragment-soup vs coherent
+prose. At exit_pdf @7,200 both are coherent. The student now produces
+near-assisted quality unaided — which is what on-policy distillation is for, and
+the first time it is visible in the text rather than inferred from a metric.
+
 ## Roadmap-hypothesis cross-reference
 
 | Roadmap / ideas claim | Probe evidence @ step_3000 | Verdict |
