@@ -2762,6 +2762,66 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-04 — ❌ DROPOUT TEST: dilution REFUTED. And a trend worth watching.
+
+### 1. Expert dropout does not reproduce the growth leg
+
+3,000 steps, 24 experts, `--expert-dropout 0.5`, everything else matched to the
+mathcode leg **including `--rollout-batch 32`**. One variable.
+
+| | top_share ↓ | distinct1 ↑ | looping |
+|---|---|---|---|
+| mathcode (no dilution) | 0.159 | 0.482 | 5/30 |
+| **DROPOUT 0.5** | **0.140** | **0.500** | **3/30** |
+| base @157,000 | 0.137 | 0.520 | 1/30 |
+| grown48 masked (the thing being explained) | **0.104** | **0.571** | 1/30 |
+
+Dropout lands **on the base**, marginally better than mathcode, and nowhere near
+grown48 on any measure. The text agrees — on the bacterial seed it produces
+`"D.p.C.N.N.C.N."` and `"ECMF-FFTS"`, invented acronyms, drifting to dental.
+That is the salad mode, not protection from it.
+
+**⇒ Routing dilution is NOT the mechanism.** The hypothesis was mine and this
+refutes it. The remaining unexplained variable between those two legs is
+**`--rollout-batch` (mathcode 32, grown48 8)**, which is now a one-variable test
+of exactly the same shape.
+
+### 2. ⚠️ PROVISIONAL TREND — fluency up, factual grounding DOWN
+
+Reading all six seeds at α=0.0 AND α=0.25 across the lineage — the practice, not
+one seed — the newer checkpoints are **not** uniformly better, and the pattern is
+consistent enough to record:
+
+**Where the OLD checkpoints win — factual and technical correctness:**
+
+```
+fibonacci  α=0.0   base   'if n == 1: return 1 / if n == 2: return 1'   ← only correct base cases on record
+quadratic  α=0.25  base   'Let me use the quadratic formula for x'      ← only one naming the method
+quadratic  α=0.0   163,238 'we need to show that the discriminant of'   ← only one naming the discriminant
+diabetes   α=0.25  base    'increased thirst, frequent urination'       ← correct symptoms
+           α=0.25  163,238 '...and a constant feeling of hunger'        ← all three classic symptoms
+```
+
+**Where the NEW checkpoints win — fluency and topicality:**
+weather and ibuprofen at α=0.0 (exit_pdf stays on topic; the base loops
+`"the weather is not very nice"` and grown48 drifts to `"getting a lot of money"`).
+
+**⇒ Three independent interventions — growth, exit_pdf, dropout — all move the
+same way: more fluent, less correct.** And it matches the code ladder exactly:
+**L0 collapsed** (12.6% → 2.5%, far fewer failures to produce *something*) while
+**L4 stayed flat** (no more correct answers). Two instruments, same story.
+
+⚠ **Provisional.** Six seeds, sample #0, one draw each — this is a pattern across
+cells, not a powered measurement. What would overturn it: a checkpoint that lifts
+L4 without dropping L3+, or one that recovers fibonacci's base cases and the
+quadratic formula while keeping the prose gains. Neither has appeared yet.
+
+### 3. Correction to 2026-09-03
+
+The `"antibiotics and antibiotics"` stock phrase was recorded as eliminated in
+the new lineage. It is **back in DROPOUT at α=0.25**. grown48 and exit_pdf simply
+did not emit it on the sampled draw — it was never trained out.
+
 ## 2026-09-03 (evening) — ✅ EXIT_PDF @7,200: the distinct1 dip was a TRANSIENT
 
 Second readout on the exit_pdf lineage, 3,000 steps past the first. Both
