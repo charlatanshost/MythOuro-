@@ -193,11 +193,37 @@ scaffolding with no content. The new lineage produces sentences.
 `"antibiotics and antibiotics"` opens 157,000, 161,500 AND 163,238 — stable
 across 6,000 steps of the old lineage. It appears in **neither** new checkpoint.
 
-**⇒ The trend that matters: the α=0.0 → α=0.25 GAP HAS CLOSED.** At 157,000 the
-difference between unaided and teacher-assisted was fragment-soup vs coherent
-prose. At exit_pdf @7,200 both are coherent. The student now produces
-near-assisted quality unaided — which is what on-policy distillation is for, and
-the first time it is visible in the text rather than inferred from a metric.
+**⇒ The α=0.0 → α=0.25 gap has closed ON THIS SEED.** At 157,000 the difference
+between unaided and teacher-assisted was fragment-soup vs coherent prose; at
+exit_pdf @7,200 both are coherent.
+
+### ⚠️ CORRECTED SAME DAY — one seed is not the picture
+
+Reading all six seeds instead of one, **the improvement does NOT generalise and
+no checkpoint dominates**:
+
+| seed | best | worst |
+|---|---|---|
+| weather | exit_pdf | grown48 (drifts to "getting a lot of money") |
+| bacterial | grown48 / exit_pdf | 163,238 (the CABI loop) |
+| diabetes | 163,238 / grown48 | **exit_pdf** (the Question 15 loop) |
+| ibuprofen | exit_pdf | 163,238 (the "1. 9682 −0.0100" number fragments) |
+| **fibonacci** | **157,000 base** | 163,238 |
+| **quadratic** | **163,238** | grown48 (term soup) |
+
+**Both technical seeds regress in the new lineage.** On `fibonacci` the BASE is
+the only checkpoint that gets the base cases right —
+`if n == 1: return 1 / if n == 2: return 1` — against grown48's
+`result.extend(result)` and exit_pdf's `fibonacci_count += 1`. On `quadratic`,
+**163,238** is the only one that restates the problem correctly and names the
+discriminant, against grown48's `16877x^2 + 3x^2 - 3x^8` term soup.
+
+⇒ **The "scaffold → sentences" trend is real for MEDICAL PROSE and false for
+code and math.** exit_pdf wins 2 of 6, is worst on 1, and loses to older
+checkpoints on both technical domains. Generalising from the bacterial seed —
+which is what happened first — produced a claim the other five seeds refute.
+
+**This is the reason the practice is to read every seed, not the one that moved.**
 
 ## Roadmap-hypothesis cross-reference
 
