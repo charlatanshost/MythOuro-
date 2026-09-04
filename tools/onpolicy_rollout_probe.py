@@ -246,7 +246,17 @@ def main() -> None:
             print(f"\n  α={alpha:<4} | top_share {_agg(tss)} | "
                   f"distinct1 {_agg(d1s)} | distinct2 {_agg(d2s)} | n={args.samples}"
                   + (f" | halt {sum(halts)/len(halts):.2f}/{args.n_loops}" if halts else ""))
-            print(f"    e.g.: {example!r}")
+            # Print the example with REAL newlines, not repr escapes.
+            # 2026-09-03: an 8x "Question 15" repetition loop was printed via
+            # {!r} and read as continuous prose, because \n\n renders inline.
+            # repr() hides the one failure mode this project most cares about.
+            # Also flag it explicitly so it cannot be scrolled past.
+            from collections import Counter as _C
+            _L = [l.strip() for l in example.split("\n") if len(l.strip()) > 3]
+            _rep = max(_C(_L).values()) if _L else 0
+            print(f"    e.g.:{'  ⚠ LOOP x' + str(_rep) if _rep >= 3 else ''}")
+            for _line in example.split("\n")[:14]:
+                print(f"      | {_line}")
             if collected is not None:
                 collected.setdefault(seed_text, {})[str(alpha)] = {
                     "texts": texts,
