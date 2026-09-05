@@ -71,6 +71,11 @@ rows=[]
 for p in sys.argv[1:]:
     d=json.load(open(p))
     ts,ds,hits,n = [],[],0,0
+    hd=[]                      # halt depth: added 2026-09-05. The probe has
+                               # always recorded it; the table never showed it.
+                               # exit_pdf moved it 2.49 -> 3.22/4 and that is
+                               # the single best durable win on the board, so it
+                               # is the number an instruction pour can cost.
     loops=stut=0
     for seed,by_alpha in d["seeds"].items():
         a=by_alpha.get("0.0")
@@ -83,18 +88,21 @@ for p in sys.argv[1:]:
         _ts = a["top_share"]; _ds = a["distinct1"]
         ts.extend(_ts if isinstance(_ts, list) else [_ts])
         ds.extend(_ds if isinstance(_ds, list) else [_ds])
+        _hd = a.get("halt_depth") or []
+        hd.extend(_hd if isinstance(_hd, list) else [_hd])
         for t in a.get("texts",[]):
             n+=1
             if SALAD.search(t): hits+=1
             if _looping(t): loops+=1
             if _stutter(t): stut+=1
-    rows.append((d.get("step","?"), st.mean(ts), st.mean(ds), hits, n, loops, stut))
+    rows.append((d.get("step","?"), st.mean(ts), st.mean(ds), hits, n, loops, stut,
+                 st.mean(hd) if hd else float("nan")))
 print("\n"+"="*64)
 print("  PROSE READOUT (α=0.0) — lower top_share, higher distinct1 is better")
 print("="*64)
-print(f"  {'step':>10} {'top_share':>10} {'distinct1':>10} {'salad':>8} {'LOOPING':>9} {'stutter':>9}")
-for s,t,dd,h,n,lo,su in rows:
-    print(f"  {s:>10} {t:10.3f} {dd:10.3f} {f'{h}/{n}':>8} {f'{lo}/{n}':>9} {f'{su}/{n}':>9}")
+print(f"  {'step':>10} {'top_share':>10} {'distinct1':>10} {'halt':>7} {'salad':>8} {'LOOPING':>9} {'stutter':>9}")
+for s,t,dd,h,n,lo,su,hh in rows:
+    print(f"  {s:>10} {t:10.3f} {dd:10.3f} {hh:7.2f} {f'{h}/{n}':>8} {f'{lo}/{n}':>9} {f'{su}/{n}':>9}")
 if len(rows)>=2:
     print(f"\n  MEAN over {len(rows)} checkpoints:")
     print(f"    top_share {st.mean([r[1] for r in rows]):.3f} "
@@ -105,6 +113,10 @@ if len(rows)>=2:
     print(f"    LOOPING   {sum(r[5] for r in rows)}/{sum(r[4] for r in rows)}"
           f"   <- separates better than distinct1; regressed ckpt runs 5/30")
     print(f"    stutter   {sum(r[6] for r in rows)}/{sum(r[4] for r in rows)}")
+    _h=[r[7] for r in rows if r[7]==r[7]]
+    if _h:
+        print(f"    halt      {st.mean(_h):.2f}/4 (sd {st.pstdev(_h):.3f})"
+              f"   <- exit_pdf: 2.49 -> 3.22. Below ~3.0 means the pour cost depth.")
 print("\n  REFERENCE — the regression that motivated growth (pre-growth 278M):")
 print("    157,238  top_share 0.150  distinct1 0.484  salad 0")
 print("    160,000  top_share 0.197  distinct1 0.456  salad 0")

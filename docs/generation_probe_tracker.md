@@ -2762,6 +2762,89 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-05 — ⚠️ THE INSTRUCTION CORPUS IS 99.5% *NO-THINK*, AND THAT NOW CONFLICTS
+
+Setting up `run_instruct.sh` meant reading `data_teacher_chat_clean/` rather than
+trusting its verification table. Two findings, one documented-but-stale and one
+never enumerated at all.
+
+### 1. 99.5% of rows have an EMPTY `<think></think>` block — by design
+
+| | rows | share |
+|---|---|---|
+| empty `<think></think>` | **2,533** / 2,545 | 99.5% |
+| real reasoning content | 9 (87 after repair, below) | 0.4% |
+| no `<think>` at all | 3 | 0.1% |
+
+Uniform across every source (general 99.6%, medical 99.2%, code 99.4%, math
+100.0%). This is **not corruption** — the owner's recall was right and the
+harvest settings say so explicitly (2026-08-14): `--no-think` "prefills a CLOSED
+empty reasoning block", verified 0/18 on a probe and 94% across the run.
+
+**The problem is that the premise expired.** On 2026-08-14 the model was
+degenerate, halt depth sat at 2.00/4 (pinned to the floor by the uniform depth
+regulariser — confirmed today: 157,000 / 161,500 / 162,500 all read exactly
+2.00, sd 0.000), and "answer instead of rambling" was the right target. Since
+then exit_pdf moved halt depth **2.49 → 3.22/4**, converged and stable across
+three checkpoints — the single best durable win on the board.
+
+So the corpus is 2,533 demonstrations of *do not think, answer immediately*, at
+4x oversample, aimed at the one property we just succeeded in moving.
+
+**And the pre-registered gate could not see it.** "Does `<think>` open and never
+close?" passes almost by construction here: the corpus demonstrates immediate
+closure 2,533 times. Passing would show the model can copy a two-token pattern,
+not that instruction data works. Halt depth is now part of the gate, and
+`run_prose_readout.sh` prints a `halt` column — the probe has recorded
+`halt_depth` per sample since it was written, and the summary table simply never
+showed it.
+
+⇒ **The likeliest outcome is the ambiguous one**: answers appear *and* halt depth
+drops. That is not a pass. It is the corpus buying answer-shape with reasoning
+depth — a trade the harvest settings made on our behalf before exit_pdf existed.
+
+### 2. A third structural defect, never enumerated: 519 duplicate `</think>`
+
+The 2026-08-14 table checked *unclosed* and *reopened* `<think>` — both genuinely
+0, and both re-confirmed today. A surplus **closer** is a third failure mode and
+was not on the list, so 519 rows (20.4%) passed:
+
+```
+<think>\n\n</think>\n\n</think>\n\nANSWER
+```
+
+The `--no-think` prefill supplied one closer and the model emitted its own. Two
+populations, repaired differently by `tools/fix_chat_clean_think.py`:
+
+| population | rows | repair |
+|---|---|---|
+| nothing between the closers | 441 | drop the surplus closer |
+| model ignored the prefill and reasoned anyway | 78 | move that text back *inside* the block |
+
+The 78 are the interesting ones: the model wrote genuine content — sometimes real
+scratchpad reasoning (*"Okay, so I need to summarize... let me start by reading
+through the abstract carefully"*), sometimes a draft answer it then refined —
+**outside the block its own tag had closed.** Recovering them lifted real
+reasoning rows from 9 to 87. Left alone they teach prose-after-a-closed-block:
+the exact shape this run exists to test for.
+
+After repair: 0 surplus, 0 unclosed, 0 reopened. Backups `*.predup`; the tool is
+idempotent and a fixed-point loop (12 rows carried three or four closers, so
+single-pass left them unbalanced).
+
+### What this changes
+
+Nothing about whether to run it — 87 reasoning rows out of 2,545 cannot pay for
+2,458 no-think ones, but at ~0.27 epochs the dose is small and the question
+(*does instruction-shaped data move output shape at all?*) is still open and
+still cheap. What changes is **what counts as a pass**, and that the real fix if
+depth drops is a re-harvest **without** `--no-think` rather than a dose cut.
+
+**Standing lesson, third instance:** a corpus that passes every structural check
+can still be wrong for the run — 2026-08-13's unconditional `<|im_end|>`,
+2026-08-31's silently-dropped schema mismatch, and now a check that enumerated
+two of the three ways a `<think>` block can break. Read the rows.
+
 ## 2026-09-05 — ✅ THE GROWN48 ANOMALY RESOLVES: it was mostly STEP COUNT
 
 Five hypotheses were eliminated chasing why `grown48` improved prose where the

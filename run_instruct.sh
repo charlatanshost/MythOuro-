@@ -27,6 +27,39 @@
 # So "never answers" may be a property of that bad harvest rather than of
 # instruction data. That is the hypothesis this run tests.
 #
+# ⚠⚠⚠ READ THIS BEFORE JUDGING THE RESULT — 2026-09-05, reading the corpus:
+#
+# **99.5% of these rows (2,533/2,545) have an EMPTY `<think></think>` block.**
+# That is not corruption, it is the documented harvest setting: `--no-think`
+# "prefills a CLOSED empty reasoning block" (2026-08-14). At the time it was the
+# right call — the model was degenerate, halt depth sat at 2.00/4, and the goal
+# was to make it answer at all rather than ramble.
+#
+# **That premise has since changed.** exit_pdf moved halt depth 2.49 -> 3.22/4,
+# converged and stable across three checkpoints, and it is the single best
+# durable win on the board. This corpus is 2,533 demonstrations of *do not
+# think, answer immediately*, at 4x oversample, poured into the one model
+# property we just succeeded in moving. Those pull in opposite directions.
+#
+# The gate below was written before that was known and COULD NOT SEE IT: "does
+# `<think>` close?" passes almost by construction here, because the corpus
+# demonstrates immediate closure 2,533 times. Passing it would show the model can
+# copy a two-token pattern, not that instruction data works. **Halt depth is
+# therefore part of the gate now.**
+#
+# ⚠ A THIRD STRUCTURAL DEFECT, not in the 2026-08-14 table: **519 rows carried a
+# duplicate `</think>`** — the `--no-think` prefill supplied one and the model
+# emitted its own. The 08-14 check tested unclosed and REOPENED `<think>` (both
+# genuinely 0); a surplus CLOSER is a different failure and was never enumerated,
+# so it passed. Repaired 2026-09-05 by `tools/fix_chat_clean_think.py`:
+#   441 rows  surplus closer with nothing between  -> dropped
+#    78 rows  the model IGNORED the prefill and reasoned anyway, OUTSIDE the
+#             block its own tag closed -> moved back inside, which is what
+#             lifted real reasoning content from 9 rows to 87
+# Backups are `*.predup`; the tool is idempotent. After: 0 surplus, 0 unclosed,
+# 0 reopened. Without this the corpus taught prose-after-a-closed-block — the
+# exact shape this run exists to test for.
+#
 # DOSE: 4x oversample = 2.70% of the mix = ~0.27 epochs over 3,000 steps.
 # Deliberately 5x below the 1.35-epoch dose that cost 6.2pp, and ~40x below the
 # 10.3 that did not recover. Oversampling works because the loader keeps
@@ -37,14 +70,24 @@
 # entire instruction corpus would have been silently dropped and the run would
 # have looked clean. (Same failure that halved the corpus on 2026-08-31.)
 #
-# THE GATE, pre-registered:
+# THE GATE, pre-registered (halt depth added 2026-09-05 — see above):
 #   `<think>` still opens-and-never-closes  -> rung 8's unfixed failure is a
 #       property of instruction data itself, not of the bad harvest. Stop; the
 #       axis is closed and chat_clean was the last cheap shot at it.
-#   answers appear AND code/prose hold      -> instruction data works at this
-#       dose on a verified corpus, and grounding has a lever that is not more math.
+#   halt depth falls below ~3.0             -> the no-think corpus is UNTEACHING
+#       the exit_pdf win. Stop regardless of how good the answers look: depth is
+#       the harder thing to buy back, and 87/2,545 reasoning rows cannot pay for
+#       2,458 no-think ones. Re-harvest WITHOUT `--no-think` before retrying.
+#   answers appear, code/prose hold, AND    -> instruction data works at this
+#       halt depth holds >= ~3.0               dose on a verified corpus, and
+#       grounding has a lever that is not more math.
 #   code/prose regress                      -> dose is still too high even at
 #       0.27 epochs; drop to natural 0.69% before abandoning.
+#
+# ⚠ Answers appearing WHILE halt depth drops is the ambiguous outcome, and the
+# likeliest one. It is not a pass. It means the corpus bought answer-shape with
+# reasoning depth, which is the trade the 2026-08-14 harvest settings made on our
+# behalf before exit_pdf existed.
 set -uo pipefail
 STOP=0
 trap 'STOP=1; pkill -INT -P $$ 2>/dev/null; true' INT TERM
@@ -105,7 +148,9 @@ echo
 echo "=== READ IN THIS ORDER ==="
 echo "  1. Does it ANSWER?  (rung 8's unfixed failure — <think> opens, never closes)"
 echo "     bash run_eval.sh $DIR/step_0003000.pt instruct_3000"
-echo "  2. Prose, >=3 checkpoints:"
+echo "  2. HALT DEPTH + prose, >=3 checkpoints (the table now prints halt):"
+echo "     -> below ~3.0 is a STOP, however good the answers read"
+echo "  2b. Prose, >=3 checkpoints:"
 echo "     bash run_prose_readout.sh $(ls -t $DIR/step_0*.pt 2>/dev/null | head -3 | tr '\n' ' ')"
 echo "  3. Read ALL SIX seeds at α=0.0 AND α=0.25, and check specifically:"
 echo "       fibonacci base cases  /  the quadratic formula  /  diabetes symptoms"
