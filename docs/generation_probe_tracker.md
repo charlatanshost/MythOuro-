@@ -2762,6 +2762,55 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-05 — ✅ THE GROWN48 ANOMALY RESOLVES: it was mostly STEP COUNT
+
+Five hypotheses were eliminated chasing why `grown48` improved prose where the
+matched `mathcode` leg regressed. The control that shrank it was one I never ran:
+**hold STEPS constant.**
+
+### The step-matched comparison — same parent, same corpus, 2,000/2,500/3,000
+
+| | top_share ↓ | distinct1 ↑ |
+|---|---|---|
+| grown48 masked (48 experts) | 0.131 (sd 0.025) | **0.542** (sd 0.021) |
+| ROLLOUT regime (24 experts) | 0.140 (sd 0.014) | 0.490 (sd 0.019) |
+| DROPOUT dilution (24 experts) | 0.140 | 0.500 |
+| base @157,000 | 0.137 | 0.520 |
+| *grown48 at its full 8,696 steps* | *0.104* | *0.571* |
+
+**On `top_share` there is no matched-step effect** — 0.131 vs 0.140, inside one
+sd. The headline 0.104-vs-0.140 gap that drove five experiments was **mostly step
+count**: grown48 went 0.131 → 0.104 over its remaining 5,700 steps, and every
+comparison ran it against 3,000-step legs.
+
+**What survives is `distinct1` +0.052 at matched steps**, ~2.5 sd at n=3 vs n=3.
+Real-looking, modest, and a fraction of the effect being hunted.
+
+### ⇒ What this retires, and what it leaves
+
+**Retired:** the premise that something exotic about the 48-expert configuration
+produced a large prose improvement. Most of that improvement was tokens.
+
+**Still standing (the eliminations were still worth having):** capacity, since
+activated params never moved off 180,726,115 and the experts stayed ~90% twins;
+initialisation symmetry; load balancing; routing dilution; rollout regime. Those
+close real questions regardless of how the anomaly resolved.
+
+**Open, and now small enough to be honest about:** a ~2.5 sd `distinct1` edge for
+the 48-expert lineage at matched steps. Worth one line in the record, not another
+experiment.
+
+### ⚠️ THE METHOD FAILURE, recorded because it cost four runs
+
+Corpus, parent, objective and rollout regime were all held constant across
+comparisons. **Step count never was.** grown48 ran 8,696; mathcode 6,000; dropout
+and rollout 3,000 each. The mystery was substantially manufactured by that.
+
+**Rule: match STEPS before attributing a difference to mechanism.** It belongs
+beside the existing protocol rule (means over >=3 checkpoints), and it is cheaper
+than either — the step-matched control here reused checkpoints already on disk
+and cost 30 minutes.
+
 ## 2026-09-04 — ❌ DROPOUT TEST: dilution REFUTED. And a trend worth watching.
 
 ### 1. Expert dropout does not reproduce the growth leg
