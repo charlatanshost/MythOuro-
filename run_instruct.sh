@@ -35,11 +35,23 @@
 # right call — the model was degenerate, halt depth sat at 2.00/4, and the goal
 # was to make it answer at all rather than ramble.
 #
-# **That premise has since changed.** exit_pdf moved halt depth 2.49 -> 3.22/4,
-# converged and stable across three checkpoints, and it is the single best
-# durable win on the board. This corpus is 2,533 demonstrations of *do not
-# think, answer immediately*, at 4x oversample, poured into the one model
-# property we just succeeded in moving. Those pull in opposite directions.
+# **That premise has since changed.** exit_pdf moved halt depth off the floor and
+# it is the single best durable win on the board. This corpus is 2,533
+# demonstrations of *do not think, answer immediately*, at 4x oversample, poured
+# into the one model property we just succeeded in moving. Those pull in
+# opposite directions.
+#
+# ⚠ TWO DIFFERENT HALT NUMBERS — do not mix them (caught 2026-09-06, after the
+# first version of this gate set a bar that exit_pdf itself would have failed):
+#   * mean of the ACT halt DISTRIBUTION: 2.49 -> 3.22/4. That is the figure in
+#     the 09-02 and 09-03 entries.
+#   * `halt_depth` from `onpolicy_rollout_probe` (what run_prose_readout.sh
+#     prints): the REALIZED halt step during rollout. On that instrument the
+#     scale is base lineage **2.00** (pinned to the floor by the uniform depth
+#     regulariser — 157,000/161,500/162,500 all read exactly 2.00, sd 0.000) and
+#     exit_pdf **2.88** (6,000/6,500/7,200, sd 0.001).
+# The gate below is on the SECOND number, because that is the one the readout
+# prints. Baseline to beat: **2.88**.
 #
 # The gate below was written before that was known and COULD NOT SEE IT: "does
 # `<think>` close?" passes almost by construction here, because the corpus
@@ -74,12 +86,14 @@
 #   `<think>` still opens-and-never-closes  -> rung 8's unfixed failure is a
 #       property of instruction data itself, not of the bad harvest. Stop; the
 #       axis is closed and chat_clean was the last cheap shot at it.
-#   halt depth falls below ~3.0             -> the no-think corpus is UNTEACHING
-#       the exit_pdf win. Stop regardless of how good the answers look: depth is
-#       the harder thing to buy back, and 87/2,545 reasoning rows cannot pay for
-#       2,458 no-think ones. Re-harvest WITHOUT `--no-think` before retrying.
+#   prose-probe halt falls below ~2.70      -> the no-think corpus is UNTEACHING
+#       the exit_pdf win. (Baseline 2.88, sd 0.001 across three checkpoints; the
+#       pre-exit_pdf floor is 2.00, so 2.70 sits ~20% of the way back down.) Stop
+#       regardless of how good the answers look: depth is the harder thing to buy
+#       back, and 87/2,545 reasoning rows cannot pay for 2,458 no-think ones.
+#       Re-harvest WITHOUT `--no-think` before retrying.
 #   answers appear, code/prose hold, AND    -> instruction data works at this
-#       halt depth holds >= ~3.0               dose on a verified corpus, and
+#       prose-probe halt holds >= ~2.80        dose on a verified corpus, and
 #       grounding has a lever that is not more math.
 #   code/prose regress                      -> dose is still too high even at
 #       0.27 epochs; drop to natural 0.69% before abandoning.

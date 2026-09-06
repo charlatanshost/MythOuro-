@@ -116,7 +116,8 @@ if len(rows)>=2:
     _h=[r[7] for r in rows if r[7]==r[7]]
     if _h:
         print(f"    halt      {st.mean(_h):.2f}/4 (sd {st.pstdev(_h):.3f})"
-              f"   <- exit_pdf: 2.49 -> 3.22. Below ~3.0 means the pour cost depth.")
+              f"   <- THIS PROBE's scale: base lineage 2.00 (pinned), "
+              f"exit_pdf 2.88 (sd 0.001). Below ~2.70 = depth was spent.")
 print("\n  REFERENCE — the regression that motivated growth (pre-growth 278M):")
 print("    157,238  top_share 0.150  distinct1 0.484  salad 0")
 print("    160,000  top_share 0.197  distinct1 0.456  salad 0")

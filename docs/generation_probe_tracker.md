@@ -2785,8 +2785,18 @@ empty reasoning block", verified 0/18 on a probe and 94% across the run.
 degenerate, halt depth sat at 2.00/4 (pinned to the floor by the uniform depth
 regulariser — confirmed today: 157,000 / 161,500 / 162,500 all read exactly
 2.00, sd 0.000), and "answer instead of rambling" was the right target. Since
-then exit_pdf moved halt depth **2.49 → 3.22/4**, converged and stable across
-three checkpoints — the single best durable win on the board.
+then exit_pdf moved halt depth off that floor — the single best durable win on
+the board.
+
+⚠ **Two different halt numbers, and they must not be mixed** (caught 2026-09-06,
+after the first draft of this gate set a bar exit_pdf itself would have failed):
+
+| instrument | base | exit_pdf |
+|---|---|---|
+| mean of the ACT halt **distribution** (09-02, 09-03 entries) | 2.49/4 | **3.22/4** |
+| `halt_depth` from `onpolicy_rollout_probe` — the **realized** halt step, what `run_prose_readout.sh` prints | **2.00/4** (pinned, sd 0.000) | **2.88/4** (sd 0.001) |
+
+The gate is on the second, because that is the number the readout prints.
 
 So the corpus is 2,533 demonstrations of *do not think, answer immediately*, at
 4x oversample, aimed at the one property we just succeeded in moving.
