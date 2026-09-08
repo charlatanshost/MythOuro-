@@ -2762,6 +2762,94 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-07 — 🐛 RUNG 8'S "NEVER ANSWERS" IS PROBABLY AN EVAL BUDGET, NOT THE MODEL
+
+Instruction leg finished: 3,000 steps from exitpdf@7,200, 5 corpus dirs
+confirmed in the mix, `training complete`. Then the readouts, and the primary
+gate fired — until we read the completions.
+
+### The three readouts
+
+| | instruct @3,000 | exit_pdf baseline | call |
+|---|---|---|---|
+| code L3+ (bare, n=320) | **70.0%** ±5.0 | 65.0% @7,200 | held (+5pp, inside the 13.6pp checkpoint sd) |
+| code L0 | 6.9% | 4.7% | held |
+| prose top_share | 0.132 (sd 0.010) | 0.106 (sd 0.003) | mild regression |
+| prose distinct1 | 0.504 (sd 0.008) | 0.527 (sd 0.005) | mild regression |
+| prose LOOPING | **1/90** | 4/90 | better |
+| realized halt | **2.78** (sd 0.031) | 2.88 (sd 0.001) | −0.10, ABOVE the 2.70 stop |
+| **chat gate: `<think>` closes** | **1/320** | *unmeasured* | fired |
+
+So: code held, degeneracy improved, depth slipped slightly but did not break the
+pre-registered bar — and the headline gate failed exactly as rung 8 did.
+
+### Except the gate was measuring the token budget
+
+`code_eval` defaults to `--max-new 96`, and `run_chat_eval.sh` did not override
+it. Completion lengths across all 320 samples:
+
+```
+min 234   median 419   max 476 chars
+```
+
+**Not one completion reached a natural stop.** Every sample was truncated. And
+the text is not degenerate — it is coherent, on-task reasoning cut off
+mid-sentence:
+
+> `<think>`\nOkay, I need to solve this problem about a function that adds two
+> numbers… Wait, maybe I should start with the first part. The user mentioned
+> that there's an example where they have a list of integers…
+
+A chat-framed reasoning model spends its whole budget inside `<think>`. It
+cannot emit `</think>` because it never gets that far. "Opens and never closes"
+is a property of 96 tokens, not of the model.
+
+### And rung 8 shows the same signature
+
+The archived chat-framed evals, re-read today:
+
+| report | n | opened | closed | median chars | max chars |
+|---|---|---|---|---|---|
+| chatmix2 @109,500 | 80 | 64 | 3 | 376 | 448 |
+| chatmix2 @111,500 | 80 | 79 | 1 | 414 | 493 |
+| chatmix @111,471 | 80 | 80 | 1 | 412 | 515 |
+| **instruct @3,000 (today)** | 320 | 320 | 1 | 419 | 476 |
+
+Same truncation band, same 1-in-80 closure. `max_new` was not recorded in
+reports before 2026-08-24, but the default has always been 96 and nothing
+overrode it.
+
+⇒ **"'never answers' is NOT dose-driven and has NO known fix" reads differently
+now.** Of course a 7.6x dose cut moved it by one sample — *dose cannot fix a
+budget*. Rung 8 may have closed a live axis on an instrument artifact.
+
+### What this does and does not establish
+
+**Does not:** that the model answers. That is untested — a 512-token chat eval
+has never been run here, on any checkpoint.
+
+**Does:** that the evidence rung 8 was closed on cannot support the conclusion
+drawn from it, and that the instruction corpus is not implicated by this gate at
+all. It also leaves the attribution open in the other direction: the exit_pdf
+seed has **never** been measured under chat framing, so even a real
+open-and-never-close result could not be pinned on instruction data without that
+control.
+
+### Two bugs fixed
+
+* `run_chat_eval.sh` now defaults `MAXNEW=512`, prints a TRUNCATION CHECK
+  *above* the tag table, and warns when lengths bunch at the cap. `MAXNEW=96`
+  reproduces the artifact deliberately.
+* `run_prose_readout.sh` tagged reports by **step alone**, so the instruct leg's
+  2000/2500/3000 silently overwrote three reports of the same step numbers from
+  another lineage. Recovered from git (reports/ is tracked); last night's are
+  now `prose_instruct_*.json`. Tags now include the lineage.
+
+**Standing lesson, and it is the same one as 2026-09-05:** the check passed its
+own structural test and still measured the wrong thing. Read the raw text before
+believing a gate — the tag counts said "the model never answers", the
+completions said "the model was interrupted".
+
 ## 2026-09-05 — ⚠️ THE INSTRUCTION CORPUS IS 99.5% *NO-THINK*, AND THAT NOW CONFLICTS
 
 Setting up `run_instruct.sh` meant reading `data_teacher_chat_clean/` rather than

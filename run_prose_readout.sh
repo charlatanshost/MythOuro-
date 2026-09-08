@@ -32,7 +32,12 @@ mkdir -p reports logs /tmp/prose_probe
 OUTS=()
 for CK in "$@"; do
   [ -f "$CK" ] || { echo "missing: $CK"; exit 1; }
-  TAG=$(basename "$CK" .pt | sed 's/^step_0*//')
+  # ⚠ TAG MUST INCLUDE THE LINEAGE. Tagging by step alone silently OVERWRITES
+  # another lineage's report: on 2026-09-07 the instruct leg's steps 2000/2500/
+  # 3000 clobbered three reports of the same step number from a different run.
+  # They were recoverable only because reports/ is tracked in git. (Recovered as
+  # prose_instruct_*.json; the originals are back under their old names.)
+  TAG="$(basename "$(dirname "$CK")" | sed 's/^checkpoints_//')_$(basename "$CK" .pt | sed 's/^step_0*//')"
   D=/tmp/prose_probe/$TAG; rm -rf "$D"; mkdir -p "$D"
   # the probe reads a DIRECTORY and takes the newest checkpoint in it
   cp "$CK" "$D/step_$(printf %07d "$(echo "$TAG" | grep -oE '^[0-9]+' || echo 0)").pt"
