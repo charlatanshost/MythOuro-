@@ -32,6 +32,13 @@ def readout(path):
     ceil_frac = sum(1 for x in L if x >= 0.8 * L[-1]) / n
     truncated = ceil_frac >= 0.60
 
+    # DEGENERACY. The tag counts are meaningless if the text is token soup —
+    # 2026-09-08: 20.3% of instruct completions "closed and answered", and the
+    # answers were "three three three four four four five five seven seven".
+    # A closer emitted amid noise is not an answer.
+    dg = sum(1 for s in S if float(s.get("adj_repeat_frac", 0) or 0) >= 0.10) / n
+    lp = sum(1 for s in S if int(float(s.get("max_line_repeat", 1) or 1)) >= 3) / n
+
     op = cl = ans = emp = 0
     for s in S:
         c = s.get("completion") or ""
@@ -52,6 +59,10 @@ def readout(path):
     print(f"  completion chars: min {L[0]}  median {L[len(L)//2]}  max {L[-1]}")
     print(f"  within 80% of longest: {ceil_frac:.0%}"
           f"   -> {'TRUNCATED — the cap is the result' if truncated else 'generation is stopping naturally'}")
+    print(f"  adjacent-token degenerate: {dg:.1%}   line-looping: {lp:.1%}")
+    if dg >= 0.5:
+        print("  ⚠⚠ THE TEXT IS COLLAPSING. Tag counts below describe noise, not")
+        print("     behaviour: a `</think>` emitted amid token soup is not an answer.")
     if truncated:
         print("  ⚠ Tag counts below are NOT interpretable. Raise MAXNEW and re-run.")
     print()
@@ -63,6 +74,12 @@ def readout(path):
     if truncated:
         print("  VERDICT: inconclusive. The model ran out of budget, which is what")
         print("           rung 8 measured (median 376-414 chars, closed 1-3/80).")
+    elif dg >= 0.5:
+        print("  VERDICT: DEGENERATE at this length. Not a closure result either")
+        print("           way — the model collapses into token repetition before it")
+        print("           finishes. Raising the budget EXPOSED this; it did not")
+        print("           cause it. Compare bare framing at the SAME max_new")
+        print("           before blaming the framing rather than the length.")
     elif op and cl / op > 0.9 and ans / op > 0.9:
         print("  VERDICT: it CLOSES and ANSWERS. Rung 8's failure does not reproduce")
         print("           when the budget allows it -> that failure was the INSTRUMENT.")

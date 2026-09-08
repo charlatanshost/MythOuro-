@@ -24,14 +24,25 @@ CKPT="${1:?usage: bash run_eval.sh <checkpoint.pt> [tag]}"
 [ -f "$CKPT" ] || { echo "no such checkpoint: $CKPT"; exit 1; }
 TAG="${2:-$(basename "$(dirname "$CKPT")")_$(basename "$CKPT" .pt | sed 's/step_0*//')}"
 OUT="reports/code_${TAG}.json"
+# ⚠ MAXNEW defaults to 96 — the value EVERY archived baseline used. Overriding it
+# makes the run incomparable to all of them, so only do it for a deliberate
+# length control, and tag the report so the difference is visible:
+#   MAXNEW=512 bash run_eval.sh <ckpt> <tag>_512
+# Added 2026-09-08: chat framing at 512 came back 72-94% adjacent-token
+# degenerate while the same checkpoints at 96 were 0%. Whether that is the
+# FRAMING or just the LENGTH cannot be answered without bare framing at 512,
+# and there was no way to ask.
+MAXNEW="${MAXNEW:-96}"
 mkdir -p reports logs
 
 if pgrep -f "python -u -m training\.(distill|sft)" >/dev/null; then
   echo "a trainer is running — the eval will contend for the card. Stop it first."; exit 1; fi
 
-echo "=== eval: $CKPT  ->  $OUT ==="
+echo "=== eval: $CKPT  ->  $OUT  (max_new=$MAXNEW) ==="
+[ "$MAXNEW" = "96" ] || echo "  ⚠ max_new != 96 — NOT comparable to any archived baseline"
 python -u -m tools.code_eval -c "$CKPT" --device xpu:0 \
   --samples 32 --temperature 0.4 --seed 1234 --repetition-penalty 1.15 \
+  --max-new "$MAXNEW" \
   --json "$OUT" 2>&1 | tee -a "logs/eval_${TAG}.log"
 
 python - "$OUT" <<'PY'
