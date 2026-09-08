@@ -2762,7 +2762,101 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-08 — ⏹ THE BUDGET WAS REAL, THE CONCLUSION WAS WRONG: chat framing COLLAPSES
+
+Ran the 512-token chat eval on the instruct leg **and on the exit_pdf seed** —
+the control that had never existed. Truncation is gone (0-1% at the ceiling,
+median ~2,200 chars, generation stopping on its own), so the budget question is
+settled. What it exposed is not what yesterday's entry predicted.
+
+### ⚠️ CORRECTION TO THE 2026-09-07 ENTRY
+
+Yesterday's headline — *"rung 8's 'never answers' is probably an eval budget,
+not the model"* — **was wrong in its conclusion.** The budget effect was real and
+large: closure on the *same* seed checkpoint went 0.3% → 8.8% purely by raising
+`max_new` 96 → 512, a ~28x move. But the 96-token cap was not hiding a model
+that would have answered. It was cutting the sample off **before the collapse
+became visible.**
+
+| | closes `</think>` | adjacent-token degenerate |
+|---|---|---|
+| chat @96 — instruct | 1/320 (0.3%) | **0.0%** |
+| chat @512 — exit_pdf seed | 28/320 (8.8%) | **72.2%** |
+| chat @512 — instruct | 65/320 (20.3%) | **93.8%** |
+| bare @96 — instruct | — | 0.0% |
+| bare @96 — exit_pdf seed | — | 0.0% |
+
+At 96 tokens every chat completion was coherent, because the model had not yet
+had room to fall apart. At 512 it does, and 72-94% of samples collapse into
+token repetition.
+
+**And the closures are not answers.** Reading the 20.3% that "closed and
+answered", per the standing rule:
+
+> Okay, let me try to understand what this problem is about… the sum of all
+> numbers between 11 and 337… but wait—three three-digit digits (not exactly
+> 1111), another integer (which can be represented as 5—three three three three
+> four four four four five five seven seven seven nine nine eight eight…
+
+A `</think>` emitted amid token soup is not an answer. `rung=0`, `committed=None`.
+The non-closing 80% look the same, arriving there sooner — runs of stray quote
+and paren fragments, then `some some some examples examples examples Examples
+ExamplesExamplesExamples`.
+
+⇒ **The instruct leg's apparent +11.6pp closure advantage over the seed (z=4.15
+on sampling alone) points the WRONG WAY.** It is accompanied by *worse*
+degeneracy (93.8% vs 72.2%). More closers amid more noise is not a capability
+win, and it is one checkpoint per condition on a metric whose checkpoint-to-
+checkpoint variance has never been measured.
+
+### What rung 8 actually found
+
+Rung 8's observation stands, and now has a mechanism: **this model is
+out-of-distribution under chat framing and degenerates there at length.** The
+"7.6x dose cut moved it by ONE sample" result is consistent — dose was never the
+variable, and neither was the corpus. What changed nothing was never going to.
+
+### The control that is still missing
+
+**Bare framing at 512 has never been run.** Everything above compares chat@512
+against bare@96, so *framing* and *length* are perfectly confounded. If bare@512
+is also 70-90% degenerate then this is a LENGTH failure — the model simply cannot
+sustain 512 tokens — and chat framing is incidental. That is a materially
+different problem with a different fix, and it is one command:
+
+```
+MAXNEW=512 bash run_eval.sh checkpoints_exitpdf/step_0007200.pt exitpdf_7200_bare512
+```
+
+`run_eval.sh` gained a `MAXNEW` env for exactly this; it still defaults to 96 so
+every archived baseline stays comparable.
+
+### Where the instruction leg lands
+
+Under **bare** framing, unchanged from yesterday and still true: code L3+ 70.0%
+vs 65.0%, L0 6.9% vs 4.7%, prose LOOPING 1/90 vs 4/90, realized halt 2.78 vs 2.88
+(above the 2.70 stop). The corpus cost nothing there. It also did not teach the
+no-think shape — 0/320 empty blocks in both conditions, so the 99.5%-empty worry
+did not materialise at 0.27 epochs.
+
+Under **chat** framing it made degeneracy worse. At this dose the instruction
+axis neither helped nor is it the thing standing between the model and answering:
+the seed collapses too.
+
+**Standing lesson, third day running, and the sharpest version of it yet:** the
+metric said 20.3% closed and answered; the text said the answers were "three
+three three four four four". Yesterday's entry trusted a count over a reading and
+got the mechanism backwards inside 24 hours. **Read the raw text before believing
+any gate — including one you built the day before.**
+
 ## 2026-09-07 — 🐛 RUNG 8'S "NEVER ANSWERS" IS PROBABLY AN EVAL BUDGET, NOT THE MODEL
+
+> **⚠️ SUPERSEDED 2026-09-08 — the conclusion below is WRONG.** The budget
+> effect was real (0.3% → 8.8% closure from `max_new` alone) but it was masking
+> DEGENERACY, not competence: at 512 tokens 72-94% of chat completions collapse
+> into token repetition, on the exit_pdf seed as well. Rung 8's observation
+> stands. The measurements below are correct; the inference from them is not.
+
 
 Instruction leg finished: 3,000 steps from exitpdf@7,200, 5 corpus dirs
 confirmed in the mix, `training complete`. Then the readouts, and the primary
