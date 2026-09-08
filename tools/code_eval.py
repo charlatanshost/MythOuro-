@@ -436,7 +436,8 @@ def score_sample(prompt: str, completion: str, fname: str,
 
 @torch.no_grad()
 def generate(model, tok, prompt: str, device: str, max_new: int,
-             n_loops: int, temperature: float, rep_penalty: float = 1.0) -> str:
+             n_loops: int, temperature: float, rep_penalty: float = 1.0,
+             top_p: float = 0.0, stop_at_eos: bool = True) -> str:
     """Sample a continuation, optionally with a CTRL-style repetition penalty.
 
     WHY THE PENALTY IS HERE — it is a DIAGNOSTIC, not a scoring aid. At step
@@ -449,7 +450,34 @@ def generate(model, tok, prompt: str, device: str, max_new: int,
                                    and more tokens alone will not get there.
     Always report the penalty alongside results; a penalised number is not
     comparable to the unpenalised 46k-66k sweep.
+
+    STOP_AT_EOS (added 2026-09-08). Until today this loop had no exit: it ran
+    exactly `max_new` steps whatever the model did. At max_new=96 that was
+    invisible — 0/320 completions ever reached a terminator. At 512 it is not:
+    63/320 emit `<|im_end|>` and were then forced to generate ~300 more tokens
+    with nothing left to say, which collapsed into repetition and inflated
+    measured degeneracy from ~52% to 94%. Every archived number predates a
+    completion that could terminate, so turning this on changes none of them.
+
+    TOP_P (added 2026-09-08). Sampling was a full-vocabulary multinomial over
+    49,152 logits with no truncation. Over 96 steps a bad draw is survivable;
+    over 512 one derail is unrecoverable, and this model derails. top_p=0
+    keeps the historical behaviour exactly, so it is off by default and is a
+    DIAGNOSTIC: if truncated sampling fixes the 512-token collapse, the failure
+    is decoding, not training — the same logic the repetition penalty exists to
+    test.
     """
+    eos_ids = set()
+    if stop_at_eos:
+        for t in ("<|im_end|>", "<|endoftext|>"):
+            try:
+                ids = tok.encode(t, add_special_tokens=False)
+            except Exception:
+                continue
+            if len(ids) == 1:
+                eos_ids.add(ids[0])
+        if getattr(tok, "eos_token_id", None) is not None:
+            eos_ids.add(tok.eos_token_id)
     prompt_ids = tok.encode(prompt)
     ids = torch.tensor([prompt_ids], device=device)
     out = []
@@ -482,9 +510,22 @@ def generate(model, tok, prompt: str, device: str, max_new: int,
             logits[seen] = torch.where(v > 0, v / scale, v * scale)
         if temperature > 0:
             probs = (logits / temperature).cpu().softmax(-1)
+            if top_p and 0.0 < top_p < 1.0:
+                # nucleus: keep the smallest prefix whose mass reaches top_p.
+                # Always keep at least one token, and renormalise.
+                sp, si = torch.sort(probs, descending=True)
+                cum = torch.cumsum(sp, dim=-1)
+                cut = int(torch.searchsorted(cum, torch.tensor(top_p))) + 1
+                keep = si[:max(cut, 1)]
+                masked = torch.zeros_like(probs)
+                masked[keep] = probs[keep]
+                probs = masked / masked.sum()
             nxt = int(torch.multinomial(probs, 1))
         else:
             nxt = int(logits.argmax())
+        if nxt in eos_ids:
+            out.append(nxt)          # keep it: scoring splits on <|im_end|>
+            break
         out.append(nxt)
         ids = torch.cat([ids, torch.tensor([[nxt]], device=device)], dim=1)
     return tok.decode(out)
@@ -499,6 +540,17 @@ def main() -> None:
                    help="Generations per task; the ladder score is the BEST of "
                         "these (pass@k semantics).")
     p.add_argument("--max-new", type=int, default=96)
+    p.add_argument("--top-p", type=float, default=0.0,
+                   help="Nucleus sampling. 0 (default) = OFF = the untruncated "
+                        "full-vocab multinomial every archived report used. Set "
+                        "0.9-0.95 to test whether a long-generation collapse is "
+                        "a DECODING failure rather than a training one.")
+    p.add_argument("--no-stop-at-eos", action="store_true",
+                   help="Keep generating past <|im_end|>. Restores the "
+                        "pre-2026-09-08 behaviour, in which the loop always ran "
+                        "exactly --max-new steps and forced hundreds of tokens "
+                        "of noise after a finished answer. For reproducing old "
+                        "runs only.")
     p.add_argument("--temperature", type=float, default=0.4,
                    help="0 = greedy. A little sampling helps a weak model find a "
                         "working form; report the temperature alongside results.")
@@ -577,7 +629,9 @@ def main() -> None:
         for _ in range(args.samples):
             comp = generate(model, tok, prompt, args.device, args.max_new,
                             args.n_loops, args.temperature,
-                            args.repetition_penalty)
+                            args.repetition_penalty,
+                            top_p=args.top_p,
+                            stop_at_eos=not args.no_stop_at_eos)
             d = score_sample(prompt, comp, fname, checks,
                              extract=args.extract)
             samples.append(d)

@@ -33,6 +33,7 @@ OUT="reports/code_${TAG}.json"
 # FRAMING or just the LENGTH cannot be answered without bare framing at 512,
 # and there was no way to ask.
 MAXNEW="${MAXNEW:-96}"
+TOPP="${TOPP:-0}"      # 0 = off; every archived baseline used 0
 mkdir -p reports logs
 
 if pgrep -f "python -u -m training\.(distill|sft)" >/dev/null; then
@@ -40,9 +41,10 @@ if pgrep -f "python -u -m training\.(distill|sft)" >/dev/null; then
 
 echo "=== eval: $CKPT  ->  $OUT  (max_new=$MAXNEW) ==="
 [ "$MAXNEW" = "96" ] || echo "  ⚠ max_new != 96 — NOT comparable to any archived baseline"
+[ "$TOPP" = "0" ]    || echo "  ⚠ top_p != 0 — NOT comparable to any archived baseline"
 python -u -m tools.code_eval -c "$CKPT" --device xpu:0 \
   --samples 32 --temperature 0.4 --seed 1234 --repetition-penalty 1.15 \
-  --max-new "$MAXNEW" \
+  --max-new "$MAXNEW" --top-p "$TOPP" \
   --json "$OUT" 2>&1 | tee -a "logs/eval_${TAG}.log"
 
 python - "$OUT" <<'PY'
