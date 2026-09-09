@@ -2762,6 +2762,76 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-09 — ✅ IT IS THE FRAMING, NOT THE LENGTH — AND NOT THE DECODING EITHER
+
+Three controls at `max_new=512`, all on the **exit_pdf seed @7,200** so the only
+things varying are framing and sampling. First run with the fixed generator
+(EOS break + optional nucleus).
+
+| run | framing | top_p | degenerate | closes `</think>` | terminates | L3+ |
+|---|---|---|---|---|---|---|
+| `seed_bare512` | bare | 0 | **22.2%** | 0.9% | **64.1%** | **66.6%** |
+| `seed_chat512` | chat | 0 | **69.1%** | 8.4% | ~10% | — |
+| `seed_chat512_p92` | chat | 0.92 | **66.6%** | 5.6% | — | — |
+| *(reference)* `code_exitpdf_7200` | bare | 0 | 0.0% | — | 24.7% | 65.0% |
+
+### 1. The model is FINE at 512 tokens. It is broken under ChatML.
+
+Same checkpoint, same budget, only the framing differs: **22.2% vs 69.1%**
+degenerate. And bare framing at 512 scores exactly as it does at 96 —
+L3+ 66.6% vs 65.0%, L4 3.8% vs 4.4%, L0 6.6% vs 4.7% — while **terminating
+cleanly 64.1% of the time**, up from 24.7% now that generation can stop.
+
+128/320 samples are simultaneously L3+ **and** self-terminating at 512 tokens.
+Reading one, per the standing rule: real Python with correct indentation, a type
+guard, control flow and comments — wandering in its logic (it is rung 3, not 4)
+but structurally coherent and stopping on its own.
+
+⇒ **The "collapse at length" of 2026-09-08 was a chat-framing effect, not a
+length limit.** Length is not free (bare goes 0.0% → 22.2% from 96 → 512) but
+framing costs 3x more.
+
+### 2. It is not a decoding failure. The cheap fix is refuted.
+
+Nucleus sampling at `top_p=0.92` moved degeneracy **69.1% → 66.6%** — 2.5pp —
+and made closure *worse* (8.4% → 5.6%). This is the test `code_eval`'s own
+repetition-penalty docstring frames: truncated sampling does not rescue it, so
+the attractor is in the weights, not in the sampler. **A training problem.**
+
+### 3. ⚠️ My EOS prediction was wrong in magnitude
+
+I predicted the EOS fix would drop chat degeneracy to "~41%, not 72%". It went
+72.2% → **69.1%**. The error: ~41% was the rate *conditional on reaching a
+terminator*, and only 10.6% of chat samples ever reach one. Fixing the loop can
+only move the marginal by a few points when it applies to a tenth of the data. I
+quoted a conditional rate as if it were a marginal one. The fix was still
+correct and necessary — bare framing terminates 64.1% of the time and every one
+of those was previously forced to ramble — it just could not have delivered what
+I said it would.
+
+### What this means
+
+The model has seen **0.27 epochs of a 1.0M-token chat corpus** and essentially
+nothing else in ChatML. Being out-of-distribution there is not surprising; it is
+the expected consequence of never having trained on it.
+
+* **The coding-assistant goal is NOT blocked by this.** Bare/file framing
+  sustains 512 tokens at unchanged quality with clean termination. That is the
+  product axis, and it works.
+* **The chat-interface goal IS blocked**, and the lever is chat-format training
+  at a real dose.
+
+**The dose window is the open question, and it is genuinely open.** Rung 8's
+limits — 10.3 epochs cost −25pp, 1.35 epochs cost −6.2pp — were all measured on
+`data_teacher_chat`, the 26,130-row harvest later shown to be "1.22M UNUSABLE
+tokens that passed every structural check". On the CLEAN corpus we have exactly
+one datapoint, 0.27 epochs, and it cost nothing (code L3+ 70.0% vs 65.0%).
+**The clean-corpus dose-response above 0.27 epochs has never been measured.**
+
+Next: 16x oversample ≈ 10.8% of mix ≈ **1.08 epochs** over 3,000 steps — a 4x
+dose increase, still below the 1.35 that cost 6.2pp on the bad corpus. Gate on
+chat degeneracy (69.1% baseline) with bare-framing code as the guard rail.
+
 ## 2026-09-08 — ⏹ THE BUDGET WAS REAL, THE CONCLUSION WAS WRONG: chat framing COLLAPSES
 
 Ran the 512-token chat eval on the instruct leg **and on the exit_pdf seed** —
