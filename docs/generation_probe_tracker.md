@@ -2762,6 +2762,81 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-10 — ⏹ DOSE IS NOT THE LEVER: 3.6x MORE CHAT DATA MADE CHAT WORSE
+
+Leg 2, 16x oversample = 9.98% of mix = **0.98 epochs**, seeded from the same
+exit_pdf@7,200 as leg 1 so dose was the only variable. The gate was
+pre-registered before the numbers were seen. It failed, and in the direction
+nobody predicted.
+
+| axis | seed | leg 1 (0.27 ep) | leg 2 (0.98 ep) | |
+|---|---|---|---|---|
+| **chat degeneracy @512** | 69.1% | — | **95.3%** | ✗ worse |
+| **chat closes `</think>`** | 8.4% | — | **3.1%** | ✗ worse |
+| **bare code L3+** | 65.0% | 70.0% | **56.2%** | ✗ −8.8pp |
+| **bare code L0 (nothing)** | 4.7% | 6.9% | **14.7%** | ✗ 3x |
+| prose top_share | 0.106 | 0.132 | 0.119 | ✓ held |
+| prose distinct1 | 0.527 | 0.504 | 0.513 | ✓ held |
+| realized halt | 2.88 | 2.78 | 2.79 (sd 0.079) | ✓ above 2.70 |
+| medical stutter / looping | — | 0/90, 0/90 | 1/90, 0/90 | ✓ held |
+| medical diabetes sx | — | 5/30 | 4/30 | ✓ held |
+
+### The finding: the clean corpus does NOT escape rung 8's dose problem
+
+Rung 8 found capacity loss was dose-driven on `data_teacher_chat` — 10.3 epochs
+cost −25pp, 1.35 epochs cost −6.2pp. The standing hypothesis since 2026-09-05 was
+that this was a property of that BAD harvest ("1.22M UNUSABLE tokens that passed
+every structural check") rather than of instruction data.
+
+**It is not.** On the verified clean corpus, 0.98 epochs cost −8.8pp L3+ and
+**tripled L0**. That is rung 8's dose-response, reproduced on clean data at a
+comparable dose. Corpus quality was not the variable.
+
+### And the direction is the surprise
+
+More chat training made **chat framing worse** — degeneracy 69.1% → 95.3%,
+closure 8.4% → 3.1%. That is not "not enough yet", which is what the
+pre-registered middle branch anticipated. It is active damage, and it means
+there is no dose window here: 0.27 epochs does nothing measurable, 0.98 epochs
+hurts.
+
+**Leading hypothesis, not proven: the empty `<think></think>` shape.** 99.5% of
+this corpus demonstrates *open, think nothing, close, answer* (the documented
+`--no-think` harvest setting, 2026-08-14). exit_pdf spent 4,200 steps teaching
+this model the opposite — halt depth 2.49 → 3.22, mass on loops 3 and 4. Under
+chat framing, where the corpus's format applies, those two objectives collide.
+Consistent with all three observations: the model never adopts the shape (**0/320
+empty think blocks in BOTH legs**), chat degeneracy rises with dose, and bare
+capability erodes with dose.
+
+The competing explanation is simply that instruction data at dose hurts a 278M
+student regardless of content — rung 8's original reading. **These are
+distinguishable by one experiment**: a re-harvest WITHOUT `--no-think`. If
+thinking-enabled instruction data at ~1 epoch does not degrade, the shape was
+the problem. If it degrades the same way, the axis is closed at this scale and
+the answer is a bigger student, not a better corpus.
+
+### What held, and it matters
+
+Prose, halt depth and **medical all held** at 3.6x the dose. Medical stutter
+1/90 and looping 0/90, diabetes symptoms 4/30 — inside the lineage bands, no
+trend. The damage is specific to chat framing and to bare code, not general
+degradation. Whatever this corpus is doing, it is doing it to *format and code*,
+not to the mission axis.
+
+### Statistical honesty
+
+The code and chat numbers are **one checkpoint per condition**. L3+ 56.2% vs
+65.0% is −8.8pp against a 13.6pp checkpoint sd — **0.65 sd, not significant
+alone**. The argument is that three independent metrics moved the same way (L3+
+−8.8pp, L0 3x, chat degeneracy +26pp) while the three-checkpoint readouts (prose,
+halt, medical) held steady. That pattern is not what noise looks like, but a
+second checkpoint per condition would settle it and has not been run.
+
+Also note the pre-registered stop line was "bare L3+ below ~55%" and 56.2% is
+just above it. The stop that fired was the primary one — chat degeneracy was
+required to FALL below 69.1% and rose to 95.3%.
+
 ## 2026-09-09 — ✅ IT IS THE FRAMING, NOT THE LENGTH — AND NOT THE DECODING EITHER
 
 Three controls at `max_new=512`, all on the **exit_pdf seed @7,200** so the only
