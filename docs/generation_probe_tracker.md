@@ -2762,6 +2762,84 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-10 (late) — ⏹ OURO IGNORES A BREVITY REQUEST. The instruction axis is CLOSED at 278M.
+
+`--think-brief` pilot, 61 accepted rows, same 0.61h and ~10 tok/s as the
+unconstrained one. Measured on the **assistant turn only** (see the measurement
+error below).
+
+| | unconstrained | `--think-brief` |
+|---|---|---|
+| rows | 47 | 61 |
+| closed think block | 34 (72%) | 39 (64%) |
+| **no block at all** | 13 (28%) | **22 (36%)** |
+| unclosed | 0 | 0 |
+| think tokens: min | 196 | **231** |
+| p25 | 355 | 307 |
+| **MEDIAN** | **442** | **379** |
+| p75 | 509 | 553 |
+| max | 851 | **1082** |
+| ≤ 200 tok | 5.9% | **0.0%** |
+
+**The pre-registered gate said compliance meant a median of 60-120 tokens, and
+that a median above ~300 closes the axis. The median is 379.**
+
+A 14% median reduction is not compliance; it is drift inside the same
+distribution. The floor went **up** (196 → 231), the tail went **up** (851 →
+1082), and *nothing under 200 tokens was produced in either pilot*.
+
+### What Ouro actually does with the request
+
+It goes **bimodal**: either no reasoning at all (36%, up from 28%) or a full
+~379-token trace. It does not have a "brief" mode. The brevity instruction
+mostly converts *thinking* rows into *no-thinking* rows — which reproduces the
+`--no-think` corpus that already failed, rather than producing the short traces
+the experiment needed.
+
+Two things did improve and are worth keeping on record: acceptance rose 52% →
+68%, and **0 unclosed blocks in the assistant turn in either pilot** — when this
+teacher opens a block it always closes it. The 50%-unterminated figure from
+2026-08-14 was measured at `--max-new 1536`; at 1024 the unterminated rejects
+are whole responses that ran out of budget, not orphaned tags.
+
+### ⚠️ A measurement error I made, and the tool bug behind it
+
+The first reading of this pilot reported **"no closed blocks"** — flatly wrong.
+The `--think-brief` system prompt contains the literal string `<think>`, because
+it has to: it is telling the model what to keep short. So every brief row
+carries an extra opener **from the prompt**, and counting tags over the whole
+row read the corpus as 22×(1,0) and 39×(2,1) instead of 39 well-formed blocks.
+
+`tools/filter_think_corpus.py` had the same bug and would have silently rejected
+every brief-harvested row as `bad_tags`. Both now split on `<|im_start|>assistant`
+and count only what the teacher generated. This is the third time this month a
+count has pointed the wrong way and reading the raw text corrected it.
+
+### Where this leaves the instruction axis
+
+Every route has now been measured:
+
+| route | result |
+|---|---|
+| no-think corpus, 0.27 epochs | no measurable effect |
+| no-think corpus, 0.98 epochs | −8.8pp bare L3+, L0 tripled, chat degeneracy 69.1% → 95.3% |
+| trace corpus, filtered to ≤200 tok | ~700 h for 1.0M tokens; floor is 196, so unreachable |
+| trace corpus, filtered to ≤400 tok | ~102 h; median trace + answer exceeds the student's 512-token window |
+| trace corpus, brevity requested | ignored — median 379, floor 231, 36% skip thinking entirely |
+
+**⇒ Instruction/chat data does not work on a 278M student with this teacher.**
+That is a finding, not a failure, and it is worth stating plainly because it was
+arrived at by elimination rather than assumption. The levers that remain are a
+bigger student, a different teacher whose traces are short, or accepting that
+the chat interface is not this model's form.
+
+**What is NOT blocked.** The coding-assistant goal never depended on this. Bare
+and file framing sustain 512 tokens at L3+ 66.6% with 64% clean termination,
+today, and that is the natural interface for code completion anyway. The chat
+axis mattered chiefly for the medical interface, and medical prose continuation
+is healthy — 0/90 stutter and 0/90 looping across the leg-1 checkpoints, the
+cleanest in the lineage.
+
 ## 2026-09-10 (evening) — 🔬 PILOT: OURO CANNOT PRODUCE SHORT TRACES. Filtering is dead.
 
 A 40-minute pilot killed a 30-hour harvest. That is what it was for, and the

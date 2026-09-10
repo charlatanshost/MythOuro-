@@ -41,6 +41,21 @@ import argparse, glob, json, os, sys
 from collections import Counter
 
 TAG_O, TAG_C, EOT = "<think>", "</think>", "<|im_end|>"
+ASSISTANT = "<|im_start|>assistant"
+
+
+def _assistant_turn(text):
+    """Everything the TEACHER generated, excluding the prompt.
+
+    ⚠ Counting tags over the whole row is wrong and silently so. The
+    `--think-brief` system prompt contains the literal string "<think>" (it has
+    to — it is telling the model what to keep short), so every brief-harvested
+    row carries one extra opener from the PROMPT. Measured against the raw text
+    on 2026-09-10, the brief pilot read as 22 rows of (1,0) and 39 of (2,1) and
+    reported "no closed blocks" — when in fact 39 rows had a perfectly well
+    formed block in the assistant turn. Split first, then count.
+    """
+    return text.split(ASSISTANT, 1)[1] if ASSISTANT in text else text
 
 
 def _counter(tokenizer_id):
@@ -57,17 +72,18 @@ def _counter(tokenizer_id):
 
 def verdict(text, ntok, max_think):
     """None = keep; else the reason it was dropped."""
-    if text.count(TAG_O) != 1 or text.count(TAG_C) != 1:
+    turn = _assistant_turn(text)
+    if turn.count(TAG_O) != 1 or turn.count(TAG_C) != 1:
         return "bad_tags"
-    body = text.split(TAG_O, 1)[1].split(TAG_C, 1)[0]
+    body = turn.split(TAG_O, 1)[1].split(TAG_C, 1)[0]
     if not body.strip():
         return "empty_think"
     n = ntok(body)
     if n > max_think:
         return "think_too_long"
-    if not text.rsplit(TAG_C, 1)[-1].replace(EOT, "").strip():
+    if not turn.rsplit(TAG_C, 1)[-1].replace(EOT, "").strip():
         return "no_answer"
-    if EOT not in text:
+    if EOT not in turn:
         return "unterminated"
     return None
 
@@ -98,7 +114,7 @@ def main():
             if why is None:
                 keep.append(r)
                 kept_tok += ntok(r["text"])
-                body = r["text"].split(TAG_O, 1)[1].split(TAG_C, 1)[0]
+                body = _assistant_turn(r["text"]).split(TAG_O, 1)[1].split(TAG_C, 1)[0]
                 lens.append(ntok(body))
         per_shard[p] = keep
 
