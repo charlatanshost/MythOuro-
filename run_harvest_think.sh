@@ -20,17 +20,30 @@
 # identically, the axis is closed at this scale and the answer is a bigger
 # student, not a better corpus.
 #
-# ⚠⚠ THE 2026-08-14 DECISION PREDICTED THIS WOULD FAIL, AND IT MIGHT.
+# ⚠⚠ WE PREDICTED ON 2026-08-14 THAT THIS WOULD FAIL, AND IT MIGHT.
 # `--no-think` was chosen for two reasons, quoted from the flag's own help:
 #
 #     "at --max-new 1536, 50% of responses never finished reasoning and were
 #      rejected as unterminated, at ~9 tok/s. Beyond throughput, a 278M student
 #      cannot execute 1500-token CoT — TRAINING ON TRACES TEACHES RAMBLING."
 #
-# That is a real prediction from someone who had measured it. The counter-
-# argument is only this: the model was trained on ZERO traces and rambles ANYWAY
-# (3.1% closure, 95.3% degenerate). So the no-think choice did not buy what it
-# was meant to buy — but that does not mean traces are safe. It means untested.
+# ⚠ THOSE ARE TWO DIFFERENT KINDS OF CLAIM AND THE DISTINCTION IS THE WHOLE
+# REASON THIS RUN IS WORTH DOING:
+#   MEASURED  50% unterminated at max_new 1536; ~9 accepted tok/s against 24
+#             with --no-think. Real numbers, still trustworthy, and they are
+#             what makes the full harvest expensive.
+#   INFERRED  "a 278M student cannot execute 1500-token CoT / training on traces
+#             teaches rambling." That was OUR reasoning at the time, written
+#             next to the measurement so it reads as established. It was never
+#             tested — no trace-trained checkpoint has ever existed here.
+#
+# There is no outside authority on this project to defer to; the docs are our
+# own prior conclusions and get the same scrutiny as anything written today.
+# The evidence against the inference is that the model was trained on ZERO
+# traces and rambles ANYWAY (3.1% closure, 95.3% degenerate) — so no-think did
+# not buy what it was meant to buy. That does not make traces SAFE. It makes the
+# 08-14 inference the untested half of a decision whose measured half still
+# holds, which is exactly what a pilot is for.
 #
 # THE MIDDLE PATH, which 08-14 did not consider: keep traces, but only SHORT
 # ones. `tools/filter_think_corpus.py` drops any row whose reasoning exceeds
