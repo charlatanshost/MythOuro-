@@ -2762,6 +2762,95 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-10 (evening) — 🔬 PILOT: OURO CANNOT PRODUCE SHORT TRACES. Filtering is dead.
+
+A 40-minute pilot killed a 30-hour harvest. That is what it was for, and the
+result is worth writing down precisely because the *shape* of the failure
+matters more than the fact of it.
+
+### What was asked
+
+Leg 2 left two live explanations for why instruction data damages this model:
+**(a)** the empty `<think></think>` shape of the corpus, versus **(b)** any
+instruction data at dose hurting a 278M student. The separating experiment is a
+thinking-enabled harvest — but 2026-08-14 had already argued against that, and
+the argument had two halves that had been sitting together as if equally solid:
+
+* **MEASURED** — 50% unterminated at `--max-new 1536`, ~9 accepted tok/s vs 24
+  with `--no-think`.
+* **INFERRED** — "a 278M student cannot execute 1500-token CoT; training on
+  traces teaches rambling." Never tested. No trace-trained checkpoint has ever
+  existed here.
+
+The proposed middle path was to keep traces but bound them: harvest with
+thinking on, then drop any row whose reasoning exceeds ~200 tokens, so every
+retained row shows a trace the student can finish inside its 512-token window.
+
+### What the pilot measured
+
+```
+accepted 47, rejected 43   (41 of 43 rejects = unterminated)   11 accepted tok/s
+0.02M accepted tokens in 0.61 h
+
+think-block tokens, n=34 rows with a closed block:
+  min 196   median 442   p75 509   max 851
+    <= 200 tok:   2/34    5.9%
+    <= 400 tok:  14/34   41.2%
+    <= 600 tok:  29/34   85.3%
+```
+
+**Nothing shorter than 196 tokens was produced in the entire pilot.** The
+distribution has a floor, and the floor is above the bound. That is why this
+kills the approach rather than merely making it expensive:
+
+| bound | rows kept | ~hours for a 1.0M-token corpus |
+|---|---|---|
+| 200 tok | 4.3% | **~700** |
+| 400 tok | 29.8% | ~102 |
+| 600 tok | 61.7% | ~49 |
+
+And a 442-token median trace plus an answer does not fit the 512-token window
+the student is scored in, so even the affordable bounds do not buy the property
+the filter existed to guarantee.
+
+The 13 rows with no tags at all were clean — `(0,0)`, the teacher answering
+directly without opening a block — not the duplicate-closer corruption found in
+the no-think corpus on 2026-09-05.
+
+### Calibrating the 08-14 inference rather than discarding it
+
+The inference was about **1500-token** CoT. The real median at `--max-new 1024`
+is **442** — three times shorter than the thing that was argued against. So the
+inference was directionally right about a floor existing, and wrong about where
+it sits. Neither half of it has been tested against a trained checkpoint, and
+that remains true today.
+
+### What is left: ask, do not filter
+
+`--think-brief` (added today) swaps the system prompt for one requesting "at
+most three short sentences" of reasoning. It is a **request** — Ouro's chat
+template has no reasoning-length control, and it already ignores the `--no-think`
+prefilled block often enough to matter. So the brief pilot measures COMPLIANCE,
+the same discipline as the 0/18 compliance probe before the 2026-08-14 night.
+
+Verified before launch: all instruction sources still build to exactly 256
+tokens in both modes; the system prompt grows 6 → 28 tokens, taking ~22 from the
+snippet, which is a real difference from the no-think corpus and a confound if
+the two are ever compared row-for-row.
+
+**Pre-registered reading:** compliance means the median falling to roughly
+60-120 tokens. A median that stays above ~300 means Ouro ignores the request,
+and the instruction axis is closed at this scale — the lever would be a bigger
+student, not a better corpus. **That is a finding, not a failure**, and it gets
+written down either way.
+
+### Standing note on where the goals actually stand
+
+The coding-assistant goal does **not** depend on any of this. Bare/file framing
+sustains 512 tokens at L3+ 66.6% with 64% clean termination, today. The chat
+axis matters chiefly for the medical interface, which is the one that needs a
+human to ask questions.
+
 ## 2026-09-10 — ⏹ DOSE IS NOT THE LEVER: 3.6x MORE CHAT DATA MADE CHAT WORSE
 
 Leg 2, 16x oversample = 9.98% of mix = **0.98 epochs**, seeded from the same

@@ -261,6 +261,27 @@ _BOILERPLATE = re.compile(
 # --prompt-len tokens keeps the existing fixed-size batching working unchanged.
 _SYSTEM = "You are a helpful assistant."
 
+# --think-brief. Measured 2026-09-10 on a 47-row pilot with thinking ENABLED:
+# Ouro's reasoning blocks ran min 196 / median 442 / p75 509 / max 851 tokens.
+# NOTHING shorter than 196 was produced, so no post-hoc length filter can build
+# a bounded-trace corpus — a 200-token bound kept 4.3% of accepted rows, which
+# prices a 1.0M-token corpus at roughly 700 hours.
+#
+# The only remaining lever is asking for brevity up front. This is a REQUEST,
+# not a guarantee: Ouro's chat template has no reasoning-length switch, and it
+# already ignores --no-think's prefilled empty block often enough to matter.
+# Whether it complies is exactly what the brief pilot measures, the same way
+# 0/18 compliance was verified before committing a night on 2026-08-14.
+#
+# ⚠ It costs snippet budget. Prompts are a FIXED --prompt-len (256), so a longer
+# system message shortens the passage the instruction refers to (~6 tokens ->
+# ~34, taking ~28 from a ~220-token snippet). That is a real difference from the
+# no-think corpus and a confound if the two are ever compared row-for-row.
+_SYSTEM_BRIEF = (
+    "You are a helpful assistant. Think briefly: keep your reasoning inside "
+    "<think> to at most three short sentences, then close it and answer."
+)
+
 _INSTRUCTION_TEMPLATES = {
     "general": [
         "Explain the following passage in your own words.\n\n",
@@ -292,7 +313,8 @@ _INSTRUCTION_TEMPLATES = {
 
 
 def _chat_prompt(tok, snippet_ids: list[int], source: str, prompt_len: int,
-                 rng, no_think: bool = False) -> "list[int]":
+                 rng, no_think: bool = False,
+                 think_brief: bool = False) -> "list[int]":
     """
     One fixed-length ChatML prompt of EXACTLY `prompt_len` tokens.
 
@@ -306,8 +328,9 @@ def _chat_prompt(tok, snippet_ids: list[int], source: str, prompt_len: int,
     """
     templates = _INSTRUCTION_TEMPLATES.get(source) or _INSTRUCTION_TEMPLATES["general"]
     instruction = templates[rng.randrange(len(templates))]
+    system = _SYSTEM_BRIEF if think_brief else _SYSTEM
     prefix = tok.encode(
-        f"<|im_start|>system\n{_SYSTEM}<|im_end|>\n<|im_start|>user\n{instruction}"
+        f"<|im_start|>system\n{system}<|im_end|>\n<|im_start|>user\n{instruction}"
     )
     # --no-think prefills a CLOSED, EMPTY reasoning block so the teacher goes
     # straight to the answer. Ouro's chat template has no switch for this: with
@@ -390,6 +413,14 @@ def main() -> None:
                         "execute 1500-token CoT — training on traces teaches "
                         "rambling. VERIFY THE TEACHER COMPLIES before a long "
                         "run: if it opens a second <think>, this does nothing.")
+    p.add_argument("--think-brief", action="store_true",
+                   help="Ask the teacher, in the system prompt, to keep its "
+                        "reasoning to at most three short sentences. Use INSTEAD "
+                        "of --no-think when you want real but SHORT traces. A "
+                        "request, not a switch — Ouro has no reasoning-length "
+                        "control, so VERIFY COMPLIANCE on a pilot before "
+                        "committing a night. Costs ~28 tokens of snippet budget "
+                        "at a fixed --prompt-len.")
     p.add_argument("--prompt-len", type=int, default=256,
                    help="Fixed ChatML prompt length in tokens for "
                         "--chat-template. Every prompt is truncated/padded to "
@@ -522,7 +553,8 @@ def main() -> None:
         _probe = list(range(args.prompt_len))          # dummy ids, right length
         for _src in list(_INSTRUCTION_TEMPLATES) + ["__unknown__"]:
             _p = _chat_prompt(tok, _probe, _src, args.prompt_len,
-                              random.Random(0), no_think=args.no_think)
+                              random.Random(0), no_think=args.no_think,
+                              think_brief=args.think_brief)
             if len(_p) != args.prompt_len:
                 raise SystemExit(
                     f"chat prompt for source {_src!r} built {len(_p)} tokens, "
@@ -715,7 +747,8 @@ def main() -> None:
             break
         if args.chat_template:
             seeds = [_chat_prompt(tok, sd, src, args.prompt_len, _tmpl_rng,
-                                  no_think=args.no_think)
+                                  no_think=args.no_think,
+                                  think_brief=args.think_brief)
                      for sd, src in zip(seeds, sources)]
         input_ids = torch.tensor(seeds, device=args.device)
         if dev.backend(args.device) == "xpu":

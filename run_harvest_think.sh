@@ -2,8 +2,26 @@
 # RE-HARVEST WITH THINKING ENABLED — the experiment that separates two
 # explanations for why instruction data damages this model.
 #
-#   bash run_harvest_think.sh              # PILOT, ~35-45 min. DO THIS FIRST.
-#   FULL=1 bash run_harvest_think.sh       # full run — only after reading the pilot
+#   BRIEF=1 bash run_harvest_think.sh      # PILOT asking for SHORT traces  <- do this
+#   bash run_harvest_think.sh              # PILOT, unconstrained traces (already run)
+#   FULL=1 BRIEF=1 bash run_harvest_think.sh   # full run — only after reading a pilot
+#
+# ⚠ THE UNCONSTRAINED PILOT IS DONE AND IT RULED OUT THE FILTER APPROACH.
+# 2026-09-10, 47 accepted rows, 11 accepted tok/s, 0.02M tokens in 0.61h:
+#
+#     think-block tokens (n=34 closed)   min 196   median 442   p75 509   max 851
+#       <= 200 tok:  2/34   5.9%      <= 400 tok: 14/34  41.2%
+#       <= 600 tok: 29/34  85.3%
+#
+# NOTHING shorter than 196 tokens was produced. A post-hoc length filter cannot
+# build a bounded corpus out of that: at a 200-token bound a 1.0M-token corpus
+# prices at ~700 hours, and even a 600-token bound needs ~49. A 442-token median
+# trace plus an answer does not fit the 512-token window the student is scored in.
+#
+# So BRIEF=1 is the remaining lever: ask for short reasoning in the system prompt
+# rather than filtering for it afterwards. It is a REQUEST — Ouro has no
+# reasoning-length control — so this pilot measures COMPLIANCE, exactly as 0/18
+# compliance was verified before committing a night on 2026-08-14.
 #
 # THE QUESTION. Leg 2 (2026-09-10) showed 0.98 epochs of the clean instruction
 # corpus cost −8.8pp bare code L3+, tripled L0, and made chat framing WORSE
@@ -74,6 +92,10 @@ export SYCL_QUEUE_THREAD_POOL_SIZE=1
 export ZE_SERIALIZE=2
 
 OUT=data_teacher_chat_think
+BRIEF_FLAG=""
+if [ "${BRIEF:-0}" = "1" ]; then
+  BRIEF_FLAG="--think-brief"; OUT="${OUT}_brief"
+fi
 if [ "${FULL:-0}" = "1" ]; then
   TARGET="${TARGET:-1200000}"; TAG=full
 else
@@ -90,11 +112,12 @@ FREE=$(df --output=avail -BG . | tail -1 | tr -dc '0-9')
 echo "=== $TAG harvest: thinking ENABLED, target ${TARGET} accepted tokens ==="
 echo "=== out: $OUT   log: $LOG ==="
 echo "=== NOTE: --no-think is deliberately ABSENT. That is the whole experiment. ==="
+[ -n "$BRIEF_FLAG" ] && echo "=== --think-brief ON: measuring whether Ouro COMPLIES with a brevity request ==="
 
 python -u -m tools.gen_teacher_corpus \
   --device xpu:0 --teacher-id ByteDance/Ouro-2.6B-Thinking --trust-remote-code \
   --out-dir "$OUT" --target-tokens "$TARGET" \
-  --chat-template --prompt-len 256 \
+  --chat-template --prompt-len 256 $BRIEF_FLAG \
   --max-new 1024 --min-new 32 \
   --batch 18 --prealloc-cache --telemetry \
   2>&1 | tee -a "$LOG"
@@ -114,3 +137,9 @@ echo "     month:  head -1 $OUT/shard_0000.jsonl | python3 -m json.tool"
 echo
 echo "  Sizing the full run from what the pilot measures:"
 echo "    hours = 1.0e6 / (accepted_tok_per_s * kept_fraction) / 3600"
+echo
+echo "  COMPARE AGAINST THE UNCONSTRAINED PILOT (2026-09-10):"
+echo "    min 196 | median 442 | p75 509 | max 851 tokens, 11 tok/s, 52% accepted"
+echo "  Compliance means the median moving to roughly 60-120 tokens. A median"
+echo "  that stays above ~300 means Ouro ignores the request and the axis is"
+echo "  closed at this scale — a finding, not a failure. Write it down either way."
