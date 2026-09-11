@@ -2,6 +2,15 @@
 # OPT-B BENCHMARK — turn a projection into a measurement, in stages.
 #
 #   bash run_optb_bench.sh            # STAGE 1: apply B, measure top-K mass. STOPS.
+#
+# ⚠ 2026-09-11, first attempt, two bugs in this script and its tool:
+#   * stage 1 died on usage text — --report-only still required --out. K=32 was
+#     then chosen blind, the exact thing staging exists to prevent. Fixed in the
+#     tool: --out is optional under --report-only.
+#   * stage 2 hung in the teacher load: 17 min at 100% CPU on one core, nothing
+#     written. The tool used a bare AutoModelForCausalLM; the trainer's
+#     load_distillation_teacher (pad_token_id fix, eager attention on XPU, move
+#     after load) brings the same teacher up in ~13 s. Fixed: one loader.
 #   K=32 bash run_optb_bench.sh       # STAGE 2+3: build a small cache, then 200 steps
 #
 # WHY THIS MATTERS MORE THAN IT LOOKS. 2026-09-10 we costed a bigger student —
@@ -89,7 +98,12 @@ STEPS="${STEPS:-200}"
 # 200 steps x micro_batch 2 x grad_accum 8 x seq 1024 = 3.28M tokens; take 2x
 # headroom so the loader never wraps and re-reads during the measurement.
 MAXTOK="${MAXTOK:-7000000}"
-if [ ! -d "$CACHE" ] || [ -z "$(ls -A "$CACHE" 2>/dev/null)" ]; then
+# ⚠ manifest.json is the completion marker, not the directory. 2026-09-11 a
+# stage-2 run hung in the teacher load and was killed with the dir created but
+# empty; a "non-empty dir" test would also be fooled by a partial run that
+# wrote some shards and died.
+if [ ! -f "$CACHE/manifest.json" ]; then
+  rm -rf "$CACHE"
   echo "=== STAGE 2: precompute top-$K teacher logits (~${MAXTOK} tokens) ==="
   echo "=== this is a GPU job — forward-only at batch 8, but not free ==="
   python -u -m tools.precompute_teacher_logits \
@@ -97,8 +111,9 @@ if [ ! -d "$CACHE" ] || [ -z "$(ls -A "$CACHE" 2>/dev/null)" ]; then
     --device xpu:0 --seq-len 1024 --top-k "$K" --batch 8 \
     --max-tokens "$MAXTOK" --out "$CACHE" \
     2>&1 | tee -a "logs/optb_precompute_k${K}.log"
+  [ -f "$CACHE/manifest.json" ] || { echo "precompute did not finish — no manifest"; exit 1; }
 else
-  echo "=== STAGE 2: reusing existing $CACHE ==="
+  echo "=== STAGE 2: reusing existing $CACHE (manifest present) ==="
 fi
 du -sh "$CACHE" | sed 's/^/  cache size: /'
 
