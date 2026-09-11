@@ -59,6 +59,34 @@ export SYCL_QUEUE_THREAD_POOL_SIZE=1
 export ZE_SERIALIZE=2
 
 TEACHER=ByteDance/Ouro-2.6B-Thinking
+
+# ---- watchdog ---------------------------------------------------------------
+# 2026-09-11: two nights lost to two hangs that each sat at 100% CPU with
+# nothing logged — 17 min and then 8h13m — because nothing was watching. Both
+# were XPU ops the field notes already listed as bad. The code is fixed, but
+# the next unknown-bad op must not get a night either. This runs a command in
+# the background and kills it if its LOG file goes STALE_SEC seconds without a
+# write. A healthy stage logs every few seconds.
+STALE_SEC="${STALE_SEC:-300}"     # 5 min; a healthy stage logs every few seconds
+POLL_SEC="${POLL_SEC:-15}"
+run_watched() {   # run_watched <logfile> <cmd...>
+  local log="$1"; shift
+  : > "$log"
+  "$@" > >(tee -a "$log") 2>&1 &
+  local pid=$!
+  while kill -0 "$pid" 2>/dev/null; do
+    sleep "$POLL_SEC"
+    local age=$(( $(date +%s) - $(stat -c %Y "$log") ))
+    if [ "$age" -gt "$STALE_SEC" ]; then
+      echo; echo "!!! WATCHDOG: no log output for ${STALE_SEC}s — killing pid $pid"
+      echo "!!! last lines:"; tail -3 "$log" | sed 's/^/    /'
+      kill -TERM "$pid" 2>/dev/null; sleep 3; kill -KILL "$pid" 2>/dev/null
+      pkill -KILL -P "$pid" 2>/dev/null
+      return 124
+    fi
+  done
+  wait "$pid"
+}
 FILES="data_teacher_code/shard_*.jsonl,data_teacher_math/shard_*.jsonl,data_teacher_v2/shard_*.jsonl,data_teacher_med/shard_*.jsonl"
 mkdir -p logs reports
 
@@ -77,10 +105,11 @@ fi
 if [ -z "${K:-}" ]; then
   echo
   echo "=== STAGE 1: how much probability mass does top-K capture? ==="
-  python -u -m tools.precompute_teacher_logits --report-only \
-    --files "$FILES" --teacher-id "$TEACHER" --trust-remote-code \
-    --device xpu:0 --seq-len 1024 --sample-rows 64 \
-    2>&1 | tee -a logs/optb_report.log
+  run_watched logs/optb_report.log \
+    python -u -m tools.precompute_teacher_logits --report-only \
+      --files "$FILES" --teacher-id "$TEACHER" --trust-remote-code \
+      --device xpu:0 --seq-len 1024 --sample-rows 64 \
+    || { echo "stage 1 FAILED or STALLED — see logs/optb_report.log"; exit 1; }
   echo
   echo "=== READ THE MASS FIGURE, THEN RE-RUN WITH K ==="
   echo "  Below ~99% captured, the lumped tail carries real signal and K should"
@@ -106,11 +135,12 @@ if [ ! -f "$CACHE/manifest.json" ]; then
   rm -rf "$CACHE"
   echo "=== STAGE 2: precompute top-$K teacher logits (~${MAXTOK} tokens) ==="
   echo "=== this is a GPU job — forward-only at batch 8, but not free ==="
-  python -u -m tools.precompute_teacher_logits \
-    --files "$FILES" --teacher-id "$TEACHER" --trust-remote-code \
-    --device xpu:0 --seq-len 1024 --top-k "$K" --batch 8 \
-    --max-tokens "$MAXTOK" --out "$CACHE" \
-    2>&1 | tee -a "logs/optb_precompute_k${K}.log"
+  run_watched "logs/optb_precompute_k${K}.log" \
+    python -u -m tools.precompute_teacher_logits \
+      --files "$FILES" --teacher-id "$TEACHER" --trust-remote-code \
+      --device xpu:0 --seq-len 1024 --top-k "$K" --batch 8 \
+      --max-tokens "$MAXTOK" --out "$CACHE" \
+    || { echo "stage 2 FAILED or STALLED — see logs/optb_precompute_k${K}.log"; exit 1; }
   [ -f "$CACHE/manifest.json" ] || { echo "precompute did not finish — no manifest"; exit 1; }
 else
   echo "=== STAGE 2: reusing existing $CACHE (manifest present) ==="
