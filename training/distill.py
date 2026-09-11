@@ -72,6 +72,10 @@ from mythouro.tokenizer import MythOuroTokenizer
 # this since growth was built; distill.py never did, so the growth path only
 # worked through the channel that collapses this model (found 2026-08-27).
 from mythouro.grow import apply_sentinel_to_router_biases
+# OPT-B: precomputed top-K teacher logits for the offline path. See
+# tools/precompute_teacher_logits.py and docs/teacher_logit_cache.md.
+from mythouro.sparse_kd import sparse_distillation_loss
+from mythouro.logit_cache import TeacherLogitCache
 # Startup assertions. Three jobs in the week of 2026-08-25 ran for hours doing
 # the wrong thing while logging only a warning; these turn that class of
 # condition into a hard failure before a single GPU kernel launches.
@@ -365,6 +369,16 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "only thing preventing expert collapse; cv above ~1.0 "
                         "with min%% near 0 means experts are dying, which is a "
                         "RESULT, not a crash.")
+    p.add_argument("--teacher-logit-cache", type=str, default=None,
+                   help="OPT-B. Directory of precomputed top-K teacher logits "
+                        "(tools/precompute_teacher_logits.py). When set, OFFLINE "
+                        "micro-steps read the teacher's answer from disk instead "
+                        "of running the 2.6B forward, which _StepProfiler "
+                        "measures at 78.4% of a step. The cache supplies the "
+                        "TOKENS too, so it replaces the corpus stream for those "
+                        "steps. APPROXIMATE: the divergence is computed on a "
+                        "top-K + lumped-tail coarsening, a lower bound on the "
+                        "true KL. Must be built at the same --temperature.")
     p.add_argument("--use-depth-aware-init", action="store_true",
                    help="Huginn/Takase depth-aware init: residual-output projs get "
                         "std^2=1/(5*h*l). FRESH runs only (no effect on resumed "
@@ -436,6 +450,18 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
 # ---------------------------------------------------------------------------
 # Step profiler — where does the time actually go?
 # ---------------------------------------------------------------------------
+
+
+def _kd(sparse_pack, student_logits, teacher_logits_dense, **kw):
+    """OPT-B dispatch: cached sparse teacher, else the dense teacher forward.
+
+    Routed through one helper so a call site cannot be missed — a site left on
+    the dense path would dereference `t_logits=None` and crash immediately
+    rather than train against a wrong target, but only if it is reached.
+    """
+    if sparse_pack is not None:
+        return sparse_distillation_loss(student_logits, *sparse_pack, **kw)
+    return distillation_loss(student_logits, teacher_logits_dense, **kw)
 
 
 class _StepProfiler:
@@ -828,6 +854,36 @@ def main():
     shutdown = ShutdownHandler()
     shutdown.install()
 
+    # OPT-B: offline teacher-logit cache. Replaces both the corpus batch and
+    # the teacher forward on offline micro-steps.
+    logit_cache = None
+    logit_cache_iter = None
+    if args.teacher_logit_cache:
+        logit_cache = TeacherLogitCache(
+            args.teacher_logit_cache,
+            seq_len=args.seq_len,
+            temperature=args.temperature,
+            batch_size=args.micro_batch,
+            device=str(device),
+        )
+        logit_cache_iter = iter(logit_cache)
+        # Dose check, logged where it will be seen. The cache is FINITE; the
+        # stream it replaces was not. 1.35 epochs cost 6.2pp of code L3+ in the
+        # chat-mix post-mortem, 10.3 epochs cost 25pp and did not recover.
+        off = max(0.0, 1.0 - args.onpolicy_lambda)
+        ep = logit_cache.epochs_for(
+            steps=max(1, args.total_steps - start_step),
+            micro_per_step=max(1, int(round(args.grad_accum * off))),
+        )
+        msg = (f"distill: OPT-B logit cache — {len(logit_cache):,} rows, "
+               f"~{ep:.2f} epochs over this leg")
+        (logger.warning if ep > 1.35 else logger.info)(msg)
+        if ep > 1.35:
+            logger.warning(
+                "distill: OPT-B cache will be RE-READ past the 1.35-epoch dose "
+                "that measurably cost capability. Enlarge the cache."
+            )
+
     # Rollout reuse buffer (docs/onpolicy_plan.md phase 5): decouple the wide
     # GENERATION batch from the training micro-batch. --rollout-legacy keeps
     # the old inline per-micro-step path.
@@ -929,6 +985,9 @@ def main():
             # OPT-A: set by the rollout buffer when it carries teacher logits
             # for this micro-step; None means "run the teacher yourself".
             cached_t_logits = None
+            # OPT-B: (topk_idx, topk_val, tail_lse) when this offline micro-step
+            # is served from the precomputed cache; None means dense teacher.
+            sparse_pack = None
             if is_onpolicy:
                 prof.start("rollout")     # paired with prof.stop below
                 seed_len = max(8, args.rollout_len // 4)
@@ -1006,15 +1065,26 @@ def main():
                 op_accum += 1
                 prof.stop("rollout")
             else:
-                x_in, y_in = x, y
-                distill_targets = y
+                if logit_cache_iter is not None:
+                    # OPT-B: the cache carries its own tokens. Taking them from
+                    # here (rather than re-deriving them) is what makes
+                    # misalignment structurally impossible.
+                    x_in, y_in, _c_idx, _c_val, _c_tail = next(logit_cache_iter)
+                    sparse_pack = (_c_idx, _c_val, _c_tail)
+                else:
+                    x_in, y_in = x, y
+                distill_targets = y_in
 
             with amp_ctx:
                 # ── Teacher forward (no grad, no autograd graph) ──
                 # NOTE: this runs on EVERY micro-step, on-policy or offline. It is
                 # the prime suspect for the λ null result — see _StepProfiler.
                 with prof.region("teacher_fwd"):
-                    if cached_t_logits is not None:
+                    if sparse_pack is not None:
+                        # OPT-B hit: the teacher answered this offline batch
+                        # once, offline. Never run the 2.6B forward here.
+                        t_logits = None
+                    elif cached_t_logits is not None:
                         # OPT-A hit: identical x_in was already sent to the
                         # teacher when this rollout was generated.
                         t_logits = cached_t_logits
@@ -1036,8 +1106,8 @@ def main():
                         s_logits, unc = student_fwd(x_in, n_loops=n_loops)
 
                     # ── Distillation (+ CE blend on the offline path) ──
-                    distill_total, distill_metrics = distillation_loss(
-                        s_logits, t_logits, targets=distill_targets,
+                    distill_total, distill_metrics = _kd(
+                        sparse_pack, s_logits, t_logits, targets=distill_targets,
                         temperature=args.temperature,
                         alpha=args.alpha,
                         divergence=args.divergence,
@@ -1083,8 +1153,8 @@ def main():
                     for k in range(K):
                         logits_k = student.head(states[..., k, :])
                         if w is not None:
-                            loss_k, metrics_k = distillation_loss(
-                                logits_k, t_logits, targets=distill_targets,
+                            loss_k, metrics_k = _kd(
+                                sparse_pack, logits_k, t_logits, targets=distill_targets,
                                 temperature=args.temperature,
                                 alpha=args.alpha,
                                 divergence=args.divergence,
@@ -1120,8 +1190,8 @@ def main():
                     if w is None:
                         # --unc-loop-weighting running ALONE: the LM objective is
                         # untouched (final loop only), exactly as before.
-                        distill_total, distill_metrics = distillation_loss(
-                            s_logits, t_logits, targets=distill_targets,
+                        distill_total, distill_metrics = _kd(
+                            sparse_pack, s_logits, t_logits, targets=distill_targets,
                             temperature=args.temperature,
                             alpha=args.alpha,
                             divergence=args.divergence,
