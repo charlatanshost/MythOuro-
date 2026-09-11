@@ -151,7 +151,17 @@ def main():
         ids = torch.tensor(batch, dtype=torch.long, device=a.device)   # (b, L+1)
         with torch.no_grad():
             out = teacher(ids[:, :-1], use_cache=False, past_key_values=None)
-            lg = (out.logits if hasattr(out, "logits") else out).float()  # (b,L,V)
+            lg = (out.logits if hasattr(out, "logits") else out)
+            # ⚠ EVERYTHING BELOW RUNS ON CPU, DELIBERATELY. Field notes #2:
+            # "topk/multinomial sampling segfaults on XPU -> sample on CPU".
+            # This is a full-vocab topk over (b, L, 49152), the documented-bad
+            # shape, and with ZE_SERIALIZE=2 the host does not segfault — it
+            # SPIN-WAITS on the dead kernel. 2026-09-11: 8h13m at 100% CPU on
+            # one core, nothing written, on a --report-only pass that needs 64
+            # rows. code_eval moves the same op to CPU for the same reason.
+            # Cost is one ~1.6 GB transfer per batch of 8 — small next to the
+            # teacher forward it follows.
+            lg = lg.float().cpu()                                          # (b,L,V)
             val, idx = lg.topk(K, dim=-1)
             # captured probability mass at T=1 — the number that justifies K
             full_lse = torch.logsumexp(lg, dim=-1)
@@ -189,6 +199,11 @@ def main():
                 vocab = int(teacher.config.vocab_size)
             if not a.report_only and sum(x.shape[0] for x in shard["tokens"]) >= a.rows_per_shard:
                 flush_shard()
+        if n_rows and n_rows % (a.batch * 4) == 0:
+            _el = time.perf_counter() - t0
+            logger.info(f"  rows {n_rows:,}  tokens {n_tokens:,}  "
+                        f"{n_tokens/max(_el,1e-9):,.0f} tok/s  "
+                        f"mass so far {mass_sum/max(mass_n,1)*100:.2f}%")
         if a.report_only and n_rows >= a.sample_rows:
             break
         if a.max_tokens and n_tokens >= a.max_tokens and not a.report_only:
