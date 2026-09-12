@@ -136,9 +136,14 @@ is unavailable on this hardware regardless.
 
 ## Untested throughput ideas, cheapest first
 
-- `--micro-batch 16 --grad-accum 1` — identical tokens/step (16,384) and
-  mathematically identical optimization, half the kernel launches. Likely
-  memory headroom at 48GB / seq-len 1024. One run to check.
+- ~~`--micro-batch 16 --grad-accum 1`~~ — **STALE, do not run (2026-09-12).**
+  Written before `exit_pdf` made the loss per-loop. `run_exitpdf.sh:44` measured
+  the per-loop distillation loss at **~19.3 GB at micro-batch 8** with all K
+  autograd graphs live — the cause of the "NotPresent / PDE / Write" page fault,
+  an OOM in disguise. mb2 is ~4.8 GB, so mb16 is ~38 GB before the 4.8 GB teacher
+  and ~4.2 GB of weights/optimiser: it cannot fit in 48 GB. The surviving version
+  of this idea is **`--micro-batch 4 --grad-accum 4`** (~9.6 GB), same
+  tokens/step, 4x fewer launches than mb2 — probed by `run_throughput_probe.sh`.
 - `--rollout-len` / `--rollout-batch` — change the O(L²) generation cost
   directly, but both alter the on-policy signal, so they are quality decisions.
 - Fixing the rollout KV cache (needs a KL equivalence gate like the teacher's)
