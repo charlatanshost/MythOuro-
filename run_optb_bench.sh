@@ -214,6 +214,16 @@ python -u -m training.distill \
   --total-steps "$STEPS" \
   > >(tee -a "$LOG") 2> >(tee -a "$LOG.err" >&2)
 
+if [ "${PROFILE:-0}" = "1" ]; then
+  echo
+  echo "=== PROFILE MODE: read the STEP PROFILE table above, not a s/step figure."
+  echo "    The profiler syncs around each region, so the total is inflated."
+  echo "    ⚠ 'TEACHER SHARE' counts ONLY the explicitly-wrapped teacher_logits"
+  echo "      calls. The teacher ALSO runs inside every rollout generation step"
+  echo "      (teacher_mix_alpha), and that time lands in 'rollout'. Do not read"
+  echo "      a low teacher share as 'the teacher is cheap'."
+  exit 0
+fi
 echo
 echo "=== RESULT ==="
 python3 - "$LOG.err" <<'PY'

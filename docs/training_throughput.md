@@ -144,3 +144,66 @@ is unavailable on this hardware regardless.
 - Fixing the rollout KV cache (needs a KL equivalence gate like the teacher's)
   would attack the 41s/generation at its root, and would also make GQA's 4x
   smaller KV cache actually pay off in training instead of only at inference.
+
+---
+
+## 2026-09-12 — step 2 of the rotation landed: the teacher cache is built, and λ is now a real lever
+
+The ladder above said: reuse 8, then the **top-K teacher-logit cache** ("Not
+built"), and only then *"λ, which only then becomes a real lever."* Step 2 is
+now built and measured. This document predicted the outcome; it is recorded here
+rather than anywhere else so the sequence stays in one place.
+
+**OPT-B (`optim/`, top-K=32 + lumped tail) measured end-to-end:** 12.34 → **8.83
+s/step, 1.40x**, on the current recipe (24 experts, `micro-batch 2 / grad-accum
+8`, `--onpolicy-lambda 0.7`, `rollout-len 64 / batch 8 / reuse 8`). Cache: 4
+shards, 6,836 rows, mean top-K mass **99.415%**, 909 MB for 7M tokens.
+
+**Profile with B applied** (5 warmup + 10 steps):
+
+| region | ms/step | share | calls/step |
+|---|---|---|---|
+| **rollout** | 7,095.6 | **69.7%** | 5.9 |
+| backward | 2,130.5 | 20.9% | 8.0 |
+| student_fwd | 779.4 | 7.7% | 8.0 |
+| teacher_fwd | 109.0 | **1.1%** | 8.2 |
+| optimizer | 38.5 | 0.4% | 1.0 |
+| data | 25.4 | 0.2% | 8.0 |
+
+Compare the reuse=8 row of the ladder above (rollout 31.2%, teacher 54.2%): the
+cache took the teacher from 54.2% to 1.1%, and **rollout is back on top at
+69.7%** — the rotation this document described, one full turn later.
+
+### ⚠ The 1.1% teacher share is a region boundary, not the teacher being cheap
+
+`teacher_fwd` wraps only the explicit `teacher_logits(...)` calls. `generate_rollout`
+runs the teacher at **every generated token** (`teacher_mix_alpha=0.45`,
+`α·softmax(teacher/T) + (1−α)·softmax(student/T)`), and that time is billed to
+`rollout`. So an unknown but probably large fraction of the 69.7% is still
+teacher work, now hidden rather than removed.
+
+**This is directly measurable and has not been measured:** a profile run with
+`--teacher-mix-alpha 0` isolates it, since α=0 skips the teacher in generation
+entirely. It is a ~5-minute PROFILE run and it decides which lever is real:
+
+* if `rollout` collapses at α=0 → the teacher still dominates, and α (or a
+  cheaper mixing schedule) is the lever, not rollout geometry;
+* if `rollout` barely moves → it is genuinely student decode, and the O(L²)
+  KV-cache fix listed under "Untested throughput ideas" is the root attack.
+
+⚠ α is not free to lower: it is the un-collapse lever from `docs/onpolicy_plan.md`
+that made on-policy viable from a degenerate checkpoint. Lowering it in TRAINING
+is a quality decision. Using α=0 in a throw-away PROFILE run is not.
+
+### Consequence for the bigger-student plan
+
+`rollout + backward + student_fwd` = **98.3%** of the step, and all three scale
+with student size (the teacher component inside rollout does not, which is
+exactly why the α measurement above matters). The 2026-09-10 costing assumed the
+teacher was ~78% of a step and would amortise a 2.55x-activated student to
+roughly today's step time. That assumption is dead: on this recipe a 2.55x
+student lands near **26 s/step ≈ 21.6 h per 3,000-step leg** unless rollout cost
+comes down first.
+
+**⇒ Rollout cost is now a prerequisite for scaling the model, not a separate
+optimisation.**

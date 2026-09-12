@@ -2803,6 +2803,19 @@ it. The scaling argument from 2026-09-10 rested on the teacher being ~78% of a
 step and not scaling with student size. At this on-policy ratio the teacher is a
 much smaller share, so most of what remains **does** scale with the student.
 
+### ⚠️ CORRECTED 2026-09-12 — this was already documented
+
+`docs/training_throughput.md` (2026-07-30) had already measured rollout at 72.2%
+and the teacher at 21.2%, explained the O(L²) cause, and laid out the rotation
+(reuse → teacher cache → λ) that OPT-B is step 2 of. Its header says "Profile
+before arguing about this loop." The profile and its consequences now live
+there, appended under 2026-09-12, rather than being re-derived here.
+
+What this entry got right: B measures 1.40x, and the 3.5x projection was mine
+and wrong. What it got wrong: attributing the `rollout 0.0%` row in
+`optim/README.md` to a config difference. It is a sampling artefact — a 10-step
+window containing no buffer refill bills ~0 to rollout.
+
 ### What is NOT yet known, and the next measurement
 
 Where the 8.83 s actually goes on this config has never been measured — the

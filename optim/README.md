@@ -14,6 +14,15 @@ optimizer            38.9    0.6%      1.0
 rollout               0.1    0.0%      2.0
 ```
 
+> ⚠️ **2026-09-12 — `rollout 0.0%` in this table is a SAMPLING ARTEFACT, and the
+> conclusion drawn from it below is wrong.** `docs/training_throughput.md`
+> (2026-07-30) had already measured rollout at **72.2%** and explained why —
+> generation runs `use_kv_cache=False` on purpose, so every decode step re-runs
+> the whole sequence, O(L²). A 10-step profile window that happens to contain no
+> buffer refill bills ~0 to `rollout`. Read that document, not this row, for the
+> cost structure; it also lays out the rotation (reuse → teacher cache → λ) that
+> this section is step 2 of.
+
 **The 2.6B teacher forward is 78.4% of a step.** `rollout` is already 0.0%, so
 `--rollout-len`, `--rollout-batch` and `--rollout-reuse` are NOT throughput
 levers — which is also why the λ sweep moved throughput ~4% against a predicted
