@@ -11,7 +11,25 @@
 #     written. The tool used a bare AutoModelForCausalLM; the trainer's
 #     load_distillation_teacher (pad_token_id fix, eager attention on XPU, move
 #     after load) brings the same teacher up in ~13 s. Fixed: one loader.
-#   K=32 bash run_optb_bench.sh       # STAGE 2+3: build a small cache, then 200 steps
+#   K=32 bash run_optb_bench.sh           # STAGE 2+3: build a small cache, then 200 steps
+#   K=32 PROFILE=1 bash run_optb_bench.sh # STAGE 3 as a PROFILE — where does the time go?
+#
+# ⚠ RESULT, 2026-09-12: B measured **1.40x** (12.34 -> 8.83 s/step), not the
+# projected 3.5x. The cache was genuinely used (TeacherLogitCache, 6,836 rows,
+# mass 99.42%, ~0.12 epochs) and the run was clean, so this is a real number.
+#
+# The projection was mine and it was wrong in a specific, avoidable way: it
+# applied the 2026-08-28 profile (48-expert config, teacher_fwd 78.4%) to a
+# DIFFERENT configuration. This leg runs --onpolicy-lambda 0.7, so `op N/8`
+# averaged 6.25 — only ~1.75 of 8 micro-steps are OFFLINE, and B only removes
+# the teacher from offline ones. On-policy teacher calls run at 79 tokens and
+# stay exactly as they were.
+#
+# That is the same error the README already names one section up: "a profiler's
+# calls/step is not work/step when call shapes differ." I repeated it at the
+# level of whole configurations instead of call shapes. PROFILE=1 exists so the
+# next number comes from _StepProfiler on THIS config rather than from arithmetic
+# on someone else's.
 #
 # WHY THIS MATTERS MORE THAN IT LOOKS. 2026-09-10 we costed a bigger student —
 # dim 1792 + prelude/coda 4 + top-k 6 = 633M total / 460M activated, 2.55x the
@@ -161,6 +179,13 @@ torch.save(ck,p+".tmp"); os.replace(p+".tmp",p); print("  seeded at step 0")
 PY
 }
 
+PROF_FLAGS=""
+if [ "${PROFILE:-0}" = "1" ]; then
+  PROF_FLAGS="--profile-steps 10 --profile-warmup 5"
+  echo
+  echo "=== PROFILE MODE: 5 warmup + 10 profiled steps, then EXIT WITHOUT SAVING ==="
+  echo "=== read the SHARES, not tok/s — the profiler syncs around each region ==="
+fi
 echo
 echo "=== STAGE 3: $STEPS steps with the cache. BASELINE TO BEAT: 12.4 s/step (+A) ==="
 echo "=== log: $LOG ==="
@@ -178,6 +203,7 @@ python -u -m training.distill \
   --onpolicy-lambda 0.7 \
   --ckpt-dir "$DIR" --ckpt-every-mins 999 --ckpt-milestone-every 100000 \
   --num-workers 0 --trust-remote-code --log-every 25 \
+  $PROF_FLAGS \
   --total-steps "$STEPS" \
   > >(tee -a "$LOG") 2> >(tee -a "$LOG.err" >&2)
 

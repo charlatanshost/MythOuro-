@@ -2762,6 +2762,72 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-12 — 📉 OPT-B MEASURES 1.40x, NOT 3.5x. The projection applied the wrong config.
+
+The benchmark ran clean. The cache was genuinely used — `TeacherLogitCache: 4
+shards, 6,836 rows, K=32, T=2.0, mean top-K mass 0.99415`, `~0.12 epochs over
+this leg`, 909 MB on disk — and 200 steps completed.
+
+```
+measured: 8.83 s/step over steps 50->200 (first interval dropped)
+baseline: 12.34 s/step (+A, same config, same parser)
+speedup:  1.40x          <- projected 3.5x
+```
+
+### Why the projection was wrong, specifically
+
+It applied the **2026-08-28 profile** (`teacher_fwd` 78.4% of a step) to a
+**different configuration**. That profile was taken on the 48-expert config. The
+instruct/bench legs run `--onpolicy-lambda 0.7`, and `op N/8` across this run
+averaged **6.25** — so only about **1.75 of 8 micro-steps are OFFLINE**, and B
+removes the teacher only from offline ones. On-policy teacher calls run at 79
+tokens (`seed_len 16 + rollout_len 64 - 1`) and are untouched.
+
+`optim/README.md` already carries the lesson one section up, from the OPT-A
+correction: *"a profiler's `calls/step` is not `work/step` when call shapes
+differ. Multiply by the actual tensor sizes before predicting a saving."* I made
+the same class of error one level up — applying a whole profile across
+configurations instead of re-measuring. **The rule generalises: a profile
+belongs to the config it was taken on.**
+
+### What 1.40x is still worth
+
+| | s/step | 3,000-step leg |
+|---|---|---|
+| +A (today) | 12.34 | 10.3 h |
+| +A+B | **8.83** | **7.4 h** |
+
+Real, and it survives the night-length constraint better — but it does **not**
+make a 2.55x-activated student cheap, which was the entire reason for measuring
+it. The scaling argument from 2026-09-10 rested on the teacher being ~78% of a
+step and not scaling with student size. At this on-policy ratio the teacher is a
+much smaller share, so most of what remains **does** scale with the student.
+
+### What is NOT yet known, and the next measurement
+
+Where the 8.83 s actually goes on this config has never been measured — the
+289-line reasoning above is inference from `op N/8`, not a profile. `PROFILE=1`
+added to `run_optb_bench.sh` runs `_StepProfiler` (5 warmup + 10 profiled steps,
+exits without saving) on exactly this configuration.
+
+That number decides the student-size question honestly:
+
+* if the residual is dominated by **student** forward/backward, a 2.55x student
+  costs roughly 2.55x of that share, and the bigger-model plan needs re-costing
+  against real nights;
+* if it is dominated by **on-policy teacher** work, then `--onpolicy-lambda` is
+  a throughput lever again for the first time (it was refuted as one on
+  2026-07-30 precisely *because* the offline teacher dominated), and lowering it
+  is cheaper than anything architectural.
+
+**Do not re-derive this from arithmetic.** That is what produced the 3.5x.
+
+### Also fixed
+
+The precompute's progress line printed once per batch inside a flush rather than
+once per 4 batches, so identical rows repeated four times in the log. Cosmetic,
+but it made the stage-1 output look stuck when it was healthy.
+
 ## 2026-09-10 (late) — ⏹ OURO IGNORES A BREVITY REQUEST. The instruction axis is CLOSED at 278M.
 
 `--think-brief` pilot, 61 accepted rows, same 0.61h and ~10 tok/s as the

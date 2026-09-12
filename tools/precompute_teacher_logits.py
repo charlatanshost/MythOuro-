@@ -191,6 +191,7 @@ def main():
         shard = {k: [] for k in shard}
 
     vocab = None
+    _last_logged = [0]
     for win in iter_windows(files, tok, L, limit):
         batch.append(win)
         if len(batch) >= a.batch:
@@ -199,7 +200,11 @@ def main():
                 vocab = int(teacher.config.vocab_size)
             if not a.report_only and sum(x.shape[0] for x in shard["tokens"]) >= a.rows_per_shard:
                 flush_shard()
-        if n_rows and n_rows % (a.batch * 4) == 0:
+        # ⚠ n_rows only CHANGES on a flush, so a modulo on it re-fires for every
+        # row of the batch that crossed the boundary — four identical lines in
+        # the 2026-09-11 logs. Gate on the flush instead.
+        if n_rows and n_rows % (a.batch * 4) == 0 and n_rows != _last_logged[0]:
+            _last_logged[0] = n_rows
             _el = time.perf_counter() - t0
             logger.info(f"  rows {n_rows:,}  tokens {n_tokens:,}  "
                         f"{n_tokens/max(_el,1e-9):,.0f} tok/s  "
