@@ -169,6 +169,13 @@ du -sh "$CACHE" | sed 's/^/  cache size: /'
 DIR=checkpoints_optb_bench
 SRC=checkpoints_exitpdf/step_0007200.pt
 LOG="logs/optb_bench_k${K}_$(date +%Y%m%d_%H%M).log"
+# ⚠ A BENCHMARK DIRECTORY MUST START CLEAN. 2026-09-12: the PROFILE run resumed
+# from step_0000200.pt left by the previous bench and hit the no-op guard
+# ("resumed at step 200 but --total-steps is 200"). The guard was right — it is
+# the one added on 09-01 after a leg reported success having trained zero steps.
+# Two different bench runs must also measure the same thing from the same start,
+# which a leftover checkpoint silently breaks. KEEP_CKPT=1 opts out.
+if [ "${KEEP_CKPT:-0}" != "1" ]; then rm -rf "$DIR"; fi
 mkdir -p "$DIR"
 [ -f "$DIR/step_0000000.pt" ] || { cp "$SRC" "$DIR/step_0000000.pt"
   python - <<'PY'
