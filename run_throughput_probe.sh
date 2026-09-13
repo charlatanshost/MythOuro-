@@ -18,10 +18,15 @@
 #
 # THE VARIANTS
 #   A baseline      the production recipe, for a same-session reference
-#   B mb4/ga4       IDENTICAL tokens/step (16,384) and mathematically identical
-#                   optimisation, 4x fewer kernel launches than mb2. A PURE win
-#                   if it pays — no objective change, no quality decision,
-#                   unlike OPT-B or lowering α.
+#   B mb4/ga4       IDENTICAL tokens/step (16,384), 4x fewer kernel launches.
+#                   ⚠ NOT "mathematically identical" — corrected 2026-09-13.
+#                   load_balance_loss is E·Σ f_i·P_i with f_i and P_i averaged
+#                   over the MICRO-BATCH, so a product of two batch means is not
+#                   linear in the batch: 8 accumulations over N=2,048 differ from
+#                   4 over N=4,096 on the auxiliary gradient, and the router-bias
+#                   update cadence moves with them. Main loss unaffected, MoE
+#                   ROUTING is not. Still cheap and still worth taking, but it
+#                   is a quality decision of its own, not a free win.
 #
 #                   ⚠ docs/training_throughput.md lists "--micro-batch 16
 #                   --grad-accum 1" as the cheapest untested idea. DO NOT RUN

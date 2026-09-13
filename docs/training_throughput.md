@@ -249,9 +249,15 @@ rollouts at 12.5 s/step or pure-student rollouts at 6.8 s/step.
 
 ### What to take, and what to gate
 
-* **B (mb4/ga4) is free — take it.** Identical tokens/step (16,384),
-  mathematically identical optimisation, 1.16x. No objective change and no
-  quality decision, unlike OPT-B or α. Memory stays ~9.6 GB against the ~19.3 GB
+* **B (mb4/ga4) is 1.16x and is NOT free — corrected 2026-09-13.** Tokens/step
+  is identical (16,384) and the main loss is unaffected, but "mathematically
+  identical optimisation" was wrong for an MoE model. `load_balance_loss` is
+  `E·Σ_i f_i·P_i` with **both** `f_i` and `P_i` averaged over the micro-batch; a
+  product of two batch means is not linear in the batch, so 8 accumulations over
+  N=2,048 and 4 over N=4,096 give different auxiliary gradients, and the
+  router-bias update cadence changes with them. Cheap, still worth taking, but
+  it is a routing change and gets its own gate — routing is what the 24→48
+  expert programme showed this model is sensitive to. Memory stays ~9.6 GB against the ~19.3 GB
   that page-faulted at mb8.
 * **C (α=0) is 1.85x and is a QUALITY DECISION, not a free win.** α is the
   un-collapse lever from `onpolicy_plan.md`: it "drags a collapsed student's

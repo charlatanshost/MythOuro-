@@ -30,11 +30,22 @@
 #        collapsed before. "It looks fine now" is how the 48-expert growth leg
 #        was justified, and that cost a week.
 #
-# ⚠ ALSO CHANGED: --micro-batch 4 --grad-accum 4 (was 2/8). Tokens/step is
-# IDENTICAL at 16,384 and the optimisation is mathematically identical, so this
-# is not a confound for quality — but it is a second change, so if throughput
-# comes out oddly, that is where to look. Memory ~9.6 GB against the ~19.3 GB
-# that page-faulted at mb8 (run_exitpdf.sh:44).
+# ⚠ ONE VARIABLE. This run changes α and NOTHING ELSE — micro-batch stays 2 and
+# grad-accum stays 8, exactly as the exit_pdf seed was trained.
+#
+# An earlier draft bundled `--micro-batch 4 --grad-accum 4` in here on the claim
+# that it is "mathematically identical at the same tokens/step". **That claim is
+# false for this model.** `load_balance_loss` computes
+#     L = E · Σ_i f_i · P_i
+# where f_i and P_i are both AVERAGES OVER THE MICRO-BATCH. A product of two
+# batch means is not linear in the batch, so 8 accumulations over N=2,048 and 4
+# over N=4,096 give different auxiliary gradients — and the router-bias update
+# cadence changes with them. The main loss is unaffected; MoE ROUTING is not.
+# Routing is precisely what the 24→48 expert programme showed this model is
+# sensitive to, so it does not ride along in a gate about collapse.
+#
+# mb4/ga4 is still worth 1.16x and is still worth taking — on its own, gated on
+# its own, after this answers.
 #
 # THE GATE, pre-registered against the exit_pdf seed this branches from:
 #   collapse — prose LOOPING >= 5/90, or stutter up sharply, or salad returns
@@ -89,14 +100,15 @@ PY
 fi
 
 at=$(basename "$(ls -t $DIR/step_*.pt | head -1)" | sed 's/step_0*//; s/\.pt//'); at=${at:-0}
-echo "=== α=0 gate: $at -> $((at+STEPS))   (pure-student rollouts, mb4/ga4) ==="
-echo "=== EXPECT ~6.8 s/step if the probe holds; 12.5 would mean α did not take ==="
+echo "=== α=0 gate: $at -> $((at+STEPS))   (pure-student rollouts; mb2/ga8, ONE variable) ==="
+echo "=== EXPECT ~6.8 s/step — the probe's C variant was mb2/ga8, so that number"
+echo "=== is directly comparable. ~12.5 would mean α did not take. ==="
 echo "=== log: $LOG ==="
 
 python -u -m training.distill \
   --student-variant mythouro_distill_tiny \
   --student-device xpu:0 --teacher-device xpu:0 --teacher-id "$TEACHER" \
-  --seq-len 1024 --micro-batch 4 --grad-accum 4 \
+  --seq-len 1024 --micro-batch 2 --grad-accum 8 \
   --warmup-steps 500 --lr 1e-4 --min-lr 3e-5 --start-loops 4 \
   --loop-loss-weighting exit_pdf --depth-reg-coeff 0.1 \
   --divergence rev_kl \
@@ -128,3 +140,8 @@ echo "    code   L0 4.7%   L3+ 65.0%   L4 4.4%"
 echo "    prose  top_share 0.106  distinct1 0.527  LOOPING 4/90  stutter 2/90"
 echo "    halt   2.88/4 (sd 0.001)"
 echo "    speed  12.34 s/step at mb2/ga8 α=0.45; this run should be ~6.8"
+echo
+echo "  ⚠ A PASS HERE DOES NOT LICENSE α=0 FOR THE WHOLE CURVE. 1,500 steps"
+echo "    catches COLLAPSE, which is fast. It cannot see slow capability drift."
+echo "    Whatever runs the token curve must RE-READ both instruments at its"
+echo "    first milestone and compare against this leg, not just against the seed."
