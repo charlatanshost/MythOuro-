@@ -278,3 +278,74 @@ was measured at α=0.45 where rollout still dominated, so do not assume they
 multiply). That is the difference between ~10 nights and ~5 for the same curve —
 which is why this is worth one gating leg before starting it.
 
+
+---
+
+## 2026-09-13 — ✅ α=0 PASSES. Pure-student rollouts, 1.70x, and the text got *cleaner*.
+
+1,500 steps from `exitpdf@7200`, `--teacher-mix-alpha 0`, **one variable** —
+micro-batch stayed 2 and grad-accum 8, as the seed was trained. Completed
+cleanly (`training complete`; the `PyGILState_Release` fatal at exit is field
+notes #4, cosmetic).
+
+**Measured: 7.25 s/step against 12.34 = 1.70x** (the probe predicted 1.85x; a
+real leg pipelines where the profiler syncs, so slightly lower is expected).
+
+| | seed (α=0.45) | α=0 @1,500 | gate |
+|---|---|---|---|
+| prose LOOPING | 4/90 | **2/90** | < 5/90 ✓ |
+| prose stutter | 2/90 | **0/90** | ✓ |
+| salad | 0/90 | 0/90 | ✓ |
+| prose top_share | 0.106 | 0.109 | held |
+| prose distinct1 | 0.527 | **0.545** | best in lineage |
+| realized halt | 2.88 (sd 0.001) | **2.74** (sd 0.023) | > 2.70 ✓ *(barely)* |
+| code L0 | 4.7% | **2.2%** | < 12% ✓ |
+| code L3+ | 65.0% | 60.6% | > 55% ✓ |
+| code L4 | 4.4% | 3.8% | — |
+| committed | 28.1% | 20.9% | — |
+| medical stutter / looping | — | 0/90, 0/90 | ✓ |
+| medical diabetes sx | — | 4/30 | in band ✓ |
+
+### The collapse α exists to prevent did not happen — the opposite did
+
+Every degeneracy instrument improved: looping halved, stutter went to zero,
+distinct1 is the best in the lineage. Reading the pairs, per the standing rule:
+
+* *bacterial infection* — the seed produces `immunoconductduct`, a malformed
+  word; α=0 produces repetitive but well-formed prose. Both are factually poor;
+  only one is broken at the surface.
+* *`def fibonacci(n):`* — the seed rambles `fibonacci_count = 0` with no
+  structure. α=0 opens `if n == 1: return 1` — **a correct base case** — before
+  degrading into confused conditionals.
+
+This is consistent with the theory rather than a surprise: on-policy distillation
+is meant to train on the student's *own* distribution, and teacher-mixing is a
+crutch for a collapsed student. This student stopped being collapsed some time
+ago (L0 2-7% against a 4-31% historical band), so the crutch was costing 5.7 s
+per step and buying nothing.
+
+### Two soft signals, neither breaking a line, both worth carrying forward
+
+1. **halt 2.74 vs 2.88** — only 0.04 above the stop. The seed's sd was 0.001;
+   this leg's is 0.023, and the per-checkpoint values (2.74 / 2.77 / 2.72) show
+   no clean trend within the leg. Not a fail. Watch it.
+2. **L3+ 60.6% vs 65.0% and committed 20.9% vs 28.1%** — each is inside the
+   13.6pp checkpoint sd on its own, but both point the same way, on one
+   checkpoint. Watch it.
+
+⚠ **A pass at 1,500 steps catches COLLAPSE, which is fast. It cannot see slow
+capability drift.** Both signals above are exactly what drift would look like
+early. The curve must re-read both instruments at its first milestone and
+compare against THIS leg, not only against the seed.
+
+### Consequence: the curve is now affordable
+
+| | s/step | 50M-token point | 500M-token curve |
+|---|---|---|---|
+| α=0.45 | 12.34 | 10.5 h — overruns a night | 104.6 h |
+| **α=0** | **7.25** | **6.1 h — fits** | **61.5 h** |
+
+~6 nights instead of ~10, and each inspection point now fits inside one window
+rather than spilling. Combined with the untaken mb4/ga4 (1.16x, its own gate
+pending) there may be more.
+
