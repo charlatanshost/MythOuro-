@@ -212,3 +212,63 @@ comes down first.
 
 **⇒ Rollout cost is now a prerequisite for scaling the model, not a separate
 optimisation.**
+
+---
+
+## 2026-09-12 (evening) — the teacher is 84% of rollout, and α is a SWITCH not a dial
+
+Four PROFILE variants of the production recipe, dense teacher (OPT-B applied but
+no cache passed, so every offline micro-step takes the dense path). 5 warmup +
+10 profiled steps each, nothing saved.
+
+| variant | ms/step | rollout | backward | student_fwd | teacher_fwd | vs base |
+|---|---|---|---|---|---|---|
+| A baseline (mb2/ga8, α=0.45) | 12,492 | 54.4% | 16.8% | 6.2% | 22.1% | 1.00x |
+| B `--micro-batch 4 --grad-accum 4` | 10,792 | 63.3% | 11.9% | 4.0% | 20.3% | **1.16x** |
+| C `--teacher-mix-alpha 0` | **6,751** | **15.7%** | 31.3% | 11.2% | 40.9% | **1.85x** |
+| D `--rollout-len 32` | 8,557 | 35.0% | 24.1% | 8.7% | 31.4% | 1.46x |
+
+### The teacher is 84% of rollout generation
+
+In absolute terms the `rollout` region is 6,796 ms at α=0.45 and **1,060 ms at
+α=0**. Generation itself — the student decoding 64 tokens with `use_kv_cache=False`
+— costs about 1.1 s. The other **5.7 s is the 2.6B teacher**, running once per
+generated token for the mix `α·softmax(teacher/T) + (1−α)·softmax(student/T)`.
+
+This resolves the ambiguity in the morning's post-B profile, where `teacher_fwd`
+read 1.1% and looked like the teacher had been eliminated. It had not: the cache
+removes the teacher from *offline* micro-steps only, and the teacher's real cost
+had simply moved into a region that does not carry its name.
+
+### α is a SWITCH, not a dial
+
+`mythouro/training_utils.py`: `use_teacher = teacher is not None and
+teacher_mix_alpha > 0.0`. **Any α > 0 pays the full teacher generation cost.**
+There is no α=0.2 that buys half the saving — the choice is teacher-mixed
+rollouts at 12.5 s/step or pure-student rollouts at 6.8 s/step.
+
+### What to take, and what to gate
+
+* **B (mb4/ga4) is free — take it.** Identical tokens/step (16,384),
+  mathematically identical optimisation, 1.16x. No objective change and no
+  quality decision, unlike OPT-B or α. Memory stays ~9.6 GB against the ~19.3 GB
+  that page-faulted at mb8.
+* **C (α=0) is 1.85x and is a QUALITY DECISION, not a free win.** α is the
+  un-collapse lever from `onpolicy_plan.md`: it "drags a collapsed student's
+  rollouts back toward the teacher's support." It was set to 0.45 when the model
+  *was* collapsing. It no longer is — code L0 is 2-7% against a 4-31% historical
+  band, prose LOOPING is 1/90, halt is 2.88. There is also a principled argument
+  that α=0 is *more* correct: on-policy distillation is meant to train on the
+  student's own distribution, and teacher-mixing is a crutch. **Neither argument
+  is evidence.** Gate it on a leg.
+* **D (rollout-len 32) is 1.46x** and likewise alters the on-policy signal. It is
+  strictly dominated by C right now — less speedup for a similar class of risk —
+  so it is only interesting if C fails its gate.
+
+### Consequence for the token curve
+
+At mb4 + α=0 the step would be ~5.8 s (if the two compose; **unmeasured**, and B
+was measured at α=0.45 where rollout still dominated, so do not assume they
+multiply). That is the difference between ~10 nights and ~5 for the same curve —
+which is why this is worth one gating leg before starting it.
+
