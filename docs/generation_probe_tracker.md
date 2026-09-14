@@ -2762,6 +2762,58 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-14 — 📈 TOKEN CURVE, POINT 1: still gaining, and the α=0 drift check PASSES
+
+First leg of main-thread #2. 3,000 steps = 49.2M tokens from `alpha0@1,500`
+(curve point 0), α=0 rollouts, mb2/ga8, exit_pdf, four non-chat corpora, dense
+teacher. **7.21 s/step, 6.0 h wall** — on projection.
+
+| | exit_pdf seed | point 0 (α=0 @1.5k) | **point 1 (@3k)** |
+|---|---|---|---|
+| prose distinct1 (3 ckpt) | 0.527 | 0.545 | **0.576** best in lineage |
+| prose top_share | 0.106 | 0.109 | **0.103** |
+| prose LOOPING | 4/90 | 2/90 | 2/90 |
+| prose stutter | 2/90 | 0/90 | 1/90 |
+| **realized halt** | 2.88 | 2.74 | **2.76**, rising 2.68 → 2.76 → 2.85 |
+| code L0 | 4.7% | 2.2% | 2.5% |
+| **code L3+** | 65.0% | 60.6% | **79.4%** |
+| **code L4** | 4.4% | 3.8% | **8.8%** |
+| **committed** | 28.1% | 20.9% | **60.0%** |
+| medical stutter / looping | — | 0/90, 0/90 | 0/90, 1/90 |
+
+### The drift check — the thing leg 1 existed to answer
+
+The α=0 gate left two soft signals: halt at 2.74 (0.04 above the stop) and
+L3+/committed both down inside noise. Both were the shape slow drift would take
+early. **Neither continued.** Halt *rose* across the leg — 2.68 at step 1,000
+(the one reading below the line), 2.76, then 2.85 at step 3,000, back toward
+the seed's 2.88. Code went up on every metric. **α=0 is safe to keep for the
+curve**, and the "1,500 steps can't see drift" caveat is now closed by 3,000
+more.
+
+### The code move, sized honestly
+
+L3+ 60.6% → 79.4% is +18.8pp on **one checkpoint** against a 13.6pp
+checkpoint-to-checkpoint sd — 1.4 sd, not conclusive alone. Two things make it
+more than a draw: L4 (2.3x) and committed (2.9x, and **60.0% is above the
+project's previous high of 50%**) moved with it, and the three-checkpoint prose
+readout agrees on direction with the best distinct1 ever recorded. Point 0's
+60.6% may also have been a low draw (the seed was 65.0%), in which case the
+real jump is nearer +14pp.
+
+Per-task, the 79.4% is broad: 8 of 10 tasks at 21+/32, one at 6/32. L4 is
+concentrated on the two trivial tasks (11/32, 12/32), as it always has been —
+reading the winners, `add_two` returns `a + b` under a pointless `if a == 2`.
+What changed is not the ceiling; it is how often the model **commits to an
+answer** instead of trailing off.
+
+### The curve question
+
+Point 0 → point 1: gaining on every instrument. One interval is not a slope, and
+the un-park condition for growth is "flat across 2–3 points", which cannot be
+read from one. **Keep pouring.** Leg 2 tonight; the first real slope reading
+comes at point 2.
+
 ## 2026-09-12 — 📉 OPT-B MEASURES 1.40x, NOT 3.5x. The projection applied the wrong config.
 
 The benchmark ran clean. The cache was genuinely used — `TeacherLogitCache: 4
