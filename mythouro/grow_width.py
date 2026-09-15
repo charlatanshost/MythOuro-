@@ -145,20 +145,34 @@ def grow_width_checkpoint(
 
 
 def _widen_state_dict(src, factor: int, noise_scale: float, g) -> dict:
-    """Widen every Expert triple (gate, up, down); pass everything else through.
+    """Widen every Expert triple whose hidden dim FOLLOWS `expert_dim`.
 
-    An Expert is detected by the presence of `<prefix>.down.weight` alongside
-    `<prefix>.gate.weight` and `<prefix>.up.weight`. This catches routed experts,
-    shared experts, AND the dense prelude/coda FFNs, which are the same module.
+    ⚠ NOT every SwiGLU block. The first version of this function widened all 30
+    of them, including the dense prelude/coda FFNs — and the 2026-09-15 test
+    against a real checkpoint failed to load: those FFNs are sized
+    `dim * 4 // 3` (`main.py`), not from `expert_dim`, so the target config
+    still built them at 1706 while the state dict carried 3412. The blocks
+    that follow `expert_dim` are:
+
+        routed experts   Expert(dim, expert_dim)
+        shared experts   Expert(dim, expert_dim * n_experts_per_tok)
+
+    Both live under `.ffn.` inside the recurrent block and carry `experts` in
+    their key. Prelude/coda are `prelude.N.ffn` / `coda.N.ffn` and are passed
+    through untouched.
     """
     src = dict(src)
     prefixes = [
         k[: -len(".gate.weight")] for k in src
         if k.endswith(".gate.weight")
+        and "experts" in k                                   # routed + shared only
+        and not k.startswith(("prelude.", "coda."))
         and f"{k[:-len('.gate.weight')]}.up.weight" in src
         and f"{k[:-len('.gate.weight')]}.down.weight" in src
     ]
-    logger.info(f"grow_width: {len(prefixes)} SwiGLU block(s) to widen")
+    skipped = sum(1 for k in src if k.endswith(".gate.weight")) - len(prefixes)
+    logger.info(f"grow_width: {len(prefixes)} expert block(s) to widen, "
+                f"{skipped} dense prelude/coda FFN(s) passed through")
 
     out = dict(src)
     for p in prefixes:

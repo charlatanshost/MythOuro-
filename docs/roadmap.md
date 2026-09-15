@@ -341,15 +341,21 @@ Chinchilla puts the plateau. Halt is the one instrument still rising (2.90 on
 the last checkpoint, above the seed). Full entry: `generation_probe_tracker.md`
 2026-09-15.
 
-**The target is `mythouro_distill_mid`** — dim 1792, prelude/coda 4, top-k 6,
-the same 24 experts: 633M total / **460M activated, 2.55x**. Expert count is
-left alone because the 24→48 leg (below) proved it does not move activated
-params. Registered, CPU forward/backward verified, from-scratch.
+**Growth is by Net2Wider from the trained model, not from scratch** (corrected
+the same day — see the tracker's "later" entry). `run_scale_profile.sh` measured
+a 460M-activated step at **1.22x** the 278M step (8,206 vs 6,751 ms), so size is
+cheap; but a from-scratch model would need ~150 nights just to reach the plateau
+the 278M model is at, which discards the 2.85B tokens already trained.
+`grow_width.py` (Net2Wider on `expert_dim`) preserves them: after fixing a real
+bug — it widened the prelude/coda FFNs, which do not follow `expert_dim` — it is
+verified function-preserving on `curve@9000` (max |logit Δ| 1.5e-5, argmax
+agreement 100%). First step: `expert_dim 1280 → 2560`, 436M / **240M activated,
+1.33x**, top-k held at 4 (shared experts scale with it and cannot ride along).
+Then pour until flat, widen again. `mythouro_distill_mid` (460M activated,
+registered and CPU-verified) remains the from-scratch reference shape.
 
-**Next: `bash run_scale_profile.sh`** — one ~5-minute run that measures the step
-time at 460M. Arithmetic says ~18 s/step, ~15 h per leg; arithmetic on step
-times has been wrong three times this month. Nothing is planned on it until it
-is measured.
+**Next: profile the widened checkpoint's step time (≤ 8.8 s/step is the ceiling,
+not the number), then run curve legs at 240M activated.**
 
 Along the way this fortnight, all in the tracker: the instruction/chat axis
 closed at 278M (every route measured); OPT-B built and measured at 1.40x, not

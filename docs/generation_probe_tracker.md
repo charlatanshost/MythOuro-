@@ -2762,6 +2762,80 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-15 (later) — 🔄 GROW FROM THE TRAINED MODEL, NOT FROM SCRATCH. Net2Wider verified after a real bug.
+
+### The scale profile: 2.55x the params costs 1.22x the step
+
+`run_scale_profile.sh`, `mythouro_distill_mid` (633M / 460M activated), fresh
+init, same recipe as the curve:
+
+| region | 460M act | 278M act | ratio |
+|---|---|---|---|
+| backward | 3,019 ms | 2,113 ms | 1.43x |
+| teacher_fwd | 2,738 ms | 2,761 ms | 0.99x |
+| rollout | 1,253 ms | 1,060 ms | 1.18x |
+| student_fwd | 1,098 ms | 756 ms | 1.45x |
+| **total** | **8,206 ms** | **6,751 ms** | **1.22x** |
+
+Projected real: 8,206 / 6,751 × 7.23 = **~8.8 s/step, ~7.3 h per leg** — a leg
+fits a night with room. Arithmetic had said ~18; wrong for the fourth time this
+month, in the good direction: the 278M model was not saturating the card, so
+its kernels were launch-bound and a wider matmul is cheaper per FLOP, and the
+teacher forward (a third of the step) does not scale at all.
+
+### ⚠️ Correcting 09-10: "from scratch, not grown" was wrong, and the reason is arithmetic
+
+A from-scratch 460M student needs ~16 tokens per activated parameter to reach
+the plateau the 278M model is already at — 7.4B tokens, **~150 nights** at
+49.2M per leg. Five months of card time to get back to today. The 2.85B tokens
+in the current model are the most valuable thing the project owns, and
+"from scratch" discards them. That recommendation was made without costing it.
+
+### Net2Wider on `expert_dim` — the axis `grow_width.py` was built for
+
+Lineage-preserving options, dim held at 1280:
+
+| | total | activated | x act |
+|---|---|---|---|
+| current | 278.9M | 180.6M | 1.00x |
+| **expert_dim 1280 → 2560** | **436.2M** | **239.6M** | **1.33x** |
+| expert_dim 1280 → 3840 (3x) | ~594M | ~298M | ~1.65x |
+
+**A real bug, found by testing against the real checkpoint.** `grow_width.py`
+widened every SwiGLU block it could find — 30, including the 4 dense
+prelude/coda FFNs. Those are sized `dim * 4 // 3` (`main.py:1115`), not from
+`expert_dim`, so the target config still built them at 1706 while the state
+dict carried 3412 and the model would not load. Its own docstring said it
+"catches … the dense prelude/coda FFNs" as if that were a feature. Fixed: it
+now widens only blocks with `experts` in the key (routed:
+`Expert(dim, expert_dim)`; shared: `Expert(dim, expert_dim * top_k)`) and passes
+prelude/coda through.
+
+**Verified on `checkpoints_curve/step_0009000.pt`, CPU:** 26 expert blocks
+widened, 4 passed through; max |logit Δ| 1.53e-5, mean 8.0e-7, **argmax
+agreement 100.00%**, KL ~0. Noise 0.02 on the down-projection, equal-and-
+opposite so the sum is exact; optimizer dropped (shapes changed); step reset to
+0; `width_growth_metadata` recorded.
+
+### ⚠ top-k cannot ride along
+
+Shared experts are `Expert(dim, expert_dim * n_experts_per_tok)`. Raising top-k
+4 → 6 would resize them 5120 → 7680, a 1.5x that no integer Net2Wider factor
+produces. So a function-preserving growth step holds top-k at 4. Raising it is
+a separate, later step and would need either a non-integer widen of the shared
+experts or their re-initialisation — neither free.
+
+### The path
+
+Widen 2x, pour until the curve goes flat again, widen 2x again. Each step is
+function-preserving, so nothing trained is ever lost, and each new plateau is
+measured on the same instruments before the next step. This is growth on
+evidence, incrementally, which is what August's attempt was not.
+
+First step: `expert_dim 2560` from `curve@9000` → 436M / 240M activated.
+Its step time is unmeasured (the profile above was `mid`, a different shape;
+this one is smaller, so ≤ 8.8 s/step is the ceiling, not the number).
+
 ## 2026-09-15 — ⏹ TOKEN CURVE, POINT 3: FLAT AGAIN. The un-park condition is MET.
 
 Leg 3, 6,000 → 9,000, 172.0M tokens on the curve. 7.23 s/step, 6.0 h. Three
