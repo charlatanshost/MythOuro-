@@ -2762,6 +2762,60 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-14 (evening) — 📉 TOKEN CURVE, POINT 2: L3+ holds at 79%, everything else flat. First flat interval.
+
+Leg 2, 3,000 → 6,000 steps, 122.9M tokens on the curve. 7.23 s/step, 6.0 h.
+
+| point | Mtok | distinct1 | top_share | halt | L0 | **L3+** | L4 | committed |
+|---|---|---|---|---|---|---|---|---|
+| seed | 0 | 0.527 | 0.106 | 2.88 | 4.7% | 65.0% | 4.4% | 28.1% |
+| pt0 α=0 | 24.6 | 0.545 | 0.109 | 2.74 | 2.2% | 60.6% | 3.8% | 20.9% |
+| pt1 | 73.8 | **0.576** | 0.103 | 2.76 | 2.5% | **79.4%** | 8.8% | 60.0% |
+| **pt2** | **122.9** | 0.562 | 0.106 | **2.81** | 3.1% | **78.8%** | 0.3% | 24.7% |
+
+Prose is three checkpoints per point; code is one.
+
+### ⚠️ Correcting the point-1 entry: committed 60% and L4 8.8% were a draw
+
+The pt1 write-up leaned on L4 (2.3x) and committed (2.9x, "above the previous
+high of 50%") as corroboration for the L3+ jump. **They did not survive.** At pt2
+L4 is 1/320 and committed is back at 24.7% — the seed's band. Looking across the
+lineage, pt1 is the outlier on both, not pt2:
+
+```
+  fence-closed ```   seed 53%   pt0 42%   pt1 84%   pt2 52%
+  committed          seed 28%   pt0 21%   pt1 60%   pt2 25%
+```
+
+L4 has a documented relative sd of 0.77 and has read 30 / 15 / 1 across
+adjacent checkpoints before. It should not have been used as corroboration for
+anything. `<think>` leakage into bare framing is not a drift mechanism either —
+2% → 31% → 16% is a bounce.
+
+**What did survive is L3+ at ~79% on two consecutive checkpoints** — +14pp over
+the seed, now confirmed rather than 1.4 sd on its own. Per-task it reshuffled
+completely (tasks 0/1/5/7 fell, 2/4/8 rose) while the aggregate held, which is
+what a 13.6pp checkpoint sd looks like from underneath.
+
+Reading the non-committing code at pt2: syntactically valid bodies that close
+the fence and stop, or close the fence and open `<think>`. Runs, doesn't return.
+Same shape as the seed.
+
+### The slope
+
+pt0 → pt1 was a real gain: L3+ +19pp, distinct1 +0.031, both instruments.
+**pt1 → pt2 is flat**: L3+ −0.6pp, distinct1 −0.014 (≈1 sd), top_share +0.003.
+The one thing still moving is halt, 2.74 → 2.76 → **2.81**, recovering toward
+the seed's 2.88 — depth is not being spent.
+
+One flat interval is not "flat across 2–3 points", which is the un-park
+condition for growth. **pt3 decides it.** If pt3 is flat on L3+ and distinct1
+too, the model is compute-optimal at this size and the condition parked since
+June is met on its own terms.
+
+Medical: stutter 1/90, looping 1/90, diabetes 3/30 — in band. QA-scaffold 16/90
+with an 11/30 spike at step 4,000 that was gone by 5,000; one checkpoint.
+
 ## 2026-09-14 — 📈 TOKEN CURVE, POINT 1: still gaining, and the α=0 drift check PASSES
 
 First leg of main-thread #2. 3,000 steps = 49.2M tokens from `alpha0@1,500`
