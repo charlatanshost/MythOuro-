@@ -322,7 +322,45 @@ instruments (code ladder + prose probe). Main-thread #3 records that this curve 
 the go/no-go for capital and the proof artifact for a collaborator. It has been
 open since June and it is the highest-value thing on the board.
 
-**CURRENT (2026-08-29): a 397M 24→48-expert leg is IN PROGRESS**, paused at step
+**CURRENT (2026-09-15): THE TOKEN CURVE HAS REPORTED — flat at 278M, growth un-parks on evidence.**
+
+Main-thread #2 ran 2026-09-13..15: three 49.2M-token legs, one per night, on the
+recipe every part of which had been gated first (exit_pdf, α=0 rollouts, mb2/ga8,
+four non-chat corpora, dense teacher). The readout, three prose checkpoints and
+one code checkpoint per point:
+
+| pt | Mtok | distinct1 | halt | L3+ |
+|---|---|---|---|---|
+| pt1 | 73.8 | 0.576 | 2.76 | 79.4% |
+| pt2 | 122.9 | 0.562 | 2.81 | 78.8% |
+| pt3 | 172.0 | 0.556 | 2.81 | 75.0% |
+
+**Flat across three points** — the un-park condition `ideas.md` set in June, met
+on the instruments it named, at ~16 tokens per activated parameter where
+Chinchilla puts the plateau. Halt is the one instrument still rising (2.90 on
+the last checkpoint, above the seed). Full entry: `generation_probe_tracker.md`
+2026-09-15.
+
+**The target is `mythouro_distill_mid`** — dim 1792, prelude/coda 4, top-k 6,
+the same 24 experts: 633M total / **460M activated, 2.55x**. Expert count is
+left alone because the 24→48 leg (below) proved it does not move activated
+params. Registered, CPU forward/backward verified, from-scratch.
+
+**Next: `bash run_scale_profile.sh`** — one ~5-minute run that measures the step
+time at 460M. Arithmetic says ~18 s/step, ~15 h per leg; arithmetic on step
+times has been wrong three times this month. Nothing is planned on it until it
+is measured.
+
+Along the way this fortnight, all in the tracker: the instruction/chat axis
+closed at 278M (every route measured); OPT-B built and measured at 1.40x, not
+the 3.5x projected; the teacher found to be 84% of rollout generation and α
+shown to be a switch, not a dial; α=0 gated and taken (1.70x, degeneracy
+*improved*); 549 GB of concluded checkpoints pruned under a cited-or-final rule.
+
+**OLDER (2026-08-29): a 397M 24→48-expert leg was IN PROGRESS** — it completed,
+was evaluated, and failed (see the 09-01 entry above). Original text follows.
+
+*(was)* a 397M 24→48-expert leg, paused at step
 2,650/6,000 in `checkpoints_grown48/`. Resume with `bash run_grown48.sh` (it
 globs the newest `step_*.pt` itself). ~19h total at the measured 11.5 s/step, so
 ~11h remain — a multi-night leg. The XPU segfault that blocked growth for a day

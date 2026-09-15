@@ -114,6 +114,7 @@ from mythouro.variants import (
     mythouro_distill_xl,
     mythouro_1b, mythouro_3b, mythouro_10b, mythouro_50b, mythouro_100b,
     mythouro_500b, mythouro_1t,
+    mythouro_distill_mid,
 )
 from mythouro import device as dev
 from mythouro.rollout import RolloutBuffer, rollout_with_retry
@@ -126,6 +127,10 @@ _VARIANT_FUNCS = {
     # Dense twin of distill_tiny (recurrent MoE -> matched-active dense FFN).
     # The dense arm of the MoE-vs-dense ablation (docs/roadmap.md).
     "mythouro_distill_tiny_dense": mythouro_distill_tiny_dense,
+    # 2.55x ACTIVATED params (dim 1792, prelude/coda 4, top-6; same 24 experts).
+    # The growth target chosen after the token curve went flat at 278M
+    # (2026-09-15). From-scratch; no promotion path from tiny.
+    "mythouro_distill_mid":   mythouro_distill_mid,
     # Post-MoE-expansion targets (48 / 96 routed experts). Used when resuming
     # a grown checkpoint via `tools/grow_checkpoint.py`.
     "mythouro_distill_small": mythouro_distill_small,

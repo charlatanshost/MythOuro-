@@ -95,6 +95,49 @@ def mythouro_distill_tiny_dense() -> MythOuroConfig:
     )
 
 
+def mythouro_distill_mid() -> MythOuroConfig:
+    """
+    ~633M total / ~460M ACTIVATED — 2.55x the activated params of
+    `mythouro_distill_tiny`. The growth target chosen on evidence, 2026-09-15.
+
+    Why this shape and not more experts
+    -----------------------------------
+    `mythouro_distill_small` / `_xl` grow by EXPERT COUNT at dim 1280, top-4.
+    That axis was run (24 -> 48, 2026-08-27..09-01) and it failed for a
+    measured reason: only top-k experts fire per token, so activated params
+    stayed at 180.6M while total went 278M -> 397M. The new experts were
+    dormant capacity the router never trained; masking them back OUT improved
+    the model. Capability tracks ACTIVATED parameters.
+
+    So this variant moves the three things that change activated params and
+    leaves expert count alone:
+      * dim 1280 -> 1792 (and expert_dim with it)   attention + every expert wider
+      * prelude/coda 2 -> 4                          more non-recurrent depth
+      * n_experts_per_tok 4 -> 6                     more experts firing per token
+
+    Same 24 routed + 2 shared experts, same 4 loops, same Ouro vocab.
+
+    Why now
+    -------
+    The token curve (main-thread #2, run 2026-09-13..15) was flat across three
+    points at 278M — L3+ 79.4 / 78.8 / 75.0, distinct1 0.576 / 0.562 / 0.556 —
+    at ~16 tokens per activated parameter. That is the un-park condition
+    `ideas.md` set for growth in June, met on the instruments it named.
+
+    Cost is NOT yet measured. With the teacher out of rollout (alpha=0), most
+    of the 7.2 s/step at 278M scales with the student. `run_scale_profile.sh`
+    measures it; do not plan nights on arithmetic.
+    """
+    return replace(
+        mythouro_distill_tiny(),
+        dim=1792,
+        expert_dim=1792,
+        prelude_layers=4,
+        coda_layers=4,
+        n_experts_per_tok=6,
+    )
+
+
 def mythouro_distill_small() -> MythOuroConfig:
     """
     ~420M target for MoE expansion from `mythouro_distill_tiny` checkpoints.
