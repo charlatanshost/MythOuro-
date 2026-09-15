@@ -2762,6 +2762,79 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-15 — ⏹ TOKEN CURVE, POINT 3: FLAT AGAIN. The un-park condition is MET.
+
+Leg 3, 6,000 → 9,000, 172.0M tokens on the curve. 7.23 s/step, 6.0 h. Three
+legs, three nights, exactly on projection every time.
+
+| pt | Mtok | top_share | distinct1 | halt | LOOPING | L0 | L3+ |
+|---|---|---|---|---|---|---|---|
+| seed | 0 | 0.106 | 0.527 | 2.88 | 4/90 | 4.7% | 65.0% |
+| pt0 | 24.6 | 0.109 | 0.545 | 2.74 | 2/90 | 2.2% | 60.6% |
+| pt1 | 73.8 | 0.103 | **0.576** | 2.76 | 2/90 | 2.5% | **79.4%** |
+| pt2 | 122.9 | 0.106 | 0.562 | 2.81 | 2/90 | 3.1% | 78.8% |
+| **pt3** | **172.0** | **0.098** | 0.556 | 2.81 | 4/90 | 6.6% | 75.0% |
+
+Prose is three checkpoints per point; code is one.
+
+### The slope, plainly
+
+* pt0 → pt1: **a real gain.** L3+ +19pp, distinct1 +0.031.
+* pt1 → pt2: **flat.** L3+ −0.6, distinct1 −0.014.
+* pt2 → pt3: **flat.** L3+ −3.8 (inside the 13.6pp sd), distinct1 −0.006.
+
+**Two consecutive flat intervals.** `ideas.md` parked growth in June, un-parkable
+only when *"the token-curve shows we've reached compute-optimal at current
+size."* The roadmap restated the test as "flat across 2–3 points." It is flat
+across three. **The condition is met, on the instruments it named, for the
+first time.**
+
+It is also where theory said it would be. This lineage carries ~2.67B tokens
+from the base plus 172M on the curve — ~2.85B, or ~16 tokens per activated
+parameter, against Chinchilla's 20. A plateau there is the expected shape, not a
+surprise.
+
+### What is still moving, and what is drifting
+
+* **halt is the one instrument still improving.** 2.74 → 2.76 → 2.81 → 2.81,
+  and inside pt3 it climbs 2.72 → 2.81 → **2.90** — above the seed's 2.88 for
+  the first time. ACT keeps deciding; depth is not being spent.
+* **Three soft signals point slightly down**, none breaking a line: distinct1
+  has declined at every point since pt1 (0.576 → 0.562 → 0.556, each ~1 sd);
+  L0 doubled at pt3 (3.1% → 6.6%, still inside the 4–31% historical band);
+  LOOPING is back at the seed's 4/90, with 3/30 on the 9000 checkpoint. Medical
+  diabetes-symptom recall read 0/30 at pt3 against 3/30 and 4/30 before it.
+  Individually noise. Together they say this is a plateau, not a slow climb —
+  which argues *against* spending more nights at 278M, and that is the same
+  conclusion the flat slope reaches.
+
+### ⚠️ On reading checkpoints in progress
+
+Four of six seeds on the 9000 checkpoint read distinct1 0.60–0.62 and halt
+2.89–2.92 while the readout was still running, and that was described here as
+"the strongest run in the project." The full checkpoint came in at 0.564. Two
+seeds pulled it down. That is the third partial-result over-read this session,
+after point 1's L4/committed. **Do not read a checkpoint until the mean is in.**
+
+### ⇒ The decision the curve was built to make
+
+The roadmap called this curve "the go/no-go for capital and the proof artifact
+for a collaborator." It has reported: **the 278M model is compute-optimal at
+its current size, and further tokens at this size are not the lever.** Growth
+un-parks on evidence, which is the thing that was missing when it un-parked
+itself in August and failed.
+
+The *how* is already settled by that failure: activated parameters, not expert
+count. The 09-10 sizing table's candidate is dim 1792 + prelude/coda 4 + top-k
+6 → 633M total / **460M activated, 2.55x** — the same 24 experts, each wider,
+more of them firing per token.
+
+**What has NOT been measured and gates the cost:** step time at 2.55x. The
+rollout region is now mostly student decode (the teacher was 84% of it and is
+gone), so most of the 7.2 s/step scales with the student. A profile of the
+larger config is one ~5-minute run and turns "probably ~18 s/step" into a
+number before anyone commits a night to it.
+
 ## 2026-09-14 (evening) — 📉 TOKEN CURVE, POINT 2: L3+ holds at 79%, everything else flat. First flat interval.
 
 Leg 2, 3,000 → 6,000 steps, 122.9M tokens on the curve. 7.23 s/step, 6.0 h.
