@@ -115,6 +115,7 @@ from mythouro.variants import (
     mythouro_1b, mythouro_3b, mythouro_10b, mythouro_50b, mythouro_100b,
     mythouro_500b, mythouro_1t,
     mythouro_distill_mid,
+    mythouro_distill_wide,
 )
 from mythouro import device as dev
 from mythouro.rollout import RolloutBuffer, rollout_with_retry
@@ -131,6 +132,9 @@ _VARIANT_FUNCS = {
     # The growth target chosen after the token curve went flat at 278M
     # (2026-09-15). From-scratch; no promotion path from tiny.
     "mythouro_distill_mid":   mythouro_distill_mid,
+    # tiny with expert_dim 2560: the Net2Wider promotion target (grow_width.py).
+    # 436M / 240M activated. Resume a widened checkpoint with this.
+    "mythouro_distill_wide":  mythouro_distill_wide,
     # Post-MoE-expansion targets (48 / 96 routed experts). Used when resuming
     # a grown checkpoint via `tools/grow_checkpoint.py`.
     "mythouro_distill_small": mythouro_distill_small,

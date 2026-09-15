@@ -2,6 +2,14 @@
 # THE TOKEN CURVE — main-thread #2, open since June, the roadmap's go/no-go.
 #
 #   bash run_token_curve.sh          # ONE leg: 3,000 steps = 49.2M tokens ≈ 6.0 h
+#
+#   THE WIDENED MODEL (2026-09-15 onward — the 278M curve is flat, see pt3):
+#   VARIANT=mythouro_distill_wide DIR=checkpoints_wide SRC=checkpoints_wide/step_0000000.pt \
+#     bash run_token_curve.sh
+#   Same recipe, same legs, same readouts. SRC is the Net2Wider promotion of
+#   curve@9000 (436M / 240M activated), so this curve's point 0 IS the 278M
+#   curve's point 3 — function-preserving, verified to 1.5e-5. Compare every
+#   point against pt3 (distinct1 0.556, halt 2.81, L3+ 75.0%).
 #   ...read it out...
 #   bash run_token_curve.sh          # next night: the next leg, resumes itself
 #
@@ -52,8 +60,9 @@ export PYTHONFAULTHANDLER=1 PYTHONUNBUFFERED=1
 export SYCL_QUEUE_THREAD_POOL_SIZE=1
 export ZE_SERIALIZE=2
 
-DIR=checkpoints_curve
-SRC=checkpoints_alpha0/step_0001500.pt
+VARIANT="${VARIANT:-mythouro_distill_tiny}"
+DIR="${DIR:-checkpoints_curve}"
+SRC="${SRC:-checkpoints_alpha0/step_0001500.pt}"
 TEACHER=ByteDance/Ouro-2.6B-Thinking
 FILES="data_teacher_code/shard_*.jsonl,data_teacher_math/shard_*.jsonl,data_teacher_v2/shard_*.jsonl,data_teacher_med/shard_*.jsonl"
 LEG="${LEG:-3000}"                 # steps per leg
@@ -69,11 +78,11 @@ FREE=$(df --output=avail -BG . | tail -1 | tr -dc '0-9')
 # ---- seed once ----
 if [ ! -f "$DIR/step_0000000.pt" ]; then
   cp "$SRC" "$DIR/step_0000000.pt"
-  python - <<'PY'
-import torch, os
-p="checkpoints_curve/step_0000000.pt"
+  python - "$DIR/step_0000000.pt" <<'PY'
+import torch, os, sys
+p=sys.argv[1]
 ck=torch.load(p,map_location="cpu",weights_only=False); ck["step"]=0
-torch.save(ck,p+".tmp"); os.replace(p+".tmp",p); print("  seeded at step 0 (= alpha0 @1,500 = curve point 0)")
+torch.save(ck,p+".tmp"); os.replace(p+".tmp",p); print(f"  seeded {p} at step 0")
 PY
 fi
 
@@ -98,14 +107,14 @@ if [ "${KEEP_ALL:-0}" != "1" ] && [ "$at" -ge "$LEG" ]; then
   [ $n -gt 0 ] && echo "=== pruned $n intermediate checkpoints from earlier legs ==="
 fi
 
-LOG="logs/curve_leg${leg_no}_$(date +%Y%m%d_%H%M).log"
-echo "=== TOKEN CURVE leg $leg_no: step $at -> $leg_end ==="
+LOG="logs/curve_${DIR#checkpoints_}_leg${leg_no}_$(date +%Y%m%d_%H%M).log"
+echo "=== TOKEN CURVE [$VARIANT, $DIR] leg $leg_no: step $at -> $leg_end ==="
 echo "=== cumulative tokens on this curve after this leg: $(( leg_end * TOK_PER_STEP / 1000000 ))M"
 echo "=== (plus the 24.6M of the α=0 gate leg it was seeded from) ==="
 echo "=== expect ~7.25 s/step, ~6.0 h.   log: $LOG ==="
 
 python -u -m training.distill \
-  --student-variant mythouro_distill_tiny \
+  --student-variant "$VARIANT" \
   --student-device xpu:0 --teacher-device xpu:0 --teacher-id "$TEACHER" \
   --seq-len 1024 --micro-batch 2 --grad-accum 8 \
   --warmup-steps 500 --lr 1e-4 --min-lr 3e-5 --start-loops 4 \

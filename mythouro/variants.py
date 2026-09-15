@@ -138,6 +138,28 @@ def mythouro_distill_mid() -> MythOuroConfig:
     )
 
 
+def mythouro_distill_wide() -> MythOuroConfig:
+    """
+    ~436M total / ~240M ACTIVATED — `mythouro_distill_tiny` with `expert_dim`
+    doubled (1280 -> 2560). The Net2Wider promotion target, 2026-09-15.
+
+    This is the config a checkpoint produced by `grow_width.py` carries, so it
+    is what `--student-variant` must name to resume one; `_check_cfg_compat`
+    refuses any shape mismatch. Every other field is identical to tiny —
+    including `n_experts_per_tok = 4`, which CANNOT change in the same step:
+    shared experts are `Expert(dim, expert_dim * n_experts_per_tok)`, and a
+    top-k change resizes them by a non-integer factor Net2Wider cannot produce.
+
+    Why this and not `mythouro_distill_mid`: mid (460M activated) is the
+    from-scratch reference shape, and from-scratch costs ~150 nights just to
+    reach the plateau the trained 278M model is already at. Widening the trained
+    model is function-preserving (verified on curve@9000: max |logit delta|
+    1.5e-5, argmax agreement 100%), so nothing is lost and the curve continues.
+    Widen again (2560 -> 5120) when this size goes flat.
+    """
+    return replace(mythouro_distill_tiny(), expert_dim=2560)
+
+
 def mythouro_distill_small() -> MythOuroConfig:
     """
     ~420M target for MoE expansion from `mythouro_distill_tiny` checkpoints.

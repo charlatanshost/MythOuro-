@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # SCALE PROFILE — what does a step cost at 460M activated? Measured, not projected.
 #
-#   bash run_scale_profile.sh            # ~5-10 min. Saves nothing.
+#   VARIANT=mythouro_distill_wide SEED=checkpoints_wide/step_0000000.pt bash run_scale_profile.sh
+#                                        # the widened 240M-activated model — do this one
+#   bash run_scale_profile.sh            # mythouro_distill_mid from scratch (already run: 1.22x)
 #   MB=1 GA=16 bash run_scale_profile.sh # if mb2 OOMs (same 16,384 tokens/step)
 #
 # WHY. The token curve went flat across three points at 278M (2026-09-15) — the
@@ -48,14 +50,21 @@ export ZE_SERIALIZE=2
 TEACHER=ByteDance/Ouro-2.6B-Thinking
 FILES="data_teacher_code/shard_*.jsonl,data_teacher_math/shard_*.jsonl,data_teacher_v2/shard_*.jsonl,data_teacher_med/shard_*.jsonl"
 DIR=checkpoints_scale_profile
+VARIANT="${VARIANT:-mythouro_distill_mid}"
+SEED="${SEED:-}"                       # empty = fresh init; a path = profile THAT checkpoint
 MB="${MB:-2}"; GA="${GA:-8}"
-LOG="logs/scale_profile_mb${MB}_$(date +%Y%m%d_%H%M).log"
+LOG="logs/scale_profile_${VARIANT#mythouro_distill_}_mb${MB}_$(date +%Y%m%d_%H%M).log"
 mkdir -p logs
 [ $((MB*GA*1024)) -eq 16384 ] || { echo "MB x GA x 1024 must be 16,384 (got $((MB*GA*1024)))"; exit 1; }
 
 if pgrep -f "python -u -m training\.(distill|sft)" >/dev/null; then
   echo "a trainer is running — stop it first"; exit 1; fi
-rm -rf "$DIR"; mkdir -p "$DIR"        # fresh init, never resume
+rm -rf "$DIR"; mkdir -p "$DIR"        # never resume a stale profile dir
+if [ -n "$SEED" ]; then
+  [ -f "$SEED" ] || { echo "missing $SEED"; exit 1; }
+  cp "$SEED" "$DIR/step_0000000.pt"    # profile the real weights AND prove they resume
+  echo "=== seeded from $SEED ==="
+fi
 
 # stall watchdog — a new config on the XPU gets one, per the field notes
 STALE_SEC="${STALE_SEC:-300}"
@@ -74,12 +83,12 @@ run_watched() {
   wait "$pid"
 }
 
-echo "=== SCALE PROFILE: mythouro_distill_mid (633M / 460M activated), mb${MB}/ga${GA}, alpha=0 ==="
+echo "=== SCALE PROFILE: $VARIANT, mb${MB}/ga${GA}, alpha=0 ==="
 echo "=== 278M reference at the same recipe: 6,751 ms/step profiled, 7.23 s/step real ==="
 echo "=== log: $LOG ==="
 run_watched "$LOG" \
   python -u -m training.distill \
-    --student-variant mythouro_distill_mid \
+    --student-variant "$VARIANT" \
     --student-device xpu:0 --teacher-device xpu:0 --teacher-id "$TEACHER" \
     --seq-len 1024 --micro-batch "$MB" --grad-accum "$GA" \
     --warmup-steps 500 --lr 1e-4 --min-lr 3e-5 --start-loops 4 \
