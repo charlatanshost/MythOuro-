@@ -2762,6 +2762,58 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-16 — 🟡 WIDE CURVE, POINT 1: code up, prose down, optimizer transient unresolved
+
+First leg at 240M activated (`mythouro_distill_wide`, Net2Wider 2x from
+`curve@9000`). 7.69 s/step, 6.4 h. This curve's point 0 IS the 278M curve's
+point 3, so that is the comparison.
+
+| | 278M pt3 | **WIDE pt1** | |
+|---|---|---|---|
+| Mtok on lineage | 172.0 | 221.2 | |
+| prose distinct1 (3 ckpt) | 0.556 | **0.522** | down ~3 sd |
+| prose top_share | 0.098 | 0.110 | down |
+| halt | 2.81 | 2.74 | down |
+| LOOPING | 4/90 | 4/90 | same |
+| code L0 | 6.6% | **1.6%** | lowest on record |
+| code L3+ | 75.0% | 73.1% | flat |
+| **code L4** | 5.0% | **16.2%** | ties the record (52/320) |
+
+### The code side has substance, not just a count
+
+L4 used to live on two trivial tasks. Here it is on **seven of ten**, and two
+of them are new: `double_it` 19/32 (`return n * 2`) and `sum_list` 14/32
+(`return sum(nums)`) — correct, idiomatic, one line, where every 278M point had
+0/32 on `sum_list`. The model then closes the fence and drifts into chat-mode
+`<think>`, but the code it writes first is the canonical answer. L0 at 1.6% is
+the lowest ever recorded. **Still one checkpoint**, and 52/320 has been seen
+once before (`exitpdf_1200`), so the count is not unprecedented — the task
+spread and the text are.
+
+### The prose side went down, and the per-checkpoint shape matters
+
+```
+  step   distinct1   halt
+  1000     0.533     2.71
+  2000     0.500     2.72     <- the dip that drags the mean
+  3000     0.534     2.80     <- recovered to step-1000 level, halt climbing
+```
+
+The 3-checkpoint mean of 0.522 is pulled by a mid-leg dip. Step 3000 alone is
+0.534 / 2.80 — still below pt3's 0.556 / 2.81, but closing. This is the shape
+the pre-registered caveat described: **Net2Wider drops the optimizer, so this
+leg rebuilt Adam moments from zero on an already-trained model.** A dip-and-
+recover inside the first leg is what that transient looks like. It is also what
+"width hurt prose slightly" would look like. **One leg cannot separate them.**
+
+### ⇒ Leg 2 is the clean test
+
+Leg 1's checkpoint carries the rebuilt optimizer state, so leg 2 runs warm. If
+prose recovers past 0.556 and code holds, the width is being used and the
+widen-pour-widen path is real. If prose stays below pt3 while code keeps
+rising, width traded prose for code — which is a real result, and a different
+decision. Medical: stutter / looping / diabetes all in band.
+
 ## 2026-09-15 (later) — 🔄 GROW FROM THE TRAINED MODEL, NOT FROM SCRATCH. Net2Wider verified after a real bug.
 
 ### The scale profile: 2.55x the params costs 1.22x the step
