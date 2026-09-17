@@ -2762,6 +2762,59 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-17 — 🟢 WIDE CURVE, POINT 2: prose recovers past the 278M plateau. Code flat. L4 was a draw (third time).
+
+Leg 2 at 240M activated, optimizer warm throughout. 270.3M tokens on the lineage.
+
+| | 278M pt3 | WIDE pt1 | **WIDE pt2** |
+|---|---|---|---|
+| prose distinct1 | 0.556 | 0.522 | **0.569** |
+| prose top_share | 0.098 | 0.110 | **0.096** best on record |
+| halt | 2.81 | 2.74 | 2.74 |
+| LOOPING | 4/90 | 4/90 | **1/90** best on record |
+| code L0 | 6.6% | 1.6% | 6.2% |
+| code L3+ | 75.0% | 73.1% | 72.8% |
+| code L4 | 5.0% | 16.2% | 4.1% |
+
+### Outcome A on prose — the point-1 dip was the optimizer
+
+distinct1 0.522 → **0.569**, above the 278M plateau (0.556) for the first time
+on this lineage. top_share and LOOPING are the best ever recorded. Per
+checkpoint: 0.604 / 0.544 / 0.558 — step 4,000 is the highest single prose
+checkpoint in the project. The pre-registered caveat held: Net2Wider's fresh
+optimizer depressed point 1, and with Adam warm for all of leg 2 the width
+shows. **Width is being used.**
+
+Halt did not recover: 2.74, below pt3's 2.81, and 2.77 / 2.66 / 2.79 across the
+leg. Not falling either. The one instrument that had been monotonic is now flat.
+
+### Code is flat, and point 1's L4 did not survive
+
+L3+ 75.0 → 73.1 → 72.8, inside the 13.6pp sd. **L4 16.2% → 4.1%**, and the
+tasks it lived on collapsed: `double_it` 19 → 3, `sum_list` 14 → 0, `is_even`
+9 → 1. The point-1 entry called this "substance, not just a count" because L4
+was on seven tasks and the text was correct. The text *was* correct. The
+capability was not stable. **Third L4 over-read this month** (278M pt1, wide
+pt1, and now the confirmation). The instrument's relative sd is 0.77; nothing it
+says on one checkpoint means anything, spread and text included.
+
+### ⇒ Protocol change: code eval on all three milestones per point
+
+Prose has been read as a mean over three checkpoints all along, and it has not
+fooled anyone. Code has been one checkpoint, and it has fooled three readings.
+The eval is ~15 min; three per point is ~45. From point 3 on, `run_eval.sh`
+runs on each of the leg's milestones and the point reports the mean — L3+ sd
+drops from 13.6 to ~7.9pp, and L4 becomes readable at all.
+
+### ⇒ Keep pouring at 240M
+
+pt1 → pt2 on prose is up, not flat, so the widen condition (two flat intervals)
+is not met. Point 3 is the first slope reading on this curve that is not
+contaminated by the optimizer transient. Halt at 2.74 is the number to watch: if
+it recovers toward 2.81 with the prose, width is clean; if it stays flat while
+prose rises, the wider experts may be buying fluency at the cost of the loop
+deciding — which the exit_pdf work showed is the harder thing to buy back.
+
 ## 2026-09-16 — 🟡 WIDE CURVE, POINT 1: code up, prose down, optimizer transient unresolved
 
 First leg at 240M activated (`mythouro_distill_wide`, Net2Wider 2x from

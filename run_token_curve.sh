@@ -136,8 +136,9 @@ echo
 echo "=== LEG $leg_no DONE. READ IT OUT BEFORE THE NEXT ONE — the next launch prunes. ==="
 echo "  1. prose + halt, three checkpoints:"
 echo "     bash run_prose_readout.sh $(P $a) $(P $b) $(P $c)"
-echo "  2. code:"
-echo "     bash run_eval.sh $(P $c) curve_leg${leg_no}"
+echo "  2. code — ALL THREE milestones, report the mean (protocol change 2026-09-17:"
+echo "     one code checkpoint fooled three readings; L4 has relative sd 0.77):"
+echo "     for s in $a $b $c; do bash run_eval.sh $DIR/step_\$(printf %07d \$s).pt ${DIR#checkpoints_}_leg${leg_no}_\$s; done"
 echo "  3. medical:"
 echo "     python3 tools/medical_readout.py reports/prose_curve_*.json"
 echo
