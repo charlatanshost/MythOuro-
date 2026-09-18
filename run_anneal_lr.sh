@@ -19,10 +19,24 @@
 # final anneal toward zero is where a great deal of quality conventionally
 # lands, and it has never been run here.
 #
+# ⚠ WHY THE FLOOR IS 1e-5 AND NOT LOWER — the owner's stipulation, and the record
+# behind it (2026-07-17): steps 13,944→18,000 ran a cosine tail 1.2e-5 → 0 and
+# the model STARVED — no progress, noisier draws, an initials-salad sample on
+# diabetes. The 3e-5 floor was added because of it. That model was still
+# climbing at real LR, so a dying tail stopped it early; this one has been flat
+# at 3e-5 for six legs, which is the different case. But the starvation zone
+# was ~1.2e-5 and below, and this leg does not go there. A first draft of this
+# script annealed to 1e-6, straight through it. Corrected.
+#
 # THIS LEG. Seeded from wide@9000 with step reset to 0 so the schedule is
 # fresh, --warmup-steps 0 so it starts AT 3e-5 (exactly where leg 3 ended — no
-# jump), and --min-lr 1e-6, a 30x decay over 3,000 steps:
-#     step    0: 3.00e-05      step 1500: 1.55e-05      step 3000: 1.00e-06
+# jump), and --min-lr 1e-5, a 3x decay over 3,000 steps, stopping ABOVE where
+# July starved:
+#     step    0: 3.00e-05      step 1500: 2.00e-05      step 3000: 1.00e-05
+#
+# ⚠ STOP RULE, because the failure mode is known: if the step-1,000 prose
+# readout shows salad returning or LOOPING >= 5/30 on any checkpoint, kill it.
+# Do not wait for 3,000 to confirm what the record already predicted.
 # Adam state carries over (the wide checkpoint has it; nothing was dropped).
 # ONE variable changes: the LR floor. Everything else is the curve's recipe.
 #
@@ -41,9 +55,8 @@
 #   down                                  -> the low LR let something drift
 #       (routing? halt?). Read the text; the answer is in which thing moved.
 #
-# ⚠ AN ANNEALED CHECKPOINT IS AN ENDPOINT, NOT A SEED. At 1e-6 the optimizer
-# has effectively stopped. Resuming training from it means warming up again —
-# fine, but know that is what you are doing.
+# An annealed checkpoint at 1e-5 is still trainable; resuming means the next
+# schedule starts from 1e-5, not from a dead optimizer.
 set -uo pipefail
 STOP=0
 trap 'STOP=1; pkill -INT -P $$ 2>/dev/null; true' INT TERM
@@ -83,7 +96,7 @@ PY
 fi
 
 at=$(basename "$(ls -t $DIR/step_*.pt | head -1)" | sed 's/step_0*//; s/\.pt//'); at=${at:-0}
-echo "=== LR ANNEAL: $at -> $STEPS   3e-5 -> 1e-6, no warmup, from wide@9000 ==="
+echo "=== LR ANNEAL: $at -> $STEPS   3e-5 -> 1e-5, no warmup, from wide@9000 ==="
 echo "=== first step line should show lr ~3.0e-05, NOT 0 and NOT climbing ==="
 echo "=== log: $LOG ==="
 
@@ -91,7 +104,7 @@ python -u -m training.distill \
   --student-variant "$VARIANT" \
   --student-device xpu:0 --teacher-device xpu:0 --teacher-id "$TEACHER" \
   --seq-len 1024 --micro-batch 2 --grad-accum 8 \
-  --warmup-steps 0 --lr 3e-5 --min-lr 1e-6 --start-loops 4 \
+  --warmup-steps 0 --lr 3e-5 --min-lr 1e-5 --start-loops 4 \
   --loop-loss-weighting exit_pdf --depth-reg-coeff 0.1 \
   --divergence rev_kl \
   --use-sandwich-norm --use-depth-aware-init \
