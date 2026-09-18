@@ -533,7 +533,20 @@ def generate(model, tok, prompt: str, device: str, max_new: int,
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[1])
-    p.add_argument("-c", "--checkpoint", required=True)
+    p.add_argument("-c", "--checkpoint", default=None,
+                   help="MythOuro checkpoint to score. Required unless --hf-model.")
+    p.add_argument("--hf-model", default=None,
+                   help="Score a HuggingFace causal LM INSTEAD of a checkpoint — "
+                        "e.g. the teacher, ByteDance/Ouro-2.6B-Thinking. Added "
+                        "2026-09-18: two token curves went flat at the same "
+                        "place (distinct1 ~0.56, L3+ ~68-75%%) while soft-KL to "
+                        "the teacher kept falling, and nobody had ever measured "
+                        "what the TEACHER scores on this instrument. Without "
+                        "that number, 'flat' cannot be read as 'at the ceiling' "
+                        "or 'below it'. Loads through load_distillation_teacher "
+                        "(eager attention on XPU, pad_token_id fix) and samples "
+                        "through the SAME loop as a checkpoint — same T, "
+                        "penalty, seed, budget, EOS — so the numbers compare.")
     p.add_argument("--device", default="xpu:0")
     p.add_argument("--tokenizer", default="ByteDance/Ouro-2.6B-Thinking")
     p.add_argument("--samples", type=int, default=3,
@@ -601,7 +614,31 @@ def main() -> None:
     from mythouro.tokenizer import MythOuroTokenizer
     enc = MythOuroTokenizer(args.tokenizer)
     tok = enc.tokenizer
-    model, _cfg, step = _load_model(args.checkpoint, args.device)
+    if args.hf_model:
+        if args.checkpoint:
+            p.error("--hf-model and --checkpoint are mutually exclusive")
+        from mythouro.training_utils import load_distillation_teacher
+        _hf = load_distillation_teacher(args.hf_model, len(tok),
+                                        device=args.device, dtype=torch.bfloat16,
+                                        trust_remote_code=True)
+        if _hf is None:
+            raise SystemExit(f"could not load {args.hf_model}")
+
+        class _HFAsStudent:
+            """Adapter so generate() can call an HF model exactly as it calls a
+            MythOuro: model(ids, n_loops=...) -> logits. n_loops is ignored —
+            the HF model runs its own architecture (Ouro has its own recurrence
+            and ACT). Returns full-sequence logits; generate() takes [0, -1]."""
+            def __init__(self, m): self.m = m
+            def eval(self): self.m.eval(); return self
+            def __call__(self, ids, n_loops=None):
+                with torch.no_grad():
+                    return self.m(ids, use_cache=False).logits
+        model, step = _HFAsStudent(_hf), f"hf:{args.hf_model}"
+    else:
+        if not args.checkpoint:
+            p.error("one of --checkpoint / --hf-model is required")
+        model, _cfg, step = _load_model(args.checkpoint, args.device)
     model.eval()
     if args.seed is not None:
         torch.manual_seed(args.seed)        # sampling is on CPU, so this is enough
