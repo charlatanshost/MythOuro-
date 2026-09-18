@@ -2762,6 +2762,77 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-18 — ⏹ WIDE CURVE, POINT 3: flat. Same plateau as 278M. Soft-KL still falling. Nobody has measured the ceiling.
+
+Leg 3 at 240M activated, 319.5M tokens on the lineage. First point with the
+three-checkpoint code protocol.
+
+| | 278M pt1 | 278M pt2 | 278M pt3 | WIDE pt1 | WIDE pt2 | **WIDE pt3** |
+|---|---|---|---|---|---|---|
+| distinct1 | 0.576 | 0.562 | 0.556 | 0.522* | 0.569 | **0.559** |
+| halt | 2.76 | 2.81 | 2.81 | 2.74* | 2.74 | **2.75** |
+| L3+ | 79.4¹ | 78.8¹ | 75.0¹ | 73.1¹ | 72.8¹ | **68.2³** |
+| L4 | 8.8¹ | 0.3¹ | 5.0¹ | 16.2¹ | 4.1¹ | **4.5³** |
+
+\* fresh-optimizer transient. ¹ one checkpoint. ³ mean of three.
+
+### The three-checkpoint code protocol earned its keep on its first use
+
+```
+  step 7000   L3+ 69.4%   L4 2.8%
+  step 8000   L3+ 59.4%   L4 9.4%
+  step 9000   L3+ 75.9%   L4 1.2%
+```
+
+A **16.5pp range** across checkpoints 1,000 steps apart. Every code number
+before this one — on both curves — was a single draw from a distribution that
+wide. The 68.2% mean is the first code figure that can be compared to anything,
+and it has nothing valid to compare against yet; the earlier singles carry
+±8pp each. Point 4 gives the first mean-to-mean interval.
+
+### Correcting point 2's framing: "past the 278M plateau" was the wrong reference
+
+Point 2 compared against 278M pt3 (0.556) because that is this curve's point 0.
+But the 278M curve was 0.576 / 0.562 / 0.556 — the plateau is a band, not the
+last value. Wide pt2 (0.569) and pt3 (0.559) both sit inside it. **The wide
+model has landed on the same plateau as the 278M model**, ~0.56 distinct1,
+~2.75 halt. Width recovered the transient and then stopped, about where the
+narrower model stopped. pt2 → pt3 is one flat interval; the widen condition
+needs two, so point 4 is still owed before that is a conclusion.
+
+Medical: stutter 0/90, looping 0/90, diabetes 3/30. In band.
+
+### Soft-KL to the teacher is STILL FALLING — the teacher is not exhausted
+
+Mean `soft` over the last 20 log lines of each leg:
+
+```
+  278M   0.868 → 0.828 → 0.800
+  WIDE   0.820 → 0.801 → 0.787
+```
+
+Small steps against a per-step sd of ~0.2, but six legs and the direction never
+reverses. The tracker's own gauge (2026-08-20): *"teacher exhaustion would show
+as rising soft-KL."* It is not rising. **The student keeps matching the teacher
+better on the training distribution, and the probes do not move.**
+
+### ⇒ The measurement nobody has taken: what does the TEACHER score?
+
+Ouro-2.6B has never been run through `code_eval` or the prose probe as a
+subject. Until it is, "flat at 0.56 / 68%" cannot be read:
+
+* if the teacher scores near 0.56 / ~70% on these exact prompts, the student is
+  **at the ceiling** — pouring, widening and depth are all spent on an
+  objective that has nothing left to give, and the lever is a stronger teacher;
+* if the teacher scores well above, the student is **below the ceiling** and
+  something else is binding — the probes' prompts vs the training mix, the LR
+  schedule, or depth.
+
+`code_eval` builds a MythOuro from a checkpoint; it needs a small path that
+loads an HF model and samples through the same loop, so the numbers are
+comparable. One ~15-minute GPU run after that. This is the next thing to build,
+before point 4, because it decides what point 4 means.
+
 ## 2026-09-17 — 🟢 WIDE CURVE, POINT 2: prose recovers past the 278M plateau. Code flat. L4 was a draw (third time).
 
 Leg 2 at 240M activated, optimizer warm throughout. 270.3M tokens on the lineage.
