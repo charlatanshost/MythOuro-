@@ -2762,6 +2762,69 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-18 — 🎯 THE CEILING IS MEASURED, AND IT IS FAR ABOVE THE PLATEAU
+
+Ouro-2.6B-Thinking scored on the student's own instruments — same prompts,
+same sampler, same seed, same budget, bare framing. First time this has ever
+been done.
+
+| | L0 | **L3+** | **L4** | | top_share | **distinct1** | LOOP |
+|---|---|---|---|---|---|---|---|
+| **teacher** | 0.6% | **97.8%** | **70.6%** | | 0.082 | **0.615** | 0/30 |
+| student wide pt3 (3 ckpt) | 7.7% | 68.2% | 4.5% | | 0.098 | 0.559 | 4/90 |
+| student 278M pt3 | 6.6% | 75.0% | 5.0% | | 0.098 | 0.556 | 4/90 |
+
+L4 correct on **10 of 10 tasks**. Per-sample L4 **70.6% against 4.5%** — a 15x
+gap on the instrument that has never moved for the student. Bare framing, which
+might have understated a chat model, did not.
+
+Reading the text: on the diabetes seed the teacher writes *"frequent urination,
+increased thirst, increased hunger, fatigue, blurred vision, and slow-healing
+sores"* — the complete textbook list, where the student names any of them in
+3/30 samples. On `def fibonacci(n):` it writes a correct recursion with both
+base cases. The prose metric gap (0.615 vs 0.559) understates the content gap.
+
+### What this settles
+
+**The student is not at the ceiling. It is nowhere near it.** Two token curves
+went flat at the same place — ~0.56 distinct1, ~2.75 halt, ~68–75% L3+, ~5% L4
+— while soft-KL to the teacher kept falling across all six legs. The student
+keeps matching the teacher better on the training distribution, and the teacher
+is at 98% / 71% on the probes. "Flat" was never "done".
+
+### What it rules out
+
+* **Tokens** — two flat intervals at 278M, one at 240M-activated, 320M tokens on
+  the wide lineage.
+* **FFN width** — Net2Wider 1.33x landed on the same plateau. If expert
+  capacity were binding, that should have moved it.
+* **The teacher** — 98% / 71% / 0.615. There is everything left to learn.
+* **A cold-start cliff** — the α ladder is smooth: 0.556 → 0.568 → 0.581 →
+  0.597 → 0.615 from α=0 to the teacher. The student's output improves in
+  proportion to steering; it is not "fine once the first tokens are right".
+
+### What is left, cheapest first
+
+1. **The LR schedule.** Every curve leg warms up to 1e-4 and cosines to 3e-5,
+   then the next leg warms up again — a cyclic schedule that kicks the model
+   every 3,000 steps. A long low-LR anneal has never been run on this lineage,
+   and the final anneal is where a great deal of quality conventionally lands.
+   **One leg at constant ~2e-5, no warmup, from `wide@9000`, read on the same
+   instruments.** If the plateau is the model bouncing at too-high LR, this
+   shows it in a night. If it does nothing, the plateau is structural.
+2. **α=0 vs α=0.45 on CAPABILITY.** The α=0 gate passed on degeneracy and the
+   278M code readings after it were single checkpoints. On-policy at α=0
+   teaches the teacher's targets on the *student's* trajectories — recovery
+   from its own prefixes as much as production of good ones. Matched legs,
+   3-checkpoint code means. Two nights.
+3. **Depth.** `grow_depth.py` is shelved behind "a base worth spending the
+   nights on". The teacher's recurrence is deeper than 4 loops. The student
+   writes runnable code that is *wrong* — syntax and structure without logic —
+   which is what a depth-starved model looks like, and what more FFN width
+   would not fix.
+
+**Not on the list:** more of the same. The curve has answered.
+
 ## 2026-09-18 — ⏹ WIDE CURVE, POINT 3: flat. Same plateau as 278M. Soft-KL still falling. Nobody has measured the ceiling.
 
 Leg 3 at 240M activated, 319.5M tokens on the lineage. First point with the
