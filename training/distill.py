@@ -325,15 +325,18 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                         "CONTINUING text. This practises ANSWERING. Everything "
                         "else in the on-policy path — buffer, teacher scoring, "
                         "loss — is unchanged.")
-    p.add_argument("--instruct-prompt-len", type=int, default=48,
+    p.add_argument("--instruct-prompt-len", type=int, default=64,
                    help="Fixed ChatML prompt length for --onpolicy-instruct. "
                         "Every seed is exactly this many tokens (the snippet is "
                         "truncated to fit), which keeps the rollout buffer's "
                         "fixed-width batching untouched. ~15 go to the system "
                         "line, ~8 to the instruction, ~5 to the assistant tag; "
-                        "the rest is snippet. Generation is O(L^2) "
-                        "(use_kv_cache=False), so this is a throughput knob: "
-                        "48+48 costs ~1.4x the 16+64 corpus-seed rollout.")
+                        "the rest is snippet. MINIMUM 52: the builder refuses "
+                        "any template left with < 16 snippet tokens and the "
+                        "longest general template is 36 tokens of framing "
+                        "(2026-09-20, learned from a failed profile). "
+                        "Generation is O(L^2) (use_kv_cache=False), so this is "
+                        "a throughput knob.")
     p.add_argument("--rollout-legacy", action="store_true",
                    help="Escape hatch: inline per-micro-step rollout "
                         "generation with full O(L^2) recompute (the "

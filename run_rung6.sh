@@ -66,7 +66,13 @@ VARIANT=mythouro_distill_wide
 TEACHER=ByteDance/Ouro-2.6B-Thinking
 FILES="data_teacher_code/shard_*.jsonl,data_teacher_math/shard_*.jsonl,data_teacher_v2/shard_*.jsonl,data_teacher_med/shard_*.jsonl"
 ALPHA="${ALPHA:-0.5}"
-PLEN="${PLEN:-48}"; RLEN="${RLEN:-48}"
+# PLEN 64, not 48. The prompt builder refuses any template that leaves < 16
+# snippet tokens; the longest "general" template is 36 tokens of framing, so
+# 48 leaves 12 and the first profile run (2026-09-20) died on it. The CPU test
+# had passed because the RNG drew a 30-token template. 64 leaves 28 on the
+# worst case. RLEN 40 keeps prompt+rollout at 104 (vs 96 planned) so the O(L²)
+# decode cost lands near the same place.
+PLEN="${PLEN:-64}"; RLEN="${RLEN:-40}"
 STEPS="${STEPS:-3000}"
 mkdir -p logs reports
 
