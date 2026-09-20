@@ -309,6 +309,31 @@ def _parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
                    help="Force a rollout-buffer refill after this many "
                         "optimizer steps regardless of remaining reuse "
                         "(staleness cap).")
+    p.add_argument("--onpolicy-instruct", action="store_true",
+                   help="RUNG 6. Seed on-policy rollouts with ChatML INSTRUCTION "
+                        "prompts instead of the first tokens of the corpus row: "
+                        "each micro-batch row is wrapped as "
+                        "'<|im_start|>user {instruction}\\n\\n{snippet}<|im_end|>"
+                        "<|im_start|>assistant' (tools.gen_teacher_corpus._chat_prompt, "
+                        "fixed at --instruct-prompt-len tokens) and the student "
+                        "generates the ANSWER, which the teacher scores. The loss "
+                        "is masked to the generated positions so the prompt is "
+                        "not trained on. Why (2026-09-18..20): the teacher scores "
+                        "97.8%% L3+ / 70.6%% L4 on the student's instruments "
+                        "against 68%% / 4.5%%, two token curves went flat far "
+                        "below it, and the student has only ever practised "
+                        "CONTINUING text. This practises ANSWERING. Everything "
+                        "else in the on-policy path — buffer, teacher scoring, "
+                        "loss — is unchanged.")
+    p.add_argument("--instruct-prompt-len", type=int, default=48,
+                   help="Fixed ChatML prompt length for --onpolicy-instruct. "
+                        "Every seed is exactly this many tokens (the snippet is "
+                        "truncated to fit), which keeps the rollout buffer's "
+                        "fixed-width batching untouched. ~15 go to the system "
+                        "line, ~8 to the instruction, ~5 to the assistant tag; "
+                        "the rest is snippet. Generation is O(L^2) "
+                        "(use_kv_cache=False), so this is a throughput knob: "
+                        "48+48 costs ~1.4x the 16+64 corpus-seed rollout.")
     p.add_argument("--rollout-legacy", action="store_true",
                    help="Escape hatch: inline per-micro-step rollout "
                         "generation with full O(L^2) recompute (the "
@@ -854,6 +879,27 @@ def main():
     # Independent stream for the per-micro-step on-policy coin flip, so toggling
     # --random-depth never shifts which steps go on-policy (and vice-versa).
     onpolicy_rng = _random.Random(args.seed + 9973)
+    # RUNG 6: the instruction-prompt seed builder. Reuses the harvest tool's
+    # prompt constructor so training seeds are byte-for-byte the ChatML the
+    # chat_clean corpus was made with. Templates come from the "general" set
+    # (the loader does not carry a source label); every prompt is exactly
+    # --instruct-prompt-len tokens.
+    instruct_seed = None
+    if args.onpolicy_instruct:
+        from tools.gen_teacher_corpus import _chat_prompt as _instruct_prompt
+        _instruct_rng = _random.Random(args.seed + 4271)
+        _hf_tok = encoding.tokenizer
+        _P = int(args.instruct_prompt_len)
+        def instruct_seed(rows: torch.Tensor) -> torch.Tensor:
+            """(B, T) corpus rows -> (B, P) ChatML prompts ending in the assistant tag."""
+            out = [_instruct_prompt(_hf_tok, r.tolist(), "general", _P, _instruct_rng)
+                   for r in rows.cpu()]
+            t = torch.tensor(out, dtype=rows.dtype, device=rows.device)
+            assert t.shape == (rows.shape[0], _P), t.shape
+            return t
+        logger.info(f"distill: RUNG 6 on-policy INSTRUCT seeds — prompt_len {_P}, "
+                    f"rollout_len {args.rollout_len}, loss masked to the "
+                    f"{args.rollout_len} generated positions")
 
     amp_ctx = (
         torch.amp.autocast(device_type=dev.autocast_type(device), dtype=amp_dtype)
@@ -1004,7 +1050,8 @@ def main():
                     # Legacy escape hatch: inline per-micro-step generation.
                     with amp_ctx:
                         rollout = generate_rollout(
-                            student, teacher, x[:, :seed_len],
+                            student, teacher,
+                            instruct_seed(x) if instruct_seed else x[:, :seed_len],
                             n_loops=n_loops,
                             max_new_tokens=args.rollout_len,
                             teacher_mix_alpha=args.teacher_mix_alpha,
@@ -1017,7 +1064,8 @@ def main():
                         # Accumulate rollout_batch seed rows from the corpus
                         # stream (the current micro-batch plus as many more
                         # as needed), then ONE wide generate call.
-                        seeds = [x[:, :seed_len]]
+                        _seed_of = instruct_seed if instruct_seed else (lambda r: r[:, :seed_len])
+                        seeds = [_seed_of(x)]
                         n_rows = x.shape[0]
                         while n_rows < rollout_buffer.rollout_batch:
                             try:
@@ -1026,7 +1074,7 @@ def main():
                                 data_iter = iter(loader)
                                 xs, _ = next(data_iter)
                             xs = xs.to(device, non_blocking=True)
-                            seeds.append(xs[:, :seed_len])
+                            seeds.append(_seed_of(xs))
                             n_rows += xs.shape[0]
                         seed_batch = torch.cat(seeds, dim=0)
                         seed_batch = seed_batch[: rollout_buffer.rollout_batch]
@@ -1143,6 +1191,21 @@ def main():
                     )
                     w = _mk(args.loop_loss_weighting) \
                         if args.loop_loss_weighting != "off" else None
+                    # RUNG 6: do not train on the prompt. x_in = rollout[:, :-1],
+                    # so position i predicts token i+1; the prompt occupies
+                    # tokens 0..P-1, hence positions 0..P-2 predict prompt tokens
+                    # and are masked. Position P-1 predicts the first GENERATED
+                    # token and is kept. The mask multiplies into the per-loop
+                    # weights so exit_pdf's own weighting is preserved on the
+                    # generated span.
+                    instruct_mask = None
+                    if is_onpolicy and instruct_seed is not None:
+                        _Pm = int(args.instruct_prompt_len)
+                        instruct_mask = torch.ones(x_in.shape[:2], device=x_in.device,
+                                                   dtype=torch.float32)
+                        instruct_mask[:, : _Pm - 1] = 0.0
+                        if w is not None:
+                            w = w * instruct_mask[..., None].to(w.dtype)
                     unc_mode = (
                         args.loop_loss_weighting
                         if args.unc_loop_weighting == "match"
@@ -1205,6 +1268,7 @@ def main():
                             alpha=args.alpha,
                             divergence=args.divergence,
                             jsd_beta=args.jsd_beta,
+                            token_weights=instruct_mask,      # None unless RUNG 6
                         )
                     else:
                         distill_metrics = {"soft": soft_sum, "hard": hard_sum}
