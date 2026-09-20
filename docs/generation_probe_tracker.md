@@ -2762,6 +2762,64 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-20 — 🔬 RUNG 6 DESIGN INPUT: the student answers code prompts on its own; medical needs α≈0.5
+
+The prose probe on six instruction prompts in the trained ChatML, full seed
+(`--seed-len 64` — the first run truncated every prompt to 16 tokens and
+measured the model continuing half a user turn; quarantined as
+`_SEEDCUT16`), annealed checkpoint, α = 0 / 0.25 / 0.5 / 0.7.
+
+| α | top_share | distinct1 | LOOP | code on-domain | **medical on-domain** |
+|---|---|---|---|---|---|
+| 0.0 | 0.091 | **0.602** | 0/30 | 15/15 | **7/15 (47%)** |
+| 0.25 | 0.079 | 0.597 | 0/30 | 15/15 | 7/15 (47%) |
+| 0.5 | 0.074 | 0.618 | 0/30 | 15/15 | **13/15 (87%)** |
+| 0.7 | 0.077 | 0.628 | 0/30 | 15/15 | 14/15 (93%) |
+
+### Not degenerate — the 69% chat collapse was a length effect
+
+At rollout length (96 tokens) the student's instruction answers are *cleaner*
+than its corpus continuations (distinct1 0.602 vs 0.546), no looping at any α.
+The 2026-09-09 collapse was at 512 tokens. Rung 6's rollouts are 64–96. So the
+question "is there anything worth correcting" is yes.
+
+### The real finding is domain routing, and it is one-sided
+
+**Code prompts:** on-domain at α=0, 15/15. *"Okay, I need to create a Python
+function called sum_of_numbers that takes a list of numbers as input"* — on
+task, then drifts. Correcting that trajectory teaches answering.
+
+**Medical prompts:** at α=0 the student goes to the wrong domain 8 times in 15.
+Asked about ibuprofen: *"The problem is about writing a Python function called
+find_sum_even_and_sum_odd…"* Asked about diabetes: *"low-level proteins on
+inflammation… present in the heart."* The teacher scoring those would teach
+recovery from a domain error, not answering. At α=0.5 it is on-domain 87% and
+the rollouts are real answer attempts: *"The common symptoms of the disease
+are: 1. Increased weight loss. 2. Increased appetite…"* — right domain, right
+shape, content partly right.
+
+This is the corpus: ~350k code+math rows against ~5k medical. The student's
+prior is code, and when it is unsure it reaches for it.
+
+### ⇒ Rung 6 design
+
+* **Rollout α is per-regime, and it is a new ladder, not a reversal.** The
+  corpus-continuation anneal (0.6 → 0) stands; the student is self-sufficient
+  there. Instruction answering is a different regime where it is not yet.
+  Start rung 6 at **α=0.5** and anneal down as the medical on-domain rate at
+  α=0 rises — the same discipline that took corpus continuation from 0.6 to 0.
+* α is a throughput switch (any α>0 pays the full teacher cost), so rung 6 at
+  0.5 runs at roughly the pre-α=0 pace, ~12 s/step. Accept it; the on-policy
+  path at α=0 was optimised for a regime this is not.
+* **Gate on the medical on-domain rate at α=0** as the anneal signal, and on
+  L4 / diabetes-symptom recall as the capability signal. The corpus imbalance
+  is the mission axis's problem and this is the first instrument that shows it
+  directly.
+
+Everything else about the on-policy path — buffer, teacher scoring, loss — is
+unchanged. The build is the seed source: instruction prompts (the 2,545
+chat_clean prompts, answers discarded) in place of corpus slices.
+
 ## 2026-09-19 — ⏹ LR ANNEAL: moved parseability, not correctness. The schedule was not binding. Last cheap lever spent.
 
 3,000 steps from `wide@9000`, 3e-5 → 1e-5, no warmup, Adam warm, one variable.
