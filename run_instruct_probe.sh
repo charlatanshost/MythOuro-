@@ -28,6 +28,15 @@
 #                                                   even steered; rung 6 at this
 #                                                   size is a harder bet.
 # READ THE TEXT. The e.g. lines are the actual rollouts.
+#
+# ⚠ --seed-len 64 IS LOAD-BEARING. The probe truncates every seed to --seed-len
+# tokens (default 16) and these ChatML prompts are 28-34 tokens. The first run
+# (2026-09-20) omitted it: every prompt was cut after "<|im_start|>user\nWrite a
+# Python", the model never saw the question end or the assistant turn, and it
+# continued the USER turn — "function that determines whether a given string is
+# a palindrome…" — at every α including 0.7. That read as "the student cannot
+# answer" and it was the harness. Read the e.g. lines: if they look like
+# questions, the seed was cut.
 set -uo pipefail
 cd "$(dirname "$0")"
 source ../venv-xpu/bin/activate
@@ -52,6 +61,7 @@ E='<|im_end|>
 python -u -m tools.onpolicy_rollout_probe --ckpt-dir "$D" \
   --student-device xpu:0 --teacher-device xpu:0 --teacher-id ByteDance/Ouro-2.6B-Thinking \
   --trust-remote-code --no-kv-cache --samples 5 \
+  --seed-len 64 \
   --seeds \
     "${S}Write a Python function that returns the sum of a list of numbers.${E}" \
     "${S}Write a Python function that returns True if a number is prime.${E}" \
