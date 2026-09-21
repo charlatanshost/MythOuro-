@@ -821,6 +821,23 @@ class MoEFFN(nn.Module):
         # Per-call (overwritten) telemetry, read by `_loop_body`.
         self._last_router_logits: "Optional[torch.Tensor]" = None
         self._last_expert_counts: "Optional[torch.Tensor]" = None
+        # ROUTING CACHE for activation checkpointing (2026-09-21). The loop body
+        # is checkpointed, so this forward runs twice per loop — once in the
+        # forward pass, once on recompute during backward — and on XPU the bf16
+        # ops upstream (attention, norms) are not bitwise-stable across calls.
+        # A dense model shrugs; values drift, shapes do not. An MoE turns value
+        # drift into SHAPE drift: a token near a routing tie lands in a different
+        # expert on the recompute, the dispatch tensors change size, and
+        # torch.utils.checkpoint refuses ("Recomputed values ... different
+        # metadata"). First seen at dim 2048 (large/xlarge profiles); fp32
+        # routing alone did not fix it because the router's INPUT differs.
+        # Routing is a discrete decision and must not be recomputed: the
+        # forward pass records topk_idx per loop slot here, the recompute reads
+        # it back. Only the differentiable expert math is recomputed — which
+        # is all checkpointing was ever meant to redo. None outside
+        # checkpointed training; the recurrent driver sets it.
+        self._route_cache: "Optional[dict]" = None
+        self._route_slot: "Optional[int]" = None
         # Per-forward accumulators populated by RecurrentBlock across ALL loops
         # (P0.2). The router logits buffer keeps gradient (aux losses); the
         # expert-count sum is detached. Read by collect_router_logits /
@@ -874,6 +891,12 @@ class MoEFFN(nn.Module):
         self._last_router_logits = logits                         # exposed for aux losses
         scores = F.softmax(logits, dim=-1)
         _, topk_idx = (logits + self.router_bias).topk(self.topk, dim=-1)
+        if self._route_cache is not None and self._route_slot is not None:
+            _slot = self._route_slot
+            if _slot in self._route_cache:
+                topk_idx = self._route_cache[_slot]      # RECOMPUTE: the forward's decision
+            else:
+                self._route_cache[_slot] = topk_idx.detach()   # FORWARD: record it
         topk_scores = scores.gather(-1, topk_idx)
         topk_scores = topk_scores / topk_scores.sum(dim=-1, keepdim=True)  # renorm
 
@@ -1725,6 +1748,9 @@ class RecurrentBlock(nn.Module):
         h_loop = loop_index_embedding(h, t, self.loop_dim)
         combined = self.norm(h_loop + e_inject)
         cache_key = f"recurrent_loop_{t}"
+        _ffn = getattr(self.block, "ffn", None)
+        if _ffn is not None and hasattr(_ffn, "_route_slot"):
+            _ffn._route_slot = t                          # routing cache key
         trans_out = self.block(combined, freqs_cis, mask, kv_cache, cache_key)
         trans_out = trans_out + self.lora(trans_out, t)
         h_new = self.injection(h, e_inject, trans_out, loop_t=t)
@@ -1835,6 +1861,13 @@ class RecurrentBlock(nn.Module):
             ffn._expert_counts_sum = None
 
         use_ckpt = self.use_ckpt and self.training and kv_cache is None
+        _ffn = getattr(self.block, "ffn", None)
+        if _ffn is not None and hasattr(_ffn, "_route_cache"):
+            # A NEW dict per forward. It must outlive this call: the recompute
+            # that reads it happens during backward. The next forward replaces
+            # it, so nothing accumulates. None when not checkpointing, so eval,
+            # inference and the rollout generator never cache.
+            _ffn._route_cache = {} if use_ckpt else None
 
         # Multi-scale injection: `e` is frozen across loops, so project the
         # three views ONCE (P1.4) and only re-blend per loop — saves 3·(K−1)
