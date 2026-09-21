@@ -160,6 +160,37 @@ def mythouro_distill_wide() -> MythOuroConfig:
     return replace(mythouro_distill_tiny(), expert_dim=2560)
 
 
+def mythouro_distill_large() -> MythOuroConfig:
+    """
+    ~922M total / ~695M ACTIVATED — 3.9x the 278M student's activated params.
+    Sized for the Max 1100's 48 GB, not the 5070's 12 GB the tiny was built
+    for (2026-09-21). dim 2048, prelude/coda 6, top-k 6, same 24 experts, same
+    4 loops, same Ouro vocab. From-scratch; no promotion path. Estimated
+    ~34 GB static+activations at mb2/seq1024 — the scale profile measures it.
+    """
+    return replace(
+        mythouro_distill_tiny(),
+        dim=2048, expert_dim=2048,
+        prelude_layers=6, coda_layers=6,
+        n_experts_per_tok=6,
+    )
+
+
+def mythouro_distill_xlarge() -> MythOuroConfig:
+    """
+    ~1.15B total / ~866M ACTIVATED — 4.8x. dim 2304, prelude/coda 6, top-k 6.
+    The largest config with plausible headroom on 48 GB (~9 GB estimated).
+    Profile before committing a night; if it fits and runs under ~13 s/step it
+    is the target, otherwise `mythouro_distill_large` is.
+    """
+    return replace(
+        mythouro_distill_tiny(),
+        dim=2304, expert_dim=2304,
+        prelude_layers=6, coda_layers=6,
+        n_experts_per_tok=6,
+    )
+
+
 def mythouro_distill_small() -> MythOuroConfig:
     """
     ~420M target for MoE expansion from `mythouro_distill_tiny` checkpoints.

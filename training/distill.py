@@ -116,6 +116,8 @@ from mythouro.variants import (
     mythouro_500b, mythouro_1t,
     mythouro_distill_mid,
     mythouro_distill_wide,
+    mythouro_distill_large,
+    mythouro_distill_xlarge,
 )
 from mythouro import device as dev
 from mythouro.rollout import RolloutBuffer, rollout_with_retry
@@ -135,6 +137,9 @@ _VARIANT_FUNCS = {
     # tiny with expert_dim 2560: the Net2Wider promotion target (grow_width.py).
     # 436M / 240M activated. Resume a widened checkpoint with this.
     "mythouro_distill_wide":  mythouro_distill_wide,
+    # Sized for the 48 GB card (2026-09-21): 695M and 866M activated. From-scratch.
+    "mythouro_distill_large": mythouro_distill_large,
+    "mythouro_distill_xlarge": mythouro_distill_xlarge,
     # Post-MoE-expansion targets (48 / 96 routed experts). Used when resuming
     # a grown checkpoint via `tools/grow_checkpoint.py`.
     "mythouro_distill_small": mythouro_distill_small,
