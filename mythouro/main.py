@@ -856,7 +856,21 @@ class MoEFFN(nn.Module):
         # selection of which experts fire so underused experts are picked more,
         # but the gating weights come from unbiased softmax scores so the bias
         # never shows up in the gradient.
-        logits = self.router(flat)                                # (N, E)
+        # ROUTE IN FP32, OUTSIDE AUTOCAST. Found 2026-09-21 at dim 2048: the loop
+        # body is activation-checkpointed, so this router runs twice — forward,
+        # then recompute during backward — and bf16 matmuls on XPU are not
+        # bitwise-stable across calls. A near-tie between two experts flipped
+        # on the recompute, one token routed differently, and
+        # torch.utils.checkpoint refused ("Recomputed values ... different
+        # metadata", [1196, 2048] vs [1197, 2048]). Never seen at dim 1280;
+        # longer dot products at 2048 made the reduction-order noise cross a
+        # tie. fp32 has ~16 more mantissa bits than bf16, so the flip goes from
+        # per-step to never-in-practice. Cost: one (N x dim x E) matmul in
+        # fp32 — negligible. DeepSeek-V3 routes in fp32 for the same reason.
+        # Gate weights stay derived from these logits, so aux losses see fp32 too.
+        with torch.autocast(device_type=flat.device.type, enabled=False):
+            logits = F.linear(flat.float(), self.router.weight.float(),
+                              None if self.router.bias is None else self.router.bias.float())
         self._last_router_logits = logits                         # exposed for aux losses
         scores = F.softmax(logits, dim=-1)
         _, topk_idx = (logits + self.router_bias).topk(self.topk, dim=-1)
