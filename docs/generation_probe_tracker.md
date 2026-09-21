@@ -2762,6 +2762,81 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-21 — ❌ RUNG 6, LEG 1: capability did not move, the base broke, and the templates were wrong
+
+3,000 steps from `anneal@3000`, `--onpolicy-instruct`, α=0.5, prompt 64 +
+rollout 40, 11.32 s/step, 9.4 h. Three-checkpoint means on both instruments.
+
+| | seed | **rung 6** | teacher | gate |
+|---|---|---|---|---|
+| **code L4** | 3.6% | 5.1% | 70.6% | **flat** — did not move |
+| **diabetes recall** | 3/30 | **1/30** | full list | **down** — did not move |
+| prose distinct1 | 0.546 | **0.470** | 0.615 | guard **failed** — lowest on this lineage |
+| halt | 2.71 | 2.64 | — | down |
+| code L0 | 4.0% | **40.2%** | 0.6% | guard **failed**, 10x |
+| code L3+ | 81.7% | **42.8%** | 97.8% | guard **failed**, halved |
+| medical on-domain @α=0 | 47% | 60% | — | moved — but see below |
+
+**Neither capability number moved. Every guard failed.**
+
+### What the 40% L0 is: regime shift, not collapse
+
+118 of 142 L0 completions contain ChatML tags. Given `def add_two(a, b):`,
+the model repeats the signature and emits `<|im_end|>` — it now treats a bare
+stub as a turn to close. No `<think>`, no loops, no salad. It learned that
+sequences end with `<|im_end|>`, and bare framing now triggers it. **This is
+the third form of instruction training to do exactly this to the base** —
+offline SFT (rung 0), the offline instruct mix (09-06..10), and now on-policy
+instruct. Different mechanisms, same result: push toward ChatML, bare framing
+breaks.
+
+### What the "on-domain" gain is: summarisation register, not answering
+
+The medical on-domain rate at α=0 rose 47% → 60%, and the keyword screen
+counted it. The text:
+
+> *"The main idea of this passage is about the prevalence of the common
+> symptoms of a specific type of heart or heart disease, which is commonly
+> known as the 'glow' syndrome…"*
+
+Asked a direct question, it answers in **passage-summary register**, because
+every training prompt was one. The trainer's loader carries no source label,
+so the seeds used the "general" templates — *Summarise the following passage /
+Explain the following passage / What is the main idea of this text* — and the
+chat_clean corpus is the same shape. The teacher scored summaries of corpus
+fragments; the student learned to say "the main idea of this passage is" and
+applies it to everything. On the code prompt: *"the original user provided a
+snippet that talks about…"* — there was no snippet. **This half is a design
+error in how rung 6 was built**, and it is why "on-domain" rose while recall
+fell: the model now mentions the domain while summarising an imaginary passage
+about it.
+
+### What is and is not settled
+
+* **Settled:** rung 6 as built does not move L4 or medical recall, and it
+  costs the bare-framing base the way every chat leg has. Summarisation
+  templates cannot teach question-answering.
+* **Not settled:** whether the bare-framing crash is *damage* or a *regime
+  move*. Rung 6 trained in ChatML; the bare code eval scores continuation.
+  The one measurement that separates them is chat-framed code at 96 tokens on
+  `rung6@3000` vs `anneal@3000` — the framing it trained in, same for both.
+  Pending.
+* **Open, and honest about it:** a question-shaped prompt source does not
+  exist. The corpus gives passages. Building one is a harvest, and the last
+  three harvests each cost a week. And a fixed template set does not address
+  the regime-shift problem, which is the recurring one.
+
+### The pattern, stated plainly
+
+Three approaches to instruction-following on this base, three times the base
+broke in bare framing, zero times the capability numbers moved. The
+coding-assistant goal works in bare/file framing and does not need chat. The
+medical goal needs chat, and the model cannot answer medical questions
+correctly in any framing — the capacity bound on facts (roadmap 07-29:
+~90–170M tokens of facts at 2–4 bits/param) has not gone anywhere. **Whether
+to keep pushing this base toward chat is a decision, not a measurement, and
+the measurements are in.**
+
 ## 2026-09-20 — 🔬 RUNG 6 DESIGN INPUT: the student answers code prompts on its own; medical needs α≈0.5
 
 The prose probe on six instruction prompts in the trained ChatML, full seed

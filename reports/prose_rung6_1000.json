@@ -1,0 +1,916 @@
+{
+  "step": 1000,
+  "samples": 5,
+  "temp": 1.0,
+  "top_k": 50,
+  "alphas": [
+    0.0,
+    0.25,
+    0.5,
+    0.7
+  ],
+  "seed": 0,
+  "rollout_len": 96,
+  "seeds": {
+    "In the morning the weather was clear, so we decided to": {
+      "0.0": {
+        "texts": [
+          " go back to what's being discussed here. The passage is a bit confusing because it only mentions the cold air at the temperature. Here is a note about the temperature of the greenhouse. The temperature of the atmosphere is at its lowest temperature, the temperature of the weather is very low. At the 800's, it was more like a temperature of the atmosphere. It is quite likely that the temperature of the atmosphere was just the heat that was kept with the temperature.",
+          " focus on the morning.\n\nThis is possible to have the temperature of the hot, but it's not in a hot environment. The greenhouse is likely something of the hotter atmosphere, or the temperature of cold, but it's not at any temperature.\n\nThis is a common place for our weather.\n\nThe temperature of the hot environment is important. It's a hot environment, and it's not always there. The temperature of the cold environment is not always the",
+          " stay warm and have some temperature in the summer.\n\nHowever, the heat is in the warm temperatures and even not a warm thermometer. We would need to be able to do these conditions where you can think or not heat, but the temperatures for these conditions would be high.\n\nWe also can see how temperatures with hot temperatures, in the summer. We can also see how temperatures were warm, but the temperatures in the summer are a little higher. As an example,",
+          " go into a cold weather. A little closer in the middle, a few years, the weather was warmer. (A temperature-temperature-stable temperature change that most of it was hot - it's not really clear what the weather is doing after the summer for the weather.\nIn the winter, the temperature is high, it's about the temperature of the heat at the same temperature. The temperature is not very strong, but it's probably difficult to be very hot. The",
+          " let me to explain it in my own words.\n\nThe main thrust was the daily weather, in the middle. It was a relatively brief reminder of the warmer. That was a place for the seasonal weather. It's a warm, warm, cold weather. The room was a little of a lot of warmth. It's the main part of the temperature and temperature. It's not really a warm air. The temperature in the atmosphere is high and the room has less air"
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.08333333333333333,
+          0.07291666666666667,
+          0.10416666666666667,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.53125,
+          0.4479166666666667,
+          0.5208333333333334,
+          0.5833333333333334,
+          0.5208333333333334
+        ],
+        "distinct2": [
+          0.8210526315789474,
+          0.7263157894736842,
+          0.8421052631578947,
+          0.9052631578947369,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.62,
+          2.53,
+          2.5,
+          2.6,
+          2.62
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " be able to do this, and we were hoping, we thought, okay, so we're looking at the 160-190-degree temperature for the entire range. Yeah, you are saying, even if the temperature was slightly off, you have to do in the warm, and then.\n\nYeah, I think the data is getting a little clear.\n\nNo, because it's not in a temperature which has no, but that is the",
+          " go on.\n\nThe group that had done the same thing with each of them and the average summer warm days has 55,000, 1,000, 1,000, 1,000, 0, 1,000, 1, 1,000.\n\nThe average heat was of a temperature of 55,000 or above that in the next",
+          " adjust the temperatures of the temperature. We found the temperature difference over the weather was not as much \"temperature\" as it was in 1946. This was a temperature difference in the same winter, but because of the temperature of each temperature.\n\nIn December 23, the temperature was not very warm since the temperature of the temperature for the previous year was not lower at night. Temperature of the winter was the result of a summer and winter. This temperature",
+          " do a few more.\n\n\nQuestion: How many of the previous summer's winter was sunny?\nAnswer: The text is a riddle that begins with a false reference to the previous summer, which cannot be true to a question about the weather.\n\nPlease provide the actual response of the passage I, I am not sure if the weather was clear in the given format and the temperature of a given condition.\n\nI am a human, so I",
+          " use this as a test case.\n\nLet's look at the given data.\n\nThe temperature was temperature, which is a variable, for the first part of the dataset. Our algorithm's a linear model might not be a linear model. It could be a model where the temperature is a function of temperature. To understand the data, we can see that the temperature is a function of the average air temperature and the temperature of the air is the average temperature, and the"
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.22916666666666666,
+          0.125,
+          0.08333333333333333,
+          0.11458333333333333
+        ],
+        "distinct1": [
+          0.6458333333333334,
+          0.3645833333333333,
+          0.53125,
+          0.6145833333333334,
+          0.4895833333333333
+        ],
+        "distinct2": [
+          0.9368421052631579,
+          0.5157894736842106,
+          0.8526315789473684,
+          0.9052631578947369,
+          0.8210526315789474
+        ],
+        "halt_depth": [
+          2.49,
+          2.61,
+          2.55,
+          2.58,
+          2.56
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " make sure the summer will follow us so far.\nIf the weather is bad, we will postpone.\n* * *\nWe are looking closer to the weather.\nIf it's sunny weather, we might be getting in the middle.\nAs we are looking closer to the weather, the weather gets worse each day.\nIf we are trying to catch up, when is it going out in the middle?\n* * *\nIf the temperature is 3",
+          " go driving by car.\n\n\n\n* 20:00: You enter a city that's not much different to other cities, but from that moment on the story begins by following various routes.\n\n\n\n* **\n\n**The second character, ** **C** **(0 \u2264** ***[ 0 ,1]***) and the following **(** **1) 1**0 8** 5 _ ( ** 4 **0 ",
+          " find out how many sheep were good in the sky. For a moment, we had one, then we have to add two more, so to make sure we understand the problem. Then we have to say that 10 children came to join our friend, and the passage is about counting the possibility that there was a small number of animals to be added. The key part is the first sentence, and the second part is about a different subject. To give a clear understanding of",
+          " spend the summer, and the night was a little cold because of its altitude, so our summer was a very mixed one, right? Our first day...\n\nThe first thing I noticed about the weather is that it's hard. The first night, but it's not that warm, so I can still remember about a few hours. The first few days, but it's very short. After all, the first morning, the second day...\n\nThe first part is",
+          " go for a hike. But now the morning is cloudy and we are staying home right.\n\nSo the temperature is 10 \u00b0C now, no temperatures at all. We have to take into account the temperature will change. We can only know the temperature of hot days but not necessarily, so we can decide to start at any temperature within a week.\n\nThe temperature change can be estimated as follows: the cooling rate is 0 temperature, but the temperature will"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.08333333333333333,
+          0.0625,
+          0.08333333333333333,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.5104166666666666,
+          0.5833333333333334,
+          0.6875,
+          0.5625,
+          0.6354166666666666
+        ],
+        "distinct2": [
+          0.7473684210526316,
+          0.9263157894736842,
+          0.9368421052631579,
+          0.8526315789473684,
+          0.9157894736842105
+        ],
+        "halt_depth": [
+          2.44,
+          2.72,
+          2.59,
+          2.54,
+          2.58
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " play a game with a friend from our hometown.\n\nNow I am sitting in an $800-story building, and I can go up with the elevator, but it's hard to walk down because my leg was injured.\n\nA friend was waiting for me at the 999th floor of the building. His goal is to reach the 999th floor in at most 10 seconds.\n\nHe is currently on the first",
+          " play the first part. The weather was 70 degrees, almost no wind. The course was not yet available online, but we got lucky. The course was so simple that it wasn't the best choice. The course had some nice par 5s and was short enough. The practice greens were really good, and there was some green.\n\nOur golf ball was really small, a 60-golf ball, and the first time we got up to",
+          " leave the island immediately since we had the water and the sun. I have to make one and more things when we get back to the island, I have to make a note on what we should do after the evacuation. I have to let the boys know what we should come up with plan for, and the way we are trying to get the island to go down, as a part of our normal life. The next part is a brief and brief description. We have to prepare",
+          " go outside. \n\nThe first part is a problem about probability. The second part is just general knowledge, but I'll make it as a question at the end. The weather is probably something of the sort.\n\n\nFor\nInput & Output.\n\n\nInput is going on your own computer. We are using it to get the current weather and current time. We are going to use it to get the data and a time.\n\nWe can see that the weather",
+          " relax and have lunch on the boat. The second evening, we were back on the second weekend of August, the weather was fine and we were all very tired from the summer heat. However, on that day, the wind was very strong, a bit too much. It was a hot day. It was a bit too much.\n\nBut in the morning, the weather was clear, so we decided to relax. The weather was a bit too much in the morning,"
+        ],
+        "top_share": [
+          0.0625,
+          0.0625,
+          0.08333333333333333,
+          0.08333333333333333,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.6458333333333334,
+          0.6458333333333334,
+          0.5833333333333334,
+          0.6041666666666666,
+          0.4791666666666667
+        ],
+        "distinct2": [
+          0.8842105263157894,
+          0.8947368421052632,
+          0.8736842105263158,
+          0.8842105263157894,
+          0.7684210526315789
+        ],
+        "halt_depth": [
+          2.53,
+          2.66,
+          2.55,
+          2.47,
+          2.51
+        ]
+      }
+    },
+    "The treatment for a bacterial infection usually involves": {
+      "0.0": {
+        "texts": [
+          " medications for various conditions which may be done for example as indicated by the following treatment if there comes to be a treatment for patients with the infectious conditions , such as the treatment, if patients were subjected to either treatment, in addition, these results are provided using a drug like insulin, for various, but not a medication, but in the context. In patients, there is not sufficient use of this medication to improve the medical situation. To better manage these practices, the medication is recommended",
+          " several different treatments. An alternative treatment for diseases (such as a specific medical treatment) involves a treatment for various problems, including a variety of treatments, often involving three different treatments, including several different treatments, and a variety of different treatments.\n\n1. Treatment of a medical treatment is a treatment that is usually done in clinical, possibly or medical or medical procedures with medical conditions such as certain medications.\n2. Treatment will be conducted in two different treatments, which makes the treatment",
+          " a particular treatment. It is also recommended to follow with treatment. It involves, by taking into different medications, and not always helps with with these problems. It then mentions, there is an effectiveness of a specific medication. The treatment is based on the therapeutic process, but it is not a treatment. It is often recommended for a non-resistant diagnosis of a certain medical problem, such as a medical diagnosis. It is recommended to ensure that the treatment is not necessary in a few",
+          " a method method. For a specific combination of therapy, one can use a specific combination, including a few other different treatment methods. The therapy is recommended for cases, but the method only has a few treatments. In many cases, it is best to use a treatment, but the treatment is also a more advanced. The treatment for different treatments, such as the treatment, is a treatment that has found a drug. It contains a certain treatment, for the most important purpose, as",
+          " specific treatments for the treatment of a particular problem. The patient may be concerned about the treatment and treatments for the different treatments with the treatment of the specific medical conditions and the possibility of having a treatment for the same treatment. This may be a therapy that has three different treatments which may also include medicine, surgical and surgical procedures, and is prescribed with the treatment of medical problems of the disease. The treatment will be to treat the patients without any symptoms, but other conditions are often attributed"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.0625,
+          0.07291666666666667,
+          0.10416666666666667,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.6041666666666666,
+          0.5520833333333334,
+          0.5833333333333334,
+          0.4895833333333333,
+          0.5416666666666666
+        ],
+        "distinct2": [
+          0.968421052631579,
+          0.8210526315789474,
+          0.8736842105263158,
+          0.8736842105263158,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.47,
+          2.48,
+          2.47,
+          2.64,
+          2.48
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " antibiotics that only work with low-risk patients. It is recommended that the treatment of those with an infection should be more effective. The treatment will be recommended, and the treatment should be given in clinical settings.\n\nThe treatment should be a treatment for the bacterial and bacterial disease that has been evaluated to determine if the treatment is a treatment.\n\nThe treatment should be done during the day.\n\nFirst, the patient should take the treatment. The patient should take the",
+          " taking a medication that works by using an effective treatment, where the process involves using a particular treatment to treat individuals.\nOne common thing that doctors, experts, are likely to treat the medical procedure, which will not affect the medical condition. Some patients who have been diagnosed with the medical procedures may be able to treat and treat the patient by using a treatment to treat it. Furthermore, such as medication, for a particular disease, such as the treatment.\nThis is one of",
+          " antibiotics, while a particular treatment (like a certain treatment) is a targeted therapy. In the case of the patient, a specific treatment (such as an antibiotic) could be recommended for patients who are using (if needed). However, the treatment for the clinical-related condition, such as the surgery and the intervention of various forms of the treatment can be used to treat and improve the most relevant treatment of patients using it. By the end, treatment can reduce pain and suffering with",
+          " a specific treatment that reduces the bacterial-like structure by a specific technique. In this specific treatment, the effectiveness of the treatment is determined by the treatment's ability. For this purpose, it is advisable to use a technique that can be adjusted for your condition, but is more common and commonly used for patients with a specialized treatment. Based on the treatment, the effectiveness of the treatment will be considered as a function of how those problems in the context of the treatment, with any specific",
+          " a certain procedure, particularly as it is more likely to get the medication for the body of the patient to fight. According to the experts, the treatment has been found for more severe diseases but has also been widely found in these cases. There are several possible conditions related to the treatment, including the treatment of some of their treatments. Some treatment methods have been used in some cases where the treatment is a cure for multiple diseases. Some doctors may give more of their patients treatment, but"
+        ],
+        "top_share": [
+          0.09375,
+          0.07291666666666667,
+          0.09375,
+          0.09375,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.5104166666666666,
+          0.6041666666666666,
+          0.625,
+          0.5729166666666666,
+          0.5729166666666666
+        ],
+        "distinct2": [
+          0.7894736842105263,
+          0.8631578947368421,
+          0.9578947368421052,
+          0.8631578947368421,
+          0.9263157894736842
+        ],
+        "halt_depth": [
+          2.49,
+          2.49,
+          2.45,
+          2.53,
+          2.46
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " antibiotics. Which is correct?\n\nA:\n\nAntib   antibiotics  only\n\nB:\n\nC:\n\nD:\n\nAnswer: D: Antibiotics and the body of water of the given area.\n\n\n\nExplanation:\nA bacterial treatment is not a treatment for a group. The group is of a particular type, the individual type, that which has the ability to be able and provide a better outcome. In the field of medical microbiology, the",
+          " the use of ______\n1.  An antibiotic is usually a treatment of a specific bacterium. \n\n## Math\n\n**Question:** Use a graphing function to express the amount of drug, 8, that remains, as a function of the time in hours. Solve the equation if a patient's medical history is at a certain amount. In the given equation, 8, is a function of the time (20 seconds) that passes in hours t. If ",
+          " the use of antibiotics, but it can be challenging to treat. When the bacteria of a particular infection are not easily treated and are resistant to the drug, it can be hard to overcome. The presence of antibiotic resistance in bacterial disease is also a big issue to a lot of people, especially those looking for assistance from health, such as doctors, who are more likely to use inappropriately, to do. It is a well-developed medical intervention, and the treatment is often",
+          " the use of antibiotics, especially if the infection has progressed to the point of the initial response being inadequate. If the treatment has no effect, then doctors usually proceed to check whether the disease is caused by the antibiotic or whether there is any medical treatment for the patient\u2019s health. This process is called in vivo screening with a medical method. It is a common treatment for bacterial disease that can be found in many medical settings.\"\n\nAn article on the clinical impact of antibiotic,",
+          " antibiotics for at least 2 years.\n\nThe presence of a combination of an infection at a time can be considered to be an ideal treatment for many illnesses. It can also help prevent a few more problems.\n\nThere is no treatment for the disease.\n\nThe treatment is sometimes difficult to treat. It depends on the treatment and treatment of the majority of the symptoms of this disease. It is recommended to have an infection at the start and end-of the first"
+        ],
+        "top_share": [
+          0.14583333333333334,
+          0.07291666666666667,
+          0.07291666666666667,
+          0.09375,
+          0.0625
+        ],
+        "distinct1": [
+          0.5520833333333334,
+          0.5833333333333334,
+          0.6666666666666666,
+          0.6875,
+          0.5520833333333334
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.9157894736842105,
+          0.9789473684210527,
+          0.9894736842105263,
+          0.8736842105263158
+        ],
+        "halt_depth": [
+          2.66,
+          2.71,
+          2.64,
+          2.42,
+          2.6
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " a prolonged course\n\nI feel the right answer is option and I am not sure if option is a better option. The correct phrase is A, although I can't explain why.\n\nOption B is a more general statement and it is also a more useful statement in terms of the treatment of certain bacterial infections (such as the one in option). It is necessary to understand the underlying message of the correct option, which is a treatment for a bacterial infection or rather a particular",
+          " a specific type of medication and a specific type of medication regimen.\nB is a bacterial. A is not a bacterial. D is a medication that is not a medication. A is an antibiotic, not a medication. B is an antibiotic, but not always the first. C, D, and A are the other form of medication. A is also a medication that is used in a different way.\nB is a form of medication, but because of the way it's",
+          " antibiotics, but it depends on whether it has become resistant. If a strain develops a mechanism of resistance (like an infection) then other antibiotics might need to be used for proper treatment.\nIf a treatment works, it will likely have reduced the total number of infection and the spread of the disease is controlled based on the health care system.\nHow to Treat Bacterial Infections in a Home?\nTreatment for patients with bacterial infections at home includes the use of a combination of treatment and",
+          " antibiotics, but what is more important is identifying and evaluating the bacteria's resistance. The bacteria should be identified and then the resistance factor to antibiotic should be assessed. The following are three procedures for identifying and evaluating bacterial infections.\nThe most common treatment for bacterial infections is antibiotics. This is not a magic bullet and should be a part of the patient's overall treatment plan. The goal of the treatment is to prevent the disease from being transmitted to other patients. The most common types of",
+          " antibiotics.\n\n- **C: The treatment for a bacterial infection usually involves antibiotics, and it can sometimes lead to antibiotic resistance. However, the treatment for a viral infection does not involve the specific action of antibodies. Instead, it often relies on whether the treatment has more or less treatment options.**\n- **D: The treatment for a bacterial infection usually involves antibiotics, which can also reduce the severity in more patients. However, the treatment can also help to improve the resistance"
+        ],
+        "top_share": [
+          0.07291666666666667,
+          0.10416666666666667,
+          0.052083333333333336,
+          0.0625,
+          0.0625
+        ],
+        "distinct1": [
+          0.6354166666666666,
+          0.375,
+          0.71875,
+          0.5729166666666666,
+          0.5625
+        ],
+        "distinct2": [
+          0.9473684210526315,
+          0.6631578947368421,
+          0.9894736842105263,
+          0.8947368421052632,
+          0.7894736842105263
+        ],
+        "halt_depth": [
+          2.43,
+          2.73,
+          2.6,
+          2.75,
+          2.71
+        ]
+      }
+    },
+    "Common symptoms of type 2 diabetes include": {
+      "0.0": {
+        "texts": [
+          " a type of medical procedure.\nHmm that makes one of your symptoms feel a bit complicated. It starts with a few medical questions and then there's a couple of conditions that can be treated. The term is likely a medical type of medical diagnosis that involves patients\n\nQuestion: What is the concept of a medical diagnosis in a few years? Answer: It is possible that the diagnosis of a medical problem is not completely clear. It also mentions the development of a diagnosis of",
+          ":\n- It is classified with a 20-month-old and has a 20-year-old.\n- The test is a specific treatment, but it's not fully complete and has the use of 100-500. It is a non-frequie in three years, but it is not clear. The test has some specific uses that are based on their ability and the ability of the test. The test has also",
+          " a few specific symptoms with the following symptoms. One aspect of the passage is the presence of common problems. The presence of different medications may be associated with some form of treatment that can be associated with changes related to the conditions of the people with mental and cognitive disorders. This method might be the treatment for patients with a variety of conditions, such as mild, chronic symptoms, and other complications, including infections that are common in patients who are suffering with their condition.\n\nIn other",
+          " a specific condition. This type requires three different areas of study.\n\nThe two different types of symptoms can be related to certain conditions, such as an acute illness, and can be diagnosed with two different types of symptoms. These conditions depend upon the three types of symptoms, two types of symptoms, and also include two types of symptoms. The two types of symptoms are identified by a specific type of diagnosis, and the two types of symptoms include two types of conditions. The two",
+          " a range of medical conditions and may be characterized by a specific treatment. The following is a specific treatment that allows for the treatment of severe conditions, such as a sudden illness, as opposed to the previous cases. It involves several different types of treatment procedures to treat patients with\n\nSome medical cases, such as diabetes, include a specific treatment for several different conditions, such as a specific treatment, but there is also a specific treatment for patients with a more specific medical question. Additionally"
+        ],
+        "top_share": [
+          0.09375,
+          0.08333333333333333,
+          0.0625,
+          0.10416666666666667,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.5729166666666666,
+          0.5208333333333334,
+          0.6145833333333334,
+          0.4479166666666667,
+          0.5104166666666666
+        ],
+        "distinct2": [
+          0.8947368421052632,
+          0.8210526315789474,
+          0.9578947368421052,
+          0.7052631578947368,
+          0.8210526315789474
+        ],
+        "halt_depth": [
+          2.63,
+          2.79,
+          2.52,
+          2.64,
+          2.55
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " the symptoms of type 3 (diabetes) and a person's condition are not typically seen with the symptoms of type 2 diabetes, but there is a specific medical diagnosis, but it can help in the symptoms of type 2 diabetes. The medical condition appears to be related to symptoms of type 2 diabetes and symptoms of type 2 diabetes, but in this type of disease, with those symptoms. As an example, it is clear that in the case of a high blood",
+          " several different conditions and are not immediately-formed. The onset of type 2 diabetes is not determined by the presence of symptoms or any particular type. Although the development of an unusual type of disease can be considered very rare, the severity of diabetes can be more prominent. People who have become more familiar with the fact that the onset of type 2 diabetes is much higher in people with conditions such as the symptoms of type 2 diabetes. A study by the researchers showed that the",
+          " a variety of disease, including a variety of health-com\n\nThe disease primarily causes a specific disease, where one person is the most important at the patient's, the most common is called the best-specific type of type of healthcare that includes a variety of different types of medical.\n\nThe condition is common as the first part is not always taken for instance, but a significant number of patients who have a certain disease, are the most important to the first two years",
+          " several different problems that affect various different symptoms. This is an example of how to treat a type of disease.\nIn the end, it helps ensure every other disease has not a problem.\nIf this is a possible treatment, it can be a helpful treatment.\nThe next part of the passage is not a comprehensive treatment for people who have some type of diagnosis.\nThe patients who have been treating and have been treating their symptoms will probably get a diagnosis.\nThe next",
+          " increased hunger. So, when insulin reduces it, it's less likely.\n\nWhen people are on insulin therapy, it is easier for them to keep things under control. In the previous years, the doctor mentioned they're going into a treatment for four different years. Because of the conditions and a lack of understanding, the majority of the treatment in diabetes are affected by the number of people who are taking insulin and taking their medication to a few years.\n\nOne can find"
+        ],
+        "top_share": [
+          0.07291666666666667,
+          0.08333333333333333,
+          0.07291666666666667,
+          0.0625,
+          0.0625
+        ],
+        "distinct1": [
+          0.5104166666666666,
+          0.6041666666666666,
+          0.5833333333333334,
+          0.6041666666666666,
+          0.6354166666666666
+        ],
+        "distinct2": [
+          0.7473684210526316,
+          0.8631578947368421,
+          0.8631578947368421,
+          0.8526315789473684,
+          0.9368421052631579
+        ],
+        "halt_depth": [
+          2.52,
+          2.54,
+          2.72,
+          2.44,
+          2.66
+        ]
+      },
+      "0.5": {
+        "texts": [
+          ": \"C. frequent urination and increased symptoms of type 141 -10. The diagnosis of the symptoms can be difficult and with a patient-led treatment.\n\ntype 2 diabetes, but the symptoms are often difficult to control.\n\ndiabetes, which includes a variety of different medical conditions which can cause a lack of clear treatment and other disorders.\n\nSome patients may have problems with a certain procedure and treatment or treatment. They should be able to",
+          " the sudden syndrome of the body of the body.\n\nMost of these foods are in the first place, but there is another important treatment for a diabetes diagnosis.\n\ntype 2 diabetes is a chronic or more severe problem. For example, an additional medication has a single and multiple different forms, and many patients with diabetes are at risk of developing type 2 diabetes. Additionally, the results from these conditions are a significant risk of cardiovascular complications.\n\nhow much of",
+          " persistent tiredness, a constant feeling of symptoms after the diagnosis of its type. These include more or less diabetes, such as a new type of diabetes for the body to use. These medications can be able to prevent type 2 and type of conditions, such as the symptoms of the other type of diabetes, such as the risk of cardiovascular disease and the associated risk of diabetes.\nThese symptoms are more likely to cause a mild or mild, while the symptoms may affect the body of",
+          " a sudden increase in thirst, frequent symptoms like persistent and repeated. It is important to diagnose and treat type of illness such as cancer with a particular diagnosis or medical diagnosis, and it refers to the fact that certain cancers may be easily identified with the help of the symptoms and medical procedures, including blood and symptoms such as a severe problem with diabetes, but there are other conditions, including, of course diabetes in this section, it is not possible to determine whether a medical diagnosis or condition",
+          " the development of diabetes.\n\u2022 The treatment for type 2 diabetes is a combination of lifestyle and drugs.\nHealth and Disease\n\u2022 Type 2 diabetes is also known as non-inspace.\nA. Is there a more information about the treatment of the illness of type 2 diabetes?\n\u2022 The treatment of such an illness is mostly done through the consumption of diet and other medical conditions.\n\u2022 You can also use the treatment of the illness or diabetes type"
+        ],
+        "top_share": [
+          0.0625,
+          0.0625,
+          0.09375,
+          0.07291666666666667,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.6354166666666666,
+          0.625,
+          0.5208333333333334,
+          0.6354166666666666,
+          0.53125
+        ],
+        "distinct2": [
+          0.9263157894736842,
+          0.9052631578947369,
+          0.8526315789473684,
+          0.9578947368421052,
+          0.8
+        ],
+        "halt_depth": [
+          2.64,
+          2.52,
+          2.71,
+          2.62,
+          2.56
+        ]
+      },
+      "0.7": {
+        "texts": [
+          ":\n- Frequent outbreaks of infections (e.g. yeast infections)\n- Blurred symptoms\n- Excessive levels of thirst\n- Chronic symptoms and feeling unusually tired\n\nIf left untreated, you risk several long-term complications including heart attack, stroke, eye problem or kidney failure. If you exhibit any symptoms it is important to seek medical and surgical treatments soon to make sure that your treatment plan is done for several months (e.g. insulin injection), but this",
+          " symptoms of\n\n1\n\nExcessive include urination, excessive symptoms of type 2 diabetes include symptoms of\n\n2\n\nSome people notice that their symptoms appear to be\n\n3\n\nThe risk of having severe complications like heart disease and diabetes-related\n\n4\n\nBlood glucose levels are determined by testing of\n\n5\n\nPeople with diabetes are treated with different levels of\n\n6\n\nSome people with type 2 diabetes begin by following an\n\n7\n\nBut",
+          " frequent urination and increased likelihood of hypoglycemia. It may be necessary to take anti-diabetic medication such as the SGLT model of the drug (Tev-2-3, 2014). An important step of diabetes is not going without insulin or medications for more than 3 days. The person has a tendency to be diabetic or at risk of developing diabetes \u2013 although some medications are effective for many people, but for others it is not recommended to take,",
+          " increased thirst, frequent urination, and feelings of fatigue. It refers to the symptoms of the disorder, which is an objective description based on observable behavior. These symptoms are known as **autopsy signs** because it is characterized by the presence of these signs and symptoms.\n\nAnother type of evidence in the field of psychone and the following section is a clinical observation; this evidence is the first-hand observation of certain **autopsy** conditions. The first-hand observation is",
+          " a series of symptoms. One of the most common early symptoms is the feeling of fatigue and the majority of them feel the symptoms only after treatment. In more severe cases, individuals may experience frequent urination. People who are at risk for developing type 2 diabetes\n\nQuestion: What is the main danger of the symptoms of type 2 diabetes, which involves the body? Answer: The main danger is the high blood glucose levels which can affect body functions.\n\nQuestion: What"
+        ],
+        "top_share": [
+          0.0625,
+          0.14583333333333334,
+          0.041666666666666664,
+          0.0625,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.71875,
+          0.5625,
+          0.75,
+          0.6354166666666666,
+          0.625
+        ],
+        "distinct2": [
+          0.9263157894736842,
+          0.8315789473684211,
+          0.9789473684210527,
+          0.9473684210526315,
+          0.8736842105263158
+        ],
+        "halt_depth": [
+          2.83,
+          2.68,
+          2.63,
+          2.73,
+          2.66
+        ]
+      }
+    },
+    "Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat": {
+      "0.0": {
+        "texts": [
+          " medical conditions, particularly in children with various types of diseases, including diseases that involve the development of immune and immune responses, but it is also recommended to treat the infection of the same medical condition and also has some special medicine therapy. Some treatments for the effectiveness of the treatment of these problems are prescribed in a specific medical scenario, but not for several other diseases (e.g., patients with the medication that treat the disease). The treatment of these conditions is often prescribed through a medical",
+          " patients with conditions with the use of medication. Other drugs (such as medication) include 700+ medications, and other treatments with a variety of drugs. These drugs are often prescribed with medications, and the treatment of patients with patients with the following treatment includes medication. The alternative medication can be used for patients with certain medical or medical conditions, but there is only a few specific medical, but that can be used in patients with patients who have been unable to treat and diagnose",
+          " patients with severe problems. It has been used in patients with severe, but it has also been known for less severe issues for patients who have had a certain medical condition. It is recommended to treat patients with one of them, and if it does, it can be recommended to treat them.\n\nAs an AI, there's a research that recommends you to provide a patient with an active treatment for symptoms and symptoms. One of the most widely used treatments for many conditions, such",
+          " patients with chronic conditions, with an increase in several patients on a specific treatment treatment.\nA study shows that treatment for five different treatments (13-13-1-149 to 5-3-15-11-19-3-14-6-23-41-39-14-08-15-13-9-12-9-9-35-5-",
+          " a variety of conditions, such as conditions like infection, gastrointestinal disease and many patients with chronic conditions such as diabetes, and the process of treating patients with the current diagnosis, as well as other related issues like medication, treatment methods, medical and medical therapies, medical and medical, medical, medical, surgical and medical, and clinical trials, and medical treatment for patients with this disease. Additionally, if patients have a highly-accur medical condition, such as the specific treatment, medical,"
+        ],
+        "top_share": [
+          0.07291666666666667,
+          0.08333333333333333,
+          0.052083333333333336,
+          0.25,
+          0.16666666666666666
+        ],
+        "distinct1": [
+          0.6354166666666666,
+          0.59375,
+          0.625,
+          0.375,
+          0.46875
+        ],
+        "distinct2": [
+          0.9473684210526315,
+          0.8736842105263158,
+          0.9368421052631579,
+          0.6210526315789474,
+          0.8
+        ],
+        "halt_depth": [
+          2.6,
+          2.49,
+          2.51,
+          2.65,
+          2.72
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " pain and pain.\nThe effectiveness of a drug is based on its effectiveness and helps in promoting healing.\n11.1. 5\nThe purpose of promoting the use of medicine in treating severe conditions such as obesity is to allow doctors to treat, not to treat the condition, in the current way, such as those medications and devices that can provide a solution to the problems of the patients. In addition, a drug named Baxie has also been used for many",
+          " pain. It has a lot of specific, and some other medical treatment, but it has not been shown that for a specific reason, it has been shown that some medications can be used for any treatment which can be considered for other diseases, such as the treatment of patients with a very mild condition like the liver. The most effective treatment is the treatment for the condition itself, but the treatment has been found to be beneficial for several more years. The other treatment has many years of",
+          " patients with acute and acute severe chronic disease. A study shows that the efficacy of 150003 mg of 50-400 mg of 100003 mg of 50003 mg of 50001 mg of 50003 mg of 50000000 and 350000500000000000",
+          " pain. This medication provides a range of treatments for chronic and medical conditions such as inflammation, such as those of rheumatoid patients. It also has a similar drug, naprox, and the two medications are generally used in a variety of different conditions, but both of these treatments were not the most common in some cases. For example, it has been known to be effective and the most common treatment for several diseases, which is known\nWhen you have inflammation, you should take a treatment",
+          " inflammation, and is commonly used in patients and patients with arthritis, but there is no specific treatment for arthritis. It does not work for a specific disease (like those for chronic diseases like diabetes or other diseases where a specific drug is being used for the treatment of patients.\n\nQuestion: The medication is a drug for a non-inflammatory drug and helps patients\n\nThe drug has several side effects with\n\nThe treatment can be a combination of a medication, and another"
+        ],
+        "top_share": [
+          0.052083333333333336,
+          0.07291666666666667,
+          0.4270833333333333,
+          0.07291666666666667,
+          0.0625
+        ],
+        "distinct1": [
+          0.625,
+          0.5416666666666666,
+          0.23958333333333334,
+          0.6770833333333334,
+          0.5833333333333334
+        ],
+        "distinct2": [
+          0.9368421052631579,
+          0.8947368421052632,
+          0.37894736842105264,
+          0.9473684210526315,
+          0.9368421052631579
+        ],
+        "halt_depth": [
+          2.54,
+          2.52,
+          2.64,
+          2.49,
+          2.68
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " pain, and the treatment of an individual patient who has used this medication is likely to be a treatment intervention called for. This treatment effect is known as \"intervention\" or \"treating...\" etc., and is usually performed with a combination of the treatment and the treatment of any side by using the patient's own medicine, but the combination with other drugs can also be an intervention (e.g., treatment of an overdose of a medication, and of a medication such as the",
+          " patients with diabetes, cancer, and other diseases related to the management of acute and chronic pain. It has a lower concentration, with a 0.5 to 2.5% concentration of ibuprofen, as well as a lower concentration of other compounds used. The drugs have to be made in a controlled treatment setting.\n\nThe same drug is used in a treatment with the same treatment group at the same time. The doctor and other patients have access to a medication called C",
+          " diseases like arthritis and rheumat. This drug has a specific action on the ability of the immune system and inflammation to affect several clinical conditions in patients with a limited and often severe clinical benefit.\n\nThe use of a drug that provides a similar effect to a certain medication, and the possibility of using a combination of medical care and drugs. Additionally, the effects of this drug do not require a high number of drugs to relieve the symptoms. The drug helps in the process of treating various",
+          " patients with both their medical and clinical problems.\nFor many people, taking medication, but also, when their medical problem is no more, it would be wise to follow a few steps so, without needing to have a medicine intake.\n\nFirst, I need to understand what each patient needs. When a medical problem occurs, whether they experience a condition called chronic or potentially serious (possibly called acute) disease. Patients with medical problems should also undergo a regular follow-therapy treatment",
+          " these conditions.\n\nThe treatment of acute-related illness that involves fever or other conditions, such as a viral fever with a particular medication.\n\nThe treatment of chronic-related disorders such as osteoarthritis and other rheumatic diseases includes.\n\nThere are several treatments for the treatment of chronic inflammation in the case of a chronic condition, such as a long-term infection.\n\nPatients with chronic conditions that are prone to acute or are very rare to patients with chronic conditions"
+        ],
+        "top_share": [
+          0.0625,
+          0.0625,
+          0.07291666666666667,
+          0.07291666666666667,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.6041666666666666,
+          0.5625,
+          0.6458333333333334,
+          0.71875,
+          0.53125
+        ],
+        "distinct2": [
+          0.9052631578947369,
+          0.9157894736842105,
+          1.0,
+          0.968421052631579,
+          0.8105263157894737
+        ],
+        "halt_depth": [
+          2.49,
+          2.63,
+          2.5,
+          2.51,
+          2.59
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " symptoms of patients with multiple sclerosis. It does not treat the underlying disease but has been effective at several doses. It does not have any effect on preventing any neurological symptoms, but it can be tested for an acute exacerbation. If someone is suffering from symptoms at a low dose, the first-line treatment is usually to use it as an alternative to pain relie for the first time or to reduce their use by using a combination therapy and over the counter-corticosteroids. For",
+          " medical conditions such as pain, fever, and inflammation. It also has the potential to have multiple medical uses such as preventing heart attacks or promoting the effects of chemotherapy, especially in cancer patients. \n\nTo obtain a more accurate measurement of the bioavailability of a drug, a second-party treatment and treatment. The drug can be taken in a single dose form and then it is administered in the system to improve the bioavailability of drug in patients suffering with other conditions and diseases.",
+          " various conditions, including fever, and it has a broad effect on the effectiveness of medical treatments. It is often recommended for its effectiveness. 4. As you see here, 5mg of acetaminophen (Ac.). This medication is used to reduce the spread of a virus and increase the effectiveness of the injection. By reducing the spread of the virus that has infected with a few other medications with anti-infective drugs, 4. This drug is not actually the same as ",
+          " pain, fever, severe problems. It is also recommended by doctors who care for patients with COVID-19 because the virus can cause fever. While some people have to take a higher-Doses such as 600 mg up to 1000 mg/day for several days to control their fever.\nIs it recommended to take multiple-dose treatment with ibuprofen, or just one dose, or 0 dose, but in other circumstances?\nIt appears",
+          " various conditions and is used to reduce inflammation. The anti-inflammatory effects of ibuprophen come from their ability to bind to two types of cyclostin enzymes (C- and L-A-C), which have a significant effect on our liver and are required for the synthesis of certain forms of lipoic cells.\n\nIn addition to the anti-anti-inflammatory effects of ibuprofen, it also has a possible anti-mutation effect. In studies, ibup"
+        ],
+        "top_share": [
+          0.041666666666666664,
+          0.052083333333333336,
+          0.07291666666666667,
+          0.0625,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.7395833333333334,
+          0.65625,
+          0.65625,
+          0.6979166666666666,
+          0.6979166666666666
+        ],
+        "distinct2": [
+          0.9578947368421052,
+          0.9578947368421052,
+          0.9157894736842105,
+          0.9263157894736842,
+          0.9368421052631579
+        ],
+        "halt_depth": [
+          2.5,
+          2.64,
+          2.64,
+          2.57,
+          2.64
+        ]
+      }
+    },
+    "def fibonacci(n):": {
+      "0.0": {
+        "texts": [
+          "\n    # Check if a `n` and then check if the `n` is a Fibonacci function.\n    n = n\n    # Check if n is a Fibonacci function.\n    if n == 0:\n        return n\n    if n == 38:\n        return n + 1\n    # Check if the number of the number is a prime.\n    if n:\n        return n * 2 + n * 1\n    if n == 1:",
+          "\n    \"\"\"\n    _2555: \"fibonacci(n)\")\n\n    \"n =\", ...\n    # ...\n    _2555: \"1\"\n\n    \"n =\",\n    \"n =\",\n    \"1\"\n    \"2555: \" +\n    \"n =\",\n    \"2555: \" +\n    \"2555: \" +\n    \"2555\",\n    \"n =\",\n    \"25",
+          "\n\nn = int(input())\n\nfor line in input:\n    for line in sequence:\n        if (n // n):\n            if n % 2 == 0 or n == 2:\n                if n % 2 == 0:\n                    print(num_of_fibonacci(n))\n\n    # Try using the code to print an index in a list.\n\nif is_n_fibonacci(n):\n    print(f's",
+          "\n\t# Take a function with a parameter `n` and then a function `n` is the sum of the `n` values. The function is meant to calculate the sum of the following function, `n`, and `n`. If `n` is a parameter, it is a function that calculates the sum of `n` and `n`, `n`, and `n`, and then calculates the function `n` using the `numpy` function. The",
+          "\n    if n < 1e9:\n        return f\"{n: 1e9} and a new function \"print_primes_prime_primes\"\n    elif n % 10 == 0:\n        return \"Please provide a Python function named `n`, the function `print_primes` should be able to handle input and print.\n    n is a list of primes, and the function is not defined within the function. It looks"
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.19791666666666666,
+          0.0625,
+          0.125,
+          0.052083333333333336
+        ],
+        "distinct1": [
+          0.3541666666666667,
+          0.20833333333333334,
+          0.5520833333333334,
+          0.34375,
+          0.5833333333333334
+        ],
+        "distinct2": [
+          0.5684210526315789,
+          0.3368421052631579,
+          0.8210526315789474,
+          0.6,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.64,
+          2.75,
+          2.51,
+          2.62,
+          2.72
+        ]
+      },
+      "0.25": {
+        "texts": [
+          "\n    if n <= 1:\n        return n\n    if n % 2 == 0:\n        return n % 4 == 0\n    elif n % 10000 == 0 or n % 10000:\n        return n % 1000000000\n    return n % 2 == 0 or n % 3 == 0\nfibonacci(n) - 2, and a",
+          "\n    \n    # Define a function to generate the Fibonacci function using the `lisa` function.\n    # function name: \"fibonacci\"\n    # function name: \"fibonacci\" and its corresponding function with a name, a function called \"fibonacci\" and a function called \"fibonacci\"\n    \n    function = {\"name\": \"fibonacci\", \"l\"\n\n\"In function (for the `lisa` function), it is not a valid function. To create",
+          "\n\n    if n <= 1:\n        return \"fibonacci(n) <= 10^28\"\n\n    if n is 32:\n        return \"fibonacci(n) <= 10^38\"\n\n    # ...\n\nA function called `calculate_the_even_fibonacci_mod_prime()` that uses a dictionary to store the factor of the `n` in a list for all integers in a list `n` that have",
+          "\n<if block_of_num 2:\n# Your code here (with a helper comment)\ndef f1(n):\ndef f1(n):\nfor n in range(6):\nprint(n, n=n_num)\nprint(n)\nprint(9)\n<if block_of_num:\nn is the given to create the n-th element of a `while-n` function.",
+          "\n\u00a0def helper_helper(n): # Define a function that generates a list of all primes and generates unique primes using a function named ``n`` and it's a function called ``n``\n\ndef helper_helper(n):\n\u00a0def generate_numbers(n):\n## Define a function that generates a list of primes, `n` and its unique factor and list of primes, using a function which returns all primes that can"
+        ],
+        "top_share": [
+          0.22916666666666666,
+          0.125,
+          0.052083333333333336,
+          0.10416666666666667,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.28125,
+          0.4583333333333333,
+          0.5416666666666666,
+          0.5208333333333334,
+          0.4166666666666667
+        ],
+        "distinct2": [
+          0.43157894736842106,
+          0.7157894736842105,
+          0.7473684210526316,
+          0.7263157894736842,
+          0.6631578947368421
+        ],
+        "halt_depth": [
+          2.7,
+          2.85,
+          2.67,
+          2.54,
+          2.81
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "\n    if n <= 1:\n        return n\n    else:\n        if memo == n:\n            return memo\n        return fibonacci(n)\n\n    result = fibonacci(n, 0)\n    \n    for i in range(len(result)):\n        for j in range(i, len(result)):\n            result += i\n        result = list(result)\n        result = list(result)\n        result.sort()\n\nfibonacci(10)\n\n#",
+          "\n    if n <= 0 or typeof n * *n * 0:\n        return -0\n    if n == 1 or n == 0:\n        return n\n    if n == 2:\n        return -1\n    if n == 2:\n        return -1\n\n    # Check if n is a 1e3,277-bit integer\n    if num == 2**(277-1):\n        return -3\n\n    #",
+          "\n\n    if n <= 1:\n        return n\n    prev_prev = []\n    \n    if n % 2 == 1:\n        return n % 2\n    else:\n        if n % 2 == 0:\n            pass\n        for i in range(1, n):\n            if n > 0:\n                n -= 1\n            print(\"Hello, World!\", end=\" \")\n            new_n = new_n + 2\n    \n    return n\n\n#",
+          "\n    if n <= 1:\n        return False\n    for i in range(2, n//2):\n        if n % i == 0:\n            return False\n    return False\n\ndef second_prime(n):\n    if is_prime(n):\n        return True\n    return False\n```\n\nPlease note that the provided code is just a snippet of code to give context and is a code snippet. The correct solution should not be this.\n\nPlease",
+          "\"\"\"Return the fibonacci function\"\"\"\nfrom fib import *\n\ndef fibonacci(*args, **kwargs):\"\"\"Return the Fibonacci function.\"\"\"\n\n\nimport fib\n\ndef f(n):\nfibonacci(n)\n\n\nThere's a syntax for the Fibonacci function `fibonacci` that uses a recursive call to create a function that generates the Fibonacci sequence.\n\nHere's a brief outline of the explanation for the function:"
+        ],
+        "top_share": [
+          0.09375,
+          0.08333333333333333,
+          0.09375,
+          0.07291666666666667,
+          0.125
+        ],
+        "distinct1": [
+          0.4375,
+          0.3541666666666667,
+          0.4791666666666667,
+          0.5625,
+          0.5
+        ],
+        "distinct2": [
+          0.7684210526315789,
+          0.6105263157894737,
+          0.7473684210526316,
+          0.8210526315789474,
+          0.8105263157894737
+        ],
+        "halt_depth": [
+          2.57,
+          2.74,
+          2.59,
+          2.59,
+          2.72
+        ]
+      },
+      "0.7": {
+        "texts": [
+          "\n    \"\"\"\n    Calculate the n-th Fibonacci number using the iterative method, but apply a transformation.\n    \n    The iterative approach involves finding the n-th Fibonacci number in a function called\n    'fibonacci_iterative(n)'. The 'fibonacci' function is then used as a function wrapper, applying\n    a transformation that ensures 'n' is non-negative before calling the 'fibonacci_iterative(n)' function,\n    and handles the case where",
+          "\n    return (n * l 15. The code reads in the first line of a function and prints out the second line of the function, like this:\nThe correct way to write this is:\n>>> print (n * n) # and not using\n\nQuestion: What is the function of the code that reads in a line of a function and prints out the \"2\" (the second line of the function)? Answer: The code is intended to print",
+          "\n    # Your code here\n\n# Example usage:\nprint(fibonacci(10))  # Should print 13\nprint(fibonacci(20))  # Should print 40\n\n\nNote:  In order to handle large inputs and to improve performance, you can use memoization or bottom-up dynamic programming approach.\n\nYour function should handle any input n, where n is any positive integer.\n\nCorrect Solution",
+          "\n    if n <= 1:\n        return 0\n    else:\n        return 1 + n\n\ndef multiply(a):\n    if n <= 1:\n        return 1 + n\n    \n    if not all(s == 'a'[:k] for s in a):\n        print(\"Invalid input.\")\n    else:\n        new_a = [1, 0, 0, 1]\n        for n in a:\n            if n == 1",
+          "\n    if n == 0:\n        return 0\n    elif n == 2:\n        return 0\n    if n == 3:\n        return 1\n    elif n == 4:\n        return 0\n    for i in range(0, 57):\n        if n == i:\n            return x[i]\n    for i in range(4, 57):\n        b, a = fib(i, n), fib(i+3"
+        ],
+        "top_share": [
+          0.052083333333333336,
+          0.07291666666666667,
+          0.11458333333333333,
+          0.09375,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.5625,
+          0.5416666666666666,
+          0.625,
+          0.4479166666666667,
+          0.3541666666666667
+        ],
+        "distinct2": [
+          0.8210526315789474,
+          0.8,
+          0.8421052631578947,
+          0.7052631578947368,
+          0.6
+        ],
+        "halt_depth": [
+          2.79,
+          2.69,
+          2.53,
+          2.67,
+          2.62
+        ]
+      }
+    },
+    "To solve the quadratic equation x^2 - 5x + 6 = 0, we": {
+      "0.0": {
+        "texts": [
+          " 0.\n\nFirst, I need to understand what each equation is saying. The equations are written in the form x^2 - 5x + a = 0, where x is the original equation. Then the equation is for the quadratic equation. That means, the equation is x^2 - 5x + 6 = 0, and then the system is written in the form x^2 + 4x + 2 = 0.",
+          " -15/4.\n\nFirst, I need to understand what each step is step by step. The problem is about the polynomial x^2 + 2x + 4x + 5x and then a method. We can divide the equation into a quadratic equation by the polynomial x^2. We can also see the fact that the polynomial x^2 + x + 2x + 4x = 7x, and then the equation is",
+          " -2x^2 + 4x + 6\n\nFirst, I need to understand what each line is saying. The equation has polynomial equation and the equation of the real function of x.\n\nThe polynomial has a complex number of variables and the same equation for the real variable x.\n\nThe polynomial of the variable x^2 is the second derivative of the equation of the quadratic that is equal to the second line. To find the value of x,",
+          " 12x. Hmm, first, I need to understand what each equation is saying. The equation is a quadratic equation involving the quadratic equation, x\u00b2 - 5x + 6 = 12x + 6 = 12x + 6 = 12x. Hmm, first, I need to understand what each equation is asking. Let me read through the original content again.\n\nThe equation is x\u00b2 + 5x +",
+          " 0.\n\nThe quadratic equation can be solved using the binomial formula: 16 = x^2 +16 +36+4+15=x^3.\n\nThe polynomial can be solved using the binomial formula for the quadratic equation.\n\nThe polynomial can be solved using the quadratic formula, and the expression x^2 +16 = 4x^4.\n\nThe polynomial can be solved using the polynomial formula"
+        ],
+        "top_share": [
+          0.09375,
+          0.0625,
+          0.10416666666666667,
+          0.09375,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.4479166666666667,
+          0.46875,
+          0.4895833333333333,
+          0.40625,
+          0.3541666666666667
+        ],
+        "distinct2": [
+          0.7157894736842105,
+          0.7578947368421053,
+          0.8105263157894737,
+          0.5789473684210527,
+          0.6
+        ],
+        "halt_depth": [
+          2.7,
+          2.76,
+          2.72,
+          2.63,
+          2.74
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " 0 by dividing both sides by 5x and subtracting the root of (x - 5x). \n\nSolve the equation x\u00b2 - 5x + 6 = 0.\n\nLet me try to break down the expression x\u00b2 - 5x + 6. \n\nLet's set up the expression x\u00b2 - 5x + 6 = 0. \n\nSo, the equation is x^3 + xy + ",
+          " 0. Then find y. First, I need to understand what each equation is.\n\nFor the quadratic x\u00b2 - 5x + 6, it seems like a set of equations related to the quadratic equation. The given equation is:\n\nx\u00b2 - 5x + 6 = 0\n\nThis is not a valid equation. The equation y = 9x is a linear function of x, and then the quadratic equation is a function",
+          " -3x + 5x^2 + x^4 by the difference of the numerator and the line containing the number 4.43.\n\nTo find the value of x, the square root root of the value of 52.73. We can use the power of 12 raised by the addition of the number of the power of the 53.73. The power of 54 is the difference of the difference obtained",
+          " 0.\n\nThe quadratic polynomial has a vertex, so it has a minimum value in the real part of the system. The quadratic is the function of the parabola.\n\nSince the quadratic has a 2nd order variable, then the quadratic has a real function and a function of the quadratic is the function of the quadratic equation. The quadratic has a function of the quadratic, and the coefficient is the function of the quadratic.\n\nThe quadratic is a",
+          " 0.\n\nFirst, factor the polynomial on the left-hand side:\nx^2 - 5x + 6 = 0\n\nSimplify the expression on the left\nx^2 -5x+6 = 0\nx(x+6+5x)/x = 0\nx^2 -2x-6 = 0\nx(x+6+5x) = 0\nx^2"
+        ],
+        "top_share": [
+          0.125,
+          0.07291666666666667,
+          0.14583333333333334,
+          0.13541666666666666,
+          0.14583333333333334
+        ],
+        "distinct1": [
+          0.4479166666666667,
+          0.4895833333333333,
+          0.3958333333333333,
+          0.375,
+          0.3229166666666667
+        ],
+        "distinct2": [
+          0.6421052631578947,
+          0.8,
+          0.7368421052631579,
+          0.6421052631578947,
+          0.5578947368421052
+        ],
+        "halt_depth": [
+          2.65,
+          2.71,
+          2.82,
+          2.8,
+          2.57
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " 0.\n\nSolving Quadratic Equation (1)\nEquine-the solution obtained in the given equation\n1.275 - 5x + 6 = 0 \nUsing the equation x^2 - 5x + 6 = 0, we have: 1x + 0.2 + 6x = \nEquine-the final solution is \n(x - 0.2) (",
+          " 0.\n[6\n\nThe given equation is quadratic equation and the solution for x is x = x1. Then, return both solutions.\n\nThe quadratic equation is of the form ax^2 +  bx\u00b2 + 100x + 100x, using the quadratic formula to find the quadratic equation.\n\nSolve the quadratic expression y^2 + 7x + 40x + 2x + ",
+          " 0. Find the roots of the equation x^2 - 5x + 6 = 0. Find the roots of the equation x^2 + 5x + 6 = 0.\n\nSolution: The equation given is a quadratic equation involving a real number x. We can find the roots by applying the given methods.\n\nFirst, let's rewrite the equation using the given quadratic equation in the form x^2 + x(x +",
+          " -x - 1\nOptions:\n(A) (x - 4)(x - 1)\n\nNow, I need to solve the polynomial equation x^2 - 5x + 6 = x - 11.\n\nTo solve x^2 - 5x + 2x + 6, we combine the constants in the equation x^2 + 2x + 6, but this seems like a typo.",
+          " 0.\n* Find the quadratic in x^2 + 3x - 4x + 4x^2.\n\n**Solution**\nThe equation x^2 - 5x - 4x + 5x^2 = 0.\n\n**Solution (Equation 1) Quadrature \nx^2 - 5x - 4x - 6x - 3x^2 = 4x"
+        ],
+        "top_share": [
+          0.14583333333333334,
+          0.08333333333333333,
+          0.09375,
+          0.11458333333333333,
+          0.15625
+        ],
+        "distinct1": [
+          0.4270833333333333,
+          0.4375,
+          0.4479166666666667,
+          0.4375,
+          0.3333333333333333
+        ],
+        "distinct2": [
+          0.7052631578947368,
+          0.7263157894736842,
+          0.6736842105263158,
+          0.6842105263157895,
+          0.5157894736842106
+        ],
+        "halt_depth": [
+          2.74,
+          2.71,
+          2.62,
+          2.61,
+          2.69
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " 0.\n\nThe problem asks for the solution to the quadratic equation x^2 - 5x + 6 = 0. Wait, but solving for x is a basic equation. Why do they ask to write a program that gives the answer? The solution should be done by a human easily with the quadratic formula or factoring. So perhaps I have written a problem involving some approximation method or a more standard question.\n\nWait, the text is a bit confusing",
+          " 0\n\nAnswer: The solutions are x\u00b2 - 5x + 6 = 0.\n\nExample using the quadratic function.\n\n`def f(x): ...` with a single line `return ...`\n\nand then: `[x for x in range(-5,0)]`\n\nSo what is a function in Python? It is a simple block of code. It can be written with a function definition (`def f(",
+          " 0 by factoring the left-hand side equation into the product of two linear factor.\n\nTo solve the equation x\u00b2 +1 + (x +\u221a2) =0, we need to simplify and solve for the variable.\n\nThe equation y= x\u00b2 +6x -11 can be solved by finding the expression, x\u00b2 +6x = y + 11 and completing the equation of x by adding (+ 18x)",
+          " 2, where x is a quadratic integer.\n\n**Solution:**  \n(a) \\boxed{(2, \\boxed{3})}\n\n(a) \\boxed{(a) \\boxed{x = \\pm \\frac{1}{2} (3 \\pm \\sqrt{130})}}\n\n**Final Answer**\nThe value(s) of \\( x \\) are \\( \\box",
+          " (x + 2)(x + 3)?  \nOptions:\n\nA) x = 3 or x = 2\nB) x = -1 or x = -1\nC) x = -2\nD) x = -3 or x = -1\nE) x = -3 or x = -6\n\nAnswer:\n\n1/2(1 point): What is the value of \\(x\\) that satisfies the"
+        ],
+        "top_share": [
+          0.0625,
+          0.10416666666666667,
+          0.0625,
+          0.125,
+          0.09375
+        ],
+        "distinct1": [
+          0.6875,
+          0.6041666666666666,
+          0.5520833333333334,
+          0.4375,
+          0.40625
+        ],
+        "distinct2": [
+          0.9368421052631579,
+          0.8631578947368421,
+          0.8842105263157894,
+          0.7263157894736842,
+          0.6421052631578947
+        ],
+        "halt_depth": [
+          2.54,
+          2.66,
+          2.77,
+          2.77,
+          2.78
+        ]
+      }
+    }
+  }
+}
