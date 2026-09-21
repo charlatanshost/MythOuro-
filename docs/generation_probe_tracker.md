@@ -2826,6 +2826,20 @@ about it.
   three harvests each cost a week. And a fixed template set does not address
   the regime-shift problem, which is the recurring one.
 
+### Addendum — the chat-framed comparison was run at 96 tokens and is uninformative
+
+`rung6@3000` vs `anneal@3000` on chat-framed code at `MAXNEW=96`: both 100%
+L0, 0% L3+, `<think>` opened on 100% / 99.7% of samples, closed on 0%. This is
+the 96-token budget artifact documented 2026-09-08 — under chat framing the
+model spends the whole budget inside `<think>` — and it was run at 96 anyway.
+Both checkpoints are at the floor, so damage-vs-move is not separated.
+
+The 512-token version would separate them and is not being run. Even a rung-6
+win there would not change the conclusion: the instruction probe shows what it
+learned (summarisation register on direct questions), the templates need
+rebuilding regardless, and neither L4 nor recall moved in any framing.
+"Damage vs move" only matters if the moved-to regime is worth having.
+
 ### The pattern, stated plainly
 
 Three approaches to instruction-following on this base, three times the base
