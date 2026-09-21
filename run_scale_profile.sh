@@ -53,7 +53,8 @@ DIR=checkpoints_scale_profile
 VARIANT="${VARIANT:-mythouro_distill_mid}"
 SEED="${SEED:-}"                       # empty = fresh init; a path = profile THAT checkpoint
 MB="${MB:-2}"; GA="${GA:-8}"
-LOG="logs/scale_profile_${VARIANT#mythouro_distill_}_mb${MB}_$(date +%Y%m%d_%H%M).log"
+ALPHA="${ALPHA:-0.0}"    # teacher-mix in rollouts; >0 puts the teacher back in generation
+LOG="logs/scale_profile_${VARIANT#mythouro_distill_}_mb${MB}_a${ALPHA}_$(date +%Y%m%d_%H%M).log"
 mkdir -p logs
 [ $((MB*GA*1024)) -eq 16384 ] || { echo "MB x GA x 1024 must be 16,384 (got $((MB*GA*1024)))"; exit 1; }
 
@@ -83,7 +84,7 @@ run_watched() {
   wait "$pid"
 }
 
-echo "=== SCALE PROFILE: $VARIANT, mb${MB}/ga${GA}, alpha=0 ==="
+echo "=== SCALE PROFILE: $VARIANT, mb${MB}/ga${GA}, alpha=$ALPHA ==="
 echo "=== 278M reference at the same recipe: 6,751 ms/step profiled, 7.23 s/step real ==="
 echo "=== log: $LOG ==="
 run_watched "$LOG" \
@@ -95,7 +96,7 @@ run_watched "$LOG" \
     --loop-loss-weighting exit_pdf --depth-reg-coeff 0.1 \
     --divergence rev_kl \
     --use-sandwich-norm --use-depth-aware-init \
-    --teacher-mix-alpha 0.0 --rollout-len 64 --rollout-batch 8 --rollout-reuse 8 \
+    --teacher-mix-alpha "$ALPHA" --rollout-len 64 --rollout-batch 8 --rollout-reuse 8 \
     --teacher-data-ratio 0.2 --teacher-data-files "$FILES" \
     --onpolicy-lambda 0.7 \
     --ckpt-dir "$DIR" --ckpt-every-mins 999 --ckpt-milestone-every 100000 \

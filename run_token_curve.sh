@@ -63,6 +63,14 @@ export ZE_SERIALIZE=2
 VARIANT="${VARIANT:-mythouro_distill_tiny}"
 DIR="${DIR:-checkpoints_curve}"
 SRC="${SRC:-checkpoints_alpha0/step_0001500.pt}"
+FRESH="${FRESH:-0}"                 # 1 = from scratch: no SRC, the trainer initialises in an empty DIR
+ALPHA="${ALPHA:-0.0}"               # teacher-mix in rollouts. 0 was earned by the TRAINED 278M
+                                    # (2026-09-13). A from-scratch model starts at the TOP of the
+                                    # ladder — the 278M went offline-only from scratch, collapsed
+                                    # at 6,675 ("is is is"), and lambda 0.7 / alpha 0.6 is what
+                                    # un-collapsed it. Random rollouts are noise; 0.6 lets the
+                                    # teacher steer them into something worth scoring. Anneal
+                                    # down as the readouts say the student is no longer degenerate.
 TEACHER=ByteDance/Ouro-2.6B-Thinking
 FILES="data_teacher_code/shard_*.jsonl,data_teacher_math/shard_*.jsonl,data_teacher_v2/shard_*.jsonl,data_teacher_med/shard_*.jsonl"
 LEG="${LEG:-3000}"                 # steps per leg
@@ -71,12 +79,12 @@ mkdir -p logs reports "$DIR"
 
 if pgrep -f "python -u -m training\.(distill|sft)" >/dev/null; then
   echo "a trainer is already running"; exit 1; fi
-[ -f "$SRC" ] || { echo "missing $SRC"; exit 1; }
+[ "$FRESH" = "1" ] || [ -f "$SRC" ] || { echo "missing $SRC"; exit 1; }
 FREE=$(df --output=avail -BG . | tail -1 | tr -dc '0-9')
 [ "$FREE" -lt 30 ] && { echo "only ${FREE}G free — need ~30G for a leg plus its readout"; exit 1; }
 
-# ---- seed once ----
-if [ ! -f "$DIR/step_0000000.pt" ]; then
+# ---- seed once (skipped when FRESH=1: an empty DIR makes the trainer init from scratch) ----
+if [ "$FRESH" != "1" ] && [ ! -f "$DIR/step_0000000.pt" ]; then
   cp "$SRC" "$DIR/step_0000000.pt"
   python - "$DIR/step_0000000.pt" <<'PY'
 import torch, os, sys
@@ -87,7 +95,7 @@ PY
 fi
 
 # ---- where are we ----
-at=$(basename "$(ls -t $DIR/step_*.pt | head -1)" | sed 's/step_0*//; s/\.pt//'); at=${at:-0}
+at=$(basename "$(ls -t $DIR/step_*.pt 2>/dev/null | head -1)" 2>/dev/null | sed 's/step_0*//; s/\.pt//'); at=${at:-0}
 if [ $((at % LEG)) -ne 0 ]; then
   echo "⚠ resuming MID-LEG at step $at (a previous leg was interrupted). Finishing it."
 fi
@@ -108,7 +116,7 @@ if [ "${KEEP_ALL:-0}" != "1" ] && [ "$at" -ge "$LEG" ]; then
 fi
 
 LOG="logs/curve_${DIR#checkpoints_}_leg${leg_no}_$(date +%Y%m%d_%H%M).log"
-echo "=== TOKEN CURVE [$VARIANT, $DIR] leg $leg_no: step $at -> $leg_end ==="
+echo "=== TOKEN CURVE [$VARIANT, $DIR${FRESH:+, FRESH}] leg $leg_no: step $at -> $leg_end   alpha=$ALPHA ==="
 echo "=== cumulative tokens on this curve after this leg: $(( leg_end * TOK_PER_STEP / 1000000 ))M"
 echo "=== (plus the 24.6M of the α=0 gate leg it was seeded from) ==="
 echo "=== expect ~7.25 s/step, ~6.0 h.   log: $LOG ==="
@@ -121,7 +129,7 @@ python -u -m training.distill \
   --loop-loss-weighting exit_pdf --depth-reg-coeff 0.1 \
   --divergence rev_kl \
   --use-sandwich-norm --use-depth-aware-init \
-  --teacher-mix-alpha 0.0 --rollout-len 64 --rollout-batch 8 --rollout-reuse 8 \
+  --teacher-mix-alpha "$ALPHA" --rollout-len 64 --rollout-batch 8 --rollout-reuse 8 \
   --teacher-data-ratio 0.2 --teacher-data-files "$FILES" \
   --onpolicy-lambda 0.7 \
   --ckpt-dir "$DIR" \
