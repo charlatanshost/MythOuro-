@@ -2762,6 +2762,64 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-22 — ⏹ LOOP SWEEP: inference depth is not a lever. K=4/6/8 is flat-to-down on a strong base.
+
+`code_eval` at K = 4 / 6 / 8 on `anneal@3000` — same weights, same seed, same
+prompts, only inference depth varies. A paired comparison, far tighter than
+cross-checkpoint.
+
+| K | L0 | L3+ | L4 | committed |
+|---|---|---|---|---|
+| **4** (trained depth) | 0.6% | **85.0%** | **5.0%** | 50.6% |
+| 6 | 0.9% | 84.1% | 4.7% | 54.1% |
+| 8 | 0.6% | **82.2%** | **3.1%** | 47.5% |
+
+Harness check: the K=4 arm reproduces the checkpoint's known numbers (L3+ 81%,
+L4 7.8% at step 3000 alone), so the deeper arms are trustworthy.
+
+**Monotone down on both capability metrics.** Small, but it is the expected
+null and it has a mechanism: the LTI injection is contractive by design
+(ρ(A) ≈ 0.27–0.37, logged every leg), so the injected signal is ~0.7% of its
+initial value by loop 4 and effectively zero by 8. Past the trained depth the
+block iterates on its own state with no new input. More loops, slightly worse.
+
+### What this closes
+
+The cheap version of the loop hypothesis — *"content tokens need K≈6–16
+(2607.14427) and we run 4, so the depth is there and we are not using it"* — is
+**dead**. The depth is not sitting unused; extrapolating into it costs
+accuracy. This reproduces the 2026-07-31 sweep on a base that is far stronger
+(L3+ 85% vs 5.0% math then) and with halt gates that `exit_pdf` has since
+trained against the task loss (verified today: `halt` carries gradient to
+`recurrent.act.halt.weight/bias`). Both reasons the old result might not have
+settled it are now controlled for, and the answer is the same.
+
+It also matches 2607.14427's own finding, which the summary that surfaced it
+had inverted: validation loss FLAT past 8 loops, the result being about
+early-exit efficiency, not capability.
+
+### What it does NOT close
+
+Whether TRAINING at K>4 helps — rung 5, `grow_depth.py`. Nothing here speaks to
+it. What it removes is the free version of the argument: rung 5 would now have
+to be justified on training grounds alone, against Ouro's own finding that they
+tried 8 and dropped back after loss spikes (2510.25741).
+
+**Decision: K=12/16 not run.** Three points monotone-down with a mechanism that
+explains them; a bump at 16 would be noise against a trend. The earlier
+intention to extend assumed a non-flat result needing disambiguation.
+
+### ⇒ The live candidate is now the attention-to-FFN ratio
+
+Measured the same day: our active ffn:attn is **4.16 (tiny) / 7.04 (wide) /
+3.14 (large)** against **2.00** for a standard SwiGLU block and **2.06** for
+Ouro-2.6B itself. LoopMoE ([2606.04438](https://arxiv.org/abs/2606.04438))
+includes a capacity-balancing strategy specifically to recover that ratio in
+looped MoE models. Attention is the operation that moves information BETWEEN
+positions — what binds a question to its answer — and a model starved of it
+relative to FFN would look fluent per-token and poor at relevance, which is the
+failure we measure. Unlike loop count, nothing has ruled it out.
+
 ## 2026-09-22 — 📏 OUTSIDE CALIBRATION: size is not the constraint. 362M at 4T beats 240M at 2.85B by 8x on correctness.
 
 The project had no outside reference — the owner's smallest prior model was
