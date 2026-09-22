@@ -74,6 +74,7 @@ ALPHA="${ALPHA:-0.0}"               # teacher-mix in rollouts. 0 was earned by t
 TEACHER=ByteDance/Ouro-2.6B-Thinking
 FILES="data_teacher_code/shard_*.jsonl,data_teacher_math/shard_*.jsonl,data_teacher_v2/shard_*.jsonl,data_teacher_med/shard_*.jsonl"
 LEG="${LEG:-3000}"                 # steps per leg
+MILE=$(( LEG / 3 ))                 # three milestones per leg, whatever the leg length
 TOK_PER_STEP=$((2*8*1024))         # mb2 x ga8 x seq1024 = 16,384
 mkdir -p logs reports "$DIR"
 
@@ -133,12 +134,12 @@ python -u -m training.distill \
   --teacher-data-ratio 0.2 --teacher-data-files "$FILES" \
   --onpolicy-lambda 0.7 \
   --ckpt-dir "$DIR" \
-  --ckpt-every-mins 20 --ckpt-milestone-every 1000 --keep-last 3 \
+  --ckpt-every-mins 20 --ckpt-milestone-every "$MILE" --keep-last 3 \
   --num-workers 0 --trust-remote-code --log-every 10 \
   --total-steps "$leg_end" \
   > >(tee -a "$LOG") 2> >(tee -a "$LOG.err" >&2)
 
-a=$(( leg_end - 2000 )); b=$(( leg_end - 1000 )); c=$leg_end
+a=$(( leg_end - 2*MILE )); b=$(( leg_end - MILE )); c=$leg_end
 P() { printf "%s/step_%07d.pt" "$DIR" "$1"; }
 echo
 echo "=== LEG $leg_no DONE. READ IT OUT BEFORE THE NEXT ONE — the next launch prunes. ==="
