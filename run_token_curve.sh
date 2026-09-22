@@ -73,8 +73,13 @@ ALPHA="${ALPHA:-0.0}"               # teacher-mix in rollouts. 0 was earned by t
                                     # down as the readouts say the student is no longer degenerate.
 TEACHER=ByteDance/Ouro-2.6B-Thinking
 FILES="data_teacher_code/shard_*.jsonl,data_teacher_math/shard_*.jsonl,data_teacher_v2/shard_*.jsonl,data_teacher_med/shard_*.jsonl"
-LEG="${LEG:-3000}"                 # steps per leg
+LEG="${LEG:-3000}"                 # steps per leg — MUST be a multiple of 3
 MILE=$(( LEG / 3 ))                 # three milestones per leg, whatever the leg length
+# --ckpt-milestone-every is a GLOBAL modulus, so leg boundaries must land on
+# multiples of MILE: LEG=2000 -> MILE=666 -> milestones 666/1332/1998 and no
+# checkpoint at the readout steps the script computes. Caught 2026-09-21
+# before a launch. 1800 / 2100 / 2400 / 3000 all work.
+[ $(( LEG % 3 )) -eq 0 ] || { echo "LEG=$LEG is not a multiple of 3 — use 1800, 2100, 2400 or 3000"; exit 1; }
 TOK_PER_STEP=$((2*8*1024))         # mb2 x ga8 x seq1024 = 16,384
 mkdir -p logs reports "$DIR"
 
