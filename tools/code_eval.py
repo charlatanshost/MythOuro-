@@ -535,6 +535,19 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     p.add_argument("-c", "--checkpoint", default=None,
                    help="MythOuro checkpoint to score. Required unless --hf-model.")
+    p.add_argument("--reference", action="store_true",
+                   help="With --hf-model: score a model that does NOT share "
+                        "Ouro's vocab (SmolLM2-360M-Instruct, Qwen2.5-0.5B-"
+                        "Instruct, Gemma-3-270m). Uses that model's own "
+                        "tokenizer and a plain HF load instead of "
+                        "load_distillation_teacher, which enforces vocab "
+                        "alignment. Valid for the CODE ladder only: L0/L3+/L4 "
+                        "grade executable Python and compare across tokenizers "
+                        "exactly. Prose top_share/distinct1 count token types "
+                        "and do NOT compare — do not run the prose probe this "
+                        "way. Added 2026-09-22 to answer whether irrelevant "
+                        "output is normal for ~300M params or normal for ~3B "
+                        "tokens.")
     p.add_argument("--hf-model", default=None,
                    help="Score a HuggingFace causal LM INSTEAD of a checkpoint — "
                         "e.g. the teacher, ByteDance/Ouro-2.6B-Thinking. Added "
@@ -612,15 +625,47 @@ def main() -> None:
     args = p.parse_args()
 
     from mythouro.tokenizer import MythOuroTokenizer
-    enc = MythOuroTokenizer(args.tokenizer)
-    tok = enc.tokenizer
+    if args.hf_model and args.reference:
+        # A REFERENCE model brings its own tokenizer — it does not share Ouro's
+        # 49,152 vocab and nothing here requires it to. `tok` is used only to
+        # encode the prompt and decode the completion around generate(), and
+        # the ladder grades EXECUTABLE PYTHON, so L0/L3+/L4 compare across
+        # tokenizers exactly. (Prose top_share/distinct1 do NOT — they count
+        # token types — which is why this flag is for the code eval only.)
+        from transformers import AutoTokenizer
+        tok = AutoTokenizer.from_pretrained(args.hf_model, trust_remote_code=True)
+    else:
+        enc = MythOuroTokenizer(args.tokenizer)
+        tok = enc.tokenizer
     if args.hf_model:
         if args.checkpoint:
             p.error("--hf-model and --checkpoint are mutually exclusive")
-        from mythouro.training_utils import load_distillation_teacher
-        _hf = load_distillation_teacher(args.hf_model, len(tok),
-                                        device=args.device, dtype=torch.bfloat16,
-                                        trust_remote_code=True)
+        if args.reference:
+            # Plain HF load: load_distillation_teacher enforces vocab alignment
+            # with the student, which a reference model will never satisfy.
+            from transformers import AutoModelForCausalLM, AutoConfig
+            _cfgr = AutoConfig.from_pretrained(args.hf_model, trust_remote_code=True)
+            if getattr(_cfgr, "pad_token_id", None) is None:
+                _eos = getattr(_cfgr, "eos_token_id", None)
+                _cfgr.pad_token_id = (_eos[0] if isinstance(_eos, (list, tuple)) and _eos
+                                      else _eos) or 0
+            import mythouro.device as _dev
+            _hf = AutoModelForCausalLM.from_pretrained(
+                args.hf_model, config=_cfgr, torch_dtype=torch.bfloat16,
+                trust_remote_code=True,
+                attn_implementation="eager" if _dev.backend(str(args.device)) == "xpu" else None,
+            ).to(args.device).eval()
+            for _q in _hf.parameters():
+                _q.requires_grad_(False)
+            print(f"reference model loaded: {args.hf_model} "
+                  f"({sum(q.numel() for q in _hf.parameters())/1e6:.0f}M params, "
+                  f"vocab {getattr(_cfgr,'vocab_size','?')}, "
+                  f"tokenizer {type(tok).__name__})")
+        else:
+            from mythouro.training_utils import load_distillation_teacher
+            _hf = load_distillation_teacher(args.hf_model, len(tok),
+                                            device=args.device, dtype=torch.bfloat16,
+                                            trust_remote_code=True)
         if _hf is None:
             raise SystemExit(f"could not load {args.hf_model}")
 

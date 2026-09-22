@@ -1,0 +1,916 @@
+{
+  "step": 1800,
+  "samples": 5,
+  "temp": 1.0,
+  "top_k": 50,
+  "alphas": [
+    0.0,
+    0.25,
+    0.5,
+    0.7
+  ],
+  "seed": 0,
+  "rollout_len": 96,
+  "seeds": {
+    "In the morning the weather was clear, so we decided to": {
+      "0.0": {
+        "texts": [
+          " make her and the new time. What is 20001540 to 10000, that is the second of the first\n399 million48751929000000000009000052015000000.The world and the 20000000000000.00",
+          " take its best school in its\nthat the \"m-d\" - I was a major state that's, and you have one of the current and the use of the next-type in it to be the other, but in the final world to be a place without a major world (the first 8000807000100000005721852250000000",
+          " create an example to make the other in the 8005246, so in 904890, the main world was no.\n\nFor a large 20\n\n# the process will be an 190-00000006500000400100000000.\n\nLet me make the number of in 2002",
+          " get the first world, and, and that the current and the other of the state, and\n\n**\n**\nThe key to the \"and 34k, in the first of the original (230233273604442708\nD&M; the first 200001,\n1000\nIn the 1.900000000",
+          " use the main and the main-bj (at-1) and in the actual, especially the first, the reason is more important for the two examples (which is likely with in this section)\n\nWhat is the best idea for example is based on an important way.\n\nThe method for 1200200200:\n\nBut let's take (the 5000000100000"
+        ],
+        "top_share": [
+          0.46875,
+          0.21875,
+          0.3125,
+          0.1875,
+          0.17708333333333334
+        ],
+        "distinct1": [
+          0.3020833333333333,
+          0.5208333333333334,
+          0.3854166666666667,
+          0.3958333333333333,
+          0.5208333333333334
+        ],
+        "distinct2": [
+          0.5473684210526316,
+          0.8,
+          0.6947368421052632,
+          0.7789473684210526,
+          0.8210526315789474
+        ],
+        "halt_depth": [
+          2.05,
+          2.12,
+          2.08,
+          2.09,
+          2.19
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " create a lot to play and. The best way after the party does not have the main idea of the best and the current weather and the 20000, after 00000. But this is the 2006286700773, as in 2010100.\n\nThe problem is to find the number of the two possible times in the other possible time, and then then",
+          " find the most effective strategy to have the maximum and then the second 8 or 1000-000, and the first 1000060000000000000351.\n\n- The process of the problem in the previous section and the number of cases, and the first day is in the first 1000, which in the time to 2000,",
+          " choose for a number of consecutive to 30000 days, you have been looking the weather and found by 20000, of the actual in his 20000 (290300944500) the third and 29000003- (170) the 120000th500005-00000 (",
+          " go for the drive.\n\nAs the third and last group is a new challenge we can read the same as the following (s) or that can be the 20008014 2000873447:5)\nThe result for any time, 50009000000401000.\n\nWe have a large-of and even other in order (",
+          " go hiking on the mountains and its state, and so in which they\u2019ll get a one or a two point, which is going to be able to take the other two people.\n\nThe purpose of the \"two period\" in the following is to build the two levels from scratch, which is the first two in which the first two are required.\n\nThe number would lead to a two people to take 10 points from the entire world.\nThe two"
+        ],
+        "top_share": [
+          0.17708333333333334,
+          0.3020833333333333,
+          0.375,
+          0.20833333333333334,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.4791666666666667,
+          0.3958333333333333,
+          0.3645833333333333,
+          0.5416666666666666,
+          0.5729166666666666
+        ],
+        "distinct2": [
+          0.8,
+          0.6210526315789474,
+          0.6210526315789474,
+          0.8105263157894737,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.11,
+          2.06,
+          2.05,
+          2.2,
+          2.17
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " go a very long distance away, as usual,\" it said the old woman. So a man, a couple, the old thing could have the three.76540_00000000,004_1458605193_1465851674298347__121298623748652250",
+          " write a programming.\nAs a method of cooling is the\nThe problem of the following writing (by no means)\n\n(Note) As a method is to use\n\nThe first and set is the number of a variable. The second has to create the data and that it's the number of the same value as the first and not the same.\n\nBut the data is set.\n\nBut I have to find the variable and 1 and 2",
+          " go the most important in and the weather and the first thing is a full or just with breakfast. He was only in a 50-minute trip to the nearest city during the time it is an opportunity. With the weather, we are only able to make the weather by the end.\n\nThis question is asking and this sentence is the word of the weather. That is a specific thing in the first paragraph, the weather. To be honest at the moment of the",
+          " make a trip 15 km long.\nThe starting point had a speed between 5000 and 10000000.\n\nThe first 5 km of 7, 14,72 km of 70000 km\n\n- The area of the total 72000 km^2 had a 20000000000000000",
+          " make a trip in a countryside.\n\nNow he has exactly N candies in the bag, while it's supposed to be an unknown type of the integer array. And I want to know how many times I have to run a particular algorithm. \n\nThe method is: If the current value in the bag is bigger than the previous one, which means it's the right thing to be a increasing sequence of the array?\n\nThe problem can be a bit ambiguous, but"
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.10416666666666667,
+          0.14583333333333334,
+          0.34375,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.3645833333333333,
+          0.5104166666666666,
+          0.6041666666666666,
+          0.3125,
+          0.65625
+        ],
+        "distinct2": [
+          0.7894736842105263,
+          0.8315789473684211,
+          0.9052631578947369,
+          0.5578947368421052,
+          0.9157894736842105
+        ],
+        "halt_depth": [
+          2.14,
+          2.14,
+          2.24,
+          2.05,
+          2.23
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " go at the beach. But if you want to make the experience better, you should visit the beach and do some coding.\"\n\n**Tasks:**\n\nThe beach is the rectangle and its sides with the axes. Now at the beach, there is a set of $$$ and points. The problem is to check how many other people want to sit on your position, i. I did not get anything to do at the beach,\n\n**The time complexity of",
+          " play...\n\nFind $40^\\circ$\\!\n\nA\nForces on a string\n\nThe mass, the length and the mass per (unit) length,\n\nThe mass of the string is $1\\,000\\,\\text{g} \\right) - \\)\n\nThe tension \\( \\mathsf{ T } \\) \\( \\), the total mass of the string \\( m \\), and mass",
+          " get\n\na,  the number of people who will sit together at least once,\n\nb, or we can choose the largest possible b.\n\nWe need to find the maximum-min value such that, in the final configuration, there are at least 40 minutes of travel and time spent in each year.\n\nHowever, we can take some time (up to 2 hours) in the morning to decide the number of people who will have an",
+          " go the nearest white desert.\"\n\n4. A little later, the group of friends that decided to go \"to the nearest...\n\nNo, the two events are both occurring: the weather-clear leads to one person deciding to go to the desert, or the group of the friends. Not sure if it's the first sentence, and in any other case of the second sentence, I didn't see any problem. \n\n1 & 2. The weather was more clear",
+          " play outside the city of Lviv or in the forest.\n\nThe map\n\nThe forest could be represented as the grid in which $P$ is the picnic location (the starting point).\nThe rest of the cells are the following types of these locations, you can only move to one cell, so you can take one step:\n\no - a cell you can find a tree, you have at most basic amenities.\n\np - a cell with"
+        ],
+        "top_share": [
+          0.07291666666666667,
+          0.11458333333333333,
+          0.08333333333333333,
+          0.10416666666666667,
+          0.09375
+        ],
+        "distinct1": [
+          0.625,
+          0.5,
+          0.6354166666666666,
+          0.6770833333333334,
+          0.65625
+        ],
+        "distinct2": [
+          0.8947368421052632,
+          0.8315789473684211,
+          0.8736842105263158,
+          0.9263157894736842,
+          0.8842105263157894
+        ],
+        "halt_depth": [
+          2.35,
+          2.19,
+          2.32,
+          2.42,
+          2.26
+        ]
+      }
+    },
+    "The treatment for a bacterial infection usually involves": {
+      "0.0": {
+        "texts": [
+          " a single-time and the effect of the non-on-in.\n\nThe process of the system to be used to create three properties of the system and in the L-S and other\nn\n\n* The main example is the sum to a set of 15m... This is related to the first level. An example of an example of the number of non-f(n): and c = 00\n\n### 10.",
+          " the low and different-part of the G-S S-E 1/18-300206.7101249.45874928.0.79012048170540222601206\n\nThe time-order set and is the time as the 1000-120751 and ",
+          " the two other data, and the same and 5000-N-T. The 1A and the B10-16.682-20669, and the time and two-th-b3.\nB. 4A,0002010+101000.\n38519782000000000000",
+          " a non-fimenic B, and the two cells are not very complex. This is the 150 C system of the 1000005040/004504840066-160700492202202882227544641910480961104002",
+          " a 70000% of 100024.000750500000.\n\n\nIf two solutions are at 2000000100-200: the problem we have\n\nThis is at 1206200020000000000000 1,60050000"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.15625,
+          0.2708333333333333,
+          0.23958333333333334,
+          0.5104166666666666
+        ],
+        "distinct1": [
+          0.5520833333333334,
+          0.3229166666666667,
+          0.3229166666666667,
+          0.3541666666666667,
+          0.2916666666666667
+        ],
+        "distinct2": [
+          0.9052631578947369,
+          0.8210526315789474,
+          0.7052631578947368,
+          0.7157894736842105,
+          0.5052631578947369
+        ],
+        "halt_depth": [
+          2.06,
+          2.01,
+          2.02,
+          2.01,
+          2.01
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " antibiotics and more importantly, you should ensure to get complete and sufficient rest to ensure the normal functioning of the body and the immune (or in the use of the different herbs and at the time in the proper use) for a speedy and more high quality of the recovery to your system of and the system of the immune. The first thing is as in the study of, in 100000.5017.\nThe second part is the number of",
+          " both antibiotics, or other antibacter... We treat the infection of the urinary tract and we have in a few cases an even the difference of a (C) ,\n\n## H0 (10.18-O) [440 2 2485.\nA 4000000500000000.64000142000000200",
+          " antibiotics. The effectiveness of all or, in the specific time frame and condition is the specific amount that  a particular drug is for a specific. The question is how to use that anabolic-time for a single-cell. The problem of the system of this study is often used to show the presence of high-molecular and its type of the (c) and (or, or) and the data and the rate of change is the number of the energy and (or",
+          " \nThe correct phase of bacterial growth...\n\nA1000,000\nA.\n\nB10, 250\nB9\nI\n\nIn the number 000186,\n\n## (100525)8 +\nE. None (D10)101530 + (7904),\n\nTo find the second term as f_",
+          " the use of ______. H) . 1442 32785870162003-19388 23002850638200312. .\n\nThe three types of antibiotics for each two of T.248 for the E195240 (20020). The following figure, the TX is known as"
+        ],
+        "top_share": [
+          0.125,
+          0.2916666666666667,
+          0.09375,
+          0.17708333333333334,
+          0.125
+        ],
+        "distinct1": [
+          0.5625,
+          0.46875,
+          0.5625,
+          0.4375,
+          0.4166666666666667
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.7473684210526316,
+          0.8842105263157894,
+          0.7894736842105263,
+          0.8736842105263158
+        ],
+        "halt_depth": [
+          2.05,
+          2.07,
+          2.1,
+          2.04,
+          2.07
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " antibiotics. But it is important to be aware of the antibiotic resistance, which is the ability to develop resistance, a few of which can be very important. The amount is that antibiotics and even, so the patient doesn't understand the side effects and the risks, and the treatment of the bacterial ... More of the drug, and the infection doesn't affect your health and the antibiotic's amount of the drug is the one of the treatment.\n\nBy the end of this course is",
+          " a very high and effective.\n\nIf a single dose is the one prescribed. The total term of the course is.\n\nHow the first case will be the most common and the most common to reduce the effects of the side effects and the value of the treatment. The last line of one-day-1-600-400000-054068 and.\n\nThe other options provided to the equation $x_",
+          " the use of antibiotics in the form of pills and creams to eradicate the bacteria. However, in the case of acne (as.6489310), which can sometimes be at the heart, a 50% solution of hydrogen peroxide can be used to destroy the bacteria.\n\nA.\n\nA single antibiotic is usually only a small 100mA. The concentration is therefore low to an important extent of the bacteria at 6,",
+          " antibiotics. So the first step is a proper diagnosis: bacterial infection for sure? I need to verify a lot of information about the infection. The current treatment of the infection may affect how to proceed the follow that for the infection.\nFor example: When I am prescribed antibiotics, I can have a positive test, for example. That would be a good (positive) result, and I found for my current infection that means I am currently infected with a bacteria and a different source",
+          " antibiotics (that attack the bacteria, which are the cause of the normal symptoms) and then the patient and is the body as well (which the cause of the normal or high fever and the chills and is to use a paink/49+ (3980). An infection in one part of the body is known in medical, but not. (3980): a bacterial infection that the patient, 830. A very high, but not"
+        ],
+        "top_share": [
+          0.14583333333333334,
+          0.10416666666666667,
+          0.07291666666666667,
+          0.0625,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.5208333333333334,
+          0.5208333333333334,
+          0.6041666666666666,
+          0.6458333333333334,
+          0.5729166666666666
+        ],
+        "distinct2": [
+          0.8526315789473684,
+          0.8315789473684211,
+          0.9052631578947369,
+          0.9578947368421052,
+          0.8526315789473684
+        ],
+        "halt_depth": [
+          2.14,
+          2.07,
+          2.15,
+          2.21,
+          2.15
+        ]
+      },
+      "0.7": {
+        "texts": [
+          ":  \nA. Antibiotics that target bacterial cell is the\n\nQuestion:\n\nThe treatment for a bacterial infection usually involves:\nA. Antibiotics that target bacterial cell is a is in a bacterial of bacteria and viruses.\nB. Antifungal medications\nC. Antivir &\n\nD. Antidiarr(\n\nT is the treat- for a viral infection that is, not a bacterial.\n\nE. Antiparasitic medications of bacteria",
+          " a specific antibiotic that is effective against the particular type of bacteria.  \n\n- **Option A** states that the patient is the first to have this type of infection. If the infection is being treated in a patient who are also taking the antibiotic for other reasons, this would make the treatment less unusual or surprising. However, the scenario does not confirm the patient of the study had this or another antibiotic and is assuming that \"there are not a large number of patients\".\n\n",
+          " antibiotics, as they will kill or a bacteria and allow the body to recover.\nWhat is good for all of us is that not a single common process (in the sense of a type of treatment) exists for viral infections that will treat the virus and cure it, to give a good prognosis of patients infected, especially to not allow the re-infection of non-composed, because different viruses cause different viral infections that can be treated in different.\nAntibiotics are drugs",
+          " antibiotics, but bacterial resistance is a good reason to stop taking antibiotics. In other cases, for instance, antibiotics in the context of high doses or prolonged use in the treatment of bacterial infections such as a persistent bacterial infection, such, for example, as an over-dosing of the treatment, and the patient and the nurse may find that the patient's resistance has increased to the point of a failure of the treatment or the patient.\n\nThe most common reason for bacterial and",
+          " high doses, which can be a problem.\n\nSo, I don't think this is a different mechanism of action.\n\nSo: A, C, and the rest?\n\nBut the probability that the correct answer is\n\nB, E, D. Wait that was initial, and the user said that's unlikely because of the high, and then other options.\n\nTherefore, perhaps I need to reevaluate.\n\nAlternatively, the other possibility of"
+        ],
+        "top_share": [
+          0.14583333333333334,
+          0.09375,
+          0.052083333333333336,
+          0.09375,
+          0.125
+        ],
+        "distinct1": [
+          0.4895833333333333,
+          0.6458333333333334,
+          0.6770833333333334,
+          0.5625,
+          0.5729166666666666
+        ],
+        "distinct2": [
+          0.7684210526315789,
+          0.9789473684210527,
+          0.9578947368421052,
+          0.9157894736842105,
+          0.8736842105263158
+        ],
+        "halt_depth": [
+          2.19,
+          2.29,
+          2.33,
+          2.15,
+          2.12
+        ]
+      }
+    },
+    "Common symptoms of type 2 diabetes include": {
+      "0.0": {
+        "texts": [
+          " the UG320017010230525651812997.00333779352962679; ... 119392802399667, 173800081468020 ,200000001410001",
+          " the time, and to do the area of our work and the second element to produce the most accurate power of those more. It was the original concept of the specific and the best time of the 2-47002 to 3000061000.52900-150014010008000.0%000000000600",
+          " an \"HAP 1000,2000-00/200000-40-200000/2000000000000000000030005010000000000000000000000000000000000",
+          " **(S. 55000504864689664-5003467534699902537891090012684050018728020888648298361420164432009352266",
+          " 243 at 200000, 200-900000330002, 2935007800000.000/80135-101122020.4012441760000020000% and 50-50082"
+        ],
+        "top_share": [
+          0.23958333333333334,
+          0.3333333333333333,
+          0.7916666666666666,
+          0.1875,
+          0.4375
+        ],
+        "distinct1": [
+          0.19791666666666666,
+          0.3958333333333333,
+          0.14583333333333334,
+          0.16666666666666666,
+          0.1875
+        ],
+        "distinct2": [
+          0.631578947368421,
+          0.7263157894736842,
+          0.23157894736842105,
+          0.6736842105263158,
+          0.5263157894736842
+        ],
+        "halt_depth": [
+          2.01,
+          2.13,
+          2.0,
+          2.01,
+          2.0
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " increased thirst. In the body on blood, there is one hormone, which is called the antopid for a number of a person on a high-sugar 2000000 in the blood, which is the first occurrence of the body, which is also a good way to be a different, the blood or 300. The body-day 1000000000000040000",
+          " new water, sweet taste (with 400006).\nThe 14000000005 in blood-related health. They only to 60000380002 as the other. You see that the 2090065963423 has the 62054080608 as the 2000000",
+          " 2.142366074395572977376005001127018416412020a152041040e1007700633e2184a1576320ea2002a\n(599484264",
+          " increased thirst.\n4.9847  680. 1,010.007 23357 | (1945601620), (9420)  D. The first symptom, 548131427584,  is  172.\nFor this  to get you started:\nimport  j.m.g.",
+          " new onset and 2-hour post; 94-9.\n\nIn most types, the main process is to find their type of the body of insulin.\n\nQuestion: These two conditions have many similarities and  are 2000% of the process, in this time.\n\nH.\n\nAnswer: As the body becomes insulin resistant to more insulin. In the final step of 1000000% in the"
+        ],
+        "top_share": [
+          0.2604166666666667,
+          0.3333333333333333,
+          0.1875,
+          0.09375,
+          0.09375
+        ],
+        "distinct1": [
+          0.4583333333333333,
+          0.375,
+          0.17708333333333334,
+          0.3854166666666667,
+          0.5416666666666666
+        ],
+        "distinct2": [
+          0.7157894736842105,
+          0.631578947368421,
+          0.6947368421052632,
+          0.9157894736842105,
+          0.8105263157894737
+        ],
+        "halt_depth": [
+          2.04,
+          2.01,
+          2.0,
+          2.06,
+          2.24
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "...\n\n1640328144\n\n- The development of the nervous and...\n\n16424\n- A patient with acute and 12 weeks of... 16253213801 160432632 [29793349780756472842800800000][16",
+          " frequent urination and 3-000.8 (A), the patient's 2520002.0520024205.\n\nThis example is based on the study to find the probability P32 000003 3-100000000003000000000002003000000",
+          "\nA 528 mg per or 2 2000-800 \nB 750 mg (F) The only \nC 190240 mg per 18598 2000 \nE 1200717065000 8000 \nI: 45-005 mg per 1959",
+          " frequent urination, according to the Mayo Clinic, including the morning urination.\n\nThe study of a study conducted by the most in 105 subjects concluded that 6000% people with the time in the brain of insulin.\n\nThis means that it involves the body of this 10.960 for the new study, which is the reason for the other studies, the patient is in 2006. That may not be the",
+          " symptoms, such as:\nE. The first-proposed method to check 28.08\n1.115\nA 7564\nE. 6. the ability to calculate the actual data (e. 2-to78.2014.28.5.9\nG. 3.2000.5 39.19:200.0.\n\n"
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.4583333333333333,
+          0.22916666666666666,
+          0.11458333333333333,
+          0.16666666666666666
+        ],
+        "distinct1": [
+          0.2916666666666667,
+          0.3125,
+          0.2708333333333333,
+          0.5625,
+          0.3854166666666667
+        ],
+        "distinct2": [
+          0.7263157894736842,
+          0.5263157894736842,
+          0.6736842105263158,
+          0.9052631578947369,
+          0.7894736842105263
+        ],
+        "halt_depth": [
+          2.01,
+          2.09,
+          2.04,
+          2.16,
+          2.13
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " a 50% or 6000% increase in the amount of glucose in the 28th-1993, but the most common reason for type 2 diabetes is a higher fasting of glucose from the blood, leading to higher blood, which can cause severe health, but this is a common problem for the body that is not able to be able to use it for some people.\nA non-diabetic patients with type, there are",
+          " increased the risk or the development of the disease.\n\nIf the same is the first, and they'll be able to make sure to be able to eat.\n\nThis is what time of day is a high blood sugar important to understand how much you can take, so any medication that's not to manage your blood.\n\nThese includes the what time has the highest blood and risk.\n\nYou may how to treat the high blood sugar also be a what time",
+          " insulin resistance, characterized by impaired 1 insulin receptor sites, and inadequate insulin secretion. It does not include\n\nThe presence of diabetes insipidus\n\nThe presence of auto, and immune\n\nThe presence of abnormal insulin, and insulin receptor of\n\nIt involves excessive urine production.\n\nThe presence of the auto-immune disease\n\nThe presence of abnormalities in both the main\n\nIn order to answer (i. A) and (B) is",
+          ":\n- Frequent urination and the urge to urinate more to make up the increased glucose, which may also increase the risk of skin conditions and infections in the area and urinary tract.\n- The excessive thirst and hunger, which result from the body from not being the same with the cells that it needs.\n- Dry mouth of the tongue, and possibly a severe thirst, along with slow healing of the wound and other infections.\n- Vision that seems to be of a blurred",
+          " increased thirst, and decreased the amount of sugar in your blood, and how to reduce high fasting blood sugar high sugar pills.\n\nhow more exercise lowers blood sugar, both the body of this blood type of the body, but there is a high blood sugar level for 2 hours for the how were type, and what it's important to increase to reduce the risk of type the disease.\nThe same is to see an important test-pulse to test the blood glucose"
+        ],
+        "top_share": [
+          0.052083333333333336,
+          0.08333333333333333,
+          0.14583333333333334,
+          0.09375,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.6354166666666666,
+          0.5625,
+          0.5520833333333334,
+          0.625,
+          0.5625
+        ],
+        "distinct2": [
+          0.9052631578947369,
+          0.8736842105263158,
+          0.7789473684210526,
+          0.9263157894736842,
+          0.9263157894736842
+        ],
+        "halt_depth": [
+          2.16,
+          2.06,
+          2.21,
+          2.23,
+          2.24
+        ]
+      }
+    },
+    "Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat": {
+      "0.0": {
+        "texts": [
+          " an average, which will also be the most active \"a\" and the total. The final structure is always the most important and the process of the\n\nT. The system is a way to analyze the expression to be considered to use the given values for all the first-zero set (since it's very interesting):\n\nIn addition the\nH.\n\nThe standard term of a pair of common terms is the right and general.\n\nThe problem of the",
+          " 0000 (or in 10000000000600000000000015000000) A30000000000000005000000000000000000000000000000000004",
+          " the actual...\n\nIn an internal relationship for a\n\n\"the actual time and the most relevant structure and in the standard line, is not called. In the actual and the question.\n\n(The answer)\n\n**No and the function `l`\n\nThe problem which is to add the same and add the number of numbers.\n\nTo find the data, in the `num` and `find_c`, `is_string`, `",
+          " the data, and the difference is not. The problem to find the natural-order 4.006-1300000000000000000000003000000011010+-810.000 and 2800.199-15.12202400000.",
+          " the second 355024-40000684685 or, 19243 on...\n\nThe question, in the \"The question of an example of the three (in14503018) in the first post, and it's almost a 1000 100000 -00100842001838 "
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.8541666666666666,
+          0.125,
+          0.46875,
+          0.21875
+        ],
+        "distinct1": [
+          0.6354166666666666,
+          0.125,
+          0.5729166666666666,
+          0.2708333333333333,
+          0.3854166666666667
+        ],
+        "distinct2": [
+          0.8947368421052632,
+          0.2,
+          0.8736842105263158,
+          0.5473684210526316,
+          0.7473684210526316
+        ],
+        "halt_depth": [
+          2.12,
+          2.01,
+          2.12,
+          2.03,
+          2.07
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " pain and increase muscle as possible in the body. The drug is a type of the time and the time and in the world is used to make the process of the drug and to the body. So the first case of the primary, the result and the drug is, the body can not.\nWhat are the risks of the structure (the initial value of the function should be used to make the system of the study being the first step in 2.5000",
+          " the L/A and the C-reactive and the GFR_J/T. A.\n- To find the system of equations that all two people' for the general, find for all elements to the standard equation for the following two people have been, where the person's standard-term is the person in other than the C10 as, and the person's standard and the C1, the person has 12.\n- This study of E-",
+          " the time of a heart, and it may be on the body and blood pressure.\n\nI'm not sure if the new drug will be\n\nSo if they have the \"new-drug\" from the two years but the actual drug of a 10 is not quite important, is also a very significant 20-9084, and the \"s\" for the 2000's new and original drug. This is the first time",
+          " two new conditions.\nThe conditions could be in any case.\n\nThe other conditions do not be an effect on the body's immune system of the drug and the body.\n\nThe 80902000 patients on the new 204216180280-100040 (4% to 20-500000) that is in a 1025",
+          " the symptoms of P.\n\nA) How is a more important, a standard-size bottle contains the exact method you know how to determine the standard form and use the following data.\n\nI'm not in my country!\n\nThe second is the problem that is the problem for a certain disease. It is also an easy to create this problem in a new country...\n\nIf you see the time \"28 weeks, a certain number of days and I"
+        ],
+        "top_share": [
+          0.1875,
+          0.13541666666666666,
+          0.09375,
+          0.19791666666666666,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.5208333333333334,
+          0.5520833333333334,
+          0.5833333333333334,
+          0.4479166666666667,
+          0.65625
+        ],
+        "distinct2": [
+          0.7894736842105263,
+          0.8421052631578947,
+          0.9263157894736842,
+          0.7473684210526316,
+          0.9157894736842105
+        ],
+        "halt_depth": [
+          2.12,
+          2.14,
+          2.07,
+          2.09,
+          2.18
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " pain and inflammation for osteoarthritis,\n\n## Step 1: In the long run and short run, a firm's costs and revenues can be affected by external influences such as inflation.\n\nWhat is the primary economic objective in the use of the natural rubber tree, but it is just the starting point and the use of resources is a long-\n\n## Step 503: Which of the application of a model is called an empirical test of the general and ",
+          " a variety of the pain and a variety of inflammatory and fever. The most important of an excellent drug-drug interaction is the risk in the \"anakin...\n\nThe second most used to achieve the role that when the heart attacks and for...\n\nQuestion:\n\nFor the following case of this patient would be an appropriate first-line.\n\nThe primary complaint is that of the 'low-year-old\n\n(a) 66-year",
+          " pain, fevers and inflammation. However it should be used to find a balance in a patient for pain in the long run and not as a quick fix like the other medications.\n\nFib-Lact in the combination of the drug-in combination of ibuprofen and Lactobacillus Acidophilus which is not a very easy and the presence of the combination of the drugs (ibuprofen and Lactobacillus Acid and the bacteria is not much the same. When taken the combination of the enzyme",
+          " inflammation and pain. However, it is not the most recommended for treating inflammation for pain, especially in the case of the common cold\u2026\n\nInfectious diseases are the most dangerous ones the most frequently occurring in the human life.\n\nA lot of people know there is the flu, which would be a lot more dangerous than the human body and in the case of most in the case of this kind of disease.\n\nThe most typical of the symptoms of the cold",
+          " pain, but it might be a different drug altogether if a doctor presc onyx, like an ACE-level, such as the time to make a change, the patient can be treated in the hospital. But, the reason for this is that the best way to make this type is with an increase in the number of the patient.\n\nQuestion:\nI've a good friend and I are doing the same and getting an even the process of this kind of medicine. The"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.10416666666666667,
+          0.11458333333333333,
+          0.125,
+          0.09375
+        ],
+        "distinct1": [
+          0.6354166666666666,
+          0.625,
+          0.59375,
+          0.5416666666666666,
+          0.6666666666666666
+        ],
+        "distinct2": [
+          0.9052631578947369,
+          0.8947368421052632,
+          0.8526315789473684,
+          0.8421052631578947,
+          0.9578947368421052
+        ],
+        "halt_depth": [
+          2.32,
+          2.25,
+          2.27,
+          2.26,
+          2.19
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " pain, fever, and inflammation 2606 in the 4010 population The next step is a number of 1806500 in 201000 the rate, and the population is 10, the total population of 2000,96.00 per 20050 population was 200000; this is 115. No. 2",
+          " the pain. These drugs relieve pain, fever, and inflammation by interfering with the body's production of prostaglandins, which affect pain and inflammation.\nBut the pain, fever, and inflammation is not just caused by a lack of prostagland, is no. If you have an injury, your body should produce more prostaglandins of that area to trigger inflammation. But the inflammation for what can be at best, beneficial. A lot of your healing processes will work with a",
+          " pain and inflammation, but may irritate the stomach time and cause ulcers or bleeding. In 204 is 3-60 mg, it is a more recent introduction to a similar drug family and also has stomach and GI risks associated with its use including bleeding from the stomach-liver, and.\n\nThere are risks to get the right dosage of any drug. This is for the patients and the doctors with their prescriptions. It's important to stick some precautions when dealing",
+          ". The dosage in milligrams for a child depends a certain function of its weight.\n\nThe expression for Ibuprofen dosage, in milligrams and m represents the child's weight 330 divided by the child and the child in the kilogram:\n\n$C=15,400\\times\\frac{1}{10} \\times 2$ $D_{8} = 4( \\cdot \\hspace{3.0em} \\",
+          " the common cold and respiratory infections like the flu is false.\n\n\\[ (\\text) Ibuprofen(s) - Treat for the flu. - No. - Ibuprofen is not used to treat the common cold or respiratory infections.\n\n\\] The answer is\n\nThe answer is just 'c' because they both say 'treat for the flu' \\[ (\\text) and 'a' (0) = (x)\\( x^3"
+        ],
+        "top_share": [
+          0.25,
+          0.08333333333333333,
+          0.0625,
+          0.052083333333333336,
+          0.0625
+        ],
+        "distinct1": [
+          0.3333333333333333,
+          0.6041666666666666,
+          0.6979166666666666,
+          0.5833333333333334,
+          0.5416666666666666
+        ],
+        "distinct2": [
+          0.6842105263157895,
+          0.8736842105263158,
+          0.9894736842105263,
+          0.9473684210526315,
+          0.8210526315789474
+        ],
+        "halt_depth": [
+          2.04,
+          2.23,
+          2.25,
+          2.11,
+          2.19
+        ]
+      }
+    },
+    "def fibonacci(n):": {
+      "0.0": {
+        "texts": [
+          "\n\n- For the current formula to show the problem (d) -12 + 129 (185 or (15) - 1. This is not the problem for the equation, and the original question of the value (or at x?) -10.2832.1844562935925 \\] \n\n```\n\nLet's assume the first, 2000",
+          "\n    # F,\nn13805\n@p1f\ndef n2_2_514(n, f):\n    max_set = a_01, x_13580\nfrom __name__ import (S_ID,\nimport\n\n__\nfrom x.get_a 20247910\n\ndef get_n(l):\n    b = list(t['",
+          "\n    with the count(l2,1).\n    # Note first row or set\n    # (list -> 26,0)\n    # 2002   # In the above 192000 to 22000076688524302952336869491975266839626698660",
+          "\r\n\r\ndef parse_list(data_name: 'F_X', 2000056441863814450532844153963964088640162488371868654463198516672366489892191",
+          "\r\n\tdef __init__(c, v, d, f_x):\n     (str := p.j.name.add_j.data).f_p.p010  # 3730000140\nn0.1.0 \ndef add_for_data_c_dict(self):\n    # For example, it's in a_l2600124426"
+        ],
+        "top_share": [
+          0.07291666666666667,
+          0.10416666666666667,
+          0.125,
+          0.13541666666666666,
+          0.11458333333333333
+        ],
+        "distinct1": [
+          0.5104166666666666,
+          0.5,
+          0.34375,
+          0.2604166666666667,
+          0.53125
+        ],
+        "distinct2": [
+          0.8947368421052632,
+          0.9052631578947369,
+          0.7473684210526316,
+          0.7157894736842105,
+          0.9157894736842105
+        ],
+        "halt_depth": [
+          2.04,
+          2.11,
+          2.04,
+          2.0,
+          2.11
+        ]
+      },
+      "0.25": {
+        "texts": [
+          "\n      def helper_order(self, order, ..._name, 1, 2, 3, 00.0, 1230 + 100\n    \n        \ndef update_v(self, ...set, ...\n\nI'm sorry to say the last few values, which is `a`, `b` I need to create the input and `def`, `output` for the test, and `l`, `b",
+          "\n    if n < f(d) == b ? t % (e(t1)\n        k1() == self._num_\n         #\n    # 4)\n\n    # if g_r = (x_3)\n    # - 44:  # for loop\n        self.setState(e)\n        # This does not handle (e1.getR)\n# @end__  # 260: for index in 1",
+          " The next part is the recursive and the last one is the same. A's second function to find the n(th) function. The initial line is not used to be the output of the n 26. But for the 34, the first has a result in that the 3000000022000023000.\n\n\n\nFor the second sample and the smallest possible code:\n",
+          "\n\t\tint(t) := 0,\n*\nfor 12000 iterations, this is not in the 0th 123-14 120658017156 8.1%176 100% ,  *\n10057658 0642344490 134505.87",
+          "\n    assert(r_b.is_t1_c1_u0_1[1][0].is_all(2))\n    # \u8fd9\n    # This might be the first type of the output. The two values of a 20006080 (i2\n    # 1222117032.34347169296901010, "
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.07291666666666667,
+          0.14583333333333334,
+          0.14583333333333334,
+          0.11458333333333333
+        ],
+        "distinct1": [
+          0.5208333333333334,
+          0.59375,
+          0.53125,
+          0.3541666666666667,
+          0.4479166666666667
+        ],
+        "distinct2": [
+          0.8421052631578947,
+          0.9368421052631579,
+          0.8105263157894737,
+          0.7578947368421053,
+          0.8842105263157894
+        ],
+        "halt_depth": [
+          2.08,
+          2.18,
+          2.08,
+          2.06,
+          2.03
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "\n\n\tif n_\n\n#include <i_255008\n\ndef fibonacci(n):\n\n\tif n_index == 0:\n\n\t\t\treturn num_229a16_b1398a1,\n\n\nNow, if I'm trying to write\n\ndef fib_sequence(n1, n_index):\n\n\ndef fib_sequence_list(n,\n\n7,\n\n\n",
+          "\n\n    if n <= n:\n        return n_\n\nWait, no, the first if the first n is\n\nif (v == 0):\n\nif (k10) + (k20) + (k10k + k_t) + ... ?\n\nNo for sure, this is a bit part of this.\n\nHmm's code:\n\nf.r\n\nSo perhaps it should be:\n\n",
+          "\n    def recursiveDataKey(n, memo):\n        if memo_key_data is None:\n            return _fib\n# If the input is a Fibonacci sequence\n\n# If\n#\n# else:\n#\n# For n_fib = 0.0004001\n#\n# # If the value is 4.00000010001\n# #\n#       # This is the",
+          "\n    if n <= 1:\n        return n.next 0\n    \"\"\"\n    Corrected function\n    \"\"\"\n    # Your new version here for the corrected function.\n    pass\n\ndef find_prime_index(n):\n    if type(x) is None:\n        # Your new version here of the list comprehension for prime_indices,\n        if 5.0 is None:\n            try:\n            except:\n\n# The original problem of finding the index (",
+          "\n\tif n in memo_dict_global: \n\t\treturn memo_name\n\tf = [0, 1]\n\nSo, when Fib in a_mod_module calls fib1, the memo is a_mod_module\n\ndef fib_in_a_module_is_n_dict_fib(t)\n\t\n# The rest is  in a.\n# The memo_dict_global is a_test_"
+        ],
+        "top_share": [
+          0.09375,
+          0.16666666666666666,
+          0.15625,
+          0.07291666666666667,
+          0.1875
+        ],
+        "distinct1": [
+          0.4583333333333333,
+          0.53125,
+          0.4583333333333333,
+          0.5833333333333334,
+          0.46875
+        ],
+        "distinct2": [
+          0.7473684210526316,
+          0.8,
+          0.7157894736842105,
+          0.8736842105263158,
+          0.8
+        ],
+        "halt_depth": [
+          2.09,
+          2.14,
+          2.1,
+          2.27,
+          2.05
+        ]
+      },
+      "0.7": {
+        "texts": [
+          "\n    # base thecase of the recursion\n    # if \"d\" is 1\n    r = 2 if n_1:\n        # recursive case of the function\n        self.recursive_fib = n_1, n_2:\n            if self.n_1 == self.n_2:\n                return self.next_term\n            # self.n_2 must be greater than or is\n            def calculate_next_step(r, p",
+          "\n        # if n == 0: return m0\n        # if there is no zero and no one: return 0\n        if n == 0:\n            return [0]\n        elif s_prev[1 - 1 and 110006360015492945756940400 or 1]\n        for i in range(1, 0) if i is positive.",
+          "\n    if n_<= 0:\n          return 'Invalid input/Input'\n    elif n.\n    return\n    else:  return a\n\ndef fibonacci(n):\n    # If n's input is not a positive number\n    if a == 0 :\n      return '3'\n    elif a - n < 0:\n      # Calculate the first term, we'll store it in a and b\n      \n    return [a]\n\ndef fibonacci(",
+          "\n    if n > t:\n        return Fibonacci.numbers().get_value(n) + 1 3\n    if n <= t:\n        return Fibonacci_numbers\n    else:\n        a_fibonacci(n)\n        try: # Check if it's a string that is a string\n            Fibonacci(n) = 10 20\n        # Check if a is a 10-character string\n        if not a_fibonacci_num",
+          "\n    fib_sequence = [0.0, 1.0]\n    while len(fib_count_sequence) < n:  # This is incorrect, use fib_subsequence instead of fib_count_sequence\n        fib_subseq_len = fib_sequence[-1]\n\n\nOkay, I'm trying to build a Python function to calculate the nth, the (n+1,k). Wait, actually, this is for"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.14583333333333334,
+          0.08333333333333333,
+          0.0625,
+          0.09375
+        ],
+        "distinct1": [
+          0.5104166666666666,
+          0.4479166666666667,
+          0.59375,
+          0.4479166666666667,
+          0.59375
+        ],
+        "distinct2": [
+          0.8105263157894737,
+          0.8,
+          0.8631578947368421,
+          0.7368421052631579,
+          0.8842105263157894
+        ],
+        "halt_depth": [
+          2.07,
+          2.04,
+          2.18,
+          2.19,
+          2.15
+        ]
+      }
+    },
+    "To solve the quadratic equation x^2 - 5x + 6 = 0, we": {
+      "0.0": {
+        "texts": [
+          " 1210 \\log 10 \\cdot 134 \\cdot 4 + 752 12 a \\times 1.8 \\left(1) \\tan 1441 \\times a + 120100 - 25273.5.\nSo the third part in both x is 20, 3000000000. However the line",
+          " 318 - 25812000\n\n## The probability from the equation of the value, we find the sum with the first 22x01250 6960x to 169010,254 = 16398, which can be the same right and the number must be the number of the remainder in the original sequence and have 66474",
+          " 08, 19-43724293522889245024939.48274737368854861230949395, 25.156564361841\n\nNow let's find the last variable.\n\nIn addition: 1: 15",
+          " 22 - 4.\n\nThe total difference is x (a) is the same as 1.\n\nThe equation of y^2 and 1240 (1000.\n\nThe original expression \\( \\frac{3400000900000000) \\cos (4000000000000000000000",
+          " c^{1} \\cos \\sqrt{1} x + \\frac{n \\cdot 212 \\pi \\left(\\frac{1}{2} \\tau \\alpha (19) \\sqrt{1}{2} \\phi) \\sqrt{1} \\epsilon} \\cos \\left(r) \\frac{p}{4} \\pi c \\left(m\\left( \\right) \\right) \\cdot \\sigma \\left"
+        ],
+        "top_share": [
+          0.15625,
+          0.09375,
+          0.10416666666666667,
+          0.3958333333333333,
+          0.22916666666666666
+        ],
+        "distinct1": [
+          0.34375,
+          0.4479166666666667,
+          0.2604166666666667,
+          0.34375,
+          0.3541666666666667
+        ],
+        "distinct2": [
+          0.7263157894736842,
+          0.8631578947368421,
+          0.7894736842105263,
+          0.5684210526315789,
+          0.631578947368421
+        ],
+        "halt_depth": [
+          2.03,
+          2.02,
+          2.03,
+          2.01,
+          2.06
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " 0 + 1000.502174289873442699787236411331846577188442777591924135268143189399285947194802766443322",
+          " 10.\n\nBut the original equation is a number of equal to 10x1, which must be the equation to do.\n\nTherefore, I don't use for\n\nYes we need to compute the square of the difference between 0 of the first part of the equation. But we have the first part as the previous step of the number.\n\nTo use the sum of the final x^2 and which equals the total length of the",
+          " 2x + 23 + 28\n\n20086 670 / 14939502\n\n### RAT\n\n- The value to be \\delta 6700398 or less than 19013\n\n#### 6:\n\\[ 1 \\cdot 301412004 + \\left.\n\\[ 187",
+          " 3.\n   Solution The total calculation of each problem which satisfies the quadratic-c (c) - a quadratic equation which would be the one to solve the problem (which must be a quadratic) - 0 - 312, 2.124 - 1.03550289816. - 1.59850\n\nI think the answer of your base can be 2000",
+          " 22 - 6293^{1} \n\n 0/2 - 326861x^246(125) + 1837313374866034 000004662593638416655203436382599262876456"
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.13541666666666666,
+          0.11458333333333333,
+          0.07291666666666667,
+          0.15625
+        ],
+        "distinct1": [
+          0.13541666666666666,
+          0.53125,
+          0.375,
+          0.46875,
+          0.21875
+        ],
+        "distinct2": [
+          0.7052631578947368,
+          0.8421052631578947,
+          0.7789473684210526,
+          0.8631578947368421,
+          0.7684210526315789
+        ],
+        "halt_depth": [
+          2.01,
+          2.03,
+          2.03,
+          2.03,
+          2.01
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " 0 + 6x\nput the number in 25592830\n[142889340]\nIn the equation above, we can see:\n12x = 10868982\n\nWe can solve the quadratic equation by the quadratic or a x^2+2x+2=0 or  by 0 to 16412735.\n",
+          " 0\n\nNew Instruction:\nSolve:\n- Write a Python function that takes a list of integers in descending and a constant K in a-2 to c, inclusive,\n- Determine the first solution (pair of 3 consecutive numbers in the list: x1 and x2,  where x can be any integer,\n- The first solution in the equation x^2 - 100000000000\n-",
+          " 0 + 1\n\n2. Solve the linear equation to find the value of the maximum.\n\n\nSo the number of questions:\n\nSo (466) = 16914000\n\nand 2) -(3) for the second value in the first value.\n\nBut when the second question is:\n\nNow the question 1000 is not\n\nBut now I have another question to try",
+          " 2\n\n**Final Answer:**\n\n\nThe quadratic equation, when the right-hand side is zero by the original equation \\(x^2 \\equiv 5x) +6 - 2e0 - 6 - 20000000000000000 = 0:\n\n\\[ 2x^2 - 2014x + 1000 =",
+          " 12, \nThen, find the average of all solutions in a polynomial, \nMult 240 by 2000 in a row, 3 times. But the 2000 should not include the 4 zeros, which should be counted individually to make the maximum 3, multiply each time. \n\nFor the average of three numbers, the formula is (10, 120000) = "
+        ],
+        "top_share": [
+          0.09375,
+          0.125,
+          0.11458333333333333,
+          0.22916666666666666,
+          0.125
+        ],
+        "distinct1": [
+          0.4270833333333333,
+          0.5,
+          0.4791666666666667,
+          0.4270833333333333,
+          0.4895833333333333
+        ],
+        "distinct2": [
+          0.9157894736842105,
+          0.8210526315789474,
+          0.8631578947368421,
+          0.6842105263157895,
+          0.7789473684210526
+        ],
+        "halt_depth": [
+          2.02,
+          2.13,
+          2.07,
+          2.03,
+          2.05
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " 0 by factoring at each step.\n\nSolution: To solve the quadratic problem \\( x^2 - 2x + 3 = 2 \\) (note the correct equation should align with the problem's solution), let's follow these steps:\n\n1. The second-degree value in a quadratic equation:\n   The quadratic value equation \\( ax^2 - bx + c = 0 + 1 * 4 + 10 = ",
+          " 0 and find y and z when each value is substituted;\n\n(b) = [x11x2k + 12, 10 + 12 109769]\n\n(c) 3003 - 2(3005 + 207) =\n\n# Find x when px20 + 10x, where p:0.4, is a",
+          " 13\n\nSolution:\n\nTo solve the quadratic equation x on both side of the equation, we must move the term if the equation on one side to the other. \n\nThe given equation of the right side is x^2 - 20x + 10 + 4x + 6.\n\nx = 6; 8\n\nSolution: \n\nTo check the above solution which has been determined, substitute the values x",
+          " 0.\n\nNew Instruction:\nSolve the quadratic equation: x^2 - 5x + 2 = 0290. Solve the problem equation using a method other than the quadratic formula. Use the square root of the square root method. Do NOT find the square root of the square roots in any step.\n\n\n\nNew Instruction:\n\n- The first step in the square root of the square root method is to move at least one square",
+          " 2x - 20, and find the solutions of the equation.\n\nThe equation is a standard point-slope form of a linear equation. \n\nNote: The quadratic equation can be simplified by bringing all terms.\n\nSolve (\u221c(x/20) + \u221c(10) \\left(5 - 2\u221cx) \\right) = 1, (\u221bx - (4/3)x"
+        ],
+        "top_share": [
+          0.09375,
+          0.11458333333333333,
+          0.10416666666666667,
+          0.09375,
+          0.052083333333333336
+        ],
+        "distinct1": [
+          0.5833333333333334,
+          0.4270833333333333,
+          0.53125,
+          0.5208333333333334,
+          0.5625
+        ],
+        "distinct2": [
+          0.8842105263157894,
+          0.7894736842105263,
+          0.8526315789473684,
+          0.7684210526315789,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.17,
+          2.03,
+          2.04,
+          2.15,
+          2.19
+        ]
+      }
+    }
+  }
+}
