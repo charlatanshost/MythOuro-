@@ -21,6 +21,11 @@ Everything MythOuro builds on or drew ideas from. Credit where credit is due.
   Ouro's exit gates are trained by the task loss while ours are shaped only by
   the depth regulariser. See docs/growth_design.md "loop-loss supervision".*
 - **Ouro-2.6B-Thinking** — ByteDance. huggingface.co/ByteDance/Ouro-2.6B-Thinking.
+  Config: 48 layers, hidden 2048, 16 heads, intermediate 5632, `total_ut_steps=4`,
+  vocab 49152. **Training budget ~7.7T tokens (arXiv 2510.25741) — RECORDED FROM
+  MEMORY 2026-09-22, NOT VERIFIED against the paper. Check before quoting it**;
+  it is the denominator in every "how far behind are we" comparison (we are at
+  ~2.85B), so a wrong value there misleads the whole scaling argument.
   *The distillation teacher; a recurrent-depth model itself. MythOuro's student is
   vocab-aligned to it (logit-level KD requires shared vocabulary).*
 

@@ -2762,6 +2762,61 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-22 — 📏 OUTSIDE CALIBRATION: size is not the constraint. 362M at 4T beats 240M at 2.85B by 8x on correctness.
+
+The project had no outside reference — the owner's smallest prior model was
+Bonsai 1B, so "is this normal for 300M?" had never been answerable. Three
+instruction-tuned references scored through `code_eval --reference` (their own
+tokenizer, plain HF load), identical prompts, sampler, seed, budget, bare
+framing, n=320.
+
+| model | active | tokens | L0 | L3+ | **L4** | committed |
+|---|---|---|---|---|---|---|
+| SmolLM2-360M-Instruct | 362M | ~4T | 55.9% | 37.8% | **30.0%** | 32.2% |
+| Qwen2.5-0.5B-Instruct | 494M | ~18T | 32.8% | 46.9% | **18.1%** | 19.7% |
+| OURS wide pt3 | 240M act | 2.85B | 7.7% | 68.2% | **4.5%** | 42.4% |
+| OURS anneal (best) | 240M act | 2.9B | 4.0% | **81.7%** | **3.6%** | 27.5% |
+| OURS large (fresh) | 695M act | 29M | 98.9% | 0.3% | 0.0% | 0.1% |
+| TEACHER Ouro-2.6B | 2.6B | ~7.7T¹ | 0.6% | 97.8% | **70.6%** | 72.8% |
+
+¹ from the Ouro paper (arXiv 2510.25741) **from memory — not verified against
+the paper. Confirm before quoting.**
+
+`gemma-3-270m-it` is a gated repo and did not run; it needs an HF login and
+license acceptance.
+
+### The answer: size is not the binding constraint
+
+**A 362M model, smaller than our current 436M-total student, gets 30.0% L4
+against our 3.6–4.5%.** Relevance and correctness are plainly reachable at
+this parameter count. What separates us is ~1,400x in tokens (2.85B vs ~4T),
+and distillation narrows that gap without closing it.
+
+### The split in the table is the diagnosis
+
+We are BETTER on L0 (4.0% vs 55.9%) and L3+ (81.7% vs 37.8%) and far worse on
+L4. The references are chat models given a raw `def f(x):` stub — they often
+decline to continue it, which is what their L0 measures. We always produce
+code-shaped text and it is usually wrong. **Fluent and irrelevant versus terse
+and right**, exactly as the owner described it.
+
+This also re-confirms the 2026-08-21 correction from the outside: **L3+ is the
+metric we look best on and it is not a capability metric.** L4 is, and L4 is
+the number that has never moved on any lineage, under any objective, at any
+size we have trained.
+
+### What it means for the 695M lineage
+
+The question is no longer "is the size big enough" — 362M suffices for a model
+trained properly. It is whether a 695M student converts DISTILLED tokens into
+correctness faster than the 278M did. The 278M went 0 → 4.5% L4 over 2.85B
+tokens. That is the curve to beat, and points 2–4 of the fresh lineage are the
+first evidence either way.
+
+Bare framing understates the references (they are chat models on our home
+ground), so the real gap is larger than the table shows. That is the honest
+direction: it does not soften the finding.
+
 ## 2026-09-21 — ❌ RUNG 6, LEG 1: capability did not move, the base broke, and the templates were wrong
 
 3,000 steps from `anneal@3000`, `--onpolicy-instruct`, α=0.5, prompt 64 +
