@@ -194,6 +194,68 @@ of N×-expensive.** The two bolder syntheses (lanes-as-micro-paths, agreement-as
 diversity-decorrelation question (parallel_loops §4) — validate that first. All stage-gated behind
 coherence.
 
+
+---
+
+## 2026-09-22 — link filed: EmergentMind "Looped Language Model (LoopLM)" topic page
+
+`https://www.emergentmind.com/topics/looped-language-model-looplm` — an
+aggregator, not a paper. Read for what it adds to §1. Five of its eight
+citations were not previously filed:
+
+| paper | filed? | verdict |
+|---|---|---|
+| Saunshi et al. **2502.17416** *Reasoning with Latent Thoughts* | yes (references.md) | **the one that matters — see below** |
+| Ng et al. **2409.14199** *Loop Neural Networks for Parameter Sharing* | yes | GPT2-81M looped ≈ deep baseline. Same claim as Saunshi, smaller scale. |
+| Giannou et al. **2301.13196** *Looped Transformers as Programmable Computers* | **new** | theory: loops emulate iterative algorithms given "sufficient loops". Depth-as-computation, no training recipe. |
+| Yang et al. **2311.12424** *Looped Transformers are Better at Learning Learning Algorithms* | **new** | parameter efficiency vs standard transformers. In-context learning, not LM. |
+| Chen et al. **2410.11268** *Bypassing the Exponential Dependency* | **new** | L loops ≈ L² in-context examples. Theory, linear attention. |
+| Gao et al. **2402.13572** *AlgoFormer* | **new** | **pre-transformer / looped core / post-transformer** — our exact prelude-recurrent-coda split, independently arrived at. Joins Retrofitted Recurrence (2511.07384) as prior art for the layout. |
+| Wu et al. **2510.24824** *Parallel Loop Transformer* | **new** | cross-loop parallelism; efficiency, not capability. Same bucket as PLT/LoopCoder in §1. |
+
+### The finding that speaks to the current question
+
+Saunshi et al. (already filed, but only as "looped depth-extrapolation
+theory") reportedly separates the two axes:
+
+> **reasoning accuracy scales with computational depth (loop count), not
+> parameter count — while MEMORISATION remains parameter-dependent.**
+> "A shallow model looped multiple times rivals a deep unlooped model."
+
+And the aggregator's summary of Ouro (2510.25741) lands on the same split:
+*"reasoning benefits more than memorisation."*
+
+**This is our result, from the other direction.** Measured here:
+
+* **reasoning-ish (code L4): flat at ~4-5%** across every size and objective —
+  and we have never increased loop count. 4 loops throughout, `grow_depth.py`
+  shelved, the 2026-07-31 depth sweep tested UNTRAINED extrapolation (4/6/8)
+  and correctly concluded nothing about trained deeper loops.
+* **memorisation (medical fact recall): flat at 3-4/30** — and the roadmap's
+  own capacity estimate is ~90-170M tokens of facts at 2-4 bits/param. That is
+  parameter-bound, and we went 180M → 240M activated, which is nothing.
+
+If Saunshi is right, we have spent the entire project moving the axis that
+governs memorisation (params, tokens, width) and never once moved the axis
+that governs reasoning (loops). Ouro trains at 4 and so do we — but Ouro is
+**48 layers** inside its loop and we are **2+2 prelude/coda over a 1-layer
+shared block**. Same loop count, an order of magnitude different depth *per*
+loop.
+
+⚠ **Read from an aggregator's summary, not the papers.** Before this becomes a
+decision, read 2502.17416 directly: whether the depth/param separation holds at
+LM scale or only on the synthetic reasoning tasks it was measured on decides
+whether it applies to us at all. Filed as a hypothesis with a name, not a
+finding.
+
+### What it would change
+
+It re-opens rung 5 (`grow_depth.py`, 4→8 loops) on a *different* argument than
+before. It was shelved for "needs a base worth spending the nights on", and the
+2026-09-18 ceiling measurement plus this split is a better reason to revisit it
+than that gate was to close it. It is also the one architectural axis this
+project has never tested, in a model whose entire premise is recurrent depth.
+
 ## See also
 
 - [parallel_loops.md](parallel_loops.md) — the parallel-paths design + §7 prior-art (PLT, RRT, Hyperloop).
