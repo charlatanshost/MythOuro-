@@ -75,6 +75,13 @@ TEACHER=ByteDance/Ouro-2.6B-Thinking
 FILES="data_teacher_code/shard_*.jsonl,data_teacher_math/shard_*.jsonl,data_teacher_v2/shard_*.jsonl,data_teacher_med/shard_*.jsonl"
 LEG="${LEG:-3000}"                 # steps per leg — MUST be a multiple of 3
 MILE=$(( LEG / 3 ))                 # three milestones per leg, whatever the leg length
+# ⚠ --ckpt-every (the STEP-based save trigger, default 500) must equal MILE, or
+# nothing is ever SAVED at the milestone steps and --ckpt-milestone-every has
+# nothing to retain. 2026-09-22: LEG=1800 -> MILE=600, saves landed at
+# 500/1000/1500 (the default), retention protected 600/1200/1800, and
+# keep-last pruned the rest — leg 1 finished with no milestones. The 3,000-step
+# curves only worked because 1000 is a multiple of 500. Both flags are set from
+# MILE now.
 # --ckpt-milestone-every is a GLOBAL modulus, so leg boundaries must land on
 # multiples of MILE: LEG=2000 -> MILE=666 -> milestones 666/1332/1998 and no
 # checkpoint at the readout steps the script computes. Caught 2026-09-21
@@ -139,7 +146,7 @@ python -u -m training.distill \
   --teacher-data-ratio 0.2 --teacher-data-files "$FILES" \
   --onpolicy-lambda 0.7 \
   --ckpt-dir "$DIR" \
-  --ckpt-every-mins 20 --ckpt-milestone-every "$MILE" --keep-last 3 \
+  --ckpt-every "$MILE" --ckpt-every-mins 20 --ckpt-milestone-every "$MILE" --keep-last 3 \
   --num-workers 0 --trust-remote-code --log-every 10 \
   --total-steps "$leg_end" \
   > >(tee -a "$LOG") 2> >(tee -a "$LOG.err" >&2)
