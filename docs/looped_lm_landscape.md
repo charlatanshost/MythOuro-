@@ -320,6 +320,78 @@ accuracy is flat across loop counts the hypothesis dies cheaply; the
 2026-07-31 sweep did exactly this and found flat, but on a far weaker base and
 before `exit_pdf` trained the halt gates.
 
+
+---
+
+## 2026-09-22 — 📐 LoopMoE (2606.04438) is our architecture, and it names a structural anomaly we have: we are 2-3.5x FFN-heavy
+
+**LoopMoE: Unifying Iterative Computation with Mixture-of-Experts for Language
+Modeling** — Chen, Li, Huang, Yin, Shang, Qin. [arXiv:2606.04438](https://arxiv.org/abs/2606.04438).
+Read via abstract, not the full paper.
+
+> "MoE and looped architectures scale models along two orthogonal axes, namely
+> parameter capacity and effective depth."
+
+That is the framing of our entire plateau, from a paper on our exact
+combination. It claims *"the first strictly controlled, head-to-head evaluation
+of a looped MoE against a Vanilla MoE under identical total parameters,
+per-token FLOPs, and active sublayer ratios"*, at 3B and 9B.
+
+⚠ **Not "Loopie".** A prior summary named this work Loopie and attached
+20B/2B-active figures to it. The paper is LoopMoE and the abstract gives no
+parameter or token budgets. The same source produced two inconsistent
+descriptions of it; treat both as unverified until the PDF is read.
+
+### The mechanism worth taking: the active-parameter ratio
+
+LoopMoE includes *"a capacity-balancing strategy that recovers the
+attention-to-FFN active parameter ratio of well-tuned non-looped references."*
+Measured on our own configs (active FFN = top-k experts only):
+
+| config | attn | FFN (active) | **ffn:attn** |
+|---|---|---|---|
+| tiny 278M | 20.5M | 85.2M | **4.16** |
+| **wide 436M** | 20.5M | 144.2M | **7.04** |
+| large 922M | 136.3M | 427.8M | **3.14** |
+| standard transformer (SwiGLU) | — | — | **2.00** |
+| **Ouro-2.6B** (2048 / 5632) | 16.8M | 34.6M | **2.06** |
+
+**We are 1.6-3.5x FFN-heavy against both a standard block and our own teacher.**
+The wide model is worst because Net2Wider doubled `expert_dim` and touched
+nothing else — all of that growth went to FFN while attention stayed frozen at
+dim 1280. `large` is closest to normal at 3.14 because raising `dim` grew
+attention too.
+
+**Why this is a candidate and not just a curiosity:** attention is what moves
+information BETWEEN positions — the operation that binds "ibuprofen" to "what
+is it used to treat". A model starved of attention relative to FFN would be
+expected to look fluent per-token and poor at relevance, which is the failure
+we measure. None of the levers swept so far (tokens, width, α, LR, objective,
+loop count) would have surfaced it.
+
+⚠ **It is a parameter-count ratio, not a FLOP or capability measurement**, and
+the causal claim is LoopMoE's, read from an abstract. What is ours is the
+number: our ratio is off, by a lot, and nobody had looked.
+
+### The other mechanism: IterAdaLN
+
+*"Resolves weight-sharing symmetry via a modulation signal jointly conditioned
+on the iteration index AND the per-token hidden state."* We condition per-loop
+on the iteration index only (`InjectionScheduler`, a learned per-loop
+log-scale; plus loop-index embedding). Conditioning on the hidden state too is
+strictly richer — and "weight-sharing symmetry" is the exact failure mode the
+expert-growth programme hit twice (twinned experts at ~90% similarity,
+symmetric units that never separate, 2026-09-01).
+
+### What to do with it
+
+1. **Read the PDF.** Both mechanisms are described from an abstract here.
+2. **The ratio is checkable and cheap**: a config with attention widened
+   (more heads or larger head_dim) against FFN held, at matched total params,
+   is a one-night A/B on the existing curve harness.
+3. Do NOT retrofit `wide` — it is the 7.04 outlier and is being retired in
+   favour of the fresh `large` lineage anyway.
+
 ## See also
 
 - [parallel_loops.md](parallel_loops.md) — the parallel-paths design + §7 prior-art (PLT, RRT, Hyperloop).
