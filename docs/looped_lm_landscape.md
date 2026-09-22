@@ -256,6 +256,70 @@ before. It was shelved for "needs a base worth spending the nights on", and the
 than that gate was to close it. It is also the one architectural axis this
 project has never tested, in a model whose entire premise is recurrent depth.
 
+
+---
+
+## 2026-09-22 — filed: a Gemini summary of the LoopLM landscape. Two new items; most of it was already here with the attributions scrambled.
+
+Checked claim-by-claim against the existing docs before acting on any of it.
+
+### Already filed, and in two cases the summary contradicts our own reading
+
+* **Identity-biased gating (bias −2.0) + LayerScale 1e-4** — presented as
+  generic "stabilization techniques". They are specifically **Silent Thinking,
+  [2603.21676](https://arxiv.org/abs/2603.21676)**, already in §0 of this doc
+  and flagged there as **opposing** rung 3 (it argues final-step-only loss and
+  that intermediate supervision is harmful — we run `exit_pdf` on every loop).
+* **Per-token fixed-point convergence** — already filed via **FPRM
+  [2606.18206](https://arxiv.org/abs/2606.18206)** and **Two-Scale Latent
+  Dynamics [2509.23314](https://arxiv.org/abs/2509.23314)**, and
+  `references.md` records the opposite conclusion to the one implied: 2509.23314
+  claims its step-size criterion **beats** KL-based early exit, and our own
+  `UncertaintyHead` is "a third family, and the one that keeps failing here."
+* Universal Transformers, RMT, Giannou/Geiping algorithmic looping — all filed.
+
+### New, and worth having
+
+* **[2607.14427](https://arxiv.org/abs/2607.14427) — *Per-Token Fixed-Point
+  Convergence in Depth-Recurrent Transformers*, Joe Logan.** Read directly.
+  135M-class model on FineWeb-Edu. Successive-output KL falls 3.9e-1 at loop 2
+  to 8.5e-6 by loop 16. **Convergence depth is ordered by token type —
+  whitespace shallowest, content words deepest. Median token converges by loop
+  6; ~10% still updating at depth 8.**
+  ⚠ **It does NOT claim more loops improve capability** — the opposite of how
+  the summary framed it. Validation loss is FLAT past 8 loops; the result is an
+  efficiency one (early-exit at 4.94 average loops, 38% fewer, same quality).
+* **Loopie — MoE + looping**, 20B total / 2B active and 6B total / 0.6B active.
+  Not in any of our docs. The only filed work combining our two axes (MoE and
+  recurrence) at scale. Claim: small active footprint looped beats vanilla
+  transformers at equal pretraining compute. **Unverified — no arXiv ID in the
+  summary and not independently checked.** Find the paper before citing it.
+
+### The one number that bears on our plateau
+
+We run **K=4**. 2607.14427 measures the median token converging at **loop 6**,
+content words deeper, ~10% still moving at 8 — on a 135M model, so if anything
+a larger model needs more, not less.
+
+That is consistent with what we see and it is NOT the same claim as "more loops
+= more capability":
+
+* fluent, grammatical, syntactically correct output — the token classes that
+  converge by loop 2-4;
+* wrong content — the classes the paper measures as converging deepest.
+
+⚠ **Consistent-with is not evidence-for.** The paper's own capability finding is
+that loss is flat past 8, and its 135M model is not ours. What it supplies is a
+mechanism that would explain the failure shape, and a measurable prediction:
+if K=4 truncates content tokens mid-convergence, then raising K at inference
+should move content accuracy and leave syntax alone.
+
+**That is testable on a checkpoint we already have, on the card, in minutes** —
+`code_eval --n-loops` at 4 / 6 / 8 on `anneal@3000`. Not a training run. If
+accuracy is flat across loop counts the hypothesis dies cheaply; the
+2026-07-31 sweep did exactly this and found flat, but on a far weaker base and
+before `exit_pdf` trained the halt gates.
+
 ## See also
 
 - [parallel_loops.md](parallel_loops.md) — the parallel-paths design + §7 prior-art (PLT, RRT, Hyperloop).
