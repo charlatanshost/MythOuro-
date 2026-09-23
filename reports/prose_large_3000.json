@@ -1,0 +1,916 @@
+{
+  "step": 3000,
+  "samples": 5,
+  "temp": 1.0,
+  "top_k": 50,
+  "alphas": [
+    0.0,
+    0.25,
+    0.5,
+    0.7
+  ],
+  "seed": 0,
+  "rollout_len": 96,
+  "seeds": {
+    "In the morning the weather was clear, so we decided to": {
+      "0.0": {
+        "texts": [
+          " be on a day of two people, which seems in the first 1540 to 14000, but is the second of a. So a good-and not. The first (c2) comes?\nH. The question is not possible in the first part of the first and that it is less than the answer for each year, after the first of the 10 people (but the number of 10) is 2",
+          " take a half of the 580 in the same, the other, and the second of the second, and then the one of the 1.\n\nFor the world, a \"A2\"\n\n**\n\n- The most important,\nthe two times of the most of the day 208, which it has only 2000. However, if the 1000 is the third, the number is 2",
+          " be divided at a perfect person, but as a number of different areas of a certain two days in a second. A man is the first thing that the point would be divided to a few of the other three\n\nIn the third-point of a certain in\n\nthe 20-7. I would have been of the first, which is just one the three ones? Now you need to have an example, in the second three to 3002",
+          " bring a short way to have a whole person, maybe in the first month, is a good\n\nThis time is about the key to a person.\n\nI don't see what it was not in the order.\n\nIt's the same, but what's the other people, or with the second-1012 (which would be 21151011\n\nWell, the third and the last, no more information. Or",
+          " use the main first of the 40000, or the 25, 25,359, then the 326 for the other 921, that it is the same for the following example is 7257.\n\nThe question is 120020, and the first time 210. The total number is used as a 4.3123.\n\n"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.13541666666666666,
+          0.07291666666666667,
+          0.08333333333333333,
+          0.09375
+        ],
+        "distinct1": [
+          0.5416666666666666,
+          0.4583333333333333,
+          0.5833333333333334,
+          0.6041666666666666,
+          0.3958333333333333
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.8105263157894737,
+          0.9368421052631579,
+          0.9052631578947369,
+          0.8
+        ],
+        "halt_depth": [
+          2.03,
+          2.02,
+          2.01,
+          2.01,
+          2.06
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " get outside the new building and even not going through the second, which would actually be an example of the best kind of the new and the two of the books.\n\nHere, the first person may have no idea of an easy, but you could have a good place. So it's a question of a way to see, that you want to add a more simple thing.\n\nSo I have a lot of a lot of something about that the game would have been",
+          " find the most common words in the English.\n\n**The 8 or 10-0-02 rule, which is not the problem. What's being the most common words in the English, but let me let me explain the two cases.\n\n- The problem is a problem in the English language. There are many cases where the problem is: 5-31+2-1, which is 22, which is the first question",
+          " have a lot of fun, to have some thing new. The second is the question (c) and the last thing is like a long-awa, of the first in his life. When the first of the third.\n\nI can take some examples, it is in the third. And perhaps a great thing, but the second would be the person but it was 12, but since I saw it the second person, I think there is, so you would",
+          " go into the rest of town, that's a little 18 minutes walk that we are given the key for the following is a short way that can you have to get your first thing.\n\nHours, 150, 447: 16, 545, 583,964, but why does it be in the way. It would actually be 20-minute and 214 (",
+          " have a bunch of children in its first two words, which are almost exactly.\n\n1. 122-2105 is 11. \n\nSo the \"R\" appears in a \"A+\" in the first and in the 1 - 0\nI. Since this makes so that is a first word, and it is being done. How many ways can help to take up? It can do be a, so, 0"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.09375,
+          0.09375,
+          0.08333333333333333,
+          0.0625
+        ],
+        "distinct1": [
+          0.6145833333333334,
+          0.4791666666666667,
+          0.5729166666666666,
+          0.6145833333333334,
+          0.6041666666666666
+        ],
+        "distinct2": [
+          0.9052631578947369,
+          0.8,
+          0.9368421052631579,
+          0.9263157894736842,
+          0.9473684210526315
+        ],
+        "halt_depth": [
+          2.01,
+          2.08,
+          2.01,
+          2.04,
+          2.06
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " go a very famous city called the \"a\" and its adjacent and not adjacent to a different city, so, the first thing we did, we can do this right? How many city and town and the distance from the city: (4) is the way that the same city and the city should have the same number of the number? A: How is the last two (4) city and town and town and the distance from the city. The two (5)",
+          " find out how high above (or under) for a specific\n\nS(T) value we can choose the time T-T and how long it can be maintained by\n\nThe first two values is the same, which seems to be in any case the three most people that it's still in the air.\n\nThe first two values are the same, but what's the difference between \"s\" and \"t\" in this problem, so, and, and",
+          " be the first to come and the first and the first and the first, or just it was like that the first is a bit...\n\nQuestion: What is the problem with the first three lines of code.\n\nAnswer: Which is the first line in the first paragraph of code.\n\nHmm. The question is asking a bit more recent\nI have to check my data.\n\nI think I need to find the number of lines from the end of",
+          " be out. 1 went on the bus, 1 went on a horse. The woman drove a car and the children could be at the school.\n\nBut what was the weather in the first paragraph? It's all in front!\n\nWait, how would you find a pair of words, let me take the total number of words, and how would be the number of words, but the weather is 2. So the same as the number of words,",
+          " make a trip in a countryside.\n\n\nNow he has a list of the \"the most important\" things he has to have with a specific priority for it. And I was not so important...\n\n08:37, I thought I will go after him, but I would lose a lot for...\n\n08:36: 4 days ago, I was not afraid, I wasn't\nI believe I can actually be a person.\nBut the"
+        ],
+        "top_share": [
+          0.125,
+          0.0625,
+          0.11458333333333333,
+          0.10416666666666667,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.5208333333333334,
+          0.65625,
+          0.5416666666666666,
+          0.5625,
+          0.65625
+        ],
+        "distinct2": [
+          0.8105263157894737,
+          0.9052631578947369,
+          0.7894736842105263,
+          0.8421052631578947,
+          0.8947368421052632
+        ],
+        "halt_depth": [
+          2.04,
+          2.04,
+          2.01,
+          2.09,
+          2.04
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " go at the beach. But if you want something, the person will be the best. You need to calculate the second smallest and second, the largest numbers in a range [B, C], and write about the total distance in a non-negative solution. But this time, with the first part we have to compute the maximum number of people in the following interval.\n\nQuestion: A person writes down a certain number of characters in a sequence. What is the smallest",
+          " be outside. I think there is a very good chance that we will be outside the whole day, because the weather is not going, but a little bit cloudy. Which means that there are a lot of things going to happen around us, and at a certain point we will probably need to do a lot of things.\nIt seems also the same. The weather is clear and sunny, so the \"I can't take something with me\".\nSo you are probably talking about",
+          " get out and enjoy the  sunny day. I packed a picnic and brought a camera, a notebook from which it was easy. The car is old but still running. I drove with my son-in the-law, my first husband.\n\nNow, in 2022, and in this very same year, after 7 years, the car became broken, and I was able to buy a new one. I had just come back from the world championship",
+          " go the nearest white, sandy, and blue would be a good start (but only the top three). \"But that' s is my idea ! \"said my wife.\n\nThe first-generation is the one where the baby can also be called the \"second-gen\" and then that can be used to tell the child, and in general, the \"third-a\" will be the one with the best memories. When a baby reaches the third-gen,",
+          " play outside the city of Lviv (we live in the city which is considered\nsafe for our purposes) The day started in the morning, and the sun was shining. But in the\nafternoon, suddenly it began to rain and this is a very unusual, but it was not bad. That was when I\n\nwas thinking about the weather and weather forecast.\n\nI did my research and found at the most popular weather forecast systems (Meteobl),"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.052083333333333336,
+          0.07291666666666667,
+          0.10416666666666667,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.6770833333333334,
+          0.6770833333333334,
+          0.65625,
+          0.6354166666666666,
+          0.6979166666666666
+        ],
+        "distinct2": [
+          0.9473684210526315,
+          0.9368421052631579,
+          0.968421052631579,
+          0.9578947368421052,
+          0.9473684210526315
+        ],
+        "halt_depth": [
+          2.0,
+          2.04,
+          2.05,
+          2.02,
+          2.09
+        ]
+      }
+    },
+    "The treatment for a bacterial infection usually involves": {
+      "0.0": {
+        "texts": [
+          " a single 'A' and in the specific.\n\n155. [2] If there are both possible or more significant a small chemical. An alternative process in the first reaction of the other\nn\u2026\n\n*\n\nThis study is to understand the first 15m... for a 300A-30-000074-210, which is a good number; in\n\n### 101",
+          " the second solution, using the first, and the total number of DW (I-I) of the D2-S.71-D2 (B) (537-M) The enzyme is...(L-12/H117) in the 2-25-121-1-1?3-P9 is the time as the 10-A-223751 and the",
+          " the two changes of 1.0% 0.13\u2013100.00 \nThe original study of the 16.682-206 1, 14, 800, 200. 4.000=20.0+10100.9.325112820000.0002.02",
+          " a cell of the pre-dis-p-c-2 and to the same 3,001-0 C-1, 100, 0.040, c=4.04840, 6.16\u2013711, 2.0220 (8). 2.7, 4.01, 0.009.110 002",
+          " a \"d\" value. To make this function for the 224.s, I want to show the second part of a few days you try to know if we would add a lot of good steps of the first place to find the total or then the problem we had\n\nThis is about the 226200020\nThe correct time that this comes in a very recent body. Because, two conditions exist are not equal to the"
+        ],
+        "top_share": [
+          0.09375,
+          0.125,
+          0.28125,
+          0.19791666666666666,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.59375,
+          0.4479166666666667,
+          0.2604166666666667,
+          0.3125,
+          0.6875
+        ],
+        "distinct2": [
+          0.8842105263157894,
+          0.8842105263157894,
+          0.6526315789473685,
+          0.6947368421052632,
+          0.9473684210526315
+        ],
+        "halt_depth": [
+          2.01,
+          2.01,
+          2.03,
+          2.01,
+          2.04
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " antibiotics and more importantly, you should ensure to get complete a specific antibiotic to ensure some specific conditions if you are trying to be a better type (in which I can use 92-8-42) for a type of bacterial, it would be in what we try to change the system of the other ways of treating a simple response in the study of, so what\u2019s the role of the second-stage. It\u2019s a good idea to be good for",
+          " taking antibiotics for a set of days, but that number of days need to be reduced, a recent study for this type and all possible treatments have been tested. It has been determined in all cases. It is one of some important and the following conditions which has a 14\u20135. The \"diet\" function and we have a function of time (like or a total \"A\" function or \"in a long 10-05 days, including the",
+          " antibiotics. The effectiveness of the new drug in the specific scenario is that the 6-2-0 (in the CSTM) activity would also form a cell (or an organ-like for example in some cases. The problem is that the effect and the activity was in the time of the original mechanism. When the total time of the infection of the cells are the only 46-1 and the rate of 6-22 is 25-",
+          " the use of antibiotics. \n\nThis can be a primary role for the human body. \n\nThe 38th is a bit more well. \n\nThe user has provided a lot of the necessary and often required to the second. However, it's also important to a second step, but for that one. The second one of the following is the first way to get a specific study (for the research, like, the question I had been trying to determine the",
+          " the use of ______. H) in vitro. C. C. B.A. A single M, or D. S. (I, II) to the 230028, 638. D.A. 400048, 632. A.\n\n248, 43.577. (2/120). The following figure shows the enzyme of the enzyme of"
+        ],
+        "top_share": [
+          0.052083333333333336,
+          0.0625,
+          0.13541666666666666,
+          0.09375,
+          0.15625
+        ],
+        "distinct1": [
+          0.65625,
+          0.65625,
+          0.5729166666666666,
+          0.6458333333333334,
+          0.4270833333333333
+        ],
+        "distinct2": [
+          0.968421052631579,
+          0.9473684210526315,
+          0.8631578947368421,
+          0.9368421052631579,
+          0.8
+        ],
+        "halt_depth": [
+          2.03,
+          2.02,
+          2.02,
+          2.04,
+          2.04
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " antibiotics. But it is important to be aware of the antibiotic resistance, which is a potential consequence of not the second step of a 6-step process in the problem. What could be the \"Second Step 2\" if the second step is a step that is not a step in the first step, but the first step does not make the second as a result of the previous step to the second thing, and the second step doesn't involve the second step.\n\n",
+          " a very high and effective activity against bacteria that a human enzyme is.\nA number of different types of bacteria, the most significant bacteria are the first- and third, are also associated with a variety of the most common (or the more serious way of dealing with the infection, even, not one-is-re-infected, and are most commonly to show the different types of bacteria.\nIn short and some important and less-known or rare types of bacteria are associated",
+          " a combination of antibiotics in the form of pills and IV, and the duration of treatment, and how to manage symptoms. The most important thing for the brain and the main treatment can be found at the bottom, where you are on your feet, or when no one does the treatment. If you need a 2-0-0-1-28-21, and we first test the same treatment of the infection to give a treatment for your symptoms. The treatment",
+          " antibiotics. So the first step is a proper diagnosis: bacterial infection.\nThe study was considered part of a \"D\" or an \"I\" treatment program.\nIn my last study, the difference between an \"I\" and a number of \"D\" treatment programs, which are not as effective and so for example, the same condition of \"M.S.\" (S.B.D) was\n\nQuestion: What is the author of the text? Answer",
+          " a combination in the form of an antimicrobial, such as a beta-l\nactam (1) is a drug with the potential and the advantage of the 22021\u2013s is to use a combination of the treatment of 22010\u2013001 as a control and the other treatments in the 22.01; 62\u20133, 38, 83, and 3-23."
+        ],
+        "top_share": [
+          0.125,
+          0.0625,
+          0.08333333333333333,
+          0.0625,
+          0.09375
+        ],
+        "distinct1": [
+          0.5208333333333334,
+          0.5833333333333334,
+          0.5729166666666666,
+          0.6145833333333334,
+          0.4375
+        ],
+        "distinct2": [
+          0.8526315789473684,
+          0.9157894736842105,
+          0.9157894736842105,
+          0.9052631578947369,
+          0.8315789473684211
+        ],
+        "halt_depth": [
+          2.01,
+          2.01,
+          2.07,
+          2.02,
+          2.04
+        ]
+      },
+      "0.7": {
+        "texts": [
+          ":\n\n\nI need to answer this question: \"When used in treating bacterial\ninf.\n\n* a specific problem of\n\nI need to understand a few key points here.\n\nFirst of all, to make sure I understand all parts of the\n\nPlease write an answer that\n\nI can't answer.\n\nWhen is the best time for you to start your career, according to your job.\n\nThe first part is: the question is",
+          " a specific antibiotic. If a patient's bacterial infection is due to a multi-drug resistant (but still a single strain) strain, which of the following treatments would be used to treat the primary infection?\nA. An antibiotic effective against several strains of bacteria\nB. A. Antibiotics that are broad-spectrum\n\nThis could be done by using multiple drugs to simultaneously target different processes where the bacteria of the current-day pandemic and its resistance strains share or the same process",
+          " antibiotics, as they specifically target and eliminate bacteria such as Escherichia coli, and are not effective against viruses.\n\nThese are the options provided in the question, followed by a selection based on the correct choices for effective treatment against that pathogen.\n\nThe final answer is to provide a selection that matches the correct, if any, the correct antibiotic therapy. Thus, for E. coli, the correct antibiotic would be chosen from the options provided in the response as \"A) E",
+          " antibiotics, a specific type of medication that kills or stops the whole growth of bacteria. The use of antibiotics has decreased the death rate from bacterial or antibiotic-induced infections, although the treatment with antibiotics may have side effects but not, like it was before an over-dosing.\nPneumonia, in medical terms, is an effect of the bacterial, viral, and also fungal causes a combination of the infection in the lungs.\nThe treatment for bacterial enzymes is generally with",
+          " high doses in the first few days, then lower doses are of little benefit in prolong-ing the body\u2019s overall exposure to this antibiotic: the infection can be cured by a shorter course of higher doses. This effect, called the \u201cdose-duration\u201d effect, a hypothesis that was first, and the original experiments supporting it. \n\nThe research group and its collaborators, it was the first to establish proof-of an effect called the dose-duration effect on bacterial infections"
+        ],
+        "top_share": [
+          0.16666666666666666,
+          0.052083333333333336,
+          0.08333333333333333,
+          0.07291666666666667,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.5625,
+          0.7395833333333334,
+          0.6041666666666666,
+          0.6875,
+          0.6875
+        ],
+        "distinct2": [
+          0.8631578947368421,
+          0.9894736842105263,
+          0.8631578947368421,
+          0.9789473684210527,
+          0.9578947368421052
+        ],
+        "halt_depth": [
+          2.08,
+          2.04,
+          2.02,
+          2.08,
+          2.04
+        ]
+      }
+    },
+    "Common symptoms of type 2 diabetes include": {
+      "0.0": {
+        "texts": [
+          " the main response.\n\n\n3. 70102305, 6518, 997.033 \u2013 I, I was not doing the first one. I have to 16 or 1000.000 cm.\n\nThe solution shows a different types including a low system from the I/H12, 20014 in the following is the first three cases of the",
+          " the specific weight and the '1002-00-16' and at 2024. In the 334-306-21-60-17, 2.635% of the \"10-3.529 is the most useful in the original case,\"\nFor this, the results for the 1.21,222 \"11, which we do",
+          " an electron-l-\n\n- 22 - c-\n\n- M1\n\nT = 14\n-\n\n*\n\n(H)\n\n- 40\n\nT-2\n\n-\n\n- 13000\n\n-\n\n- 0\u00b0 6\n\n- 9300040\n\n- 400000\n\n**\n\n",
+          " H(S) a single S-D-D to 864-H96-4-D-A3/P7-34 \nF0-A5-201-09\n\n**\nCh4/A 10117 2020. A\n\nHow many I have been in 100000*43 and the following time\n\n**P-6",
+          " the 434, (b, 03, 24) with multiple A and 2433 (402, 293) with the 8-22-3 (45) 3.135-111, 2d23.401/441,60000-20001-6.53-31482"
+        ],
+        "top_share": [
+          0.125,
+          0.10416666666666667,
+          0.3229166666666667,
+          0.11458333333333333,
+          0.11458333333333333
+        ],
+        "distinct1": [
+          0.4895833333333333,
+          0.40625,
+          0.25,
+          0.4375,
+          0.23958333333333334
+        ],
+        "distinct2": [
+          0.8842105263157894,
+          0.8631578947368421,
+          0.49473684210526314,
+          0.8315789473684211,
+          0.7578947368421053
+        ],
+        "halt_depth": [
+          2.07,
+          2.03,
+          2.03,
+          2.01,
+          2.0
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " increased thirst. The kidneys could also be considered as the normal organ, which is affected. There have the best a11,8,550 cm 24, 20.\nThe main cause of the symptoms that all of the patients were in. The study for the treatment of a different group, for each time for the previous time.\nIn the 10, 2007, 400.4, 10",
+          " excessive and,2019, 02.16\n\nThe 14019 is an 3 and 30-year-A-22.6222A380712 as 407 of 1024. 8.5963423.23.2 the 40806, 102\n\n**\n\n**What",
+          " a single p-n-p-6074-d1) and the other steps to change a similar to those described in the current 2701. the following is a function. You have a single number. Your task is that this is a complex number in a string form of three digits; one (2/24, 576) and the other examples of a single 1000 (and then 200",
+          " increased thirst.\n\nG: 4:16:02 1,010? \n\n\n\n### Related 343 | (C)\n\nA woman's first: to the problem of the woman's most significant, when a woman's, 548,\n\nis a 5-4, 10-7-11 (51 to 31 days).\n\nC)\n\n\"I",
+          " increased thirst and urination. However, the body is not using the glucose. Instead, the first two components of a second-degree fever, and a common cause of a 0.36C and the 1930s and the development of 40.27 in 10088. This is a key mechanism that the results were not used to the same as a 10088.60433-3"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.13541666666666666,
+          0.07291666666666667,
+          0.11458333333333333,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.5208333333333334,
+          0.28125,
+          0.5416666666666666,
+          0.4479166666666667,
+          0.5104166666666666
+        ],
+        "distinct2": [
+          0.8421052631578947,
+          0.7578947368421053,
+          0.9052631578947369,
+          0.8631578947368421,
+          0.8736842105263158
+        ],
+        "halt_depth": [
+          2.03,
+          2.0,
+          2.02,
+          2.03,
+          2.05
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "...\n\n164032814,\n\nSo there is this first, but it takes a 124 (or a few 12012)s to make the first character in 212811 160, and the first number is also an 1933 and 1807. I need to get the correct name and I need a\n\nHow much did the world war",
+          " both high blood glucose levels and how does a person to lower blood sugar?\n\nA typical method for measuring this is a good night's 40 minutes of fasting for the morning.\n\nA second, what is the most straightforward thing for type 2 diabetes\n\n(in terms, we have a general pattern, that is the most common for this disorder, so it's in general that this is the most common thing to do, as a normal amount of \"",
+          ": the 528 mg of the body to be able to produce a lot of a lot \nBut in 50 cases (for the first 43 and 1904.0 mg is an important part of the following are the 248 of the 528 of 1706.0 mg is 8475.\n\nThe body is a high risk of developing this case, insulin is to the",
+          " frequent urination as well, but the second stage may be a bit tricky.\n\nI know that in the first group is when 80% of a person's immune and liver system. The cells start the problem of producing insulin or a lack of insulin if the initial \"first\" group that can be considered. However, the second stage occurs in other individuals and the reason you get an a1000 is due to the time. The first group is where it",
+          " the classic, more important for the patient, it would help us even look for 28.\n\nNow that is the case, which is a person who is 10.\n\n**[\n\n**This can be a very important part of diabetes that the condition will be able to use.\n\nSo the way they have more blood testing for a single- and they can use a way of being more than: the pancreas is to secrete.\n\n"
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.0625,
+          0.09375,
+          0.07291666666666667,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.5,
+          0.6354166666666666,
+          0.46875,
+          0.6666666666666666,
+          0.5833333333333334
+        ],
+        "distinct2": [
+          0.8631578947368421,
+          0.9052631578947369,
+          0.8526315789473684,
+          0.9368421052631579,
+          0.9157894736842105
+        ],
+        "halt_depth": [
+          2.03,
+          2.04,
+          2.02,
+          2.03,
+          2.06
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " a specific set of P1 (primary) and the role of the American Diabetes Association (BCS) in managing the condition. To achieve this, it's crucial to optimize the development of glucose levels and reduce the risk of associated type of diabetes, often involving metformin treatments or other medications.\n\nSome individuals may exhibit the condition due to obesity, not just from a lack of physical activity, some people with type 2 diabetes may struggle with an increased \"A1",
+          " increased, thirst or urination. The condition in the individual is likely to have a higher Hb, and a lower Hb and Hb. This is how the body of the glucose (gl-d-fructose) is formed. The body then, is a process where the, with any other substance (which includes the body's metabolism, which is usually the, the glucose from, which is more. This is called the.\n\nThe problem is that the, the, the",
+          " insulin resistance, characterized by impaired glucose uptake of skeletal muscle cells and the central nervous system in response to insulin. To combat insulin, the body begins to secrete beta cells from a healthy enzyme with a specific insulin to produce insulin but the production of insulin in a number of people, the body will not have a response to insulin, which is the number of days a new.\n\nThe authors are not a study with the role of a new type, which may be used to get",
+          ":\n- Frequent urination and the urge to urinate more to make up the increased glucose, which may be used for a period of a few.\nBut if you have a higher blood that is at home, it's important to prevent and manage the body's the same for the body.\nmetformin lowers blood sugar levels, it could be done to avoid these symptoms of predi and diabetes, but is important to a way you need to be able to take a meal",
+          " increased thirst, and decreased water, and it is usually asymptomatic until these symptoms appear for 5-10 days. After two days of these symptoms are noticed as well as frequent urination, this might be the result of an illness. This was observed in the research published in the JADA (32). The second case where thirst and decreased water to urine concentration might indicate that the patient is a diabetic or an early diabetic, but the patient needs to be tested by a large"
+        ],
+        "top_share": [
+          0.0625,
+          0.11458333333333333,
+          0.07291666666666667,
+          0.07291666666666667,
+          0.052083333333333336
+        ],
+        "distinct1": [
+          0.7291666666666666,
+          0.5520833333333334,
+          0.5833333333333334,
+          0.65625,
+          0.71875
+        ],
+        "distinct2": [
+          0.9894736842105263,
+          0.8736842105263158,
+          0.9157894736842105,
+          0.9578947368421052,
+          0.9368421052631579
+        ],
+        "halt_depth": [
+          2.07,
+          2.02,
+          2.02,
+          2.07,
+          2.04
+        ]
+      }
+    },
+    "Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat": {
+      "0.0": {
+        "texts": [
+          " an average number of C.\n\nSo we need to do any time, the second and then the first term that is the same (145).\n\nWait, the following is a difference in a good \"S.\n\nIf the most recent number is not just a new function, that is the first step for the 1000, then, the type is a typical kind of \"it\" and the same. Hmm, that's a different",
+          " 0,000, because the chemical is the rate of the 60-16, an area of the initial activity of a a c-1-8 (1.0 -) A3-1-20-6-22 20.050 370. I would change the maximum value of which is the main response of the 3 2-3-7.5-2.084",
+          " the end of the 600-50, 4,453,300, 36, or 64. In the study, at the effect of a total 9-1.0?\n\n1.1.313/3: and we are given, the first (32)\n72 23.3007 in the initial [0:]\nThis is of the 23",
+          " the presence of a PCOC on which the B5P is the correct condition to the S-P6-13-014 4-59-R3? in this post-10-1-3, and 2) the enzyme was a protein with the \"n.1-.33\" and is a low protein, the reaction by c-1 to (42)\n\nIn order, the data has a",
+          " the second 3,502 cm 4593).\n\nI want to use the solution of the original\ns3 on...\n\nThe question, in the way of that the way that you don't look for the question; it would be the same as it's not a thing for it's being a very difficult. The question 1007 is a reference to the other and so the person is making the second line.\n\n"
+        ],
+        "top_share": [
+          0.09375,
+          0.125,
+          0.10416666666666667,
+          0.10416666666666667,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.5833333333333334,
+          0.3854166666666667,
+          0.4270833333333333,
+          0.5416666666666666,
+          0.6041666666666666
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.8,
+          0.8631578947368421,
+          0.9368421052631579,
+          0.9473684210526315
+        ],
+        "halt_depth": [
+          2.03,
+          2.01,
+          2.04,
+          2.03,
+          2.06
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " pain and inflammation. It can actually be used to achieve it.\n\nYes, you can see an effective way for the treatment of the best of that \"I\" is to the body. So I could take it to get a better thing and maybe in a, the body could not.\n\nC-71, I know, that's a person where we can treat the first two stages of the \"I-C-D-J. But if I have",
+          " the symptoms of a small treatment. This is not, the first reason that the use of ibuprofen and aspirin-inhibitors and the other ingredients are in the case, the effect of the first treatment as is the same...\n\nThe two categories have been called by the other conditions in the first category...\n\nThe case the key role in this, the way of a number and the second part, the effect after the two of...\n\nIn this case, the",
+          " the pain of a migraine, and it may be effective to reduce its use as a headache, it's good for a variety of cases. The most likely of the body is also \"one-3\" from the body, but the most common side is the difference in the above, but in the \"S\".\n\nAn answer is at the bottom of this method, because the result is used for the \"A\" and \"E\" in the most likely answer. The",
+          " the drug, but I need to find a different drug in its class, it's the same drug that doesn\u2019t just get all as 3,002 and have all possible. 809, 2009, I would not make a 21+1, and the second is also 210, 14% to 21-5. It is the same answer that you want a 3+25",
+          " the symptoms of A. C.A. C. 2: 85-C, 235 B. is an example from the 3rd 20-53 35-120 20-144 (1) c. S. 20-6-3-15 3-05-31-21 3-2-3, p.4763 "
+        ],
+        "top_share": [
+          0.0625,
+          0.16666666666666666,
+          0.11458333333333333,
+          0.08333333333333333,
+          0.125
+        ],
+        "distinct1": [
+          0.625,
+          0.5208333333333334,
+          0.5729166666666666,
+          0.5208333333333334,
+          0.3333333333333333
+        ],
+        "distinct2": [
+          0.9368421052631579,
+          0.8210526315789474,
+          0.9157894736842105,
+          0.8736842105263158,
+          0.7263157894736842
+        ],
+        "halt_depth": [
+          2.03,
+          2.05,
+          2.04,
+          2.12,
+          2.06
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " pain, fever, and also\n\nQuestion:\nWe need to ensure the safety and efficacy of an extra drug that is a combination of 10 mg of ibuprofen and 1 gram and a half and a 34%\n\nA large part of the new 200-mill and an 24-0 and 30. The question is what is the best option for the two options and is it okay?\n\n**\n\"You",
+          " a variety of the pain and a variety of inflammatory and the inflammatory...\n\nThe effect that aspirin has on the immune system is in the \"anti-...\n\nThe effect that aspirin has a on the immune, the immune (as for...\n\nSter and the aspirin is...\n\nThe effect of aspirin of the immune system depends as as on the dose of aspirin, 22-41,... the second-dose aspirin. The immune-system has",
+          " pain, fevers and inflammation. However it should be used to find a balance in a patient's pain in the long of the patient's not using a drug. I have heard that NSAID in the world in the long term has side.\nWhich is the use of the human body and the patient's use the medication and the doctor is not taking a pain of a patient in the world. If such a patient is not taking the drug. When the patient's pain and symptoms",
+          " inflammation and pain. However, it is not the most likely to induce the therapeutic treatment of osteoporosis.\nH: An effective treatment of \"toure\" (I am not sure about the most effective treatments for \"t\" and \"the treatment of the disease and the effectiveness of the combination of a combination of 11-1. In their research, the researchers were given 1) the combination of different combinations of 20,000 milligrams of each",
+          " pain, but this might be a different drug. This would be a very big deal, but this is a first step. You can test different factors like, the type of human to animal ratio, the \"strength\" of the drug is this effective if you're having a lot is, and other variables to look at the same process that can do with a 2 or a 3 day run with the same dose 100 mg a day.\nIn the past"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.10416666666666667,
+          0.125,
+          0.09375,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.5729166666666666,
+          0.4270833333333333,
+          0.4895833333333333,
+          0.5833333333333334,
+          0.6458333333333334
+        ],
+        "distinct2": [
+          0.9263157894736842,
+          0.7473684210526316,
+          0.8105263157894737,
+          0.8842105263157894,
+          0.9368421052631579
+        ],
+        "halt_depth": [
+          2.04,
+          2.02,
+          2.03,
+          2.07,
+          2.01
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " pain, fever, and inflammation 26/6 in the 4 or 66: the most important ones and the way I am supposed to go when these things happen for.\nWhat should I think it like a patient with chronic myeloid leukemia, the first thing the physician is going to do is that in. But the next thing is going a lot of data and. That's a part of it; this is not good for a whole host. All the",
+          " the pain. These drugs relieve a person, but no matter how much pain is a person. That is why for the relief of pain they can only have a more suitable, or a different type of analgesic. However, with the use of over-the-counter pain medicines that we know, it should be used at maximum 100 days. However, it could be for different reasons of health problems, such as stomach inflammation.\n\nWe will see that if",
+          " pain and inflammation, but may irritate the stomach.\n\nAcid reflux can be caused by factors such as overeating, consuming an acidic or fatty diet, stress, alcohol, and a lack of sleep.\n\nFor the most part, the symptoms of heartburn and the symptoms of indigestion are known as.\n\nThere are plenty of simple lifestyle changes you can have to relieve the symptoms for your toddler and improve their overall health and some can even be effective in some. At that",
+          ". The dosage in milligrams for a child depends on the child's weight and is the minimum of the child. To find the appropriate dosage and the corresponding child's weight, \n- find the appropriate dosage and corresponding child's weight ranges,\n- \nThe dosage is the minimum of the child's weight, 15mg/kg, and the maximum daily dose 608.\n- A typical adult dosage (mg) of acetaminophen. The child's dosage",
+          " the common cold (and other conditions) when inflammation is present.\n\nAs they are non-medication to help you feel better for some time. But it's a good idea to seek help that can use those at the same time.\n\nDoes Benadryl, and when considering the use of non-revenue, the medication of the same time when it's the next-day and the first-party is usually prescribed.\n\nThe second kind of"
+        ],
+        "top_share": [
+          0.07291666666666667,
+          0.0625,
+          0.0625,
+          0.09375,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.6666666666666666,
+          0.6770833333333334,
+          0.6666666666666666,
+          0.4583333333333333,
+          0.65625
+        ],
+        "distinct2": [
+          0.9894736842105263,
+          0.9578947368421052,
+          0.9263157894736842,
+          0.7368421052631579,
+          0.9052631578947369
+        ],
+        "halt_depth": [
+          2.06,
+          2.05,
+          2.12,
+          2.02,
+          2.05
+        ]
+      }
+    },
+    "def fibonacci(n):": {
+      "0.0": {
+        "texts": [
+          "\n\n- For 100, 00, ...\n\nFor example, if sum 11, or 2 is the sum of 12, and you are using the first and 2...3 for the list, which is an initial (and in the case) would be a list of numbers. So the sum is not 59, even when the first is 12, not necessarily the first, but the 10",
+          "\n    if i,1 < n3:\n        if (s, 2) if n > 2 != 1 and x == 2 and (i is empty)\n        return (1, x)\n    if 80 != 20000 > 14:\n        num = 1\n        if (121 2020001, 170)\n        else:\n            if (x == 20",
+          "\n    \"\"\"Find the largest nonreconind. **s)\n    if is set(c, 0, 6,0)\n    return 200 if 24,0 132, -16, 2000, 66, and the number of numbers, which I 2 3: 2.\n\n    #19: 2.0833, 669876 ",
+          "\r\n\r\nThe answer is:\n\nThe code is here.\n\nYou need to find the function in the code here, if the code is:\n\nIn the case, you need the answer. The first problem is in a general\n\nThe problem is:\n\nI would think is a very common way.\n\nI need the first problem, the second function is:\n\nI just try to use this.\n\nThe main problem is:\n",
+          "\n\ndef p_n_f_n_n1_in_x_27_t24_and_13_and_f_p3001_t43673_n_1147380_1226_t662769386665_13200917122600124426"
+        ],
+        "top_share": [
+          0.09375,
+          0.11458333333333333,
+          0.13541666666666666,
+          0.1875,
+          0.19791666666666666
+        ],
+        "distinct1": [
+          0.4895833333333333,
+          0.34375,
+          0.4166666666666667,
+          0.3958333333333333,
+          0.21875
+        ],
+        "distinct2": [
+          0.8526315789473684,
+          0.7157894736842105,
+          0.7684210526315789,
+          0.7052631578947368,
+          0.6736842105263158
+        ],
+        "halt_depth": [
+          2.05,
+          2.03,
+          2.06,
+          2.1,
+          2.1
+        ]
+      },
+      "0.25": {
+        "texts": [
+          "\n    # Handle the base numbers\n    if i < 1:\n        print(\"The input line should be a positive integer. There are 2 1230 and 1245 digits in \"1\"\n    return (\n        -1, 76 (1 2212, 10, 15, 93, 42, 50, 2, 0, 12, 14",
+          "\n    if i < 1 or n is not an integer.\n    12 = 97\n    n += 2 = 10\n    return 4\n    raise a ValueError\n    \"\"\"\n    return\n\n    return [3, 5, 44]\n\n    from_5 = 1\n    _find_n = 14\n    # Remove all possible\n    # 11 - 53 7, as 3 and for index, return ",
+          " The problem says that the function should have a time.\n\nHere's the second function to find the n(th) function. The function that is not used with the next question, but when the original problem is in the problem, the number of characters where the character at the original solution, is an integer.\n\nLet me think, the solution is in the function. So the problem is to calculate the number of the second, and the smallest possible code is to",
+          "\n\t\tint(y)  # This is not a string, 420001 - this is not in the above\n\n# 23-14 1206 (10) :\n\ns 1.1\n\n#\n\na\n\n# \n#\n\n# 10008  24134\n\n# 1034 0232_",
+          "\n    if a < c:\n        return True\n    return 1\n    # the following code is:\n    return (fib(n) +2 2 < 2\n    # 4 < 2253\n    # the two numbers of sum\n    # 436 < 2532\n    # 1222117\n    # 134a471\n    # 16900 # 1, "
+        ],
+        "top_share": [
+          0.15625,
+          0.15625,
+          0.15625,
+          0.15625,
+          0.125
+        ],
+        "distinct1": [
+          0.4479166666666667,
+          0.46875,
+          0.5208333333333334,
+          0.3645833333333333,
+          0.375
+        ],
+        "distinct2": [
+          0.7368421052631579,
+          0.8315789473684211,
+          0.8526315789473684,
+          0.6947368421052632,
+          0.6947368421052632
+        ],
+        "halt_depth": [
+          2.03,
+          2.02,
+          2.07,
+          2.15,
+          2.04
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "\n\n\tif n_x > 4: \n\n\t\tif n is between 11 and 92, \n\n\t\t\tif, n is a prime in the fibonacci. \n\ndef if_a_fibonacci(n):\n\n\t\"\"\"check  whether n is given fibonacci  number or any\n\n**Ale**-number19685*\n\n[8] 60972\n\n7955",
+          "\n\n    if n <= 2:\n        return 0.\n    else:\n        return (f\"[-^{2, -1}]\")\n\nprint(fibonacci(s[1] * 2 - 1))  # example for example, if the third item is less than the number, it's going to be the fourth item.\n\nprint(fibonacci_index, 0)  # example for the output. Then the code continues to run",
+          "\n    \"\"\"\n    :param input of digits\n    :return 1 (i. a * b.\n    \"\"\"\n    # Your code is here.\n```\n\nAnswer\n\n**Final Answer**\n\nYour code is,\n```\n\n**Code:**\n```\n*a + 0\n```\n\n**Sample Output:**\n```\n* 10\n```\n\n\nOkay, let me see.\n\nSo, the problem says",
+          "\n    if n > 1:\n        return fib.next()\n        # Or using a generator function, like:\n        prev = np.array(np.x)\n        np.x = 1233\n        return prev + 3*x\n    # Then, we need to take the square as well as the sum\n    \n# 1 57 27 00 5  5\n\n#  this function seems to the most\n",
+          "\n\tif n and the_k is less than 1, 2, or 3, 4, then return a single integer...\n\tif n is a prime integer, you can use a while loop...\n\tif n is the integer, the largest one is more than 3, 4, 5, then it has to be a number of integers. If n is 0, 10, it's just a single, the"
+        ],
+        "top_share": [
+          0.0625,
+          0.07291666666666667,
+          0.23958333333333334,
+          0.09375,
+          0.125
+        ],
+        "distinct1": [
+          0.5729166666666666,
+          0.59375,
+          0.4895833333333333,
+          0.5520833333333334,
+          0.4791666666666667
+        ],
+        "distinct2": [
+          0.9157894736842105,
+          0.8736842105263158,
+          0.7263157894736842,
+          0.8947368421052632,
+          0.7473684210526316
+        ],
+        "halt_depth": [
+          2.07,
+          2.1,
+          2.08,
+          2.02,
+          2.04
+        ]
+      },
+      "0.7": {
+        "texts": [
+          "\n    # base case\n    if n <= 0:\n        return []\n    elif n == 1:\n        return  [0]\n\n    res =  [0,1]\n    res_temp = 1  # temp variable to store nth value of fibonacci  # fib_n, fib_(s)\n    for i in range(2, n):\n        fib_n = res\n\nUser123456: A man said a dog",
+          "\n\nSo, perhaps the function is not the first thing to correct:\n\ndef pisano(a, b):\n    if a[0] in b, 1:\n        from_prev = 0, 1\n    return a, 263 * b - 1, a - 25756 * 24770\n\ndef p1(a, b1):\n    return 225 * ",
+          "\n    if in_cache_key(n_str):\n        return cache[n_str]\n    if i < 2:\n        res = i * 1  # Incorrect and variable based on i\n        cache = {str(i): 1} + cache[:i]  # Does not correctly store the results\n    a, b = 0, 2 2  # Syntax a error, should not be here\n    result = fibonacci(n",
+          "\n    if n > 1:\n        return 1\n    return 0\n```\n\nHere 1 is returned as the function does not perform actual Fibonacci operations. The original recursive function computes a Fibonacci number, but the function given is that only the base case (when n is a negative number) returns 1. That is, it does not have the function or logic to determine the 1st as the function returns 1, insteadname it as a",
+          "\n fibonacci_numbers = []\n for i in range(n):\n fibonacci_numbers.count = fib = 0 if i < 2 else 1\n print(fibonacci_numbers)\n```\n\nPlease correct the code so we can generate the first n numbers in the Fibonacci sequence, and ensure that the code can handle very much larger numbers. Please also consider the optimization to calculate the sequence. Let me know when you have corrected the code"
+        ],
+        "top_share": [
+          0.07291666666666667,
+          0.09375,
+          0.09375,
+          0.07291666666666667,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.5729166666666666,
+          0.4583333333333333,
+          0.5625,
+          0.5625,
+          0.6354166666666666
+        ],
+        "distinct2": [
+          0.9052631578947369,
+          0.8,
+          0.8947368421052632,
+          0.8631578947368421,
+          0.9157894736842105
+        ],
+        "halt_depth": [
+          2.05,
+          2.08,
+          2.1,
+          2.06,
+          2.03
+        ]
+      }
+    },
+    "To solve the quadratic equation x^2 - 5x + 6 = 0, we": {
+      "0.0": {
+        "texts": [
+          " 12.\n\nIn this equation, the product is 3. Let me see. Since the following is the 12x and 3. The two numbers may be 1, and the number is 12.\n\nWe can start this:\n\nGiven that the smallest function is 4 or 100.\n\nNow let me compute the question here. So if you can find the number of x, then in the line",
+          " 39, 2028\n\n$00098 2833.5090996 5.122401255 696 704169\n102254 = 16393,\n152475117122904239626066474",
+          " 0. However, not there's not a problem. But the number has a number, the correct answer should be \n\nA. Let me say. The code seems, from the problem is:\n\nFor the numbers, let me consider the possible equation for the difference. So, the second number is 5 and the number is 11/4,\n\\boxed{2} \\] A + 12$ and 1615",
+          " 3.\n\nThe standard is:\n\nFor this solution, that is equal to the function, the function can be divided as a simple integer, which is 24.\n\n**To:**\n\n**T(a \\) The function should use the function to solve the function.\n\n**Input:**\n\n**This can make a series of dictionaries:\n\n**Sample Output:**\n\n**Sample Input:**\n```\n\n**Sample",
+          " 20 1. Therefore, we need 10, we must use \\[ 21, 4, 2, 4, 14] \\]\n\n\nWait, let me try to find the formula for the first answer, but let me try for a question. The function is:\n\n\\boxed{303} 345 \\right \\Rightarrow 23 \\quad \\text"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.13541666666666666,
+          0.08333333333333333,
+          0.19791666666666666,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.53125,
+          0.16666666666666666,
+          0.59375,
+          0.5104166666666666,
+          0.5
+        ],
+        "distinct2": [
+          0.8210526315789474,
+          0.7578947368421053,
+          0.9368421052631579,
+          0.7368421052631579,
+          0.8421052631578947
+        ],
+        "halt_depth": [
+          2.03,
+          2.05,
+          2.04,
+          2.03,
+          2.1
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " 0. So the second number would be at 21, 23 (47) but the equation has the first one at the solution, and how do x^3 = 16, which will be the number of numbers, like 10 is the function in the equation and x = 11, then the next is given the equation and the answer is 21, which is 22 and 47. So what's",
+          " 10.\n\nBut the problem is asking for the remainder, but the equation is x1, x1 and the equation is 1085, but when the equation for the user is not the answer. The task is to find the answer which the remainder is in the second equation. But, in the problem, then the previous step is incorrect. Hmm, I need to write about the answer is in the second step which is the problem, but the",
+          " 4x + 23 + 28\n\n4x+86 670\n\n0. \n**-:**\n\n**Input:**\n- `d = 132, 1670`\n\n**Input:**\n- `901, 163, 1.560`\n\n**Sample Output:**\n```\n0\n```\n\n**Sample Output:**\n```\n```",
+          " 3.\n   Solution: Move the constant number of numbers of each string, then factor - X\u00b2 is 46:\n**a**1: 9 + 2a - 220 - 312a46.124 -\n1.435502898162 - 1.59950\n\n**\n- **8008282 - 2",
+          " 2\n\n4. What is the second derivative?\n\nA1/2 - 32 = 6^x^2\n6(125)\n\n**Calculus and Step 3:**\n- **Step**\n4 10 x^24 is the first digit (s) and 11 8, 200,\n\n**Sample Output:**\n```\nA, 1, 2\n"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.16666666666666666,
+          0.16666666666666666,
+          0.10416666666666667,
+          0.125
+        ],
+        "distinct1": [
+          0.46875,
+          0.4166666666666667,
+          0.3020833333333333,
+          0.3645833333333333,
+          0.46875
+        ],
+        "distinct2": [
+          0.8315789473684211,
+          0.7894736842105263,
+          0.6210526315789474,
+          0.8421052631578947,
+          0.8421052631578947
+        ],
+        "halt_depth": [
+          2.05,
+          2.04,
+          2.04,
+          2.1,
+          2.09
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " 0\nAnswer-a: To the question in the prompt given equation, we will start:\nx\u00b2 \u2013 The function is the equation, which is equal to 8.6.\n\nThis would be incorrect to solve the square and multiply 800,\n`0`, 0,0,0,0,0, and the sum of the second two (0, 20, 16, 20, 20",
+          " 0\n\nWait, but the original instruction is: \"Write a list of questions and their \"yes\" is required and a problem statement. Please put the problem. Please put your answer to the problem. And maybe, give an additional question.\"\nIn the first message, the two questions, their \"Yes/No two-sentence\" and the word has 3-4, plus 1. But, the answer to this is 1 with a few steps",
+          " 0. Let me think:\n\nFirst, I need to consider the input that comes in the form and determine the product of 967 (466) which uses a single step of 8.03 (or 0.3) so 0.89279:\n\nx = 3.007171042;\n\n(x)\n\na)\n\nThis result is not",
+          " 2\n\n**Final Answer:**\n\n(2, 4)\n\n**Step-To\nStep \n\n1: Subplify the equation of the quadratic equation.\n\\]\nGiven:\n\\( \\boxed{{x}^{2} - 2^2} \\sqrt{{3}x}} = 22\\)\n...\n\n2:\n\n**Step-By\nass\n\nSince the problem",
+          " 12, so the value of x^2 is 12, which can be derived as 14. So for the equation x^2 is given, it is 12, 2+23, and the original 48, which is 2-9, which equals 3, so x^2 = 4. If I must solve a quadratic equation in the last problem, x to 2-17, and the"
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.07291666666666667,
+          0.10416666666666667,
+          0.16666666666666666,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.4895833333333333,
+          0.59375,
+          0.5208333333333334,
+          0.5104166666666666,
+          0.4479166666666667
+        ],
+        "distinct2": [
+          0.7789473684210526,
+          0.9157894736842105,
+          0.8631578947368421,
+          0.8526315789473684,
+          0.7368421052631579
+        ],
+        "halt_depth": [
+          2.03,
+          2.05,
+          2.03,
+          2.16,
+          2.1
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " 0.\n\nThis would be:\n\ndef f(x):\n    return x**2 -5*2x +6\n\nBut since the user's answer is 2 and 2, 3 and 3, it means that the first 2 is 5?\n\nWait, the next thing is that I have to evaluate the function f(f(f(x))) for which is a function that accepts x and returns the sum of",
+          " 0 and find y:\n\na = x^2 + 2x - 1\n11x = 21a\n\nLet me calculate step by step:\n\nFirst, let me solve:\n\nx = [5 \u00b1 \u221a(252-24)]/2 = [57.94/-4]/2\n\nWait, let me see, the discriminant is sqrt:\n\n54.73",
+          " 13\n\nSolution:\n\nTo solve: x^2 - 9a^2 = 14\n\nTake the square number of the squared and the squared term is positive.\n\nThe solutions are not real in this context.\n\nSimplify and solve the quadratic equation is to be able to find the equation of the path that is traveled on the screen. \n\nIf solving quadratic equations:\n\nWhat is the quadratic equation: x",
+          " 0. Wait, no: x\u00b2 - 10x + 6 = 10x - 24. Wait, let me re-express equation 1.\n\nStarting from the original equation: \u221e^2 + 10\u222c = -24.\n\nWe had 2\u221e = 10/q, which gives \u222a = (\u221e/2) = (5/3) because the",
+          " 2x(x^2 + 8x + 7)\n\nA quadratic equation is a second-degree expression given as  ax^2 = bx + c = 0.\n\n## Answer: \nThe roots are (\u221a1) and (0, -3).\n\nFor a quadratic equation, we need the equation to be written in the form y = ax^2 + 0x - c = 0, where"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.11458333333333333,
+          0.13541666666666666,
+          0.09375,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.5729166666666666,
+          0.5104166666666666,
+          0.5625,
+          0.4791666666666667,
+          0.5520833333333334
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.8736842105263158,
+          0.8526315789473684,
+          0.7894736842105263,
+          0.8421052631578947
+        ],
+        "halt_depth": [
+          2.03,
+          2.14,
+          2.09,
+          2.16,
+          2.1
+        ]
+      }
+    }
+  }
+}

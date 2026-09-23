@@ -117,6 +117,7 @@ from mythouro.variants import (
     mythouro_distill_mid,
     mythouro_distill_wide,
     mythouro_distill_large,
+    mythouro_distill_large_bal,
     mythouro_distill_xlarge,
 )
 from mythouro import device as dev
@@ -139,6 +140,9 @@ _VARIANT_FUNCS = {
     "mythouro_distill_wide":  mythouro_distill_wide,
     # Sized for the 48 GB card (2026-09-21): 695M and 866M activated. From-scratch.
     "mythouro_distill_large": mythouro_distill_large,
+    # large with the attention:FFN active ratio rebalanced 3.14 -> 1.95 at
+    # matched activated params. The B arm of the 2026-09-23 A/B.
+    "mythouro_distill_large_bal": mythouro_distill_large_bal,
     "mythouro_distill_xlarge": mythouro_distill_xlarge,
     # Post-MoE-expansion targets (48 / 96 routed experts). Used when resuming
     # a grown checkpoint via `tools/grow_checkpoint.py`.

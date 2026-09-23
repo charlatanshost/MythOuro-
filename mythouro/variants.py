@@ -191,6 +191,55 @@ def mythouro_distill_xlarge() -> MythOuroConfig:
     )
 
 
+def mythouro_distill_large_bal() -> MythOuroConfig:
+    """
+    `mythouro_distill_large` with the ATTENTION-TO-FFN ACTIVE RATIO REBALANCED.
+    The B arm of the 2026-09-23 A/B. Two knobs move, both directly on the ratio:
+
+        n_kv_heads   4 -> 8       (more KV heads = more attention params)
+        expert_dim   2048 -> 1664 (less active FFN)
+
+    ⚠ n_kv_heads must DIVIDE n_heads (16): valid values are 1/2/4/8/16. A first
+    draft used 12 and died in scaled_dot_product_attention — "Number of heads in
+    key and value must divide the number of heads in query". 2026-09-23.
+
+    Everything else is identical to `large`: dim 2048, 16 heads, prelude/coda 6,
+    24 experts, top-6, 4 loops, Ouro vocab.
+
+    | | activated | attn | ffn(active) | **ffn:attn** |
+    |---|---|---|---|---|
+    | large | 695M | 136M | 428M | **3.14** |
+    | large_bal | 680M | 177M | 418M | **2.36** |
+    | standard SwiGLU block | | | | 2.00 |
+    | Ouro-2.6B (2048/5632) | | | | 2.06 |
+
+    **Activated params match to 2.2%**, so the arms cost about the same per
+    token and the comparison is fair on a fixed time budget.
+
+    ⚠ 2.36 does not reach 2.00. With prelude/coda held at 6 and GQA restricted
+    to divisors of 16, nothing lands on the target: the alternatives overshoot
+    to ~1.62-1.68. 2.36 is the closest available to Ouro's own 2.06 and moves
+    68% of the way from our 3.14. If the axis matters, that should be visible;
+    if it is not, a larger swing is the follow-up, not the first test.
+
+    Why: measured 2026-09-22, our configs run 3.14-7.04 against 2.00 for a
+    standard block and 2.06 for our own teacher. LoopMoE (arXiv 2606.04438)
+    includes a capacity-balancing strategy specifically to recover this ratio in
+    looped MoE models. Attention is what moves information BETWEEN positions —
+    what binds a question to its answer — so an attention-starved model would be
+    expected to look fluent per-token and poor at relevance, which is the
+    failure we measure across every lineage.
+
+    ⚠ The causal claim is LoopMoE's, read from an abstract. What is ours is the
+    number: our ratio is off by 1.6-3.5x and nobody had looked.
+    """
+    return replace(
+        mythouro_distill_large(),
+        n_kv_heads=8,
+        expert_dim=1664,
+    )
+
+
 def mythouro_distill_small() -> MythOuroConfig:
     """
     ~420M target for MoE expansion from `mythouro_distill_tiny` checkpoints.

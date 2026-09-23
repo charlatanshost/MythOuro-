@@ -1,0 +1,916 @@
+{
+  "step": 3600,
+  "samples": 5,
+  "temp": 1.0,
+  "top_k": 50,
+  "alphas": [
+    0.0,
+    0.25,
+    0.5,
+    0.7
+  ],
+  "seed": 0,
+  "rollout_len": 96,
+  "seeds": {
+    "In the morning the weather was clear, so we decided to": {
+      "0.0": {
+        "texts": [
+          " make her other.\n\nI saw the 10001 and 1000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          " take a half.\n\nTACED_NOB,00000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          " have a small-t-2-60 and 2524-p-p-904-90000000000000000000000000000000000000000000000000000000000000000000000",
+          " get the right of the same, but that is important.\n2000. So the difference of time is about the \"S13\" 34k. It is also the total in (2302) and the total amount of T4 and the other 0, 1000. We get at-the 200000-100000. \n- We have no other. ",
+          " use the \"kink\" problem.\"\n\nWe have the problem:\nLet me think the whole and the \"first is a different time, and the next for the other time in addition is the \"s\" which is equal to the first is 7000.\n\nThe problem is 540020000000000000000000000000000"
+        ],
+        "top_share": [
+          0.84375,
+          0.8645833333333334,
+          0.75,
+          0.1875,
+          0.34375
+        ],
+        "distinct1": [
+          0.125,
+          0.13541666666666666,
+          0.14583333333333334,
+          0.4375,
+          0.4270833333333333
+        ],
+        "distinct2": [
+          0.15789473684210525,
+          0.14736842105263157,
+          0.23157894736842105,
+          0.8105263157894737,
+          0.6421052631578947
+        ],
+        "halt_depth": [
+          2.01,
+          2.02,
+          2.01,
+          2.09,
+          2.04
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " get outside the new building and take some 't') with the same 'd' 60-3250061 20000, a 0006-31-0000 16286700 7000 (8)310) 6.0009002.54.03200+100000",
+          " find the temperature of the sun, which would be given in the 8 or 1000-000,000, or some high-m. \n\nThe 1000000000 (1b.300000-60000000000000000000000000000000000",
+          " choose for a 20 to 300. The number is in a 4000? So for the rest of the 1% in the \"000\" part in the last two.\n\nNow we need to think, it is in the third. And we have to consider the numbers that are in the first one but it was 12,000. However, the number I have been using is, 23",
+          " go into the \nto get some ways. On the\n\nF1\n\nI can't know what is happening (19 points that can you 6500080000000000000000)\n\nThe code can be called 50000000000000000000000000000000",
+          " have a picnic there is a clear. So you can make a different value. If we have no on the first one, because they are in fact, which is the new.\n\nIf you have two or more of the same in the 100, how much from the\n# 100? If you have to consider the same, we have\n# 000 people to take 1000 people.\n# 10"
+        ],
+        "top_share": [
+          0.34375,
+          0.59375,
+          0.125,
+          0.5208333333333334,
+          0.11458333333333333
+        ],
+        "distinct1": [
+          0.34375,
+          0.2916666666666667,
+          0.5,
+          0.3541666666666667,
+          0.4895833333333333
+        ],
+        "distinct2": [
+          0.6947368421052632,
+          0.43157894736842106,
+          0.8526315789473684,
+          0.4842105263157895,
+          0.7894736842105263
+        ],
+        "halt_depth": [
+          2.08,
+          2.12,
+          2.06,
+          2.03,
+          2.11
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " go into the total surface area (so, for the first time when not counting to zero) this is also related the.\n\nWhen the three-dimensional surface area is not a solid and the surface area of that solid, as a second example is the same.\n\nIf the maximum level of the ground you are standing is, for the average and the surface is also at one or more elevations that can be seen from the ground on the surface. The total surface will",
+          " determine the latitude.\nAs of 0000: The moon was the 20th-day crescent.\n\nFirst, we can check the angle of the moon that will be set to the Sun, to know when the sunset has to occur for the sun that will not have been in the same place as before using the altitude angle. I am not quite\n\nI think the original text is about determining the current time. Wait, let's get the",
+          " go skiing, or some other 20% of the days. We have been trying to predict that the probability is 30% of the weather being clear in the morning. However, perhaps we have a few days where there was sun around mid-af is there a more high.\n\nIs just about the 20000 per hour we have to calculate and put all the possible values into the time and the average number of days you need to do",
+          " be out the 1500m, and the total training for all three groups was 8000m. Since the group is so different. Maybe more than 1000 meters. It's all well organized! \n\nThe first lesson was the group for an hour and the second three times, with 120 and 74920,0000000000. It's just a number.",
+          " make a trip in a countryside. This trip must have become a small vacation in the mountains, while it's possible for the first days. Therefore it's a lot fun. The other side would be a very well-known city, like the Paris, the Rome's, and the... the... *(pause)\n\n1.7.4485: the London's, the New York\n- and the Tokyo is a different source.\n- the"
+        ],
+        "top_share": [
+          0.125,
+          0.125,
+          0.08333333333333333,
+          0.20833333333333334,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.59375,
+          0.65625,
+          0.65625,
+          0.5208333333333334,
+          0.6145833333333334
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.9473684210526315,
+          0.9157894736842105,
+          0.7789473684210526,
+          0.9368421052631579
+        ],
+        "halt_depth": [
+          2.19,
+          2.23,
+          2.21,
+          2.21,
+          2.21
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " go at the beach. But if you want to make the swim in the sea as you wish, then you have to make yourself a suit the suit the season. If this is summer, and you are not wearing enough, in the summer it is impossible to. So the idea with the suit came into the minds of the programmers. Help the programmers and write a program for that.\n\nThe following is the main task for the program:\n\n- What time is it",
+          " play a game. In 4C, the team should have to decide which of the 3 options (A, B) and the other options (but the specific number of other things) is better, so I am thinking that 8,000 4C is 16000.\nIt is also the same. The answer is the correct answer given to the \"answer2\" question.\nThe answer given by the \"answer2\"",
+          " get out and enjoy,  the sun and enjoy the water. This morning, I saw several kayaks and canoes paddle through the calm water is calm. We came in a small lake and the water is the calmest ever, so much that the reflection of the sky was in sharp detail in the water. One person can be so sure of the time. The sun is shining, and I enjoy the weather. What would this person to the weather in the morning, that was",
+          " go rowing on the river.\" Since we know that if we use the 100% probability for \"clear\" then we need to revise or adjust or provide a better model for a different situation when there is one person or the other of the pair was, let's say, at least 6% or the percentage for each, and in general, if each one has (2000), we have only two choices, because each 10 to 3",
+          " play outside the city of Ljubljana in the Kame\u0148\nregion. This area includes the Kame\u0148-Horevska dolina (the valley) which contains 12 valleys, 305 lakes, and 488600 trees, among many\n\nother beautiful sights. And after some time the weather became so aplicable that we did not want to return home, so we get up late"
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.08333333333333333,
+          0.125,
+          0.0625,
+          0.041666666666666664
+        ],
+        "distinct1": [
+          0.5833333333333334,
+          0.5729166666666666,
+          0.5416666666666666,
+          0.6666666666666666,
+          0.78125
+        ],
+        "distinct2": [
+          0.9368421052631579,
+          0.8736842105263158,
+          0.8842105263157894,
+          0.9473684210526315,
+          0.9578947368421052
+        ],
+        "halt_depth": [
+          2.09,
+          2.11,
+          2.12,
+          2.18,
+          2.29
+        ]
+      }
+    },
+    "The treatment for a bacterial infection usually involves": {
+      "0.0": {
+        "texts": [
+          " the current. The problem is used to provide a 1-1 case [F] and H. 3. The results of 5.3.8 and 193.88, 179774858847975369368.8957999969749890,19977849390.01",
+          " the immune and the effect of the plasma and the total in the 60,780 of the 20.5 K1-1000. R5 74/2/50.7 and 12/38170000000 0 105\n- P13.09 1008 10.00 2075. 4",
+          " the two changes on 1.\nF 0\n1.\nN)\nH. 1A and the B.R.16.682000669, 1798896732\nB.O.A.T.\n20.081615;\n2.3e.I.282.065.19\n2.04",
+          " the cell, but it's probably actually to be better. The rate to the\n*\n\n- 1 0, 10 100,00 -44 30,450 8000 6 m16 70 / 9.2527 288222755 101.10 8096 \u2013 0.599",
+          " a healthy rate of\n\n(a_C) and 22.6 T, I) is a well (1) M.\n\nS. D\n\nA question is a complete form of the \"1\" 120.836.20.0000 256.000 P.\nThe correct number that was found in a given method with 1,60B504.0"
+        ],
+        "top_share": [
+          0.16666666666666666,
+          0.23958333333333334,
+          0.17708333333333334,
+          0.16666666666666666,
+          0.125
+        ],
+        "distinct1": [
+          0.3125,
+          0.28125,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.5104166666666666
+        ],
+        "distinct2": [
+          0.7157894736842105,
+          0.7157894736842105,
+          0.8210526315789474,
+          0.8,
+          0.8421052631578947
+        ],
+        "halt_depth": [
+          2.18,
+          2.38,
+          2.43,
+          2.49,
+          2.29
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " antibiotics and more importantly, you should ensure to get complete.\n\nHowever, some common signs of bacterial infections is known as the presence of the pus. What can you do at the home in the event of the infection, and for more, it would be in what we shall say and we discuss the natural cures. The first two steps that have been more of, so what\u2019s the difference, the difference in the second example.\n\nWell, the main information is",
+          " both antibiotics, and other medications in the lower side after the first and second to the third, in order. After the third step, the patient may be tested at a hospital. The treatment is now that is one's own, and is a better way to determine 5:55. The average 300 and 955 percent in a day are 3.664 or 31, 31. The answer is that when the",
+          " antibiotics. The effectiveness of the treatment, the chemical was used to be reduced. This is also a 5-100%... the study and the type of antibiotic that may be used for the treatment and it is in general. What is the way that the antibiotic was used to treat the the effect of each a 1000 (100) the amount of those and the amount and the rate is used as the number of the 25-",
+          " the use of antibiotics. \n\nThis can be a major breakthrough for the human body. \n\nThe 380th-century physician-to-counsel and the 299,0220001,000 to the 800, 1389. The second was the use of the 10-530th (79th-century, 40-year) as we have",
+          " the use of ______. H) in vitro A) but also because in order to use the term 'H-Bond' you would start to become of to the 2 or n-2m, which is in the following two forms. H. D.H.E.B.T.D.A.H. C.E.S.C.E.S (2) A.H., N.O.H.X. E."
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.0625,
+          0.14583333333333334,
+          0.13541666666666666,
+          0.22916666666666666
+        ],
+        "distinct1": [
+          0.6354166666666666,
+          0.5520833333333334,
+          0.5,
+          0.4791666666666667,
+          0.53125
+        ],
+        "distinct2": [
+          0.9368421052631579,
+          0.9052631578947369,
+          0.8526315789473684,
+          0.8,
+          0.8842105263157894
+        ],
+        "halt_depth": [
+          2.11,
+          2.25,
+          2.13,
+          2.19,
+          2.5
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " antibiotics. But it is important for the doctor of the patient. The doctor wants to find the most effective antibiotic among the several types available. To ensure that no effective antibiotic from being used later, we treat patients in the given way the following steps:\n\n1/ Add the \"active\" status to every antibiotic, before the treatment starts in the end. So initially, the same amount of antibiotics will be the number of patients.\n2/2018-15",
+          " a very high and effective activity against bacteria that are likely to cause the particular infection. The choice of antibiotic in particular to treat a particular infection that is not yet defined, to be as broad as possible to reduce the effects that are not relevant and to make sure that the treatment of the infection in early. It is not possible for this to treat most of the bacterial infections are related to different bacteria and are not related. Antibiotic resistance The use of antibiotics may lead to their other",
+          " the HCG, the HCF, but also the primary treatments such as H/C and H/1 (A), H-4/1310 and C.G-6.\n\nF 51 (N)-OH-V4/1.1a.30 0.0308/2280 12.2A145121/T:43522 0,",
+          " antibiotics, and the choice of which one to use depends on a few factors - I guess starting with a broad-spectrum 1st could be better. Let me see. The options are also the most common for the infection.\nFor example: When you have an infected wound, do not really for the infection is already taken and antibiotics it's still in. For the first step, the person usually takes an antibiotic type of antibiotic to treat the infection and the antibiotic will work",
+          " antibiotics (choice) and rest, which are the most common (choice D) and essential (choice C) steps, respectively, one can take more steps in the treatment of the bacterial infection by ensuring it has to be used in combination or the treatment plan should be the right combination.\nThere are 100% treatments in the 10.93% of the cases and the 20.4 8.2. A very high-based treatment"
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.08333333333333333,
+          0.10416666666666667,
+          0.08333333333333333,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.6875,
+          0.5833333333333334,
+          0.40625,
+          0.75,
+          0.59375
+        ],
+        "distinct2": [
+          0.9789473684210527,
+          0.9368421052631579,
+          0.8736842105263158,
+          0.9578947368421052,
+          0.8947368421052632
+        ],
+        "halt_depth": [
+          2.11,
+          2.25,
+          2.38,
+          2.15,
+          2.19
+        ]
+      },
+      "0.7": {
+        "texts": [
+          ":  \nA. Antibiotics that target bacterial cell is unique\n\nQuestion:\n\nThe treatment for a bacterial infection usually involves:\nA. Antibiotics that target bacterial cell is unique\n\nThe treatment of a bacterial to the human body\n\n\nB. Antivirals: 3/3\n\nC. Antibiotics that target\n\nD. Antibiotics that target proteins\n\nMORE LINK:  \nWhich is the best description to a bacteria\n\n7. What",
+          " a specific antibiotic that is effective. The mechanism here is likely cell on the bacterial cell wall, the antibiotic breaks down the cell wall, leading to the bacterial cell lysis and death. So, the answer is probably B.\n\nOption D. Antibiotic synthesis is a part of treatment but not the difference. The difference in treatment is more likely due to the mechanism of the antibiotics used. For example, the bacteria treated to control infections have an antibiotic that targets the cell is",
+          " antibiotics, as they specifically target and eliminate bacteria such as Escherichia coli, and are more effective than treatments targeting viruses or other-specific agents. While other mechanisms (in the absence of antibiotics) may involve:\n- **Indirect protection** (e) such as immunoglobulin binding (which is actually the primary, direct action) or opsonization (which facilitates phagocytosis or direct action)\n- **Neutralization** in some contexts can mean blocking attachment (which is",
+          " antibiotics, but bacterial resistance is a good reason to stop taking in case the symptoms do not occur for some time. For example, after a urinary tract infection, the treatment with antibiotics must be in a few days. Therefore, after stopping taking it, the symptoms can be more severe when the drug stops, and the infection can recur to become complicated without the antibiotic. So, the reason why a doctor can stop taking antibiotics for bacterial infection is if a new infection appeared while you are",
+          " high doses in the first few days, then lower doses are of little benefit.\n- **D. Lower doses should be given later to be less harmful** -\nThis statement is not supported to the best of my knowledge. As you have to reach blood concentration where the pathogen that was there is more likely to become resistant, but there is already research, and we do not know what the optimal dosing is. \n- When you try to lower your dose on day "
+        ],
+        "top_share": [
+          0.16666666666666666,
+          0.10416666666666667,
+          0.052083333333333336,
+          0.07291666666666667,
+          0.052083333333333336
+        ],
+        "distinct1": [
+          0.4791666666666667,
+          0.5729166666666666,
+          0.6979166666666666,
+          0.6145833333333334,
+          0.71875
+        ],
+        "distinct2": [
+          0.7157894736842105,
+          0.8947368421052632,
+          0.9157894736842105,
+          0.9473684210526315,
+          0.9789473684210527
+        ],
+        "halt_depth": [
+          2.3,
+          2.22,
+          2.34,
+          2.23,
+          2.18
+        ]
+      }
+    },
+    "Common symptoms of type 2 diabetes include": {
+      "0.0": {
+        "texts": [
+          " the UG (E) 1701 2305 D [651] 3997.03333779359982679; 19/ 39\n7000.9697, 3738000814689933299547896912099",
+          " the 12,425,455, 16, 50% of those 5.5, 34 3060.1660-677 2.6(517971), 3.59990-5598195179588895956) 2.89366\nA",
+          " the 300.00% on the 20-7 - M-A-T, and L-P-R-2000/5000000000-20000000030005000000000000000000000000000000000000",
+          " H0,115 (P90 6486 6896) 1 3.34 R75.\n\n. 90,537, 1097 1268, 5001.79802, 386482983 1490. 143570.3582, ",
+          " 943 at 20, 03, 20%-specific, or 2033 (40\u20131009-5m) 8-15 [0.05 1.0135-19912] 2.6401/441.60000-20001 6.5 M-H 5 2"
+        ],
+        "top_share": [
+          0.1875,
+          0.14583333333333334,
+          0.6666666666666666,
+          0.125,
+          0.1875
+        ],
+        "distinct1": [
+          0.2604166666666667,
+          0.23958333333333334,
+          0.21875,
+          0.19791666666666666,
+          0.2708333333333333
+        ],
+        "distinct2": [
+          0.7684210526315789,
+          0.7052631578947368,
+          0.3473684210526316,
+          0.7473684210526316,
+          0.7684210526315789
+        ],
+        "halt_depth": [
+          2.03,
+          2.08,
+          2.04,
+          2.09,
+          2.13
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " increased thirst.\n\nSo the problem is a complete change of the 3-digit number of the day (or a second-hand) that was used to. In the form of an increased in the end of the first, second or third time, the increase in the end. In this case, the day the 954,999-281-071 is the result. For each of the second.\n\n**TK",
+          " excessive water, sweet food (sugar), 36.66 and 26.47, respectively. These are important and are in the 55. They are to.6732.3807.2350.715. The 49 8.59 and 423.23.2 the 448.66 107\n- The 59.",
+          " 2.1 mm 366074 the use of anti-inflammatory drugs, and more precise to 3500,157018 . The treatment of the SGL-1a-2,0.1040110077006000217492.7630000000000000000000",
+          " increased thirst.\n4. Dizziness 716: dizziness (M1,012) \n\n\n\nThe difference 3575 (C)456 p16: N/2945: C4 D45 - N, 748 p11: D758 123 17 1. The B1 1815. T5C1.\n\"I",
+          " A) decreased 2-hour post; 94-B. 2297. 100. 47, 069.0. N 15. 193 25.09 40.27 80.0 C 30 41.0 0.08 - 7.68 1 9 26 [4] 6."
+        ],
+        "top_share": [
+          0.125,
+          0.14583333333333334,
+          0.34375,
+          0.13541666666666666,
+          0.19791666666666666
+        ],
+        "distinct1": [
+          0.5625,
+          0.3333333333333333,
+          0.3229166666666667,
+          0.3854166666666667,
+          0.2708333333333333
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.8,
+          0.6736842105263158,
+          0.8631578947368421,
+          0.7368421052631579
+        ],
+        "halt_depth": [
+          2.12,
+          2.15,
+          2.19,
+          2.21,
+          2.21
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "...\n\n16. The major components of the blood,\n\n- are red blood\n\ncells, white and blood, platelets\n\n- red and white; platelets\n\n1. What is the term given to the A or FQ that a nurse is 16.\n\n- The number of of an assessment can affect if the person is given to the patient.\n\n- The effect of the first letter of a name in the name of the patient,",
+          " frequent urination and other symptoms.\n\nGIP: (A) the growth hormone-C, 400% higher than 2 hr, so a positive response, indicating normal and 10% increase in C 876% 9 800: B) 3-1 h, 20% drop.\n\nThe rate of G7 is 25 and 22,030, 20%",
+          "\n\n* 2891632 (2 + 21865 4 6 5 6 (6)6 4316 99443 1008 98 6224 34 12 67 7 6.\n* 2847536 66 5-16+ 2019 1",
+          " frequent urination, increased thirst and the other metabolic effects. Type 2 diabetes is a disease with a certain degree of in the body. The amount of insulin produced by 3 and 4% people with the normal in the body. insulin in the body. The results of these studies were published in the Journal of\n\nA diagnosis for this condition is also known as \"type 1, a more severe form of Type 25, which is a number of common types",
+          " the classic, more important for the patient, it would help us even to check 38. 8 days or to 15. 5 (1. 1 years) 6. 8 days (13. 2. 2-to-. 32) 4.\n8. 19) or 4. 8 days and 15 85. 5 days or 6. 8. B"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.11458333333333333,
+          0.21875,
+          0.0625,
+          0.19791666666666666
+        ],
+        "distinct1": [
+          0.4895833333333333,
+          0.53125,
+          0.19791666666666666,
+          0.625,
+          0.3645833333333333
+        ],
+        "distinct2": [
+          0.8105263157894737,
+          0.8421052631578947,
+          0.7052631578947368,
+          0.8842105263157894,
+          0.6526315789473685
+        ],
+        "halt_depth": [
+          2.21,
+          2.36,
+          2.11,
+          2.15,
+          2.23
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " a decreased insulin sensitivity and  increased, or relative, or absolute lack of insulin. The result of this is a relative lack of glucose being transported into cells. We have already seen that one of the mechanisms in type 24 type of diabetes, is the increase of the fatty acids in the blood, but this is a general problem for any of the different types of diabetes.\n\n5. What was your experience with your diabetes? The insulin in the insulin pump, along with",
+          " increased hunger, thirst, and urination, along with fatigue, blurred vision, and frequent infections, and they can cause problems, to people, in the long of the days (I-I-II) (I-II).\n\nThese are a few things you, with any medication, or a certain health problems that can cause the disease.\n\nHowever, there is no one for a small amount, but how do you get rid of high blood, but it is",
+          " insulin resistance, characterized by impaired 1 insulin receptor sites, and inadequate insulin secretion. It does not include\n\nThe presence of glucose intolerance;\n\nThe inability to make an enzyme with a specific function to break the disaccharide, lactose, leading to lactose\n\nInt 0.25% of the total\n\n2.10% of a total\n\nWhat is the first step of the normal digestion?\n\nChemical\n\nIt acts on the 3",
+          ":\n- Frequent urination and the urge to the Dreaded\n- Excessive thirst\n- The urge to the refrigerator, which is often the Dreaded\n- Blurred vision\n- Fatigue\n- Slow the Dreaded to Heal C\n- \n- Pain in your teeth.\n- Dry mouth.\n- In women, a persistent\n- in the Dreaded,\n- itching, a Dreaded that seems\n- to be a",
+          " increased thirst,\nincreased urination, increased hunger, and weight loss... even for\npatients who are overweight.\nThe two hormones (ins. and glucagon) help regulate blood sugar.\nInsulin in Type II causes cells to a high level of glucose for energy or\nstoring energy....\n\"Blood sugar\" refers to the amount of glucose in...\n\nQuestion: What happens when a person with diabetes starts exercising the first few days to week of a new"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.13541666666666666,
+          0.125,
+          0.13541666666666666,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.59375,
+          0.6354166666666666,
+          0.6145833333333334,
+          0.4583333333333333,
+          0.71875
+        ],
+        "distinct2": [
+          0.9157894736842105,
+          0.9052631578947369,
+          0.9157894736842105,
+          0.7052631578947368,
+          0.9789473684210527
+        ],
+        "halt_depth": [
+          2.19,
+          2.12,
+          2.33,
+          2.27,
+          2.42
+        ]
+      }
+    },
+    "Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat": {
+      "0.0": {
+        "texts": [
+          " an acid, which is also as the the chemical.\n\nTo find the temperature of the n-2-16-2-645-15-8210-year-C35032593434201250167036990905955018-88932-1500-000-77",
+          " D+p,\n\nA. 1) the rate of the D.A. 6719. The initial activity of the a c-158 (1.0 -) A34. In this case from 5.5 M3.5050 37 C. I. C. 1. (20,0.40). 0.007 (1.23584",
+          " the H2-H/L-P5010-44531303-4, 79, 9.0711, 24.5 911.0380 1931 139 and 2019 0.22\n72 0.\n2. The study in the 1023 is an additional factor in the O",
+          " the oxygen, and the temperature is not. The same value is:\n\nThe 4.0,6113,0046475902300000000000000000091414+1810.000027856.8999875922034006005",
+          " the\n5. 502 cm 4593968468 7, 69\n43 75\n3. 14.53349300000000\n0.5676733509447546. 1087877001 0842091838 "
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.15625,
+          0.11458333333333333,
+          0.3333333333333333,
+          0.16666666666666666
+        ],
+        "distinct1": [
+          0.3020833333333333,
+          0.40625,
+          0.3020833333333333,
+          0.2708333333333333,
+          0.16666666666666666
+        ],
+        "distinct2": [
+          0.7368421052631579,
+          0.8526315789473684,
+          0.8105263157894737,
+          0.7052631578947368,
+          0.7473684210526316
+        ],
+        "halt_depth": [
+          2.26,
+          2.42,
+          2.3,
+          2.2,
+          2.11
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " pain and increase of the liver.\nD-A) is a type of food that is a natural and in the world.\n\nA lot of what in the study to the body, and the most common side to the whole and the risk, in it can be a good.\n\nWhat are are the same as the first and the most common. A lot of these medications, which the whole may be a greater. In contrast, that.\n\nThe ",
+          " the symptoms of a small number of conditions related to inflammation, with a normal dose. When the dose is to have a 40. The drug was first of, the effect of the drug, as is the present... The effect is the first-1,000, the effect of the...\n\nThe 2010 and,2807, and the second part, the effect after 12...\n\nIn this case, the",
+          " the pain of migraine, and the enzyme is 0 to 37% in the blood to the 50% 200\nSild. But the original \"one-3\" is a more common but highly for the 1.00 is not to the \"M. A.\n\nQuestion: What is the total rate of P. B. The value of the \"g\" in the new equation? Answer: The text is an experiment",
+          " the G-D-10-1.\n\nIt is now a 5-pH-10:01-13,0020000. 80902000 57: 77421+1702800 0104 14% 0.165.00.00 1.0000 5",
+          " the symptoms. A. C.A.14 0:08 A-C-A/T-C1 is an example. (i) The 2nd-E3 05b-VJ2c 11-4 (1) c 3. 200 (13) 5 300 651 21 3e28 \n(0476) "
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.11458333333333333,
+          0.10416666666666667,
+          0.2916666666666667,
+          0.13541666666666666
+        ],
+        "distinct1": [
+          0.5208333333333334,
+          0.4479166666666667,
+          0.5729166666666666,
+          0.28125,
+          0.3958333333333333
+        ],
+        "distinct2": [
+          0.8421052631578947,
+          0.8842105263157894,
+          0.9473684210526315,
+          0.6526315789473685,
+          0.8947368421052632
+        ],
+        "halt_depth": [
+          2.12,
+          2.18,
+          2.11,
+          2.26,
+          2.18
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " pain, fever, and also\n\nQuestion:\n\nWhat is the primary chemical and pharmacological and an extra drug that is used in the treatment of acute lower back pain and the common cold and many other and is commonly used in the treatment and the treatment of the common or 200?\n\nA:\n\nThis is very difficult to get information about the exact health, which, it is used to a variety of treatment options including:\n\nB (i",
+          " a variety of the pain and the most widely prescribed drug, are...\n\n17. The first-ever synthetic antibiotic is streptomyol, the first...\n\nThe correct answer is not a penicillin.\n\n15. In the case of\n\nQuestion: Which drug is the most important...\n\n172. 25-04. Which drug can be treated with the 2010 World Health Organization, 2016). The",
+          " pain, fevers and inflammation. However, it's also very sensitive in the human body, so people in the pharmaceutical of the future might not be a problem. I'm getting tired that so many people do in the human and the drug.\n\nHow I use Ibuprofen in the human system for pain?\n\nWe use the most effective method that's important in the first two of my five and the most effective method is the same. When we have the first and second",
+          " the same conditions. However, it is not the most recommended for long to long-term, but with the potential for serious health\u2026\n\nInfectious diseases, the immune system has the most sensitive immune and the human life will be saved. For immune system, there is no effect of the virus or a lot there is more that. In their research also a lot of studies have a lot of these and that would cause the human treatment, and the symptoms\u2026\n\n",
+          " pain, but this might be a different drug. In the context, the two options are separate and the user might get any of the drugs.\n\nA similar method for the second part of the question is to use a second, i.e., the third one.\n\nThe first part has to be a drug, which means two options with a 2 or a 35 or a 3-year-old. Because a person is still in the hospital"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.0625,
+          0.11458333333333333,
+          0.09375,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.5625,
+          0.5520833333333334,
+          0.59375,
+          0.6145833333333334,
+          0.6041666666666666
+        ],
+        "distinct2": [
+          0.8526315789473684,
+          0.8842105263157894,
+          0.8736842105263158,
+          0.8947368421052632,
+          0.9052631578947369
+        ],
+        "halt_depth": [
+          2.16,
+          2.12,
+          2.12,
+          2.13,
+          2.18
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " pain, fever, and inflammation 26/6 in the 4 or 66: the effects of sertraline for depression on the course of these symptoms.\n\nThe drug should be the least likely to cause side effects unless the patient is under the most at risk.\n\nThere is an increase in a more likely to be well-aids as blood pressure and the same form. If you are in the population, a small or large, it",
+          " the pain. These drugs relieve pain, fever, and inflammation by interfering with the body's production of prostagland-E/A-like compounds. It is used to do a variety of things during labor. When a woman is considered.\n\nQuestion: What are some factors that increase the risk of these side effects?\nAnswer: High-N-18/K-186-82, F. A., and other factors such as the use of",
+          " pain and inflammation, but may irritate the stomach.\n\nAcid reflux can be caused by factors such as overeating, consuming an acidic or fatty diet, stress, alcohol, and smoking.\n\n- The first step in the treatment of acid reflux is more often than not the use of antacids and it is also important to get the right dosage and frequency.\n\n- The effect is often temporary, with its temporary relief.\n- Acid blockers are a more effective",
+          ". The dosage in milligrams for a child depends on the child, s weight. The formula to the right, which was created by N1-P 910 0-15031 950 1: 8 4.96, 194.\n\n**Unit 10: Solving Trigon and Triangle 6:89% by GG-**\n\n**V3. The child\u2019s",
+          " the common cold (and other conditions) when inflammation is present.\n\nAs they are non-medication, physical treatments include cold for inflammation, heat for pain.\n\nOther strategies include rest, stretching, that kind of thing.\n\nThere is a significant amount of evidence on when to apply each for different conditions, but it's probably easier for the average of us to just say the common recommendation is, ice or the cold, cold that's anti-inflammatory,"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.0625,
+          0.07291666666666667,
+          0.09375,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.6770833333333334,
+          0.6979166666666666,
+          0.6875,
+          0.5,
+          0.625
+        ],
+        "distinct2": [
+          0.9578947368421052,
+          0.9789473684210527,
+          0.9157894736842105,
+          0.8842105263157894,
+          0.9473684210526315
+        ],
+        "halt_depth": [
+          2.36,
+          2.33,
+          2.35,
+          2.34,
+          2.23
+        ]
+      }
+    },
+    "def fibonacci(n):": {
+      "0.0": {
+        "texts": [
+          "\n\n- For the given formula, the equation is the formula for the problem.\n\n- The equation is 8 or 2 is the integral of the sum of the three-value and the inverse of the two...\n\nThe problem is to take an initial problem in this case which is a function that would have a 2-based method.\n\n**Examples:**\n- A: If the problem is not necessarily the same, it is not just the",
+          "\n\n- R1 (p1) is a general (p) - l, then I need to get. \n\n\n- S = B(t) is a single (T) and the result of a new\n\nBut then the original \"f_1^n\" is a single-the.\n\n**\n\n**1 1 2.191(i.7)\n- ...\n- The \"E\" is a function",
+          "\n    \"\"\"Find the largest and non-sub-3 and the first-negative set without the 0 and 1.\n\n    Example 3:\n        \"\"\"\n    x = 0\n    # Find 1 by 0 -1 to 3,000, or you are using this function for a number of instances, 2 3; 0.491, or 2.08, 0.6, so it should be ",
+          "\r\n\r\nThe answer is always the square (with a 2-digit of 20-1) and the 11 of the left-line. \n\nThe maximum and the original answer is the first problem, so it's an arithmetic solution because it's related in a single function. The problem is the same.\n\nTo solve the problem, we need to solve the number of units in the given number of items in the given expression for the formula,",
+          "\n\nThe solution is the quadratic and the derivative of the initial equation.\n\nThe given equation is a bit to solve. The problem is now to solve a value such. The formula is to solve the values of the function.\n\n## Step 1: Compute the initial and most likely 3-6-2-th and 8-16-1\n\n**Summary**: Calculate the first factor of the two is the result.\n\n**Solution"
+        ],
+        "top_share": [
+          0.125,
+          0.11458333333333333,
+          0.13541666666666666,
+          0.11458333333333333,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.5520833333333334,
+          0.53125,
+          0.53125,
+          0.5625,
+          0.5
+        ],
+        "distinct2": [
+          0.8526315789473684,
+          0.8421052631578947,
+          0.8736842105263158,
+          0.8842105263157894,
+          0.8210526315789474
+        ],
+        "halt_depth": [
+          2.09,
+          2.15,
+          2.27,
+          2.16,
+          2.21
+        ]
+      },
+      "0.25": {
+        "texts": [
+          "\n\nI have to write a recursive integer in the code that gives 1916. Wait, the problem is written.\n\nI should write a function to process all the integers of digits in the first 10-element and then the result is the 10-digit integer and the number of elements of the first case is a number I need to find the number of elements in the first row, but I want to have the right, so the",
+          "\n    if is_1 % (1 / 1):\n        return 1\n    return 0\n\ndef get_fib(g, i):\n    \"\"\"\n    Returns function to get next-number in sequence in this new list, but the function should be\n    called from a loop to build a new list of next elements\n    but the function should handle a simple list like 'list' and other elements.\nif __name__ == '__main__':\n    a, n",
+          " The problem is a classic point, where the value is of the first element, second to the last, we can show in the previous problem.\n\n\nFor the next one, when you know all the values, and the previous problem is the number of elements where the values at the original and the problem is a combination of the first and the values of the last, the actual is that the exact first and the first is that the exact first and the first possible to the original",
+          "\n\t\tint(t) := 0\n\n\ndef main():  # Check the following line for the input/line, the input is a 1-3-dimensional 2D array (array must be the 'X' of the 2-level\n\nfor (int,k) in the 1-1-a-b-1-n 2^p-4, a-s-1 (i.e., 2_",
+          "\n    # To check the number is a single positive integer or a float (for precision) and whether it's a power in the given range\n    # and to get a non-empty and non-null, but return an array that is also in a form of numbers and not 0 and is (re)computize.\n\n    # But when we print the value to the first step, we must have the first in the first 1000 or 10"
+        ],
+        "top_share": [
+          0.125,
+          0.07291666666666667,
+          0.20833333333333334,
+          0.11458333333333333,
+          0.0625
+        ],
+        "distinct1": [
+          0.5104166666666666,
+          0.6458333333333334,
+          0.4375,
+          0.59375,
+          0.6145833333333334
+        ],
+        "distinct2": [
+          0.8526315789473684,
+          0.9368421052631579,
+          0.7157894736842105,
+          0.8842105263157894,
+          0.9157894736842105
+        ],
+        "halt_depth": [
+          2.1,
+          2.38,
+          2.01,
+          2.28,
+          2.14
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "\n\n\tif n_\n\n#include <i_255,0\n\n**Funct-iom** ` fib_2 **\n\n**\n\n**\n\n-\n-2.\n\n**\n\nFor the `x` and \ufffd\n\nIn the 1-1\n\n**Ale\n\n**196s.\n\n- `y `[6, 1,\n\n7, 5",
+          "\\v\\n   2\\delta\\lambda= a \\lambda\\tau\\v(t \\map( \\lambda\\alpha\\tau^2 \\alpha \\v \\lambda \\alpha) \\v(t^n^{-1}\\cos\\alpha^2 \\\\) \\left(\\\\v \\left( \\frac{\\frac{\\frac{\\sum}{2 +}^{-1}\\sin\\lambda}^u\\lambda \\left(v \\right)",
+          "\n    \"\"\"\n    :param b: The resulting sequence (a list of integers).\"\"\"\n\n\nOkay, I need to find the Fibonacci sequence. For the input of 9 and 13, which means we need to find the first line of a 2D and 3D-shape with elements of the sequence if that is possible, the same for the second input. I remember that it's possible to represent the 3D-shape as",
+          "\n    for _ in range(n):\n        if len(p.f_cache.get_value(n) is not:\n            return 0\n        else:\n                return (self.get_value(n-1) + self.get_value(self.f_name[2] + self.f_name_to_count())\n        else:\n             if self.f_name == '' else:\n                    return self.get_value_list",
+          "\n\tif n and n_k(n-1) and d_n(R-1) == (1, -1): # Not a way to use a new loop from the start.\n\t # print((3,3) is the next element and the one is just an empty value. Wait, this is the point of the recursive function.\n\nWait, I think in this case, the first is: I see this is a case, but"
+        ],
+        "top_share": [
+          0.23958333333333334,
+          0.13541666666666666,
+          0.07291666666666667,
+          0.11458333333333333,
+          0.0625
+        ],
+        "distinct1": [
+          0.4270833333333333,
+          0.3541666666666667,
+          0.625,
+          0.4791666666666667,
+          0.6041666666666666
+        ],
+        "distinct2": [
+          0.7578947368421053,
+          0.7052631578947368,
+          0.9157894736842105,
+          0.6947368421052632,
+          0.9473684210526315
+        ],
+        "halt_depth": [
+          2.13,
+          2.15,
+          2.23,
+          2.07,
+          2.13
+        ]
+      },
+      "0.7": {
+        "texts": [
+          "\n    # base is that the first term in fibonacci, with a different x is used\n    # n and 2 must be equal, so that doesn't really make the function\n    # but it still needs to be checked or else it won't be a 0\n    if n <= 1:\n        return (0,0), (1,1)\n    elif (n < 2)\n\nimport numpy as np\n\ndef x(n=1):",
+          "\n\nSo the problem is: generate all the numbers in the Fibonacci value of the number n using tail, recursive, and iterative methods for Python. Here's the code for the equation.\n\nLet the task be given n and you are to solve the equation. Also, return the Fib-Sequence at index of given n value.\n\nI need to get back the value of the function. For example, the Fibonacci sequence is 0, and the task",
+          "\n    if n <= 0:\n        return 0\n    elif len(fib_cache) < n:\n        fib_range = list_fib_cache()\n        max_cache = max(fib_range)\n        for i in range(max_cache_list):\n            if len(fib_range) != len(fib_cache) * 2:\n                fib_range[len(list_fib_cache())\n                return fib_piv.next",
+          "\n    if len(memo) >= n + 1:\n        return self.memo(1)  # wrong indexing\n    if n <= 2:\n        return 1\n    result = self.fibonacci(n) + self.fib.memo(1)\n    self.memo.append(1)\n    return result\n\nclass Fibonacci:\n    def test_fibonacci(self):\n        self.test_fibonacci(5)\n",
+          "\n fibonacci_numbers = []\n for a in range(n):\n fibonacci_numbers.append(a)\n\n# Check if the user wants to reverse the list or not\nif not reverse_list:\n\n# This code might be useful for you later\ndef is_even(n, reverse_list):\n return n % 2 == 0\n# End the code here.\nNote to the input \"reversing\" was"
+        ],
+        "top_share": [
+          0.052083333333333336,
+          0.13541666666666666,
+          0.14583333333333334,
+          0.07291666666666667,
+          0.125
+        ],
+        "distinct1": [
+          0.6354166666666666,
+          0.5625,
+          0.4375,
+          0.3958333333333333,
+          0.625
+        ],
+        "distinct2": [
+          0.9578947368421052,
+          0.8631578947368421,
+          0.7368421052631579,
+          0.7368421052631579,
+          0.8842105263157894
+        ],
+        "halt_depth": [
+          2.33,
+          2.18,
+          2.29,
+          2.25,
+          2.29
+        ]
+      }
+    },
+    "To solve the quadratic equation x^2 - 5x + 6 = 0, we": {
+      "0.0": {
+        "texts": [
+          " 12. The function is correct.\n\nThis is 3. To solve the correct function for the expression, 3, a and 3-based value.\n- The original approach is not a new term, not a way to determine a general value of the previous equation which is at least 3-in.\n- There's an in both-type approach where each is a solution for this problem.\n- For example, we have the same",
+          " 39.\nThe answer is:\n\n$P$ and the equation is \\boxed{-1} \\ne 96 5.1 \\cdot 3^{25} 6 = 2 \\l 1 \\cdot 1^2 \\times 1 \\ne 3 \\cdot \\frac{1}{2} \\frac{7}{2^2} \\right) = 2 \\le 2^{2 \\",
+          " 0. However, not there are not two numbers for x2, so the equation might be correct. \n\nS) The equation is a positive. \n\nFor a square number of integers, the result is 4. The solution is not possible, for the difference of the whole (the number of solutions). It's hard. \n\nThe function should show that the exact x is not given. For the original equation, when the inequality is actually in the second",
+          " 3x - 4.\n\nThe question is an integer (a + 2) as a general function with the function of the equation for the original problem.\n\nAs the problem is a non-\n\nThe original expression \\( \\frac{3^9}{2} \\cdot 0 \\times \\frac{b}{2} \\frac{3}{10} \\left( \\frac{-1}{2^2} \\left",
+          " 3 + 1. For example:\n\\[ a^1 = 30. \\]\n\nR. If the equation is the original (the formula is:\n\\[ \\frac{1}{2} \\cdot 1 \\pi \\left(1 \\left(1 \\left(1 \\cdot 20 \\pi \\frac{1}{2}(1) \\left( \\frac{1}{2} \\frac{1}{"
+        ],
+        "top_share": [
+          0.0625,
+          0.13541666666666666,
+          0.08333333333333333,
+          0.09375,
+          0.13541666666666666
+        ],
+        "distinct1": [
+          0.5625,
+          0.3854166666666667,
+          0.6145833333333334,
+          0.4791666666666667,
+          0.3854166666666667
+        ],
+        "distinct2": [
+          0.8947368421052632,
+          0.7368421052631579,
+          0.9368421052631579,
+          0.7894736842105263,
+          0.6210526315789474
+        ],
+        "halt_depth": [
+          2.17,
+          2.21,
+          2.1,
+          2.1,
+          2.15
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " 0. So the second number would be at least 10. So the original expression is:\n\nBut this is getting too straightforward and probably not the 11 in this problem. \nThe final answer is the original equation. Let me try to understand this is not a solution to the real-set and so to make the next step from the equation and the answer to my problem.\n\nA lot of numbers and solutions are available.  The solution",
+          " 10.\n\n**H(X_{1}), H(V) + H(1) \\right) \\left(1 \\text{1} _1)\\left(1)\\beta_1\\sigma\\left(1\\left(1 \\sqrt{1}{1}} \\v^{1}\\frac{1}{-1}\\right)\\right)} \\text{1} \\frac{1}{2} \\right) \\rightarrow \\",
+          " 4x + 3x + 5x + 20y + 670 / 10x + 500\n\n### Note:\n\n- The value of a \\delta \\le \\frac{39}{280} is needed, so we can see the original term is not.\n  \n- The expression x = 141 \\sin 40 \\pi \\left( \\frac{1}{",
+          " 3.\n   Solution The quadratic: x^2 + 24x - ( -2\u00b2) = 6: x + 21 = 9 + 23 - 22 + - 3^2 + 6 = 24 - 12 + 5^3 - 9 + 6. Given the problem is just 3^-2 + 2^n where it's supposed to solve the value of...",
+          " 2 \\frac{6}{23} \\)\nA. The solution set of the equation is {6^x^2(6(2^5} )\n\\sqrt{7} (3 + \\frac{6}{2}3 7 \\right) is a solution to the condition:\n\\[ \\frac{6}{2}\\left(3 \\right) \\ln \\frac{9}{2} \\frac{1}{2"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.17708333333333334,
+          0.09375,
+          0.16666666666666666,
+          0.09375
+        ],
+        "distinct1": [
+          0.5729166666666666,
+          0.3958333333333333,
+          0.53125,
+          0.40625,
+          0.4375
+        ],
+        "distinct2": [
+          0.9052631578947369,
+          0.6947368421052632,
+          0.8421052631578947,
+          0.6736842105263158,
+          0.7789473684210526
+        ],
+        "halt_depth": [
+          2.18,
+          2.23,
+          2.1,
+          2.27,
+          2.17
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " 0\nAnswer-a\n\\]\n\n\\[\n\\begin{eqnarray}\n\\]\n\\]\n\nTo find the roots with the original function, we know with the answer to the previous equation \\( \\frac{x^2 - 5 \\rightarrow - \\frac{-1}{20^2} \\right)^2 \\) or \\(- \\frac{1}{x^2} \\left( \\frac",
+          " 0\n\nNew Problem:\nSol1 - Solve the quadratic equation x^2 - 2x = 0 and find the integral of x-2 to x - 1\n\nSol22 - 167\n\nSol2 - What is the sum of two sides, 13/4 and 9/1 is a complex number\n\nSol4.8 - Solve the equation x2 + x^2 = 9\n\n",
+          " 0. Let me recall:\n\nThe original equation is 2x^2 - 2.7x - 1.967 (466) = 0.9948.0389409393593892795. We have to find the solution.\n\nFirst, I need to set this form to be used in Python:\n\nThe equation is an algebra with",
+          " 2\n\n**Final Answer:**\n\n(2, 3)\n\n**Step-1: Rewrite the equation in the standard sequence with variables on the left-hand side is x^2: 0 - 1 - 2 + 2 + 0^2 = 4 = 2^2 = 2^2 + 2^2 = 2^2 = 2^2 = 2^2 = ",
+          " 19, where the value of x is to be determined. If a^3 is a factor of b^3, and the G is the G, it says it is impossible. But the question is to define a quadratic function F (x = -1/2x) where r, can't we? To find the formula of a quadratic function f(x) = 0 with 200, we have:\n- The function is linear of"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.11458333333333333,
+          0.09375,
+          0.1875,
+          0.0625
+        ],
+        "distinct1": [
+          0.4791666666666667,
+          0.4375,
+          0.4895833333333333,
+          0.3854166666666667,
+          0.5833333333333334
+        ],
+        "distinct2": [
+          0.7578947368421053,
+          0.7684210526315789,
+          0.8421052631578947,
+          0.5894736842105263,
+          0.9368421052631579
+        ],
+        "halt_depth": [
+          2.23,
+          2.32,
+          2.22,
+          2.46,
+          2.17
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " 0.\n\\boxed{-3}\n\\boxed{2}\n}\n\n\\boxed{36}\n\\boxed{399}\n\n\n\nAnswer\n\n\\boxed{-12}\n\\boxed{-3}\n\\boxed{19}\n\\boxed{10}\n\\]\n\n**Note:** The correct approach is to use the following expression:\n",
+          " 0 and find y(t) for y + y^x. \n\nTo solve this, first find the solutions for x in 2^y = x^2. Then apply the solutions found for x in 2^3 = x^2 to find y(t). The initial condition is: find the solution to y + y^x = 2^-x, given the differential equation: x, 1.05, 0.",
+          " 13\n\nSolution:\n\nTo solve the quadratic equation is the first step to simplify the value on the right hand side of the equation, i.e. Then the equation is transformed by 6-16 = -165 20x 3x. \n\nThe quadratic form of a quadratic-equation is given by the general format Ax for a quadratic equation: x^2 - 5x - 1 - 2 x",
+          " 0. Wait, no: x\u00b2 - 10x + 6 = 10x - 24. Wait, let me re-express equation 1.\n\nStarting from the original equation: \u221e 2^2x + 5 \u00d7 ^28 + 3 = 4 + 10.\n\nBut wait, maybe the original problem was (\u221e 2^2x + 5) \u00d7 (",
+          " 3x - 2.\nSolution: To find the solution set for the given quadratic equation, we start to represent the given quadratic equation in the standard form of ax^2 + 6 = 5x + B.\nFirst, subtract (3x + 2)(3) from both solutions by adding 4 to 45.\nThen, distribute the 3 using the distributive property, (30)x + 6 = 5"
+        ],
+        "top_share": [
+          0.17708333333333334,
+          0.07291666666666667,
+          0.07291666666666667,
+          0.13541666666666666,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.3333333333333333,
+          0.46875,
+          0.5208333333333334,
+          0.46875,
+          0.5416666666666666
+        ],
+        "distinct2": [
+          0.5052631578947369,
+          0.7789473684210526,
+          0.8947368421052632,
+          0.7157894736842105,
+          0.8105263157894737
+        ],
+        "halt_depth": [
+          2.35,
+          2.32,
+          2.29,
+          2.4,
+          2.35
+        ]
+      }
+    }
+  }
+}

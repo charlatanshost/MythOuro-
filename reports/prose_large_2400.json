@@ -1,0 +1,916 @@
+{
+  "step": 2400,
+  "samples": 5,
+  "temp": 1.0,
+  "top_k": 50,
+  "alphas": [
+    0.0,
+    0.25,
+    0.5,
+    0.7
+  ],
+  "seed": 0,
+  "rollout_len": 96,
+  "seeds": {
+    "In the morning the weather was clear, so we decided to": {
+      "0.0": {
+        "texts": [
+          " be on the day?\n\nLet me go in the first 1540 to 14000, but is the second half in the\n\nIn the second time, we must go as just an early?\n\nAs the question is not possible, the first part is at one it. Since the only was more effective for each if the same numbers are 0.\n\nIn these questions, the 30th-50?",
+          " take the best time in its\nthat the other (such as the other, it's a little 'e, one-n, because the day that we start, but the world must bring it to be just\none, and the final day to be a\nthe two times.\nThis makes a much 2080 years because I know,\nIn the city, the next thing in the most important\nd. the top when the other time and the",
+          " be in the third and still, can be more and often the last time that is the whole and long.\nThe following is the common thing as the people might come, the most important, the other three\n\n# and even in the\n\nThe more common way about the same body.\n\n## The question, the new way, it's just one the three ones? Now you've at a very small-based, the idea to look\n\nWhat could",
+          " bring the right world, and not the whole person.\n\nIn that this is a natural\n\nf.I'm not all to come, \"I didn't know the way. Let's see the most common.\n\nIt's still a large and a group of my people, or,\n\nIn this first case, the other-the life, but the problem is actually thought,\n\nin the same.\n\nIt\u2019s no thing.\n",
+          " use the main and common and clear.\" Some other kind of the P-D is a strong '\nA lot of people\n\nSo the most important data is for the other time in this way, that it is a huge way we don't think these, that may become a new, so it's actually the same.\n\nH. The current person, a great way to go, and the 5. The idea is actually a long, that it will be"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.125,
+          0.125,
+          0.13541666666666666,
+          0.0625
+        ],
+        "distinct1": [
+          0.5729166666666666,
+          0.625,
+          0.625,
+          0.59375,
+          0.6354166666666666
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.9578947368421052,
+          0.8947368421052632,
+          0.8842105263157894,
+          0.9368421052631579
+        ],
+        "halt_depth": [
+          2.02,
+          2.07,
+          2.05,
+          2.05,
+          2.07
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " get this time to go off. The same way we went the body, but he was not the man with the big in a single, because of the body was going, after all, or the other way. But my father will go at the time, she must be quite far like the other woman, as in the way I remember that the  body. I think it's hard to remember. As a number of possible that this is about the same, I was very",
+          " take the dogs in the life, but maybe they didn't get 8 or 1000 for the 200. The new, in the 26000,00000, how long can be in the life. That can't be a bit-wise, that is a high but it's not necessarily a lot of time, and just the 200 may be a 200-day time.\n",
+          " have for a 200-500. The number is still a large, the weather and 70-80% - but of the first in the morning. When the first of the two.\n\nNow we need some examples, it is in the morning. And we have had a way to the problem-solving and even but it was 12,000 of the \"morn,\" and it will be taken away when the",
+          " develop the game for the human\ndormitory . If you don't have the world to stay there, what else can be a lot of other. When the 20008, the\na, 150000 is so when you see the most important for any other thing and what is the most important\na day.\n\nBut after the the way, when one (rein in the previous page and even the time for its",
+          " have more time to be in the first two areas, because there were two different kinds of different ways (or more, which I am quite important). So, that's the first thing that we put on the.\n\nWait, this approach is a very hard one. Let's call the number of possibilities. There are some other as in the first.\n\nThus, the answer is to be the main and difficult. It can be a very simple for these people,"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.17708333333333334,
+          0.09375,
+          0.11458333333333333,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.6145833333333334,
+          0.4895833333333333,
+          0.5625,
+          0.625,
+          0.65625
+        ],
+        "distinct2": [
+          0.9789473684210527,
+          0.7684210526315789,
+          0.8947368421052632,
+          0.9263157894736842,
+          0.9263157894736842
+        ],
+        "halt_depth": [
+          2.09,
+          2.03,
+          2.03,
+          2.01,
+          2.12
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " go a very long distance away, as usual,\" and you read a map describing the surrounding area.\n\nThe map is not provided, but from the diary, you'll be able to calculate the direction of the city in the first (top) layer. So that is the only 3-character code. Please take a small, but it does not have the last two digits, meaning that the first two digits of the 3-1-521% of",
+          " find out the new and the old planets, for these are the only celestial and astronomical in space. The first year we saw the best planet, but it's not because it has been good. That is one day we did a search, because in these times the sky was the best, and if there is a single thing that we might miss them. This is a search,\nby the next case when we need to get back.\n\nHere is the example, and",
+          " be the first to come and the first and the first and the first, or just it was like that the first is a bit...\n\nQuestion: What does the problem with the time complexity, and when a few days ago, we are only able to make the first\n\nI know that the problem is about the question that the number is so much\nI got this, and this is the answer\nI thought the answer.\n\nI'll try to explain about",
+          " be out the 1500m, and the total training for all three groups was 8, and the remaining. Since the group was so in the middle, but it was in the first half of the day. By other, the two of the groups are now also a half, and there are times that the total  is less than 17,222. It's important to be a good, so there are times as well, but also",
+          " make a trip in a countryside. This trip's destination was a small village in the mountains, and it required some other journey.\nClimbed mountains\n\n[The mountains, where the village is located, the same as in the middle ages, the same as today's]\nBecause we have nothing else to do the rest. As for the most basic need, it has not a single thing.\n\n[Dropping in this village]\n\nBut the"
+        ],
+        "top_share": [
+          0.09375,
+          0.08333333333333333,
+          0.13541666666666666,
+          0.10416666666666667,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.65625,
+          0.6458333333333334,
+          0.5208333333333334,
+          0.5520833333333334,
+          0.6041666666666666
+        ],
+        "distinct2": [
+          0.9368421052631579,
+          0.9473684210526315,
+          0.8105263157894737,
+          0.8842105263157894,
+          0.8947368421052632
+        ],
+        "halt_depth": [
+          2.2,
+          2.11,
+          2.05,
+          2.16,
+          2.14
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " go the beach to have both fun, and in a somewhat scientific way to collect this. The beach was a lot of sand, and since the other option was.\n\n [BW]\n\nLet me introduce some math, since this might become a good idea. The idea with the beach was we found a bunch to make sure we can figure and figure to make sure that can be really sure sure sure.\n [BWX]\n\nThe most important thing,",
+          " be outside. They looked 4 times, the first time of the morning when the sun was on the left side , because you all the students were coming to the door from the other, direction. It was so nice, we saw 8, birds.\n\nThis is how people are able to learn and see them from the books. For instance, maybe you did not know what a butterfly looks like, but I know now. People are able to learn from the birds",
+          " get out and enjoy the  sunny day and enjoy the scenic\nviews at the top,\n\nwhere we have a big flag; but we have the most important thing there: our eyes. That is the reason to look,\n\nto notice the stars, to see the moon and also to be surprised by the\n\nbeauty of the sun.\n\nAfter some,\n\nwe know the right time to go to the place,\n\nand we decided",
+          " go the nearest white desert.\"\n\n4. A little later, the group of friends that are the ones that made the plan, is on their way to their destination. \"Then, a group of friends headed with one person as the driver of the vehicle.\"\n\nNow, write the original query and the following the instructions for each step.\n\nStep 1:\nStart with the following query, based on the data.\n\nQuery 1: 20",
+          " play outside the city of Ljubl,jana.\n\nThe map\n\nThe map of Lj, the is the square $PQR$ with a side length $C$ .\n\nA square which can be described as $C \\times {C_0^{10n}}$. Note that\n\nC is the initial side length of the square.\n\nC_3 is at the center of the square, with $C_{3"
+        ],
+        "top_share": [
+          0.052083333333333336,
+          0.09375,
+          0.13541666666666666,
+          0.11458333333333333,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.5833333333333334,
+          0.6875,
+          0.6145833333333334,
+          0.6041666666666666,
+          0.5208333333333334
+        ],
+        "distinct2": [
+          0.8842105263157894,
+          0.9473684210526315,
+          0.8842105263157894,
+          0.9157894736842105,
+          0.8105263157894737
+        ],
+        "halt_depth": [
+          2.21,
+          2.21,
+          2.06,
+          2.12,
+          2.24
+        ]
+      }
+    },
+    "The treatment for a bacterial infection usually involves": {
+      "0.0": {
+        "texts": [
+          " a more important, and more in the development. The effects of the specific [S]s] of both, and also an active, in this way. The effects of the main [1]\nThe most common, and the role is the most important role in the most important and much, for the most important of the other. The general way is that the majority can be able to be the most common and common.\n\"A better understanding of such as much.\"",
+          " the following types of \"T-\" and the potential in the 60, 80000 (36), the second 1200. (507-1) The other is...(2-12/3) the key of the \"A more general time\" (1.) The effect of this course is to make this and is the time as the 1000-12375. These are",
+          " the two other time, and not the most valuable \"tang\" and in the \"m-vog... and the most important time is also a specific one of the very basic and important because the first time in the most effective, the effects are more effective and likely to be the most common, or most likely, in the way to find a little to become.\nA large \"I and what's a way that the question is why that some things of an independent",
+          " a high-f-enic-p-t-2 and not the effects of these are, and as the activity of the 4915s, which is related to the case, and its other, because the solution of the main...\n\nI can't use this, we need to discuss the in a human (or the 2) but the total in the system, it would be 80-6 \u2013 1500-",
+          " a major, high-\n\nThe same in the 1224. One is the problem for the other types of the 45-S-P(m) 2012+ of the 1-12-2:34-2\n\nThis is about the 22-20-023\nThe following factors that allows the effect of the two parts 1,64.50000"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.11458333333333333,
+          0.11458333333333333,
+          0.10416666666666667,
+          0.11458333333333333
+        ],
+        "distinct1": [
+          0.5,
+          0.4791666666666667,
+          0.59375,
+          0.625,
+          0.4375
+        ],
+        "distinct2": [
+          0.8421052631578947,
+          0.8842105263157894,
+          0.9473684210526315,
+          0.9473684210526315,
+          0.7894736842105263
+        ],
+        "halt_depth": [
+          2.03,
+          2.03,
+          2.03,
+          2.03,
+          2.03
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " antibiotics and more importantly, not spreading the most important for a successful outcome to ensure some specific antibiotics if there are a new, most common, or in.\nA very important for the way in the treatment of the most important thing for the most important. There are to be a better and the most complex and important. The first way is as in the more of, in the other.\n\nAn efficient. A large number of data with high level of the main information is",
+          " both antibiotics, not just one-third.\n\nSome basic and general to the more efficient, and for this course, all\n\nstudents (of the following\n\nin this course) should be a good\n-d-or-and a 2 2405.\n\nThe following method is also for the best\n\nIn terms there are 3-A-4 or on a small, 30-year old, and when the",
+          " antibiotics. The effectiveness of the new, more powerful, effective, and targeted antibiotics and a better understanding, a long, more effective and social, and the most effective and, that may be used for the treatment and for an ongoing, better, but the way and the individual \"M\" and may be a high, a very common, natural\" (c.e. the only, a very important, and the only is used as the only, because the world (as",
+          " different, more in the same of the...\n\nA few people who had been given in the\n\ntetracy, a\n\n##\n\nIn these are the\n\n**\n\nI and for this article, I will\n\nI find the three\n\nIt\u2019s important for the study. It's the third example of the\n\ns. I mean, I've lost to the second point, the\n\nbacteria of the body of",
+          " the use of ______, which helps in killing the bacteria but also can be more of the antibiotic side, and these antibiotics in the same time-t.S to the 200028006 may be better because the results were not. Also, we should be made to the same treatment. It is the only possible in this case, but also in the case. (2) is a new to a few (e.g. 20"
+        ],
+        "top_share": [
+          0.09375,
+          0.11458333333333333,
+          0.14583333333333334,
+          0.20833333333333334,
+          0.09375
+        ],
+        "distinct1": [
+          0.5520833333333334,
+          0.59375,
+          0.4895833333333333,
+          0.5520833333333334,
+          0.5833333333333334
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.9052631578947369,
+          0.8631578947368421,
+          0.8210526315789474,
+          0.9157894736842105
+        ],
+        "halt_depth": [
+          2.06,
+          2.06,
+          2.07,
+          2.07,
+          2.1
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " antibiotics. But with the rise of the spread of antibiotic and the emergence of the resistant (A) effect, a strong focus of the scientific, and is in the search for alternative and even, effective, and safe methods for the treatment for which the target, and the bacteria without the in the damage to the individual, and the host cells.\n\nSame, and same and the most widely developed the field of the treatment and a possible alternative to the use of the antibiotics",
+          " a very high and effective. The key of a human, important.\nA number of different types of bacteria, the. The bacteria of the first case will be the most common and the whole, all is a very large in the development and the.\n\nQuestion: What was the initial one-day-recovery rate for all-hazards, and what had the rate reached by a certain and.\n\nThe rate at the first two kinds of conditions.",
+          " a combination of antibiotics in the form of pills and IV, and the more complicated or stubborn and persistent to the body. The most important thing for the child, they should be kept in a place of the \"good air\" on the side of these things. The most important.\nHow do you make a good thing? \"The best thing\nI have a 12-majorn-s121 that I'm not only the \"best\" but not",
+          " antibiotics in the absence of specific circumstances, a broad-spectrum antibiotic targeting intracellular bacteria might not necessarily indicate a viral [32].\n\nI would like the research, but my concern is \"a broad-spectrum\" of the specific is not a virus. I just took a large and broad spectrum for the infection for the most significant or the most severe (such as the bacteria), I found for the human and important for me in the \"cris- and the most productive",
+          " a combination in the the following way that: the most important thing of the\n\nFACTORS and is to determine precisely as one can the more or less the first and the second and the first is to use the combination of their treatment, while the third is to develop a treatment plan in the first and it is important. For more, the key. The importance of the other two factors is not only the first, 5,2. It is a critical task for"
+        ],
+        "top_share": [
+          0.1875,
+          0.09375,
+          0.07291666666666667,
+          0.10416666666666667,
+          0.14583333333333334
+        ],
+        "distinct1": [
+          0.5208333333333334,
+          0.5833333333333334,
+          0.6666666666666666,
+          0.6458333333333334,
+          0.5729166666666666
+        ],
+        "distinct2": [
+          0.8526315789473684,
+          0.9157894736842105,
+          0.9473684210526315,
+          0.9263157894736842,
+          0.9052631578947369
+        ],
+        "halt_depth": [
+          2.08,
+          2.05,
+          2.08,
+          2.11,
+          2.04
+        ]
+      },
+      "0.7": {
+        "texts": [
+          ":  \nA. Antibiotics that target bacterial cell is often used to manage bacterial\n\nThe treatment for a bacterial infection usually involves:\nA. Antibiotics of a bacterial cell wall, preventing in a bacterial of bacteria and to the spread of the infection\nB.\nThe use of antibiotics at the same time as well as a.\nC\nThe treatment of a person with an infection that is caused by a virus.\nD. Antiviral treatments that the infection of",
+          " a specific antibiotic that is for example,\n\nThe following is a partial list of some antibiotics, their mode of action, the bacteria they have activity against, and the other properties for the antibiotic, namely, or\n\nBacterial Infections\n\nSome common bacterial infections are as follows-\n\n1. Bacterial Pneumonia\n\nThe infection caused by the bacteria affecting by infecting the lungs or the same and causing them to prevent the air and cause inflammation in the lung, leading to",
+          " antibiotics, as they will kill or inhibit the growth.\n\nB. When there are some good bacteria inside the intestine and the good bacteria outnumber, the body of a child will be able to fight, in the case that the bad bacteria come and infect it, to give protection against the pathogens.\n\n## Chemistry\nThe correct equation is 1/22.5 + 1/20 = 1/x.\n\nBy cross-multiplying",
+          " antibiotics for a short or...\n\nQuestion: The treatment includes what the doctor is...\n\nQuestion: The correct answer is 13.\n\nQuestion: What is the correct answer of the question?\n\nQuestion: What was the correct answer to the question.\n\nQuestion: What are the correct answer to the following question.\n\nQuestion: What is the correct answer (which the questioner will reveal shortly)?\n\nQuestion: What is the correct",
+          " high-dose antibiotics to ensure all bacteria are killed with the most effective antibiotic.\n- **D. Lower of the total number of bacteria killed at a 5X concentration**, and the treatment for a bacterial infection typically,\n-\n\nBacterial infections are typically a good idea for this, and the treatment for a small.\n- **E. 5X of the other two treatments**. However, the best treatment is **A. The highest**, **L."
+        ],
+        "top_share": [
+          0.09375,
+          0.08333333333333333,
+          0.07291666666666667,
+          0.14583333333333334,
+          0.0625
+        ],
+        "distinct1": [
+          0.53125,
+          0.6666666666666666,
+          0.65625,
+          0.3854166666666667,
+          0.5833333333333334
+        ],
+        "distinct2": [
+          0.8631578947368421,
+          0.9473684210526315,
+          0.8947368421052632,
+          0.5473684210526316,
+          0.8842105263157894
+        ],
+        "halt_depth": [
+          2.15,
+          2.09,
+          2.11,
+          2.03,
+          2.12
+        ]
+      }
+    },
+    "Common symptoms of type 2 diabetes include": {
+      "0.0": {
+        "texts": [
+          " the main and the most important.\n\nThe most likely, we are also have a human\n\n# more important, even the major.\n\n## I, I was just the best. I should do the main, in the way of the most important\n\nThe way on the most important and well,\n\nH3 is a good thing from the I/m\n\n1. The problem for the answer, in the book is the name.\n\nThe",
+          " the number of people, in this case, if the effect of a good, and significant,\nmore of those things. In the problem, it seems the correct, and as a lot of ways in our future, the most important to make the development for the\nto be made for the most important, and is the most difficult in the human.\n\nFor this, and the second thing in the.\n\n## Step 2011, which have the",
+          " the 2000000,2000-k-601000.14\n-232. The result of the G-n) and the system of the S2 is the most important, not necessarily for the same is the most basic, to understand the 72.60027930. We will use the other and more, from the first case the\nand then, if",
+          " the different, the amount of the world and the 1486 289604-D.g.g. and the average number of. (T. S5-2, that is not an independent 1200/5000-172-32, which would be at the first line. In the 14000000, and the one of the two other cases are not",
+          " the 430, (b) 00, 200-100-203, (402, 19-5,778-253), (45-18.1) 300112.02/a.01/44/160000-20001% and 53-5 are 12"
+        ],
+        "top_share": [
+          0.125,
+          0.13541666666666666,
+          0.16666666666666666,
+          0.125,
+          0.20833333333333334
+        ],
+        "distinct1": [
+          0.5,
+          0.5416666666666666,
+          0.46875,
+          0.46875,
+          0.25
+        ],
+        "distinct2": [
+          0.8315789473684211,
+          0.8947368421052632,
+          0.8210526315789474,
+          0.8210526315789474,
+          0.6947368421052632
+        ],
+        "halt_depth": [
+          2.06,
+          2.05,
+          2.04,
+          2.03,
+          2.0
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " increased in the new\n\n**GK.141, which is not always an opportunity to reduce a number of a well, and that is not the.\n\nBy the more basic in the\n\nA new, well-l\n\nThe goal. It is to have more effective, or any the. This can be much. And the\n\n*1.0.1.0.1.\n\nAs the problem is that, the idea",
+          " new and, and other (with the 30000 and 26000, and it's a new and new in the 55 years, and to reduce the risk, and the 8000, as the other. You see the following 2010-15 years and in the first, 23.2 the 408000 100\nWhat was the other, that",
+          " 2.10, 6600% the main data of the same.\n\nA 100000, 25010 mg, which may be the same a.\n\nThe results that are used in a few cases and in the other 50% of the (21,4, 576) of the first part of the first 100000. At this case,",
+          " increased 1.4 million in people 2  650. 1,000.000 133.3.2.14. The total number of people to use the total number. These individuals have the same 55, 54.10000 55 1200 (in 1115) to get the total number.\n\nC) In the above table",
+          " new onset and non-reversol; 90-9.022 for type, but also,\n\nThe 35 is very important, but not.\n\n6, and the 1930 are also the most common and effective the.\n\nTo be sure to put the number of other treatments. In the most important, I must make more the only important that the body of insulin is to use the insulin, and the same\n"
+        ],
+        "top_share": [
+          0.125,
+          0.1875,
+          0.16666666666666666,
+          0.13541666666666666,
+          0.09375
+        ],
+        "distinct1": [
+          0.5104166666666666,
+          0.3645833333333333,
+          0.4166666666666667,
+          0.3645833333333333,
+          0.5729166666666666
+        ],
+        "distinct2": [
+          0.8315789473684211,
+          0.7473684210526316,
+          0.7263157894736842,
+          0.7473684210526316,
+          0.9368421052631579
+        ],
+        "halt_depth": [
+          2.07,
+          2.01,
+          2.03,
+          2.07,
+          2.05
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "...\n\n**Finance**\nJ- The most reliable\n- The least-reliable\n- Which will be a primary\n\n- a new business\n- a company and a particular\n- A private and a public company\n\n**Social for 1900-1532 [2979334978075647284250s]\n\n**Social\n\nThe United",
+          " both high-risk and low-risk cases.\nThe primary results showed significant, not the most accurate and most important.\nThese medications are related to chronic diseases, the more people are diagnosed to reduce the risk factors. These medications are used for type 2 diabetes, where you can be doing the same way to know.\nIf you also have the same.\n\nQuestion: Which is not a good and important, even, all, as, especially for people.",
+          ":\n\n- Increased (poly) thirst and frequent (pol) and increased (poly) urination (p. urine) from excess, (for) blood, and (1, 20210) is an endocrine and metabolic disease where sugar or blood sugar concentration and the same time when the pancreas makes much less insulin \u2013 and.\n\nBut in the long it may be that they are not even related because they both happen because there are insulin or to the",
+          " frequent urination as well-called poly-urania. Type-I diabetes is as a result of the body's in the body are also associated more with a sedentary lifestyle but the most prominent symptom that occurs the the in the...\n\n# \nPaste, then, the information into this box.\n\n# \nWhat is the most important number of \"171, a more important to know is that the person's. The major...a and it",
+          " the classic, more important for the patient, and in this country, people who have it will be able to see that to make some changes.\nThey can also understand the ability to follow, and what the world and the future can do, but as long, as you think, your friend, and some.\nIn 1995, I was diagnosed and for several and they can be a way of.\nBut it's really a way, they've got"
+        ],
+        "top_share": [
+          0.15625,
+          0.07291666666666667,
+          0.0625,
+          0.09375,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.4583333333333333,
+          0.6354166666666666,
+          0.6354166666666666,
+          0.625,
+          0.6354166666666666
+        ],
+        "distinct2": [
+          0.8421052631578947,
+          0.9368421052631579,
+          0.968421052631579,
+          0.9263157894736842,
+          0.9473684210526315
+        ],
+        "halt_depth": [
+          2.13,
+          2.1,
+          2.14,
+          2.07,
+          2.13
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " a decreased insulin sensitivity and in the pancreas to regulate the role of the hormone as a glucose-to\n\n*lose-weight*\n\nHow the pancreas should be taken by the glucose levels and in the body of the type of this, how do I lower, which can also be found in the cells.\n\nIt's how to lower blood, but we should not be considered as a doctor that this is to be given insulin in the body.\n\nThese",
+          " increased the risk or the development of the disease.\n\nIf the same effect is a significant and risk of the risk, it is important.\n\nThe National and the End-I-care Management is a very significant effect on the risk of developing the condition.\n\nTo improve the body's ability to respond the blood glucose levels, but it is not caused by any conditions to make.\n\nYou may try to treat the problem, but also the cause of these",
+          " insulin and the body's ability to be insulin resistance, which can lead to diabetes.\n\nThe patient and their treatment options, for example, including a diagnosis of the conditions, such as a treatment has to be taken to the primary, and their healthcare team is for the same.\n\nIt is important to be the same way that blood sugar levels in the body can be too high.\n\nhome remedies for the pancreas (or type 1, but it is not",
+          ":\n- Frequent\nneed to urinate\n- Very thirsty\n- Blurred vision\n- The feeling of tiredness and\nfatigue\n- Areas of dark and thick,\ncrusty skin on the most sensitive body of your child. One of the first signs\n-\nThis\narticle tells you what are a good\nfruits and\nveggies for the weight of the diabetes,\nsome other, a group of foods that might improve insulin sensitivity, and",
+          " increased thirst-and-hunger and frequent urination, and other\n...Read for more\nSUGGEST\nThe two.\n\nQuestion: Which hormones are involved in regulating blood, urine, and in a process for the 950-D7, but not for the 90,500-D7. Answer:\nHormonal regulation, the 90-D7, the 950-D-73"
+        ],
+        "top_share": [
+          0.09375,
+          0.125,
+          0.07291666666666667,
+          0.14583333333333334,
+          0.07291666666666667
+        ],
+        "distinct1": [
+          0.5625,
+          0.5729166666666666,
+          0.6041666666666666,
+          0.65625,
+          0.5208333333333334
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.8631578947368421,
+          0.8947368421052632,
+          0.9157894736842105,
+          0.7684210526315789
+        ],
+        "halt_depth": [
+          2.12,
+          2.11,
+          2.15,
+          2.21,
+          2.08
+        ]
+      }
+    },
+    "Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat": {
+      "0.0": {
+        "texts": [
+          " an extensive,\n\nThe major, the most important of the study that also has been the most important for the treatment of the best and the\n\nI14. (215.0) for many of the effect, the study is most important in the \"12, as it was made on the various \"p/in the best.\n\nQuestion: What is the current, common \"H10.\"\n\nThe authors do have reached and",
+          " 0000 (or in the 20000-10006, 20000, and a 4150 (1200) A new mechanism. In the last case, the number of different and not as it was a different, in the very common but a group of other. (a. 3540). The problem is, in the following. This issue is also different,",
+          " the very long of 100-e.\nAn increase, and a common 300-s) is to be studied in the. In the way, at this case that a particular 5-1.0?\nThe most effective of the potential and in the process and we may consider the in a different, so it's important.\nF.\n\nWhat is the use of the effects of the G.\n\n### Step 3",
+          " the 120000. The process to find the natural-6 4.0,6013,0000, and as a very comprehensive mechanism of the \"MX-M\" can be a major and long-sarn_11414+-11-5000 and is a low-pre...B\nIn my current to nonprodeap.34. 6015",
+          " the\n5. 2024-45532. For the three data 7, 192s3.55, on the results and the \"5334.300b.1.50 in the process of the \"p.33\" and the \"CHS.\" In 2010, a high water of the E1-2842.51838 "
+        ],
+        "top_share": [
+          0.125,
+          0.19791666666666666,
+          0.09375,
+          0.14583333333333334,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.5520833333333334,
+          0.46875,
+          0.5625,
+          0.5104166666666666,
+          0.3854166666666667
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.8,
+          0.8947368421052632,
+          0.8631578947368421,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.01,
+          2.03,
+          2.02,
+          2.01,
+          2.02
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " pain and increase muscle (and in the body-s) are different. Because is an absolute to an effective in the world.\n\nThe best response of the drug and to the body. So the development of the other, the other types and the drug is, the body can be.\n\nC-e1, and the number of a significant reduction in the \"the main, and the development may be much-to-sleon.\n\nThe ",
+          " the symptoms of a small 500000 mg and the main use the current cell and to produce a 40. The drug was first of, in the general 40-152... for the following two years have been, 5050-70-200 2010 as, 1000 and 49,000 12.\n\nIn this case, the",
+          " the pain, and the two-component effect model of the drug and other foods.\n\nI'm not sure that the new drug will be in the second part they have the \"new body\" and \"d-component\" in this one of the 10 is not to develop the first. A few types 2019082, and the \"s-component of the \"l-S's new body\" is the most likely to be the",
+          " the symptoms, both of the conditions in question.\n\nIt is now a good, but if the results will be useful and for the 3,002 and 50. 80% of the body, then that is the number of human lives that do both.\n\nThe final thing is in such as the other is about a significant, significant in the most important, in contrast, the most likely that they are a.\n\nAnd this",
+          " the symptoms. A. C-A-14 2:28, 2000,5000, 2000,426,53 0582,0220-144 (1148) and 2000-101 (NEC) 5431521 3428-\n\nThis is because the study is"
+        ],
+        "top_share": [
+          0.125,
+          0.20833333333333334,
+          0.125,
+          0.09375,
+          0.16666666666666666
+        ],
+        "distinct1": [
+          0.53125,
+          0.4375,
+          0.5625,
+          0.5520833333333334,
+          0.2916666666666667
+        ],
+        "distinct2": [
+          0.8105263157894737,
+          0.7789473684210526,
+          0.9052631578947369,
+          0.9368421052631579,
+          0.7473684210526316
+        ],
+        "halt_depth": [
+          2.04,
+          2.01,
+          2.01,
+          2.02,
+          2.05
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " pain, fever, and also\n\nQuestion:\n\nThe table of the chemical and pharmacological actions can be used with these and in the 100% accurate and correct.\n\nWhat is the table of the study of the various chemical and pharmacological actions, but it is impossible to know that the result for the effects on a long-\n\nAnswer:\n\nthe result of a research is used to determine how many drugs of these types of human beings are actually",
+          " a variety of the pain and the most important for treating the inflammatory pain, and is very important for the treatment of arthritis in the joints, but also is not a good choice for treating the stomach. We know that when the acid attacks the most of the blood is not the. They are also important for the use of these conditions that may be used as such. In the general way, it is a good idea for the current medical condition, but the patient should be monitored as",
+          " pain, fevers and inflammation. However, it's also very common in the market, and so people have been using a much higher dose than the actual ones needed to achieve the desired that's in those other in the human and other animals.\n\nHow about you?\n\nHave several different for the treatment and/ and your doctor.\n\nIn addition, the combination pill is quite important to stay in the heart. To get an anti-depressant, and some",
+          " the same conditions in humans as it is in the most important things, to the pain, reduce the inflammation, or as well. Because of the way it doesn't take the time to be the most sensitive to the other, and it is a common and specific, and there is no effect of blood pressure.\n\nWe do more that we are to develop the most things, it may also help the effects and that would improve stress and stress, and stress, and other.",
+          " pain, but it might be a different drug altogether if the brand name is 1000mg. The drug of the same chemical composition can be called the generic form. It would also make a \"branded\" medication, i-108. Branded are the pharmaceutical and other medications for the consumer, although they've all been sold to 1 or more to a third party with the same dose 1000% of the time of the different"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.14583333333333334,
+          0.07291666666666667,
+          0.10416666666666667,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.59375,
+          0.5520833333333334,
+          0.6979166666666666,
+          0.5520833333333334,
+          0.6666666666666666
+        ],
+        "distinct2": [
+          0.8842105263157894,
+          0.8842105263157894,
+          0.9368421052631579,
+          0.8947368421052632,
+          0.8947368421052632
+        ],
+        "halt_depth": [
+          2.11,
+          2.02,
+          2.06,
+          2.07,
+          2.04
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " pain, fever, and inflammation. For the correct treatment in the first year or two of life: the most important factor and the way to make the drug work best.\nSustained-release pills will be given every day, with one of the daily, the next day the child is well-hydrated and in the morning, and so on each day.\nThe following are good choices which have been approved by the US-FDA for children. You should read the",
+          " the pain. These drugs relieve pain, fever, and inflammation by the inhibition of prostaglandin [283]. However, NSAIDs have potential side effects such as ulcer, or gastritis, renal failure. Thus, a better alternative could be needed. These are currently being treated with a combination of physical therapy and surgery.\nIn the current review, the available treatments were discussed including non-pharmacological and pharmacological agents. A few studies have evaluated the effectiveness of different types",
+          " pain and inflammation, specifically-related to conditions such as rheumatoid as well as osteoarthritis.\n\nIt's well known in the market, and also it's a more recent introduction to a lot of other types, hence if the person is taking high levels of it, the doctor is not as concerned about how the person is feeling and also what the future holds for any kind of the body for the person\n\nAs with everything and some other type is there, some health conditions that",
+          ". The dosage in milligrams for a child depends on the child, s weight. The formula to find the dosage, but it is very important not to be confused about the 3-letter abbreviation. \n\nTo explain the calculation steps used to answer the following question. How can help. \n\nAn alternative to the child weight and the child is in kilograms.\n\nThe patient should take 800 milligrams of the medication.\n\nThe table summarizes the calculations for",
+          " the common cold (and other conditions) when inflammation is present.\n\nAs the common cold is a viral infection, such as the most common type of the common cold, rhinoviruses, there are no more \"v\" in the spectrum of a single and so the drug is not only in the \"anti-vomit\" category. However, because the drug is used in common cold, the main use, you can think of the cold being given as a form of"
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.07291666666666667,
+          0.07291666666666667,
+          0.09375,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.71875,
+          0.7708333333333334,
+          0.625,
+          0.6145833333333334,
+          0.59375
+        ],
+        "distinct2": [
+          0.968421052631579,
+          0.9894736842105263,
+          0.9473684210526315,
+          0.9157894736842105,
+          0.8947368421052632
+        ],
+        "halt_depth": [
+          2.11,
+          2.29,
+          2.04,
+          2.03,
+          2.01
+        ]
+      }
+    },
+    "def fibonacci(n):": {
+      "0.0": {
+        "texts": [
+          "\n\nUsing the 100x 30-92 in the previous sum 12, 85 or the 5-12, 1-1-2 for the sum, and the number for 15 (or an initial base) with the difference. The 2.18445621 or 9.5 \\] \n\nTo find the smallest of 6, we have the 5-",
+          "\n\n- The sequence (p1) is a sum (p) part of the value of the first integer. \n\n\nWait, for the sum \\( \\frac{500}{241135800000000^2 \\sqrt{200.53671219602000100070000000000000",
+          "\n    \"\"\"\n    Returns the sum of integers of the **n) first number or the number of positive numbers in the input.\n\n    Parameters:\n    if the number is not equal to the two unique numbers.\n    \"\"\"\n    return -1.\n    \"\"\"\n    return []\n    if n is not None and sum of sorted numbers\n    \"\"\"\n    \n\n    def get_f(self):\n        if not len(k):\n            start = 0.0\n            return a -10",
+          "\n\nThe answer is:\n\nThe integer of the two elements **1,2, 7, 6, 12, where the number is 5 (5, 14, and 3, so it's an arithmetic) and thus the same in the number at the total and odd the two numbers.\n\n## What is the problem in the function:\n\nThe answer of the given number.\n\nThe expression for the answer,",
+          "\n\n\\\n\n\\[ \\sqrt \\frac{1}{1\\sqrt (27.5\\right)^2\\sqrt{2000000001000007300001400000000000660009300065413000910122000000000"
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.3333333333333333,
+          0.10416666666666667,
+          0.10416666666666667,
+          0.4895833333333333
+        ],
+        "distinct1": [
+          0.4375,
+          0.3958333333333333,
+          0.5416666666666666,
+          0.46875,
+          0.21875
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.7157894736842105,
+          0.8631578947368421,
+          0.8,
+          0.49473684210526314
+        ],
+        "halt_depth": [
+          2.02,
+          2.04,
+          2.12,
+          2.06,
+          2.02
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " 1.2, 27.1, 3.5, 1.1, 2.7, 0.7, 30, 4.5, 4, 8, 20, 4, 6 (1) \n\nWait, the number of elements is greater.\n\nSolution:\n\nThe problem statement is:\n\nLet's say, for the array of length \\(\\mathbb{",
+          "\n    if i < 0 and the elements are numbers.\n    \n    For 1, count_neg=1, 2, 1, 3, 4, 4, 2...\n\n# We can see the count and 44...\n\n# The array is given.\n\n# The data type, as it is still in the list.\n#\n# So, the result of running the 8th for the two elements,",
+          " The maximum (x), which can have a value of n or less.\n\nLet's find another real number 18.5.\n\n28. The following function is to take a 26. But in the 34, 17.\n\nNow, the problem is to be a certain that the number to be passed by the solution of the original input.\n\nWait, the number of vertices given and the smallest possible (x)",
+          "\n\t\ta1 + p1\n```\n\n\nI've the 420001 - this is not a function that is a 123-14 120658017156 8. So the given string is 100.\n\nThe two strings will be the 1080 642-444-5-1 (i.0) 20",
+          "\n    if a < c:\n        if len(1):\n            p_1 = fibonacci_1 % (2 * 122 + 10)\n    else:\n        for i in sum(1):\n            fibonacci_12 = 100\n            if we're using 2 (1-1) and 117, 1.3 and the last digit, and the sum of 1000 to 10"
+        ],
+        "top_share": [
+          0.14583333333333334,
+          0.10416666666666667,
+          0.07291666666666667,
+          0.11458333333333333,
+          0.15625
+        ],
+        "distinct1": [
+          0.40625,
+          0.5,
+          0.6041666666666666,
+          0.4270833333333333,
+          0.4583333333333333
+        ],
+        "distinct2": [
+          0.6947368421052632,
+          0.7789473684210526,
+          0.8842105263157894,
+          0.8421052631578947,
+          0.7789473684210526
+        ],
+        "halt_depth": [
+          2.05,
+          2.03,
+          2.07,
+          2.04,
+          2.02
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "\n\n\tif n_\n\n#include <i_2\n\n# Example string\n\nresult = [i_a]\n\n# Now the list has all the squares of the base, and if the sum is even\n\n# the string and the same, if the sum is even\n# the first half\n# the first half\n# but if the sum is even in the number of integers as 6 digits.\n\n\n\n### The problem is",
+          "\\n if y >= 20:\\n0.10010000000\n\n0\n\n```python\ndef fibonacci(k):\n    \"\"\"Generate a sequence which is equal to the Fibonacci number (x^2+x) in the number of bits of all values passed to equal values.\n    \"\"\"\n    def _fib_bits(self):\n        \"\"\"Generate the unique bits of the minimum of non-negative numbers",
+          "\n    \"\"\"\n    :param numbers: list of sorted elements in ascending_i, a tuple of the two integers if the first\n    number\n    :param numbers: list of sorted numbers of integers in descending, where the last value,\n    n = - 1, 6, 6, 0, 45\n    \"\"\" # def factorial(self, n): #   if k > 0:\n        # For 0 <= 3 < 10",
+          "\n    if all_fib < 0:\n        return max_fib\n    \"\"\"\n    if all_fib:\n        return _fib:return next 25000\n    return_first_prime_of_1\n    return len(r'*')\n    return list[1]\n    if isinstance(d_c, int_to_count):\n        return 20\n    next_pr_s = _fib()\n    for p in range(1,",
+          "\n\tif n in memo_dict:\n\t\treturn [mem_dict[n][p] != 0, f, 0, memo_dict]\n\telif n_t == 1:\n```\n\nPlease complete the function\n\nNow the function is more accurate as the memo_dict also gets the same number for 0 and 15,10 in a. The second parameter is:\n```\n\nPlease create the total"
+        ],
+        "top_share": [
+          0.14583333333333334,
+          0.125,
+          0.09375,
+          0.125,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.5,
+          0.59375,
+          0.53125,
+          0.4895833333333333,
+          0.53125
+        ],
+        "distinct2": [
+          0.7368421052631579,
+          0.8842105263157894,
+          0.8315789473684211,
+          0.8315789473684211,
+          0.8210526315789474
+        ],
+        "halt_depth": [
+          2.07,
+          2.09,
+          2.04,
+          2.02,
+          2.14
+        ]
+      },
+      "0.7": {
+        "texts": [
+          "\n    b,  = 0\n    c = 12\n    for x in range(n, 2, -1):\n        res = (b * c * c)\n    print(str(1)\n    return [res]\n\nfor i in fibonacci(6):\n        print(i[-3] / i[-3])\n\nSo, let me analyze each of these incorrect implementations and their respective and the problem with them, and what the correct",
+          "\n\nSo the problem is: generate all the numbers in the Fibonacci value of the number in the Fib, meaning all the number up to and including the given n, ordered from smallest to largest.\n\nWait, the problem statement is a bit ambiguous, but looking to the number in Fib refers to the index, so n is the two-dimensional input? Or perhaps the input is a solution for the Fib, meaning the first n is the same as the first ",
+          "\n    if in_cache_length_check_and_store(fibonacci_cache):\n        return fibonacci_cache[n]_mod_val\n    # Handle new values here\n\nWait, no, so how does the cache work to remember its own code? Let me the cache_mod, and store the results mod a value of the current and previous value?\n\nWait, perhaps a better approach to memoize while keeping track of the numbers.\n",
+          "\n    if n > t:\n        return Fib\nfibonacci().\n    \"\"\"\n    }\n    \n    static fib 1 1\n    \"\"\"\n    def fib(self):\n        if n == 3:\n            a=1\n            fib = Fib(1*1)\n            if fib == n:\n                return 1\n            return 0\n        fibonacci = Fib 2 3 4 29 38 23 39, 42, 4",
+          "\n fibonacci_numbers = []\n for a in range(n):\n fibonacci_numbers.append(a) + 0  # This is incorrect, the actual logic is not just appending the current index\n # The correct logic involves calculating the actual Fibonacci sequence terms, but\n # since I can't provide Python code, here's the Python code to calculate the Fibonacci, the code must be written:\n\n\\n```\n\ndef fib"
+        ],
+        "top_share": [
+          0.052083333333333336,
+          0.16666666666666666,
+          0.10416666666666667,
+          0.14583333333333334,
+          0.09375
+        ],
+        "distinct1": [
+          0.6041666666666666,
+          0.53125,
+          0.65625,
+          0.40625,
+          0.6354166666666666
+        ],
+        "distinct2": [
+          0.9157894736842105,
+          0.8315789473684211,
+          0.9052631578947369,
+          0.8210526315789474,
+          0.8947368421052632
+        ],
+        "halt_depth": [
+          2.04,
+          2.11,
+          2.09,
+          2.09,
+          2.09
+        ]
+      }
+    },
+    "To solve the quadratic equation x^2 - 5x + 6 = 0, we": {
+      "0.0": {
+        "texts": [
+          " 12\\] \\]\n\\[ \\frac{1}{45} \\sin \\frac{520}{2} \\sqrt{1}{2 \\left(1600000000006\\cdot 10000000070000000000000\\]\n\\]\n\\]\n\\[ \\text{(1800",
+          " 698000081200000x^2 + x + 409099615.1.\n\nWait, the sum of 6 is 2x, which is:\n\nI have the number 4 = 16398, which is:\n\n\\[\n\\boxed{2900239626066474",
+          " 78, and not there are not two numbers can be written, so the numbers are equal from the 450, but which is the smallest number of sides in x, then the last are 454, and 230, but can be 5, and we get the difference to which the number and the positive from the numbers,\n\\boxed{25005} \\cdot 3000000",
+          " 32. Wait, if k == 2:\n\\[ \\sum \\sqrt 10000000027200000000000000000 \\right\\cdot 340000090000000000000000000000000000000000",
+          " 2000?\n\nLet us check x a cube, so, \\(1212 \\cdot 1665498101189798669. So since \\(\\boxed{79790015667999770070000000000000000000000\\div"
+        ],
+        "top_share": [
+          0.3541666666666667,
+          0.14583333333333334,
+          0.10416666666666667,
+          0.6666666666666666,
+          0.3125
+        ],
+        "distinct1": [
+          0.25,
+          0.3541666666666667,
+          0.4791666666666667,
+          0.23958333333333334,
+          0.3333333333333333
+        ],
+        "distinct2": [
+          0.5052631578947369,
+          0.7789473684210526,
+          0.8315789473684211,
+          0.3684210526315789,
+          0.6210526315789474
+        ],
+        "halt_depth": [
+          2.01,
+          2.03,
+          2.15,
+          2.01,
+          2.03
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " 0000000.50000000000000000.\n\nWe need to solve the two values in this 100, which will be the number of numbers, like 100 times. For example, the other numbers can be obtained, but the next one would be the sum of the given numbers.\n\nThe other equation of the form 0, so 25",
+          " 10.\n\nBut the original 7 is 2^2 (c^2) when \\(\\frac{24}{8085} \\left(x^2 - 31\\right)^2\\l(1000000\\)\n\n\\]\n\n\\]\n\n\\]\n\n\\[\n\\[ \\frac{27}{3} \\]\n\n\\[ \\frac{",
+          " 4x + 1352 \\)?\n\n4x+86 670 \\sqrt{1}{3} \\cdot 10^ {20} \\sqrt{325}{16700395} \\sqrt{1901}{2}(236) \\cdot (60 \\sqrt{30140200000000000000",
+          " 3.\n   Solution\n\n(12) | 14x - ( -2 - a + 6) + (4a + 4) + 2a - 520 - 312a\n\nSo we will first define the sum of equations in the problem, the equations of the system...\n\nIf each is just a polynomial equation:\n\n\\[\n\\begin{Dequations} \\sqrt{2",
+          " 22006293^{-4.50003} \\cdot 16^x^2\\cdot(2^5 \\sqrt{x})^2 \\right) \\sqrt{2} \\right) \\cdot 00000000000\\]\n\n\\]\n\n\\]\n\\[\n\\[ \\[\\]\n\n\\]\n\n\\]\n\\]"
+        ],
+        "top_share": [
+          0.2916666666666667,
+          0.13541666666666666,
+          0.23958333333333334,
+          0.09375,
+          0.16666666666666666
+        ],
+        "distinct1": [
+          0.4166666666666667,
+          0.375,
+          0.28125,
+          0.5416666666666666,
+          0.2916666666666667
+        ],
+        "distinct2": [
+          0.6736842105263158,
+          0.6842105263157895,
+          0.6631578947368421,
+          0.8842105263157894,
+          0.5684210526315789
+        ],
+        "halt_depth": [
+          2.04,
+          2.06,
+          2.02,
+          2.08,
+          2.08
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " 000-100080-255-2730\n[542889340]\nIn the original question, we were a question in the number theory, where we have to make some assumption, so the 2510 -10000 is the first and the sum of the two groups (because it's 00)\n[41273]\n\n",
+          " 0\n\nWait, but the original instruction is to implement the quadratic (tetrahedron) and the value is 1, and also x = 2 to x, and when the value is 24 (467), so the initial number of nodes (1 and two sides, 1), but the two sides are 1 and 2.\n\nWait, the next steps that I need to do are given the quadratic (tetra). The",
+          " 0\\]\n\nx^2 - 5x + 6 = 0. Using the quadratic formula is unnecessary. This is a simple (bivariate? I think) equation, and we need to isolate y from the equation \\(y - \\frac{1}{y} = 95.8\\). So, let's rearrange the equation of the initial question. For example, when using the equation of the right triangle:\n\n\\[",
+          " 2\n\n**Final Solutions:**\n\n- The solutions can be verified by  substituting  back with the original equation \n\nThe solutions are 192, 60, with the quadratic formula:\n\n**Key Steps:**\n\n- Set the function equal to 10,000, to obtain the quadratic.\n- Apply the quadratic formula to the simplified form the quadratic number.\n\nNote: The rest of the text seems **",
+          " 12, \n\\sin \\left(\\frac{\\sqrt{2^3} \\cdot 940000000000,000000000000000000000000000000000000} = 0 \\]\n\n\\[\n\\frac{2012}{20700}"
+        ],
+        "top_share": [
+          0.16666666666666666,
+          0.08333333333333333,
+          0.0625,
+          0.125,
+          0.53125
+        ],
+        "distinct1": [
+          0.46875,
+          0.5,
+          0.6770833333333334,
+          0.5104166666666666,
+          0.2708333333333333
+        ],
+        "distinct2": [
+          0.8210526315789474,
+          0.8105263157894737,
+          0.9263157894736842,
+          0.8105263157894737,
+          0.47368421052631576
+        ],
+        "halt_depth": [
+          2.03,
+          2.12,
+          2.1,
+          2.16,
+          2.02
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " 0 by factoring.\n\n**Answer the question with your final response:** \n{x=2, 2x=6} \\sqrt{25} = 6\n\n\n{2,6} \\sqrt{\\frac{1}{2}} \n\nThe user provided this answer: \n{2,6} \\sqrt{\\frac{1}{2}} \n\n\\sqrt{25} = 6\nThe user's expression is incorrect",
+          " 0 and find y and z when the remaining solutions.\nx. Let the maximum, middle, and the base solutions be y.  So,  the final equation would be: \nx = 6, 2, 3.  (from above)\n\nThe solution is:\nSolution 1:\ny. If y = 6. Then, the result would be:\n\\end{align}\nSolution:\n\\[ a",
+          " 13\n\nSolution:\n\nTo solve the quadratic equation \\(x^2 - 5x \\) \\] \\]\n\nThis solution is already provided, so here is the refined version.\n\nProblem:\nSolve 20x^3 - 39x^2 + 20x^2 \\] [ 8x \\sqrt{2x^2 -11x+151} \\]\n",
+          " 0. Wait, no: x + 6. So, x = sqrt(11), but maybe I made the first step wrong.\n\nWait:\n\\(\\sqrt{x + 6} \\leq \\sqrt{21} - 3\\cos 28\u00b0 \\left(\\left|\\frac{1}{\\sqrt{2}}\\right|\\right)^{33}\\).\n\nWait first, we need to find f(",
+          " 0 by 6\nand 28x^3+46x^2 +27x+36=0.\na 3x = 18\nb = 5/6 - 7/15 (I think its -120/6300)\nc = 15/32 = 20/???\n\nFind the quotient: (x^2 - x + "
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.10416666666666667,
+          0.10416666666666667,
+          0.052083333333333336,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.4583333333333333,
+          0.5,
+          0.4479166666666667,
+          0.5729166666666666,
+          0.3958333333333333
+        ],
+        "distinct2": [
+          0.6526315789473685,
+          0.8631578947368421,
+          0.7789473684210526,
+          0.9263157894736842,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.12,
+          2.23,
+          2.13,
+          2.18,
+          2.06
+        ]
+      }
+    }
+  }
+}
