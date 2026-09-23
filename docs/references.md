@@ -466,6 +466,41 @@ if that also fails, and the two can be measured against each other with
 - **Universal Transformers** — Dehghani et al. 2018. arXiv **1807.03819**.
   *Recurrent-in-depth transformer + ACT — a foundation of the design.*
 - **Adaptive Computation Time (ACT)** — Graves 2016. arXiv **1603.08983**.
+- **Asymptotically Unconstrained Knowledge Distillation via Teacher Assistant (TAKD)** —
+  Mirzadeh, Farajtabar, Li, Levine, Matsukawa, Ghasemzadeh, AAAI 2020.
+  arXiv **1902.03393** (**filed 2026-09-23 from a summary; ID and venue NOT
+  independently verified — check before quoting**). *Formalises the failure of
+  direct distillation when the teacher-to-student capacity gap is too large,
+  and introduces intermediate "teacher assistant" stepping-stone models.*
+- **On the Efficacy of Knowledge Distillation** — Cho & Hariharan, ICCV 2019.
+  arXiv **1910.01348** (**same caveat — unverified**). *Empirical: larger
+  teachers frequently UNDERPERFORM as distillers because of capacity mismatch
+  with small students. Distillation quality is not monotone in teacher size.*
+
+  **⚠ Why these two matter here, and why they were missing.** Of 14 filed arXiv
+  references before today, exactly one touched both distillation and looping,
+  and the entire `looped_lm_landscape.md` is about PRETRAINING looped models
+  from scratch. We do neither — we distil a 2.6B recurrent-depth teacher into a
+  small recurrent-depth student, and no filed paper addresses that. Our
+  teacher-to-student ratios by ACTIVATED parameters:
+
+  | student | activated | teacher/student |
+  |---|---|---|
+  | `distill_tiny` | 181M | **14.4x** |
+  | `distill_wide` | 240M | **10.8x** |
+  | `distill_large` | 695M | **3.7x** |
+
+  Cho & Hariharan's regime. And the symptom matches the mechanism: soft-KL to
+  the teacher falls on every leg of every lineage while the probes do not move
+  — a student fitting a distribution it lacks the capacity to represent.
+
+  **Teacher size has never been varied in any training run.** The one
+  "teacher-agnostic" claim in `onpolicy_plan.md` is base vs -Thinking at the
+  SAME size. `Ouro-1.4B-Thinking` exists and we already use it — but only as
+  the instruction-HARVEST teacher (2026-08-16, 1.9x throughput at comparable
+  grounding). Never as the distillation teacher. TAKD's prescription is
+  therefore a one-flag change: `--teacher-id ByteDance/Ouro-1.4B-Thinking`,
+  halving the gap to 5.8x (wide) or 2.0x (large).
 - **PonderNet** — Banino et al. 2021. arXiv **2107.05407**. *Halting / depth
   regularisation lineage.*
 - **Reasoning with Latent Thoughts: On the Power of Looped Transformers** — Saunshi,

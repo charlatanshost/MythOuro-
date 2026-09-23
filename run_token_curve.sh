@@ -71,7 +71,16 @@ ALPHA="${ALPHA:-0.0}"               # teacher-mix in rollouts. 0 was earned by t
                                     # un-collapsed it. Random rollouts are noise; 0.6 lets the
                                     # teacher steer them into something worth scoring. Anneal
                                     # down as the readouts say the student is no longer degenerate.
-TEACHER=ByteDance/Ouro-2.6B-Thinking
+# TEACHER is overridable for the capacity-gap A/B (2026-09-23). TAKD
+# (1902.03393) and Cho & Hariharan (1910.01348) find direct distillation
+# degrades when the teacher-to-student gap is large, and that bigger teachers
+# are not monotonically better. Ours by ACTIVATED params: tiny 14.4x, wide
+# 10.8x, large 3.7x. Ouro-1.4B-Thinking is a drop-in — same vocab 49152, same
+# hidden 2048, same total_ut_steps 4, 24 layers instead of 48 — and halves the
+# gap. It has never been used as the distillation teacher, only as the
+# instruction-harvest teacher (2026-08-16). Teacher size has never been varied
+# in any training run.
+TEACHER="${TEACHER:-ByteDance/Ouro-2.6B-Thinking}"
 FILES="data_teacher_code/shard_*.jsonl,data_teacher_math/shard_*.jsonl,data_teacher_v2/shard_*.jsonl,data_teacher_med/shard_*.jsonl"
 LEG="${LEG:-3000}"                 # steps per leg — MUST be a multiple of 3
 MILE=$(( LEG / 3 ))                 # three milestones per leg, whatever the leg length
@@ -129,7 +138,8 @@ if [ "${KEEP_ALL:-0}" != "1" ] && [ "$at" -ge "$LEG" ]; then
 fi
 
 LOG="logs/curve_${DIR#checkpoints_}_leg${leg_no}_$(date +%Y%m%d_%H%M).log"
-echo "=== TOKEN CURVE [$VARIANT, $DIR${FRESH:+, FRESH}] leg $leg_no: step $at -> $leg_end   alpha=$ALPHA ==="
+echo "=== TOKEN CURVE [$VARIANT, $DIR${FRESH:+, FRESH}] leg $leg_no: step $at -> $leg_end   alpha=$ALPHA"
+echo "===   teacher: $TEACHER ==="
 echo "=== cumulative tokens on this curve after this leg: $(( leg_end * TOK_PER_STEP / 1000000 ))M"
 echo "=== (plus the 24.6M of the α=0 gate leg it was seeded from) ==="
 echo "=== expect ~7.25 s/step, ~6.0 h.   log: $LOG ==="
