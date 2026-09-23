@@ -392,6 +392,100 @@ symmetric units that never separate, 2026-09-01).
 3. Do NOT retrofit `wide` — it is the 7.04 outlier and is being retired in
    favour of the fresh `large` lineage anyway.
 
+
+---
+
+## 2026-09-23 — 📄 LoopMoE READ IN FULL. Our ratio is worse than measured, their method matches our arm, and their own ablation warns about our eval.
+
+`pdftotext` on arXiv:2606.04438v2. Chen, Li, Huang, Yin, Shang, Qin (HKUST-GZ
++ Huawei). Corrects three things from the abstract-only reading of 09-22.
+
+### Their architecture is ours, almost exactly
+
+> "2 prefix layers, a 2-layer block that is recurrently applied for **4
+> iterations** with shared weights, and 2 suffix layers" — top-k routing with
+> **k = 6**, shared experts, 3B and 9B scales, Dolma3Mix, 100B/300B tokens.
+
+Prelude 2 / recurrent / coda 2, K=4, top-6, shared experts. That is
+`mythouro_distill_tiny`'s layout with our loop count and our routing. Nobody
+has published closer.
+
+### ⚠️ CORRECTION 1 — our ratio is WORSE than 09-22 measured
+
+Their ρ = A_attn / A_ffn (the inverse of what we computed), and the mechanism
+we missed:
+
+> "a token may route to different experts at each iteration of the shared MoE
+> layer, so its unique active FFN parameters **accumulate with K**. The growth
+> is, however, sublinear rather than K×."
+
+Our 09-22 number counted top-k experts **once**. Across K=4 a token touches
+~16.4 of 24 experts (E(1−(1−k/E)^K)), so A_ffn is far larger:
+
+| | A_attn | A_ffn (K=1) | A_ffn (K=4) | **ρ at K=4** |
+|---|---|---|---|---|
+| large | 136M | 428M | **559M** | **0.244** |
+| large_bal | 164M | 385M | **492M** | **0.333** |
+| standard SwiGLU block | | | | ~0.50 |
+| Ouro-2.6B (2048/5632) | | | | ~0.485 |
+
+**We have half the attention share of a well-tuned model, not two-thirds.** And
+this is exactly the distortion the paper says weight-sharing induces —
+attention params are reused across iterations while FFN accumulates.
+
+### ✅ Our A/B arm matches their method
+
+> "we **expand the MLA low-rank projections** to increase A_attn, and **shrink
+> each expert's hidden dimension** to decrease A_ffn, while **keeping top-k
+> routing fixed**."
+
+`large_bal` does: n_kv_heads 4→8 (expand attention — GQA's analogue of their
+MLA rank expansion), expert_dim 2048→1664 (shrink expert hidden dim), top-k
+held at 6. Three for three on the mechanism.
+
+**What we skipped:** their third step, "restore N to N⋆ by scaling up the
+routed expert pool, exploiting the MoE decoupling of N from F." We hold
+n_experts at 24, so `large_bal` has lower TOTAL params than `large` while
+activated matches to 2.2%. For a fixed-time A/B activated is the right control,
+but it means ours is not their exact recipe.
+
+### ⚠️ CORRECTION 2 — balancing is the BIGGER half, which is good for us
+
+Ablation (Table 3, 5-benchmark average):
+
+| config | avg |
+|---|---|
+| Loop Base | 42.26 |
+| **+ Balancing** | **42.86** (+0.60) |
+| + iteration-only AdaLN | 41.47 (−0.79) |
+| + IterAdaLN | 42.38 (+0.12) |
+| + IterAdaLN & Balancing (= LoopMoE) | **43.02** (+0.76) |
+
+Balancing alone beats IterAdaLN alone, five to one. The arm we are running
+tests the stronger component. Note also that **iteration-only AdaLN HURTS**
+(−0.79) — conditioning per-loop modulation on the iteration index alone is
+worse than nothing, and that is what our `InjectionScheduler` does.
+
+### ⚠️ CORRECTION 3 — their own result warns about OUR primary instrument
+
+> "a small regression on GSM8K, consistent with prior observations that **math
+> relies more heavily on FFN computation**"
+
+Balancing helped HellaSwag, BBH, ARC — and *hurt* math. **Our capability gate
+is code L4 and a math-heavy prose probe.** If balancing trades FFN for
+attention, our instrument is the one benchmark family they measured it hurting.
+
+⇒ **The A/B must not be read on code L4 alone.** The relevance probe
+(on-domain rate) and the medical seeds are the closer analogue to what they saw
+improve. Recorded before the run, so it cannot be rationalised after.
+
+### Scale caveat
+
+Their gains are +1 point at 3B and +3 at 9B on a 9-benchmark average, at
+100–300B tokens. Ours is a 695M-activated model at 29M tokens. The effect they
+measure is real but small, and we are two orders of magnitude below where they
+measured it.
+
 ## See also
 
 - [parallel_loops.md](parallel_loops.md) — the parallel-paths design + §7 prior-art (PLT, RRT, Hyperloop).
