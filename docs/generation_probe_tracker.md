@@ -2762,6 +2762,67 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-24 — ⏹ RATIO A/B, LEG 1: null. The attention-to-FFN rebalance does nothing measurable at 29M tokens.
+
+Two arms, from scratch, same seed, same corpus, same recipe, ONE variable.
+
+| arm | ffn:attn | ρ=attn/ffn (K=4) | activated | s/step |
+|---|---|---|---|---|
+| A `large` | 3.14 | 0.244 | 695M | 15.07 |
+| B `large_bal` | 2.36 | 0.333 | 680M | 15.07 |
+
+`n_kv_heads` 4→8, `expert_dim` 2048→1664, top-k held. Step time matched to
+0.1% in practice (profiled 3.3% apart), so equal tokens in equal wall-clock.
+
+### soft-KL to the teacher, at matched steps
+
+| steps | A | B | Δ |
+|---|---|---|---|
+| 10–450 | 3.281 | 3.236 | −0.045 |
+| 450–900 | 2.282 | 2.263 | −0.019 |
+| 900–1350 | 2.042 | 2.149 | +0.108 |
+| 1350–1800 | **1.990** | **2.002** | **+0.012** |
+
+**Null.** B is marginally ahead early and marginally behind late — curves that
+cross, which is the shape of noise rather than an effect. Paired at identical
+step numbers, n=45: mean Δ +0.012 against a per-line sd of 0.557, i.e. **0.15
+standard errors.** Nothing.
+
+Capability instruments were not read: at 29M tokens both arms are in the
+digit-salad regime where L4 and the relevance probe read zero by construction.
+That was stated before the run.
+
+### What this does and does not say
+
+**Does:** at 29M tokens, on a 695M-activated student, moving ρ from 0.244 to
+0.333 changes the rate of fit to the teacher by nothing detectable.
+
+**Does not:** that the ratio is irrelevant. Three reasons, all recorded before
+the result:
+1. **LoopMoE measures +0.60 points on a 5-benchmark average at 3B over 100B
+   tokens.** We are at 695M and 0.029B. Their effect is small where they
+   measured it and we are ~3,400x below that token budget.
+2. **0.333 is not their target.** ρ⋆ is ~0.485–0.50; GQA divisor constraints put
+   the reachable options at 0.333 or overshoot past it. We tested 68% of the
+   way.
+3. **Early loss is a weak proxy.** Their gains are downstream-benchmark gains,
+   not fit-to-teacher gains, and nothing here measured downstream.
+
+### ⇒ Not worth a second leg on this axis now
+
+The honest position: this axis cannot be tested at our token budget with our
+instruments. A second leg buys another null at the same power. It stays a live
+structural anomaly — **our ρ is half a well-tuned model's, and that is measured
+fact** — but it is not the cheap win, and the arms should not be carried
+further until something can discriminate them.
+
+**The teacher-gap arm is the better next test** and it is already built:
+`TEACHER=ByteDance/Ouro-1.4B-Thinking`. Its predicted symptom is the one we
+actually have — soft-KL falling while capability does not move is what a
+capacity gap looks like, and unlike the ratio it should show up *in the
+fit-to-teacher curve itself*, which is the only instrument that works at this
+token budget.
+
 ## 2026-09-22 — ⏹ LOOP SWEEP: inference depth is not a lever. K=4/6/8 is flat-to-down on a strong base.
 
 `code_eval` at K = 4 / 6 / 8 on `anneal@3000` — same weights, same seed, same
