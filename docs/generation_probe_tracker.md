@@ -2762,6 +2762,57 @@ which is what cured the exposure bias. **The real, untested throughput levers ar
 *Salvage: `reports/onpolicy_rollout_probe_66000_lambda07_n5.txt` is a clean, fully
 probed 2,000-step λ=0.7 baseline at 66,000, usable for any future comparison.*
 
+## 2026-09-24 — ⏹ TEACHER-GAP A/B: null, and the metric was invalid. Structural A/Bs are not measurable at 29M tokens.
+
+`large` + Ouro-1.4B-Thinking (gap 2.0x) against `large` + Ouro-2.6B (3.7x).
+Same student, same seed, same corpus, same recipe, 1800 steps each.
+
+| steps | A soft (2.6B) | T soft (1.4B) | Δ |
+|---|---|---|---|
+| 10–450 | 3.281 | 3.390 | +0.109 |
+| 450–900 | 2.282 | 2.328 | +0.046 |
+| 900–1350 | 2.042 | 2.054 | +0.013 |
+| 1350–1800 | 1.990 | 2.009 | +0.018 |
+
+Paired, n=45: **1.1 SE. Null.**
+
+### ⚠️ And the comparison was invalid by construction
+
+soft-KL in arm T is measured against **a different teacher**. Ouro-1.4B and
+Ouro-2.6B are different targets; a higher KL means that target is harder to
+match, not that the student is worse. **The instrument cannot answer the
+question the arm was built for.** That was foreseeable — soft-KL was chosen as
+primary precisely because it is the only thing that moves at 29M tokens, and
+nobody checked it stays comparable when the teacher changes.
+
+### The pattern across three nights
+
+| A/B | result | why it could not discriminate |
+|---|---|---|
+| ratio (kv 4→8, expert_dim 2048→1664) | null, 0.15 SE | LoopMoE's own effect is +0.60pt at 3B over 100B tokens; we are at 695M over 0.029B |
+| teacher gap (2.6B → 1.4B) | null, 1.1 SE | and soft-KL is not cross-teacher comparable |
+
+**Three nights, no information.** Not because the hypotheses are wrong —
+because at 29M tokens every capability instrument reads zero by construction:
+L4 0.0%, relevance 0/15 on code seeds, code L3+ 0.3%, and the prose metrics
+measure degeneracy rather than capability. The only quantity that moves is
+fit-to-teacher, which is a weak proxy at best and invalid across teachers.
+
+### ⇒ Rule, recorded: no more structural A/Bs at this token budget
+
+An A/B is only worth a night if some instrument can separate the arms. At
+~30M tokens per night and probes that need billions of tokens to come alive,
+that condition is not met for any architectural change. Running more buys more
+nulls.
+
+What remains true and measured: our ρ = 0.244 against ~0.485 for the teacher,
+and **fine-grained experts are the lever that actually closes it** — 128
+experts at `expert_dim` 384 reaches ρ = 0.482 with FEWER total parameters,
+against 0.333 for the kv/expert_dim change that was tested. It is adopted as a
+default for the next lineage on the strength of the arithmetic and LoopMoE's
+own config (136 experts, FFN hidden 864, top-k 6), **not** as a tested result.
+
+
 ## 2026-09-24 — ⏹ RATIO A/B, LEG 1: null. The attention-to-FFN rebalance does nothing measurable at 29M tokens.
 
 Two arms, from scratch, same seed, same corpus, same recipe, ONE variable.
