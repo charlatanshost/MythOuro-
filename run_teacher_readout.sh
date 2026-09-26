@@ -44,7 +44,22 @@ unset SYCL_CACHE_PERSISTENT PYTORCH_ALLOC_CONF
 export PYTHONFAULTHANDLER=1 PYTHONUNBUFFERED=1
 export SYCL_QUEUE_THREAD_POOL_SIZE=1
 export ZE_SERIALIZE=2
-TEACHER=ByteDance/Ouro-2.6B-Thinking
+TEACHER="${TEACHER:-ByteDance/Ouro-2.6B-Thinking}"
+TAG="${TAG:-}"                      # report-name suffix. REQUIRED when TEACHER is
+                                    # overridden, so the archived 2.6B ceiling
+                                    # (reports/code_teacher.json — the number every
+                                    # "ceiling vs plateau" call rests on) is never
+                                    # overwritten by a different model.
+CODE_ONLY="${CODE_ONLY:-0}"         # 1 = skip the 35-min prose stage. Use this when
+                                    # the question is only "how good is this teacher
+                                    # at code", e.g. sizing a throughput trade.
+if [ "$TEACHER" != "ByteDance/Ouro-2.6B-Thinking" ] && [ -z "$TAG" ]; then
+  echo "TEACHER is overridden ($TEACHER) but TAG is empty."
+  echo "That would overwrite reports/code_teacher.json, the archived 2.6B ceiling."
+  echo "Pass a suffix, e.g.:  TEACHER=$TEACHER TAG=_1p4b bash $0"; exit 1; fi
+CODE_JSON="reports/code_teacher${TAG}.json"
+PROSE_JSON="reports/prose_teacher${TAG}.json"
+export CODE_JSON PROSE_JSON TEACHER
 ANY_CKPT="${ANY_CKPT:-checkpoints_wide/step_0009000.pt}"   # loaded, contributes 0 at alpha=1
 mkdir -p reports logs /tmp/prose_probe
 if pgrep -f "[p]ython -u -m training\.(distill|sft)" >/dev/null; then
@@ -53,16 +68,20 @@ if pgrep -f "[p]ython -u -m training\.(distill|sft)" >/dev/null; then
 echo "=== 1/2  CODE: teacher through code_eval, bare framing, n=320 ==="
 python -u -m tools.code_eval --hf-model "$TEACHER" --device xpu:0 \
   --samples 32 --temperature 0.4 --seed 1234 --repetition-penalty 1.15 \
-  --max-new 96 --json reports/code_teacher.json 2>&1 | tee -a logs/eval_teacher.log
+  --max-new 96 --json "$CODE_JSON" 2>&1 | tee -a "logs/eval_teacher${TAG}.log"
 
 echo
+if [ "$CODE_ONLY" = "1" ]; then
+  echo "=== 2/2  PROSE: SKIPPED (CODE_ONLY=1) ==="
+else
 echo "=== 2/2  PROSE: teacher through the prose probe at alpha=1.0, six seeds ==="
 D=/tmp/prose_probe/teacher; rm -rf "$D"; mkdir -p "$D"; cp "$ANY_CKPT" "$D/step_0000000.pt"
 python -u -m tools.onpolicy_rollout_probe --ckpt-dir "$D" \
   --student-device xpu:0 --teacher-device xpu:0 --teacher-id "$TEACHER" \
   --trust-remote-code --no-kv-cache --samples 5 --alphas 1.0 \
-  --json reports/prose_teacher.json 2>&1 | tee -a logs/prose_teacher.log
+  --json "$PROSE_JSON" 2>&1 | tee -a "logs/prose_teacher${TAG}.log"
 rm -rf "$D"
+fi
 
 echo
 echo "=================================================================="
@@ -83,18 +102,24 @@ def prose(p, alpha):
             L=[l.strip() for l in t.split("\n") if len(l.strip())>3]
             if L and max(Counter(L).values())>=3: lo+=1
     return st.mean(ts), st.mean(ds), lo
+CJ=os.environ["CODE_JSON"]; PJ=os.environ["PROSE_JSON"]
+NAME="TEACHER  "+os.environ["TEACHER"].split("/")[-1].replace("-Thinking","")
 rows=[]
-if os.path.exists("reports/code_teacher.json"):
-    l0,l3,l4=code("reports/code_teacher.json"); rows.append(("TEACHER  Ouro-2.6B", l0,l3,l4))
+if os.path.exists(CJ):
+    l0,l3,l4=code(CJ); rows.append((NAME, l0,l3,l4))
 print(f"  {'':22s} {'L0':>6} {'L3+':>7} {'L4':>6}")
 for lbl,l0,l3,l4 in rows: print(f"  {lbl:22s} {l0:5.1%} {l3:6.1%} {l4:5.1%}")
 print(f"  {'student wide pt3 (3ck)':22s} {'7.7%':>6} {'68.2%':>7} {'4.5%':>6}")
+print(f"  {'student LARGE pt3 (3ck)':22s} {'71.5%':>6} {'16.8%':>7} {'0.0%':>6}   <- live lineage, 139M tok")
+print( "      ⚠ large pt3's L3+ is INDENTATION, not computation (2026-09-26): 52%% of")
+print( "        completions start with an indent, 1%% of its L3 returns a value. Compare")
+print( "        this teacher's L4 and committed, not its L3+, when sizing the trade.")
 print(f"  {'student 278M pt3 (1ck)':22s} {'6.6%':>6} {'75.0%':>7} {'5.0%':>6}")
 print()
-if os.path.exists("reports/prose_teacher.json"):
-    t,d,lo=prose("reports/prose_teacher.json","1.0")
+if os.path.exists(PJ):
+    t,d,lo=prose(PJ,"1.0")
     print(f"  {'':22s} {'top_sh':>7} {'dist1':>6} {'LOOP':>6}")
-    print(f"  {'TEACHER  Ouro-2.6B':22s} {t:7.3f} {d:6.3f} {lo:3d}/30")
+    print(f"  {NAME:22s} {t:7.3f} {d:6.3f} {lo:3d}/30")
     print(f"  {'student wide pt3':22s} {'0.098':>7} {'0.559':>6} {'4/90':>6}")
     print(f"  {'student 278M pt3':22s} {'0.098':>7} {'0.556':>6} {'4/90':>6}")
 print()

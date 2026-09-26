@@ -101,12 +101,19 @@ mkdir -p logs reports "$DIR"
 
 if pgrep -f "python -u -m training\.(distill|sft)" >/dev/null; then
   echo "a trainer is already running"; exit 1; fi
-[ "$FRESH" = "1" ] || [ -f "$SRC" ] || { echo "missing $SRC"; exit 1; }
+# SRC only ever SEEDS an empty DIR. Once a lineage has checkpoints the trainer
+# resumes from $DIR itself (checkpointing.list_ckpts()[-1]) and SRC is never
+# read. Requiring it anyway sent a routine resume of a FRESH lineage into a
+# "missing SRC" dead end (checkpoints_large, 2026-09-26 — it was created with
+# FRESH=1 so it has no step_0000000.pt), and the obvious workaround, passing
+# FRESH=1 on every later leg, habituates a flag that means "start over".
+HAVE_CKPT=0; ls "$DIR"/step_*.pt >/dev/null 2>&1 && HAVE_CKPT=1
+[ "$FRESH" = "1" ] || [ "$HAVE_CKPT" = "1" ] || [ -f "$SRC" ] || { echo "missing $SRC"; exit 1; }
 FREE=$(df --output=avail -BG . | tail -1 | tr -dc '0-9')
 [ "$FREE" -lt 30 ] && { echo "only ${FREE}G free — need ~30G for a leg plus its readout"; exit 1; }
 
 # ---- seed once (skipped when FRESH=1: an empty DIR makes the trainer init from scratch) ----
-if [ "$FRESH" != "1" ] && [ ! -f "$DIR/step_0000000.pt" ]; then
+if [ "$FRESH" != "1" ] && [ "$HAVE_CKPT" != "1" ] && [ ! -f "$DIR/step_0000000.pt" ]; then
   cp "$SRC" "$DIR/step_0000000.pt"
   python - "$DIR/step_0000000.pt" <<'PY'
 import torch, os, sys

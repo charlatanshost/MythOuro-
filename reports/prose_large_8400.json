@@ -1,0 +1,916 @@
+{
+  "step": 8400,
+  "samples": 5,
+  "temp": 1.0,
+  "top_k": 50,
+  "alphas": [
+    0.0,
+    0.25,
+    0.5,
+    0.7
+  ],
+  "seed": 0,
+  "rollout_len": 96,
+  "seeds": {
+    "In the morning the weather was clear, so we decided to": {
+      "0.0": {
+        "texts": [
+          " see on the day of two the earth at 10001 40 to 10000, so is the second half in the\n\n###\n\nB. S. (The total temperature-d) is the result of the solar, which means the temperature is at one\n\n## The average temperature is 24.1006000\n\n- 36963400.00",
+          " take a steady time in its energy and the space (such as the other Earth and the space at the time, one-time, as the space that we start to the next time. We will also be able to get the energy of a very small energy, but the real energy is the most efficient, so the other areas are to be on the air, which means that the amount of the energy in the real way is that the energy is the one that can be replaced",
+          " reduce the water in the ground, in the early and non-high water that only form the wind and the energy in the water of the water during the same time.\n\nFor our large heating in the\n\n#\n\n### In the current context, we will reduce the potential of the energy. I would not have the new state, which is just one the water for the next 2.\n\nThe goal is to set the weight of the current water.",
+          " bring the right to be to get the whole energy.\n\nIn that, is a natural\n\n**\n**\n\nThis would come out.\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n*\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n**\n\n",
+          " use the water and the rest-the 400, the second of the water, not what the first-year is the most important effect of the next three.\n\n\nI am really good and it is how I am the time.\n\nQuestion: In 2002, the 12002 M is the year of 1200. The first time is the total number of times of the two hours that the first one"
+        ],
+        "top_share": [
+          0.17708333333333334,
+          0.16666666666666666,
+          0.17708333333333334,
+          0.53125,
+          0.13541666666666666
+        ],
+        "distinct1": [
+          0.4479166666666667,
+          0.53125,
+          0.5520833333333334,
+          0.22916666666666666,
+          0.5104166666666666
+        ],
+        "distinct2": [
+          0.8105263157894737,
+          0.8842105263157894,
+          0.8421052631578947,
+          0.29473684210526313,
+          0.8421052631578947
+        ],
+        "halt_depth": [
+          2.03,
+          2.04,
+          2.01,
+          2.03,
+          2.04
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " get this time to find the potential of P.\n\nFirst, so in the main form of the problem is the current weather and the energy of the amount of air, the weather, or the other way. But the problem is the most important to the main thing they have to do but the question of the current time and the weather.\n\nIn a more simple way we can see the weather of a number of possible times in the way that the air is in the",
+          " find the temperature of the water, which would be 3\u00b0 8 or 1000 for the water, with a 2\u00b0, which is now being measured in the 20% of the 1900s of the water. A 1400-60, which is the difference of water and the water, which is now the first to 27.\n\nThe 200-200,",
+          " go for a 20 to 300. The second time, what is the probability that the current energy is not as long; how can the energy from a 200% in the last two.\n\n## 20.50. The power of the wind\nIn the morning the weather is much the 200% the 2000 hours. The wind is the same as the first 2000.",
+          " go into the garden. All a long time and the last time is the past that we are doing with the most important event (saying that that can you know this part may be very close to the air as the 150 words of your essay on your own\n\nThe word has become more efficient and what about the most productive form, an old woman and the\nw. The world. The last time I'm able to get and even the time for its",
+          " go hiking on the mountains and then the two friends, as well as their two friends, one boy and who did one on the first time in the city, and the two are the most in the town and also the two the first time, the top in the city. Then from the\n\nMans and the top in the first time, they had a two-minute break. (The two people are not being in the middle, so their the top in the first"
+        ],
+        "top_share": [
+          0.1875,
+          0.13541666666666666,
+          0.15625,
+          0.09375,
+          0.17708333333333334
+        ],
+        "distinct1": [
+          0.5,
+          0.4166666666666667,
+          0.4583333333333333,
+          0.7395833333333334,
+          0.46875
+        ],
+        "distinct2": [
+          0.8526315789473684,
+          0.7052631578947368,
+          0.7368421052631579,
+          0.9578947368421052,
+          0.7684210526315789
+        ],
+        "halt_depth": [
+          2.05,
+          2.04,
+          2.03,
+          2.07,
+          2.07
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " go into the nearby the forest, which is what we are going to study today.\n\nWe have been an enthusiastic group of programmers (like you) who like N. S.\n\nH. C. S.\n\nIt is given by the following two of the N. S.\n\nAs you are a programming contest?\n\n\nWell, the last two N. S.\n\nThe last two N. L.\n\n-20% of",
+          " find out the weather of the entire 24-hour\nperiod.\n\nAt the end of the 0th-year and 2006-th\nyear that were also Le.\n\nThe second part of the new Le, the 2006-year was in the same place as the 0th year. I am a new\nL 1700. I have had the same problem as 13, and",
+          " go skiing the first two and 20% of the days.\n\nIn the morning the weather was clear in 15 days.\n\nHow much did they come in time?\n\nThe total number of days, we need the amount:\n\nx\n\n\"They were there, for two and 200% of the\n\nDays.\n\nOn all the total days, we need to find the number of days from the end.",
+          " collect mushrooms. At 100m, we can observe the number of mushrooms in square meters which it has the shape. Since the height is the same for these more than 100m meters away, we can consider the problem with two of these mushrooms.\n\nThis problem is actually a problem of counting the total number of steps, and how it can be a problem that the number of steps required to get from the mushroom that you want to be able to",
+          " make a steady- state to see if something I did all. And not the weather in general, it's possible that I have the same amount and the...\n\nThe best way to start the morning is when the sun of air is sunny, and the sky is clear. If...\n\nThe new...\n\nThe new...\n\nThe new...\n\n\n\nThe new and...\n\nWe...\n\nThe finale is a bit different. The night is"
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.09375,
+          0.14583333333333334,
+          0.08333333333333333,
+          0.13541666666666666
+        ],
+        "distinct1": [
+          0.5625,
+          0.4791666666666667,
+          0.5208333333333334,
+          0.5625,
+          0.5520833333333334
+        ],
+        "distinct2": [
+          0.7789473684210526,
+          0.8,
+          0.7789473684210526,
+          0.8736842105263158,
+          0.7789473684210526
+        ],
+        "halt_depth": [
+          2.04,
+          2.03,
+          2.05,
+          2.02,
+          2.09
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " go up Mount Merapi,\" said, and in a place where it came the best. \"We got to the top of Merapi, the mountain was still a bit hot, but the sight of sunrise was the best. Now at sunset, with the sky. It was to show us the most important thing about nature and how the beauty of the sky. \"I never want to forget it\" (D.T. was a student at MTs), who was. The",
+          " play a second game, 40 hours later, then we were on the way we had a real fight in the way with the sun a little while ago.\n\nA real fight?\n\nYes. It's a solar storm, at a peak, but this is no matter. But during this event, solar protons are also the problem. The space weather is actually very sensitive to the change of the solar wind.\n\nSo, with a small space storm,",
+          " get out and enjoy the  sunny day at the beach.\"\n\nOutput: 2\n\nExample 2:\nInput: 5\n\nA nice day at the park is the best way to spend time, especially when they are sunny.\n\nOutput: 1\n\nWait, but in example 6, the input is 7. The output is 3. Let me check the example:\n\nThe last example in the problem, Input ",
+          " go the nearest white, sandy sea beach. A little later, the sea became rough that we could not swim, so then we went to the beach restaurant or ca, the weather turned cold and the water there was one degree of the temperature of the surrounding seas, and we took a huge hot shower and returned to the beach house, the weather in the evening was clear, so they have been the same as the morning, but then we started on a kayak to explore the",
+          " play outside the city of Ljub a\n\nIn the morning the weather is\nclear the weather of the morning, the weather in the evening, the water was\nclear, they decided to play the day, we will not do the exercise.\n\n5.\nIn the morning, the weather was about the clear\n\nIn the morning, the weather is clear the weather of the morning.\n\n3.\nIn the morning, the weather was clear during the morning"
+        ],
+        "top_share": [
+          0.09375,
+          0.07291666666666667,
+          0.13541666666666666,
+          0.13541666666666666,
+          0.20833333333333334
+        ],
+        "distinct1": [
+          0.6354166666666666,
+          0.625,
+          0.53125,
+          0.6354166666666666,
+          0.375
+        ],
+        "distinct2": [
+          0.9368421052631579,
+          0.9368421052631579,
+          0.8526315789473684,
+          0.9157894736842105,
+          0.6526315789473685
+        ],
+        "halt_depth": [
+          2.08,
+          2.08,
+          2.03,
+          2.05,
+          2.03
+        ]
+      }
+    },
+    "The treatment for a bacterial infection usually involves": {
+      "0.0": {
+        "texts": [
+          " the best-to-to-procom A, the following data can be applied to that the following groups are known as an a 5.2.2 and 103.2\nThe function will be used to find the output and to check the first three steps in the case for the data to the first cell. An example of an example of a few of the variables and the most common and common of the new \nThe process is to define the",
+          " the mechanism of the mechanism in the process of the mechanism that includes both the mechanism, allowing a strong part of the activity to be able to explore the development of the role. Since the system is a very important process that is to create and make it to make the new use of an additional area (B) to develop the structure for the effect of a given protein to make this step is to determine the reaction of the system that has a very complex value on the type and a",
+          " the specific form of bacterial (a certain and 5-1) a more efficient, a very close the use of the BAP from these types of specific factors, in the context of the first time, you'd be required to get the first, but with more likely to be the most common thing or most likely, in the way to find a specific amount, these are two ways of doing to find the right by checking the question.\n\nWhat's the idea of",
+          " a high growth of the specific products and some conditions.\n\nThe primary thing to the end-based and more important and the role-based and the essential part for the human and health-based, and its natural, are the primary and the main process for the overall health and health.\n\nWe are taking the number of things (or the actual ones) but the key is the purpose of the medical\nin this case, the main function is related this\n\n",
+          " a comprehensive comprehensive The\n\nOther methods of a single product that can be the same as a well as a proper for a new way to make it\n\n\nIf an initial type of chemical is a common form of one. The main is the most important of any of the new and\n\nThis is about the specific structure of the best time to be the same as a lot of that this is a natural and a\n\nThe reason that the structure is a natural or sometimes"
+        ],
+        "top_share": [
+          0.125,
+          0.15625,
+          0.11458333333333333,
+          0.14583333333333334,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.5729166666666666,
+          0.5520833333333334,
+          0.625,
+          0.5520833333333334,
+          0.5416666666666666
+        ],
+        "distinct2": [
+          0.9052631578947369,
+          0.8842105263157894,
+          0.9473684210526315,
+          0.8736842105263158,
+          0.8842105263157894
+        ],
+        "halt_depth": [
+          2.02,
+          2.05,
+          2.04,
+          2.1,
+          2.07
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " antibiotics and more than than just a certain course. The doctor will be to ensure some follow up if there are complications of a medication.\n\nQuestion: What can you can take the proper treatment of D.E.E. and more than one of the following to your first stage and the use of the following.A and a body that has the more of, in the sense of the use of the following.\n\nQuestion: Is a person taking the main type of",
+          " taking a significant amount of drug in the following manner: The total amount of drug and its potential, and the most important and the possible clinical. Since the only possible type of treatment is that this can be done.\n- In this case, the best and the patient is probably taking the treatment to avoid a certain type of side, but it is a more complex way for the following two. It is only a part of an issue. For example, the possible issue when the",
+          " antibiotics. The effectiveness of the new, more powerful antibiotic in killing and other aspects of a specific pathway, a novel, more effective and non-consum and how it works in an environment.\n\nA single dose is a general way of giving the way and not a single factor. A general way to prevent those of the more common things in the current of the current medical, such as an alternative or in the body. The process of the medical is the most important factor",
+          " the use of antibiotics. \n\nThis can be made in a specific part of the cell, like a 3-fold and a 4-fold the treatment of the infection. If you want to understand and reduce this treatment, you will need to know the most important reasons why this is the right for the process. It's the possibility that you may find to make the most significant changes.\n\nThe process is not the effect if I had a very common and well",
+          " the possibility of an over-protein in the first phase but also being in more or less over-protein, i.e. you would be having a little to the protein or even a protein which can be treated if it does not give a protein. But here is the right for a protein or an enzyme that is important for the enzyme. However, it does not need to be able to do it to do for you to build the form of protein. So there's a"
+        ],
+        "top_share": [
+          0.09375,
+          0.10416666666666667,
+          0.08333333333333333,
+          0.10416666666666667,
+          0.0625
+        ],
+        "distinct1": [
+          0.5625,
+          0.59375,
+          0.5833333333333334,
+          0.6458333333333334,
+          0.5625
+        ],
+        "distinct2": [
+          0.8315789473684211,
+          0.9157894736842105,
+          0.9157894736842105,
+          0.9578947368421052,
+          0.9052631578947369
+        ],
+        "halt_depth": [
+          2.05,
+          2.04,
+          2.05,
+          2.07,
+          2.08
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " antibiotics. But it is important to provide your vet with the exact medication, and if the diagnosis is not the bacterial infection, do not give the medicine. The specific is that antibiotics may be dangerous to be used for the wrong to the dog. So these are the best ways to make sure that they are the ideal, and the infection doesn't affect your health and the life of the bloodhound.\n\nWhat are the possible treatments to get the most appropriate treatment for this.",
+          " a very high and effective factor, with a single pathway, which is one of the major problems, and the reason the immune system is not the first line and it is a common problem which is why all the things should be done with care and the patient should have the treatment right away, not one. It would be possible for a whole population to reach to that the immune system would be able to fight the bacteria. What is wrong with the disease, it should be a good",
+          " the use of antibiotics in the form of pills and the whole thing can be finished.\nHow does it work?\nWith these techniques:\n\nIn the past the main method is based on the use of a natural treatment on skin with the help of an antiseptic cream to destroy the infection.\n\nA.\n\nTreatment\n\nB.\n\nC.\n\nD.A. B.\n\nC.A:\n\nThis may be a lot more",
+          " antibiotics with broad-spectrum activity. The most suitable antibiotic for treating a bacterial infection caused an extremely large number of a particular  bacteria would be   _  .\n\n\nOkay, let me read the question again to explain the problem. The user's query is in the initial question description, but the way the answer is phr... Wait, let's think this.\n\nThe user says, for bacterial infections, antibiotics are used in broad-spectrum treatments and the most suitable factor",
+          " a combination of antibiotics and supportive, especially supportive of hydration.\n\nS\n\nFever management and is the most important thing for a bacterial\n\ninfection.\n\nBut if a bacterial is really well but may need to continue treatment from 2-m to develop on.\n\nThe primary and secondary for bacterial.\n\nS The key differences for bacterial and viral\n\nYou may not see the difference between 2-m and a very high in this."
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.10416666666666667,
+          0.1875,
+          0.0625,
+          0.14583333333333334
+        ],
+        "distinct1": [
+          0.625,
+          0.5729166666666666,
+          0.5520833333333334,
+          0.6875,
+          0.5833333333333334
+        ],
+        "distinct2": [
+          0.9578947368421052,
+          0.9368421052631579,
+          0.8,
+          0.9473684210526315,
+          0.8421052631578947
+        ],
+        "halt_depth": [
+          2.07,
+          2.07,
+          2.06,
+          2.07,
+          2.07
+        ]
+      },
+      "0.7": {
+        "texts": [
+          ":\n\n\nI need to answer this question: \"When used in treating bacterial\ninf.\n\nC:\\Users\\Anon\n\nThe treatment of a bacterial infection is a multifaceted in nature where more than a specific therapy is applied and is largely the result of a number of approaches by the doctor, the patient, and other\n\nWhen a person is a person and is a good person, there could be some\n\nWhen the person is feeling cold, they may",
+          " a specific antibiotic that is effective against the particular type of bacteria.  \n\n- **Option A** states that the patient is the first to have a bacterial infection and the doctor is unaware of any specific treatment, which would prevent effective use of the antibiotic. The reasoning is sound in this context but does not illustrate the problem described in Option B.  \n\n- **Option B** describes a patient with a bacterial infection already treated to control symptoms, and the doctor insists the disease is",
+          " antibiotics, as they will kill or inhibit the growth of the bacteria.\n\nBut let's think about all conditions.\n\nA: Bacterial B Cell (infl and H.G) \u2013 antibiotics, in the form that will be the first and main thing, to eliminate the bacteria that can cause an infection if any of the previous conditions are present.\n\nThere aren't many different areas of antibiotics for treating various types of bacterial infections of varying different bacteria (which are",
+          " antibiotics or other drugs that are the result of the study of microbiology. In other cases, for instance, a patient of a parasitic infection, the medical specialists must rely on the tools applied such as a microscope, culture, and, maybe, it\u2019s also necessary to apply.\n\nHow do the best and most important things to say before the question, how might you use this information to create an informative, or perhaps an informative, if you can\u2019t be sure and",
+          " high and prolonged antibiotic use of a single drug. The goal of this project is to compare the number of bacteria of certain strains that are present after the treatment. After the treatment, the number of viable colonies is counted and, as a measure of relative effect, the ratio of the number of colonies, and the ratio of the differences. \n\nThe function, and its use, are explained in the case study. \nThe input to the study can be provided on the file"
+        ],
+        "top_share": [
+          0.10416666666666667,
+          0.08333333333333333,
+          0.0625,
+          0.10416666666666667,
+          0.11458333333333333
+        ],
+        "distinct1": [
+          0.6041666666666666,
+          0.6145833333333334,
+          0.6875,
+          0.6875,
+          0.5625
+        ],
+        "distinct2": [
+          0.8947368421052632,
+          0.9052631578947369,
+          0.9263157894736842,
+          0.9789473684210527,
+          0.8842105263157894
+        ],
+        "halt_depth": [
+          2.09,
+          2.06,
+          2.06,
+          2.05,
+          2.02
+        ]
+      }
+    },
+    "Common symptoms of type 2 diabetes include": {
+      "0.0": {
+        "texts": [
+          " the patient as a single treatment.\n\nQuestion:\n\n- RCC, B, A, W, C, B, B, C, S, A, C, C, C, C, C, C, C, P, C, E, N, C, C, C, C, C, B, C, F, C, C, C, C, C, C, C, C, K, C, C, C",
+          " the time-2, and the effect-2, followed to a certain form of disease, but this is not a serious process of the clinical of the patient.\nIn a non-26 and a high level of a specific to the patient, which leads to the development of a hospital that can give more or the most effective health and not enough when you could be under and have a good to have an extensive and more healthy/20, or, which is the",
+          " an acute-l-c protein-t-2 -g-d-m/b/c-g/p is\n-R-r-c(H) is given by the T-C-T-2 and the H-14-p3,00-B, and the other is the one that is\n- The following as the following methods, which is the last and the first stage of the P-R-S, which",
+          " the medical that has a certain amount.\n\nThese forms are not mentioned, but they are not the right-ex-g. There is a combination of the effect.\n\nSo, the primary point is that the most common of such drug, and the use of the different activities are in the main treatment of this, which the fact is the first part of the treatment of this and the one of the treatment of \"b\" and the study. The goal is to",
+          " an active drug.\nSome studies, like the most significant methods of this and the most serious, or the other known to a high in the different, that some of the the most common problems are for the body to help.\n\nIt is a good approach for testing and the treatment of the treatment of the main aspects. It could help that you have the benefits in your mind.\n\nThese are the issues of this and many steps that are in the same way."
+        ],
+        "top_share": [
+          0.4166666666666667,
+          0.08333333333333333,
+          0.19791666666666666,
+          0.14583333333333334,
+          0.13541666666666666
+        ],
+        "distinct1": [
+          0.25,
+          0.5729166666666666,
+          0.5208333333333334,
+          0.5520833333333334,
+          0.5625
+        ],
+        "distinct2": [
+          0.3684210526315789,
+          0.9157894736842105,
+          0.8947368421052632,
+          0.8736842105263158,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.03,
+          2.03,
+          2.04,
+          2.07,
+          2.06
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " increased thirst. In the first stage, they can provide an additional 40% of the best and best quality of a patient for a period that can be 2.\n\n## The current in the study with a new, but all of the patients were in the medical\n\nQuestion:\nIf the group was able to produce a new drug, which part of the problem is to treat the first two points. For example, the second problem is that a single enzyme",
+          " excessive and, and other metabolic risks. When the medical has been treated and the number of symptoms may have been treated by an animal (that is only for a few types of diabetes that might require the medical, and the effect is to do it, as soon as a way of getting a disease that you are in control.\n\nFor example, people with the most common or severe the medical that is a natural and a regular, but with\n\nC)\nC)",
+          " a single body in a more of a few of the other the main steps of the same.\n\nA 2005 is a more specific use of the P.\n\nHow many things can be a good for a single, or other types of\n\nThe first day, the 2013, and so far, and when a person with one of 2010, the 2000 (and then many\n\n**",
+          " increased thirst. It might be because people aren't drinking and eating enough. 2,000 patients are randomized to 2 treatment, a single dose with the most significant reduction in fasting, and more to the problem we are taking the most significant, but a particular age, 5% of the effect of the risk of the risk. What is the role of a possible approach when the drug is to get a proper blood sugar control.\nWhat is the question and",
+          " increased reduction (C) and some studies; the use of the new medical.\n\nThe authors demonstrate the significance of the primary and their ability to improve the outcomes of the research.\n\n\nC)\n\nThe results are the data and the development of this process.\n\nThe purpose is to find the difference and how the results can be used.\n\nAs a result to the same kind, or if the same is to have the benefits for the whole population of"
+        ],
+        "top_share": [
+          0.09375,
+          0.0625,
+          0.08333333333333333,
+          0.09375,
+          0.14583333333333334
+        ],
+        "distinct1": [
+          0.6458333333333334,
+          0.625,
+          0.5104166666666666,
+          0.625,
+          0.5729166666666666
+        ],
+        "distinct2": [
+          0.9263157894736842,
+          0.9157894736842105,
+          0.7894736842105263,
+          0.9157894736842105,
+          0.8736842105263158
+        ],
+        "halt_depth": [
+          2.05,
+          2.04,
+          2.1,
+          2.04,
+          2.04
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "...\n\n\nI need to recall the common symptoms of the\n\nSo there are several classic signs that are to be kept by one's\n\n**\n\n**\n\n\n\n## The\n\n# What are the Symptoms of Type?\n\n**\n\n**\n\nThere are several problems which are common to determine the condition\n\nThe next thing that happens in the\n\nThe question is to be answered first\n\nAnd the result is then the next step would",
+          " an effect of blood pressure.\n\nIn this article and the results the results, your doctor may be able to learn about.\n\nA diagnosis of chronic diseases: the patient has type and type of diabetes, or obesity when to prevent type 2 or type 2 diabetes.\n\nThey should be taken in a doctor to support the treatment of the insulin.\n\nThe result in the process by finding and what these patients have a doctor's, especially after insulin.",
+          "\n\n* Increased (8) hunger or thirst and (8) and\n* Fatigue and (8) or\n* Blurred, (6) or\n* The need to (9)\n* Tingling or an (8) in the\n*2 slow (8)\nAll of these issues\n*1. **All of these issues\n\nThis is a non-trivial (6-8-10+\n*1. **All of",
+          " frequent urination, increased thirst.\nC: Hyp\nD)\nE)\nB)\nA)\nB)\nB)\nB)\nC)\n\nD)\nThe primary, the\n\n...\nE)\n\nP)\n\nAnswer:\n\nThe 20\n\nA)\n\nG)\n\nB)\n\nA)\n\nA)\n\nC)\n\nA)\n\nC)\n",
+          " the classic, more important features (sugar) in the urine, even to a 28. 2 days or to the\n\n[A 75% discount in the first 6 months]\n\nB 36, 292-to77.23, 128, 1958, 1880 and 1898\n\n\n \n\n\n\nThe overall treatment of both types of this disease"
+        ],
+        "top_share": [
+          0.22916666666666666,
+          0.08333333333333333,
+          0.125,
+          0.3958333333333333,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.53125,
+          0.59375,
+          0.4375,
+          0.2604166666666667,
+          0.5208333333333334
+        ],
+        "distinct2": [
+          0.8105263157894737,
+          0.8842105263157894,
+          0.6842105263157895,
+          0.4105263157894737,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.04,
+          2.03,
+          2.07,
+          2.03,
+          2.05
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " a specific form of muscle or joint, or other. However, that is as a result of the loss of muscle mass and function for the patient, it is well known that the condition is associated even with the most common of the type of loss, e.e. muscle loss or the loss of muscle function. Therefore, the diagnosis of type of diabetes is not a disease in and a treatment, but some other condition, such as, for the patient. However, there are",
+          " increased hunger, or the feeling of the appetite.\nIs there a connection that has been made between a certain gut and the disease type 02 diabetes?\nGut bacteria, also known as microbiome, a term referring to the complex,\n\nQuestion: Is the case report mentioning? (yes/no) Answer: No.\n\nQuestion: What caused the case of a person's pancreas inflammation, according to the case report? Answer: The article did not provide",
+          " insulin (the hormone produced by the pancreas of the body) resistance\nThe body is in a continuous struggle\n\nThe disease, diabetes insipidus, refers to a condition in which the treatment has to be seen but the cause is varied. This can be due to the kidney, brain. And the problem of the pituitary gland that is the best known to be a problem that occurs when the kidneys are not working in a normal and healthy manner, and then the urine is",
+          ":\n- Frequent urination and thirst\n- Increased pain in joints\n- Impotence\n- Blurred vision\n\n## Step 200: Confirm that for this case\nType 1 diabetes: the medical of this case is a 14-year-old presenting with symptoms of type of diabetes.\n\n## Step 201: Create the final answer to the question\nType 1 diabetes: The medical of this case is a specific case",
+          " increased thirst, and decreased the amount of sugar in this case, and decreased.\n\nThis is a high sugar pills for type of the brain.\n\ntreatment of uncontrolled diabetes in pregnancy, such as the body, which causes the glucose, or the insulin is enough, but not for the how do I control high blood sugar to achieve the same to the body.\n\nThis causes the body to produce an additional insulin for the body, and the body can help manage the"
+        ],
+        "top_share": [
+          0.09375,
+          0.07291666666666667,
+          0.10416666666666667,
+          0.10416666666666667,
+          0.125
+        ],
+        "distinct1": [
+          0.4791666666666667,
+          0.6770833333333334,
+          0.6458333333333334,
+          0.5208333333333334,
+          0.53125
+        ],
+        "distinct2": [
+          0.8947368421052632,
+          0.9052631578947369,
+          0.9578947368421052,
+          0.7789473684210526,
+          0.8421052631578947
+        ],
+        "halt_depth": [
+          2.06,
+          2.07,
+          2.07,
+          2.05,
+          2.05
+        ]
+      }
+    },
+    "Ibuprofen is a nonsteroidal anti-inflammatory drug used to treat": {
+      "0.0": {
+        "texts": [
+          " an acid-phosphase.\n\nSo, the CST will take a certain non-D-2-B-S2 (1951) or an S2P that is a \"C\" between the same, but the most suitable (G-C) or the H1, which is the primary for the H-N (the first one, probably) is a common kind of \"H1\" to the same time, that is the same",
+          " D-C, but is a strong.\n\nC) F-I is the central active and its an anti-D-C, and a mechanism can also be used to make an un-A-3 and a non-dependent\n\nI. is a very important step for the B-O-t-O-D. The other are primary for the main of the \"b\" for the A, and the following are main-in-S,",
+          ", so the first was the primary one that is a\n\n\"\n\nThe following is a great study and in the present, are the\n\n. You can also be at the right and have an appropriate activity of the new, even that the most significant thing is by having the same: and we are the same in the first, so it's important that they can be\n\nWhat's the use of the primary way to obtain an\n\n### 2D",
+          " T-C-K (C) which the B-P-D-6 4D (P) is the product of a BMP 4D-D-R-N-G-H-M-D-3-2-s) 5114144-C-C. The H-B2 and C-C.B-G-15-H2 of the D-2-I (D)",
+          " the\n5. A typical D2 (or a) T32\n\nB38 7, 69\ns3 75\n3. 14.5\n3.9 6.5\n\nAn\n\nN0.5\n\n16.335. A single\nIn other cases can be 10% a high water of water to water and of the\n\nThis is a very important point\n"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.13541666666666666,
+          0.125,
+          0.25,
+          0.14583333333333334
+        ],
+        "distinct1": [
+          0.5729166666666666,
+          0.5520833333333334,
+          0.5729166666666666,
+          0.3854166666666667,
+          0.46875
+        ],
+        "distinct2": [
+          0.9263157894736842,
+          0.8842105263157894,
+          0.8736842105263158,
+          0.8105263157894737,
+          0.8315789473684211
+        ],
+        "halt_depth": [
+          2.03,
+          2.04,
+          2.06,
+          2.01,
+          2.01
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " pain and also used as an initial but temporary step.\n\nBut the first is an initial to an effective in the first step, the best of that when the drug is to the body. So the first case of the primary mechanism is the anti-dependent with the same side.\n\nIt is an anti \u2013 but as the first step is an important component where we can easily see, which the mechanism may be involved in this phase. These can be related without an anti",
+          " as a pain\n\n**How can Dic-R\n\n**T31213-R/N\n\n**H**\n\n**B-2\n\nIn the following is the standard equation for the following two groups of equations, where the first group is the first of the 3: 2(10)\n\n**P7\n\nA42, the largest **P12.\n\nWe can solve for the",
+          " protein, so we are the only way to detect the treatment of its use as a standard drug to promote the process of the immune.\n\n4\n\nSo, they have the \"new-com\" from the first two groups: for the 1. D 4, the most important is that a normal one 2. The second part is the 7. B. The 2. the second is the A. The 3. This is the simplest.",
+          " the G-D-P-type, as a direct effect of non-an-H-H-B-C -1 or 3, and a reduced and/C-B. D-A-2 is a new component on the new 2-D. This is a similar and important form of G-D-P-A (C) to a nonsteroidal-anti-inflammatory drugs. This is part of a new class of C-T",
+          " the C-reactive.\n\nA recent study is a significant step forward.\n\nC-b/T-type of a primary part is the main and its the main aspects.\n\nIt is a way to identify a 20-fold-cell (a) for the main and the effect of the C-d and in this case, the C-G-1 is a highly sensitive for this. The result, a certain degree of the number of"
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.16666666666666666,
+          0.125,
+          0.1875,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.5625,
+          0.5,
+          0.6041666666666666,
+          0.5,
+          0.5625
+        ],
+        "distinct2": [
+          0.8947368421052632,
+          0.8210526315789474,
+          0.9157894736842105,
+          0.8526315789473684,
+          0.8526315789473684
+        ],
+        "halt_depth": [
+          2.04,
+          2.01,
+          2.04,
+          2.03,
+          2.04
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " pain and inflammation. It's the one with a\n\n**NON/41.4974\n\nGQ22100892017971\n\n**Proteo\n\n**Protexio**\n\n**Bis-Ket\n\n- Aqueous Solution and\n\n**Bis used for anti-inflammatory, analgesic and\n**\n\n**Aqueous**\n\nAnti and ",
+          " a protein  the pain and the inflammation. A protein-rich diet is often used for treating heart-related issues. The protein in the diet of a person is needed to keep the heart-type protein which is used to protect the formation for the protein to the best and the strongest for...\nA protein of the protein of the tissue is used to provide an immune if the person is 2-protein-rich diet, a good source of the protein for the person.",
+          " pain, fevers and or a whole range of the specific conditions in which the overall drug is used to reduce the risk of heart attack (such as a stroke), or blood pressure. Other factors are the other components in the way to get the primary and then the use of the information.\n\nAs such as a low and your doctor is not to be a patient's doctor if the problem is a doctor.\n\nThey are the same as a doctor will follow your blood pressure",
+          " inflammation and pain. However, it is not the most recommended for treating inflammation for pain. Aspoins also have anti-bacterial-tropic or anti-inflammatory properties. For the most sensitive and the most common cases of the inflammatory. For other conditions, there is no effect of ibuprofen for inflammation. What happens with more complicated and more severe in the most cases of inflammation, ibuprofen is the main and that would improve the inflammatory treatment, and to make a good effect",
+          " pain, but this might be a different drug. This is a pain medication that has a lower and often better safety profile. You can buy an anti-inflammatory-containing T-cell-B cell. But, like many other types of pain relievers, the only way to improve the treatment of the pain is by the patient. This can help with how to find a good to a well-functioning body. However, it's not clear but this is still an area-"
+        ],
+        "top_share": [
+          0.19791666666666666,
+          0.13541666666666666,
+          0.10416666666666667,
+          0.07291666666666667,
+          0.0625
+        ],
+        "distinct1": [
+          0.4895833333333333,
+          0.4791666666666667,
+          0.6041666666666666,
+          0.59375,
+          0.6666666666666666
+        ],
+        "distinct2": [
+          0.7789473684210526,
+          0.8526315789473684,
+          0.9157894736842105,
+          0.9157894736842105,
+          0.9789473684210527
+        ],
+        "halt_depth": [
+          2.04,
+          2.04,
+          2.04,
+          2.03,
+          2.04
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " pain, fever, or inflammation. For the correct treatment in the first year or two of life: the most important reason for taking ibuprofen for the long term in kids of the.\n\nThe drug should be the most important medication choice for the first year for any of the most common symptoms.\n\nThere may be a few other more likely to be taken in a month or two. That's often a better choice. The following 115 million people are likely to",
+          " the pain. These drugs relieve pain, fever, and inflammation by interfering with the body's production of prostaglandins, which affect pain and inflammation.\nBut the pain, fever, and inflammation is not just caused by a lack of prostagland, but by too much.\nProstaglandins, these little lipid molecules, stimulate the brain to do the opposite. They make inflammation for these reasons:\nReduce, or even stop, bleeding\nKeep the wound from getting too",
+          " for example.\nAc-upuncturists use needles in order to balance the flow of energy. This is believed to be an effective treatment for back pain.\nIt has no clinical basis and the placebo effect is more than a possibility.\nI know that I have used the treatment and have a very personal and real experience of back pain relief. Since the effect may be the placebo for some, you can just forget on and try alternatives. It might work for you more than",
+          ". The drug does not treat heart disease, a specific disease, but is instead to lower the risk of these, but it is very important to note that the drug affects the body in various ways.\n\nQuestion 20\n\nThe answer is 4.16, 16/4\n\nQuestion 21\n\nThe total volume of a solid-based mixture is less than or equal to the sum of the active constituents. The solid-based",
+          " in the treatment of pain (pain-s-in-flam -itis) [a] In acute, and a second type for chronic [b] 2. For the pain's treatment 2 is a combination of the drugs' and [c] the 2, and when [n(a) and the 3d can be used to treat pain, [n(n) and [m-n], it is the 2(t) and"
+        ],
+        "top_share": [
+          0.08333333333333333,
+          0.10416666666666667,
+          0.0625,
+          0.08333333333333333,
+          0.0625
+        ],
+        "distinct1": [
+          0.6041666666666666,
+          0.6041666666666666,
+          0.6770833333333334,
+          0.5625,
+          0.5416666666666666
+        ],
+        "distinct2": [
+          0.8842105263157894,
+          0.8736842105263158,
+          0.9473684210526315,
+          0.8631578947368421,
+          0.8842105263157894
+        ],
+        "halt_depth": [
+          2.05,
+          2.06,
+          2.01,
+          2.04,
+          2.02
+        ]
+      }
+    },
+    "def fibonacci(n):": {
+      "0.0": {
+        "texts": [
+          "\n\n- For the integer \\( n \\) (n) to the prime numbers \\( n \\)\n\n- A( n) is a perfect, non-con-of-of-s, and one-at-s\n\n- This is a function with only numbers. The function ``` which is a prime number of digits or the digits. For \\( n \\)\n\n- You need the first one of the 5-",
+          "\n    result_```\n\nIn this code, 'the solution should be part of the function to check.\n\nReference implementation:\n\n```\n\nPlease implement the Python function to use `c` to find the `f` in `a` for the second letter, the input\n\n```\n\nAdditional solution to find the final array 10 and a single input input\n\nIn Python,\n```\n\nHere are the `def main_valid",
+          "\n    \"\"\"Find the largest non-L and the following numbers:\n    \"\"\"\n    # Check the smallest N in the first and second\n    return True\n```\n\nInput:\n```\n\nPlease write the function to count(n-2-20000) for all the numbers in the sorted number `n` \n\n    input:\n\nThe problem is to write a Python function that will be written with a function that can have a specific input and not",
+          "\r\n\r\n`(n) 1000, and the **H-R-C-F-X-E-L-F-E-R-C-B-P-N-V-C-P-H-B-T-P-C-H-F-S-D-D-Q-E-B-B-T-D-B-C-C-M-B-H-C-D",
+          "\r\n\tn = 1\n\tn = 1\n\tnum = 1\n\tnums = 2\n\n# The input is the following:\n# 001- 10\n#31\n# 141\nn = 1\n# 1\nprint(n) 1\n# 16\n#\n#\n#  91\n\n\n# \n# 1.\n# 6"
+        ],
+        "top_share": [
+          0.11458333333333333,
+          0.17708333333333334,
+          0.08333333333333333,
+          0.4166666666666667,
+          0.1875
+        ],
+        "distinct1": [
+          0.4583333333333333,
+          0.5520833333333334,
+          0.59375,
+          0.3125,
+          0.3020833333333333
+        ],
+        "distinct2": [
+          0.7789473684210526,
+          0.8105263157894737,
+          0.8842105263157894,
+          0.4842105263157895,
+          0.5473684210526316
+        ],
+        "halt_depth": [
+          2.03,
+          2.02,
+          2.04,
+          2.02,
+          2.08
+        ]
+      },
+      "0.25": {
+        "texts": [
+          "\n    # Handle function to find the original order in the code to find 1,1\n    # This is the main part of the code.\n\nOutput:\n\n# Original, we can see in the code to find the original orderpalindrome\n# [ (1 2 1 1 100 10 19 14 2 15 13 2 14 13 15 ",
+          "\n    if n < len(mem) > 1:\n        return 1\n    count_nums = {0}\n    if n > 0:\n        count_numbers = [1, 1, 1]\n        for i in range(n + 1) * 2 * 10:\n            # ...\n\n    for j in range(n):\n        if n > 1:\n               for i in range(int(n)):\n                    a = max",
+          " The prime numbers are the prime number, which is the prime prime number. If this function is an integer **(n) and the number of digits is not less than one, which prime number of 2, and the numbers that are congrun of the prime numbers. \n\n**Ex-D:** \n103^022000, 3111402314, and the given digit list has an integer number of",
+          "\n\t\tnum1,\n\tinput2 = 1\nprint(len(n) % (num_to_m) if len(s) % 100  # this is what's possible to use the result of the 1st and last row?\n#\tinput_data = 1\n# print(n)\n# the second 2^2 is a 2-layer 1 (i.e. 2_",
+          "\n    # check if the number is less than the number of possible elements \\( n \\)\n    if n > 2:\n        if number is not None:\n                total = 4 \\( n \\) \\( n \\)  \nif there is a case that 2) is less than \\( n \\) then there are only four possible factors that are. Therefore, the last digit of the first digit number 2 is 1. So, the"
+        ],
+        "top_share": [
+          0.16666666666666666,
+          0.09375,
+          0.0625,
+          0.09375,
+          0.08333333333333333
+        ],
+        "distinct1": [
+          0.40625,
+          0.46875,
+          0.4791666666666667,
+          0.53125,
+          0.4895833333333333
+        ],
+        "distinct2": [
+          0.6105263157894737,
+          0.7157894736842105,
+          0.8210526315789474,
+          0.8526315789473684,
+          0.8
+        ],
+        "halt_depth": [
+          2.03,
+          2.01,
+          2.06,
+          2.06,
+          2.02
+        ]
+      },
+      "0.5": {
+        "texts": [
+          "\n\n\tif n <= n > 4: \n\n\t\treturn n\n\n\nThe solution is the same as the original solution here: **\n\n\nOkay, let's see. The user wants to generate the first one hundred integers of the Fib Fibonacci number sequence and then output the 1-digit and 1-to-4-digit number of integers. Hmm, wait, that's a solution that can be written in the form of a",
+          "\n    if n <= n:\n        return n if n < 1:\n            return True if n == n:\n\n\n\n```python\ndef fibonacci(n):\n    if n < 1:\n        return True\n    return n if n < n:\nExample:\n    return n if n < n:\n    return []\n    return []\n```\n\n```python\ndef fibonacci(n):\n    return [n * n * n *",
+          "\n    \"\"\"\n    :param num: The position of the number  that is needed.\n    :raises ValueError: if the first argument is less than or a non-integer.\n    :return: The n input list will be added\n    \"\"\"\n    # This function converts any non-int in the given position to an error message.\n    # If the value is exactly 1, then the sum is that integer, is it 2 then it is 3.\n    if s",
+          "\n    for _ in range(n):\n        if n < 0:\n            raise ValueError(\"n must be a one-based:n\"  # not sure.\n        # ...\n\n\nAlternatively, for the function in the above code, we could use this. Then, we can try to generate the list of Fib-numbers. And then, if the input is the Fib number, that is, the Fib-numbers of this input is  the number that is returned",
+          "\n\tif n < 1:\n\tn1 = 1\n\nfibonacci(n)\n```\n\nOriginal question: Write a function to count the sequence of all Fib Fibonacci numbers in the range of 1 and n.\n\nCorrect, find the sum of the **Fibonacci** numbers in the range of 10 to 15, **not in a Fib Fib L_t if not it's just a single, a"
+        ],
+        "top_share": [
+          0.0625,
+          0.15625,
+          0.08333333333333333,
+          0.07291666666666667,
+          0.09375
+        ],
+        "distinct1": [
+          0.6145833333333334,
+          0.28125,
+          0.6145833333333334,
+          0.6145833333333334,
+          0.5416666666666666
+        ],
+        "distinct2": [
+          0.9368421052631579,
+          0.5052631578947369,
+          0.8947368421052632,
+          0.9368421052631579,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.07,
+          2.04,
+          2.02,
+          2.03,
+          2.07
+        ]
+      },
+      "0.7": {
+        "texts": [
+          "\n    # base case\n    if n <= 0:\n        return False\n    elif n == 1:\n        return 0\n    # recursive: nth fibonacci is defined using last two fibonacci\n    if fib_in_memory(n):\n        return 0\n    for i in range(n-1, r):\n        return fib_in_m(k,nth,i)\n\nWait, but in the problem \"n\" isn't a variable",
+          "\n        # if n < n and n > m\n        return [[n-\nCorrect the syntax and the final return statement of the number\n\n```python\n#\n\ndef fibonacci(n):\n    sequence = [0, 1]1\n    while len(sequence) <= n:\n        # add the string for n\n        sequence.append(0)\n    return sequence\n\n```\n\n\n```python\ndef fibonacci(n):\n    sequence =",
+          "\n    if n <= n_max_per_request_count:\n        # Calculate the nth Fib-U-Dub 4_1 number and return the sum.\n```\n\nThe function `fibonacci(n)` is supposed to be implemented with the use-case constraints. Please find a way to find the n-th Fib-U-Dub 12_14 and return the sum. Here is a hint: the numbers of the",
+          "\n    if len(n) == len(n):\n        return 0 if n % 3  != 0 else fibonacci(n >= 2 ? n // 3  : n - 1  ? n // 1 : abs(n) > 1  ?\n    if (n := n // 1) > 1:\n        print(n, end=\"\")  # 2 3 3 1\n\nfor i in",
+          "\n fibonacci_numbers = []\n for i in range(n):\n fibonacci_numbers.append(next(fib_num))\n# return the list\n# print(output)\n\nI want to use only one\nprint\nstatement and one\nfor\nstatement, with\nfibonacci_numbers = 1, 1, 2, 3, 5, 7, 12, 20, 33,"
+        ],
+        "top_share": [
+          0.0625,
+          0.125,
+          0.07291666666666667,
+          0.19791666666666666,
+          0.125
+        ],
+        "distinct1": [
+          0.5520833333333334,
+          0.5104166666666666,
+          0.5833333333333334,
+          0.4270833333333333,
+          0.4791666666666667
+        ],
+        "distinct2": [
+          0.8315789473684211,
+          0.8210526315789474,
+          0.8631578947368421,
+          0.6947368421052632,
+          0.7473684210526316
+        ],
+        "halt_depth": [
+          2.0,
+          2.02,
+          2.04,
+          2.01,
+          2.08
+        ]
+      }
+    },
+    "To solve the quadratic equation x^2 - 5x + 6 = 0, we": {
+      "0.0": {
+        "texts": [
+          " 12\nThis is the correct equation:\n\n**a** (34 - 5 + 5 + 12 a)\n\nWait. Let \\( x^2 = 2 \\), which is not 16 + 201 + 15 - 27 = 1.\n\nThe third part in the equation is 2^2 = 32, but there is a value of 10 +",
+          " 61, then the answer is 120000084 = 33.599799615.122401255 6960704 693102254 = 1639339495475147122904239626036474",
+          " 0. However, not there's a common way to find the value of the equation 1.\n\nSo, since a different equation is a constant value of 1, so then the equation is a 54=20, so it is not possible to find a whole solution. If someone\u2019s work a few.\n\n**Question: \n\n\\boxed{25} - A + 7 + 5 = 615",
+          " 3.\n\nThe solution is 2 + 4.\n\nStep 1. What is the value of x?\n\nStep 2 = 12\n\nWhen the other numbers are the same as 15.\n\nThen the 4-digit number is 20.\n\nThe problem is the remainder for an integer being 3000, so the final is 10, which is 10:\n",
+          " c + 10. Therefore, we can check x = 10, then we find the value of the original solution we are asked to find the minimum in each element.\n\nTherefore, we have the values of the number \\( a\\) for the given values of the function in the middle, and the number of possible values in case of numbers \\( c = 10\\), so \\( \\frac{1}{3} \\) is"
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.11458333333333333,
+          0.07291666666666667,
+          0.13541666666666666,
+          0.09375
+        ],
+        "distinct1": [
+          0.4479166666666667,
+          0.1875,
+          0.5729166666666666,
+          0.4375,
+          0.5520833333333334
+        ],
+        "distinct2": [
+          0.7789473684210526,
+          0.7052631578947368,
+          0.8842105263157894,
+          0.7263157894736842,
+          0.8631578947368421
+        ],
+        "halt_depth": [
+          2.0,
+          2.01,
+          2.02,
+          2.03,
+          2.03
+        ]
+      },
+      "0.25": {
+        "texts": [
+          " 0\n\nThe system can be a simple solution of a polynomial (dividing) equation:\n\n(a, 1) and (c) divide (1)\n\n1. 6577 = ? 4\n\n2. 75. 504 / 52 = ?\n\n1. 893 + 1859 + 1948 = ? 16443 25",
+          " 10.\n\n**H(X_{\\sqrt(R_{\\n}(x\\_) \\right)}} (4) \\text{C_2} \\Rightarrow 2431\\mathrm{P} = 20 \\times 2\\)\n\n## Prof:\n\n### **-108270452.49793626919\n\\[ ",
+          " 4x + 6. So, first factor of \\( S = 3 \\cdot 10 \\), which is 50 less less than the given number of sets of integers which are not divisible by 6 to the 3-digit or less than the number at the second number of three. The integer number that is divisible by the smallest positive integer that is \\( C \\) to a different \\( S \\) such that is not necessarily",
+          " 3.\n\nNow the first two problems are just a set such that every number\n\nIn a quadratic case, the set of solutions to find the integer (which must divide 20, then we try to find the real number of steps, but there are 11 and 3, 3, and 8, so we would need each number of 3 that are consecutive two numbers of the two solutions so we can solve them in the other two",
+          " 2 \\frac{6}{23} \\)\nA: \\( x = \\frac{16}{x} \\)\n(a) \\( x = 13 \\cdot 3 \\)\n\n(a) 4 4 5 \\text{ is not the only case. We can compute for 68, so it is the first one \\( 25 \\)\n\nThe equation is in the first equation"
+        ],
+        "top_share": [
+          0.125,
+          0.07291666666666667,
+          0.07291666666666667,
+          0.07291666666666667,
+          0.11458333333333333
+        ],
+        "distinct1": [
+          0.4166666666666667,
+          0.5208333333333334,
+          0.5416666666666666,
+          0.5520833333333334,
+          0.4375
+        ],
+        "distinct2": [
+          0.8421052631578947,
+          0.9263157894736842,
+          0.8736842105263158,
+          0.8947368421052632,
+          0.7473684210526316
+        ],
+        "halt_depth": [
+          2.02,
+          2.0,
+          2.02,
+          2.02,
+          2.01
+        ]
+      },
+      "0.5": {
+        "texts": [
+          " 0\nAnswer- The problem is: solve quadratic-2559*e^0 + 5428e^3 = 0\nIn the equation above, we know the first term and we can find the square and multiply 800,\n\n## Let 8 - 4 = 0, x^2 = 16, which implies the first of the following numbers:\nx^22 + 5x =",
+          " 0\n\nWhich does not need the numbers of solutions?\n\nWhich does not need to be done?\n\nWhat is the correct possible value of the constant c?\n\nWe will have a quadratic solution (x^2 + 2x - 1)\n\nNow we put it in our second equation:\n\nx = 3 - 3\n\nThen divide the second equation of values:\n\n(x + 2)\n\n",
+          " 0\n\nTo find the value of x^2 + 1:\n\n( - 2) = 0\n\n( x - 4)( x - 2 ) = 0\n\n(0)(x + 2) - 3\n\n(y - 7) = 1\n\n(a + 3)(a - 5) = 0\n\nFor the equation:\n\ny = -1, we",
+          " 2\n\n**Final Solutions:**\n\n- The solutions can be expressed as a 6440 and 67005159237699916253508162280022506030473576706238131779209117427635333",
+          " 11, so the value of x^2 + 112.34\n\n**College Algebra**\nSol) 20400, p= 122400, which is given by the 48% of the same number divided by 100?\n\n**Math**\n\n**Math**\n\n-8(08200, 1224)\n-28"
+        ],
+        "top_share": [
+          0.09375,
+          0.1875,
+          0.16666666666666666,
+          0.11458333333333333,
+          0.10416666666666667
+        ],
+        "distinct1": [
+          0.5,
+          0.53125,
+          0.3229166666666667,
+          0.2604166666666667,
+          0.375
+        ],
+        "distinct2": [
+          0.8736842105263158,
+          0.7789473684210526,
+          0.6210526315789474,
+          0.7473684210526316,
+          0.7263157894736842
+        ],
+        "halt_depth": [
+          2.02,
+          2.03,
+          2.0,
+          2.0,
+          2.04
+        ]
+      },
+      "0.7": {
+        "texts": [
+          " 0 by factoring.\n\n**Answer**\nx = 27 / 100\n\n**Answer**\nx = 12\n\nIn order to solve for x, we need to have 5 equal terms of x.\n\nThe function is f(x) = -16 = -90\n266 = 11\n\nTo find the number of ways 13 is different from each of the other three",
+          " 0 and y^2 - 7y + 5x = 0.\n\nA quadratic equation is an integer equation in the standard equation format ax^2 + bx + c = 5. It is a polynomial that is generally second degree, and when plotted on the Cartesian plane, it creates a value for each number. If the equation is plotted, it will form a graph of a function, which, if the number of x's is positive,",
+          " 13\n\nWe need to find the value of x and express the answer in both exact and approximate form. To do this, the equation can be rearranged as x + x^2 + 6 - 2x - 6x = 0. However, this approach seems like a mis-type. A correct factorization of the first three terms, each that can be factored, is missing. The correct approach involves simplifying the numerical fractions and multiplying",
+          " 0. The equation can be written as (4.555)x^2 + 3x - 4.529x. However, in equation 14, it is possible that x is the same as in equation 137.596284. \n\nIf any two different equations are given in the form of a second-degree in x (i.e., quadratics in x), they can always",
+          " 0 by a quadratic\nequation and find the required solution.\n\nLet A = \u221a a + 3; given that 8a + 3 = 13, find the value of A. The solution is to substitute a (\u221a a) for x, resulting in x^2 - 4x = 5.\n\nNext, solve 2x^2 - 7 (\u221a)x + 6 = 0"
+        ],
+        "top_share": [
+          0.13541666666666666,
+          0.0625,
+          0.052083333333333336,
+          0.07291666666666667,
+          0.11458333333333333
+        ],
+        "distinct1": [
+          0.5,
+          0.6041666666666666,
+          0.6875,
+          0.6041666666666666,
+          0.53125
+        ],
+        "distinct2": [
+          0.8,
+          0.9368421052631579,
+          0.968421052631579,
+          0.9052631578947369,
+          0.8421052631578947
+        ],
+        "halt_depth": [
+          2.01,
+          2.01,
+          2.03,
+          2.01,
+          2.02
+        ]
+      }
+    }
+  }
+}

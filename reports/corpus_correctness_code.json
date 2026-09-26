@@ -1,0 +1,15 @@
+{
+  "glob": "data_teacher_code/shard_*.jsonl",
+  "sampled": 3000,
+  "adjudicable": 840,
+  "verdicts": 838,
+  "strict": 766,
+  "normalised": 808,
+  "skipped": {
+    "no_io_block": 484,
+    "multi_arg": 582,
+    "not_one_fn": 658,
+    "len_mismatch": 116,
+    "unparseable_literal": 320
+  }
+}
